@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "baseUrl": "./packages",
+        "paths": {
+            "@verkkokauppa/product-experience-api/*": [
+                "product-experience-api/src/*"
+            ],
+            "@verkkokauppa/product-backend/*": [
+                "product-backend/src/*"
+            ]
+        }
+    },
+    "files": [],
+    "references": [
+        {
+            "path": "packages/product-backend"
+        },
+        {
+            "path": "packages/product-experience-api"
+        }
+    ]
+}
