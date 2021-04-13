@@ -1,0 +1,21 @@
+version: '3.7'
+
+services:
+  product-experience-api:
+    build:
+      context: ./
+      dockerfile: packages/product-experience-api/Dockerfile
+      target: base
+    volumes:
+      - ./packages/product-experience-api/src:/opt/app-root/src/packages/product-experience-api/src
+      - ./packages/product-experience-api/nodemon.json:/opt/app-root/src/packages/product-experience-api/nodemon.json
+    container_name: product-experience-api
+    expose:
+      - '8080'
+    ports:
+      - '8081:8080'
+      - '9229:9229'
+    command: yarn workspace @verkkokauppa/product-experience-api dev
+    environment:
+      - SERVICE_NAME=product-experience-api
+      - BACKEND_URL=https://1d250bb7-3f90-4dfd-b698-7ce524efb1fd.mock.pstmn.io
