@@ -4,10 +4,10 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "clean": "rimraf dist && rimraf tsconfig.build.tsbuildinfo",
+    "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
     "prepack": "yarn build",
     "build": "yarn clean && yarn compile",
-    "compile": "tsc -p tsconfig.build.json && cp \"./package.json\" ./dist/",
+    "compile": "tsc --build && cp \"./package.json\" ./dist/",
     "lint": "eslint \"./src/**/*.{ts,tsx}\" --max-warnings=0",
     "start": "node dist/index.js",
     "dev": "NODE_ENV=development nodemon src/index.ts"

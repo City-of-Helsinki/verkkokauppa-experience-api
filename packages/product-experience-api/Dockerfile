@@ -25,6 +25,6 @@ RUN yarn workspace @verkkokauppa/product-experience-api install
 
 # Create production build
 FROM base as production
-RUN yarn build
+RUN yarn workspace @verkkokauppa/product-experience-api build
 EXPOSE 8080
-CMD yarn -d start
+CMD yarn workspace @verkkokauppa/product-experience-api start -d
