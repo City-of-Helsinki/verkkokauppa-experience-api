@@ -10,8 +10,9 @@ COPY ./tsconfig.base.json ./tsconfig.base.json
 
 # Copy package and dependent packages
 COPY ./packages/types ./packages/types
-COPY ./packages/product-experience-api ./packages/product-experience-api
 COPY ./packages/product-backend ./packages/product-backend
+COPY ./packages/price-backend ./packages/price-backend
+COPY ./packages/product-experience-api ./packages/product-experience-api
 
 # Chown to correct user
 USER 0
@@ -21,6 +22,7 @@ USER 1001
 
 # Run install for all required packages
 RUN yarn workspace @verkkokauppa/product-backend install
+RUN yarn workspace @verkkokauppa/price-backend install
 RUN yarn workspace @verkkokauppa/product-experience-api install
 
 # Create production build
