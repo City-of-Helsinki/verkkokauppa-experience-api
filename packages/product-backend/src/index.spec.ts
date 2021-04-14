@@ -7,7 +7,7 @@ const axiosMock = axios as jest.Mocked<typeof axios>;
 describe('Test Single Product from backend', () => {
   it('Should throw error with no backend url set', async () => {
     process.env.PRODUCT_BACKEND_URL = '';
-    await expect(getProduct({ id: 'test' })).rejects.toThrow('No backend URL set');
+    await expect(getProduct({ id: 'test' })).rejects.toThrow('No product backend URL set');
   });
   it('Should fetch correctly with backend url set', async () => {
     process.env.PRODUCT_BACKEND_URL = 'test.dev.hel';
