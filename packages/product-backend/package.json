@@ -4,7 +4,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "clean": "rimraf dist",
+    "clean": "rimraf dist && rimraf tsconfig.build.tsbuildinfo",
     "prepack": "yarn build",
     "build": "yarn clean && yarn compile",
     "compile": "tsc --build && cp \"./package.json\" ./dist/",
@@ -12,5 +12,8 @@
   },
   "dependencies": {
     "axios": "^0.21.1"
+  },
+  "devDependencies": {
+    "@verkkokauppa/types": "^1.0.0"
   }
 }

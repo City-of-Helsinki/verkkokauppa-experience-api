@@ -7,16 +7,31 @@
             ],
             "@verkkokauppa/product-backend/*": [
                 "product-backend/src/*"
+            ],
+            "@verkkokauppa/price-experience-api/*": [
+                "price-experience-api/src/*"
+            ],
+            "@verkkokauppa/price-backend/*": [
+                "price-backend/src/*"
             ]
         }
     },
     "files": [],
     "references": [
         {
+            "path": "packages/price-backend"
+        },
+        {
+            "path": "packages/price-experience-api"
+        },
+        {
             "path": "packages/product-backend"
         },
         {
             "path": "packages/product-experience-api"
+        },
+        {
+            "path": "packages/types"
         }
     ]
 }

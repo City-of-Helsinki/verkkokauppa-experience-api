@@ -1,10 +1,8 @@
 import type { RequestHandler } from 'express';
 import { getProduct } from '@verkkokauppa/product-backend';
+import type { CommonExperienceRequest } from '@verkkokauppa/types';
 
-type GetParams = {
-  id: string;
-};
-export const get: RequestHandler<GetParams> = async (req, res) => {
+export const get: RequestHandler<CommonExperienceRequest> = async (req, res) => {
   try {
     const { id } = req.params;
 
