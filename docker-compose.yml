@@ -14,8 +14,25 @@ services:
       - '8080'
     ports:
       - '8081:8080'
-      - '9229:9229'
     command: yarn workspace @verkkokauppa/product-experience-api dev
     environment:
       - SERVICE_NAME=product-experience-api
-      - BACKEND_URL=https://1d250bb7-3f90-4dfd-b698-7ce524efb1fd.mock.pstmn.io
+      - PRODUCT_BACKEND_URL=https://1d250bb7-3f90-4dfd-b698-7ce524efb1fd.mock.pstmn.io
+      - PRICE_BACKEND_URL=https://7c62f33b-5691-4f45-8db0-f506c61e5b8d.mock.pstmn.io
+  price-experience-api:
+    build:
+      context: ./
+      dockerfile: packages/price-experience-api/Dockerfile
+      target: base
+    volumes:
+      - ./packages/price-experience-api/src:/opt/app-root/src/packages/price-experience-api/src
+      - ./packages/price-experience-api/nodemon.json:/opt/app-root/src/packages/price-experience-api/nodemon.json
+    container_name: price-experience-api
+    expose:
+      - '8080'
+    ports:
+      - '8082:8080'
+    command: yarn workspace @verkkokauppa/price-experience-api dev
+    environment:
+      - SERVICE_NAME=price-experience-api
+      - PRICE_BACKEND_URL=https://7c62f33b-5691-4f45-8db0-f506c61e5b8d.mock.pstmn.io
