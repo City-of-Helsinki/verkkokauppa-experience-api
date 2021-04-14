@@ -15,7 +15,8 @@ COPY ./packages/product-backend ./packages/product-backend
 
 # Chown to correct user
 USER 0
-RUN chown -R 1001:0 ./
+RUN chown -R 1001:0 ${APP_ROOT} && chmod -R ug+rwx ${APP_ROOT} && \
+    rpm-file-permissions
 USER 1001
 
 # Run install for all required packages
