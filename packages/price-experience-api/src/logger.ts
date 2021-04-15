@@ -1,22 +1,10 @@
-import {
-  createLogger,
-  format, transports,
-} from 'winston'
+import { createLogger, format, transports } from 'winston'
 
 const logger = createLogger({
-  format: format.combine(
-    format.timestamp(),
-  ),
-  transports: [
-    new transports.Console({
-      format: format.combine(
-        format.colorize(),
-        format.simple(),
-      ),
-    }),
-  ],
+  format: format.combine(format.errors({ stack: true }), format.json()),
+  transports: [new transports.Console()],
   defaultMeta: { service: process.env.SERVICE_NAME },
-  level: process.env.NODE_ENV === 'development' ? 'silly' : 'warn',
+  level: 'silly',
 })
 
 export default logger
