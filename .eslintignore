@@ -1,3 +1,6 @@
 node_modules
 umd
 dist
+coverage
+jest.config.js
+tsconfig-references.js

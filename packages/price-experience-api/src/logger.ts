@@ -1,7 +1,7 @@
 import {
   createLogger,
   format, transports,
-} from 'winston';
+} from 'winston'
 
 const logger = createLogger({
   format: format.combine(
@@ -17,6 +17,6 @@ const logger = createLogger({
   ],
   defaultMeta: { service: process.env.SERVICE_NAME },
   level: process.env.NODE_ENV === 'development' ? 'silly' : 'warn',
-});
+})
 
-export default logger;
+export default logger
