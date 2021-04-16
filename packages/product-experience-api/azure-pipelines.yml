@@ -11,11 +11,6 @@ trigger:
     include:
       - master
 
-
-
-# By default, use self-hosted agents
-pool: Default
-
 # Opting out of pull request validation
 pr: none
 
