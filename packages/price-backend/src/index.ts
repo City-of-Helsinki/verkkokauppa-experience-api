@@ -11,7 +11,9 @@ type PriceBackendResponse = {
   original: PriceBackendOriginals
 }
 
-export const getPrice: CommonBackendHandler<AxiosResponse<PriceBackendResponse>> = async (p) => {
+export const getPrice: CommonBackendHandler<
+  AxiosResponse<PriceBackendResponse>
+> = async (p) => {
   const { id } = p
   if (!process.env.PRICE_BACKEND_URL) {
     throw new Error('No price backend URL set')
