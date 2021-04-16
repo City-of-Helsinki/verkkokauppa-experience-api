@@ -4,11 +4,12 @@ trigger:
   paths:
     include:
     - packages/product-experience-api
-
+  tags:
+    include:
+      - product-experience-api/*
   branches:
     include:
       - master
-      - refs/tags/product-experience-api/v*
 
 
 # By default, use self-hosted agents
