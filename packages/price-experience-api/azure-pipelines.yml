@@ -9,7 +9,7 @@ trigger:
       - price-experience-api/*
   branches:
     include:
-      - develop
+      - master
 
 
 # By default, use self-hosted agents
