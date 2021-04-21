@@ -26,6 +26,6 @@ RUN yarn workspace @verkkokauppa/price-experience-api install
 
 # Create production build
 FROM base as production
-RUN yarn build
+RUN yarn workspace @verkkokauppa/price-experience-api build
 EXPOSE 8080
-CMD yarn -d start
+CMD yarn workspace @verkkokauppa/price-experience-api start -d
