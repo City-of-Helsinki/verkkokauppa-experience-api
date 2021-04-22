@@ -1,4 +1,4 @@
-export class CombinedResult {
+export class CombinedData {
   private _data?: any
 
   public add(p: { value: any; identifier: string }) {

@@ -10,6 +10,7 @@ COPY ./tsconfig.base.json ./tsconfig.base.json
 
 # Copy package and dependent packages
 COPY ./packages/types ./packages/types
+COPY ./packages/core ./packages/core
 COPY ./packages/price-backend ./packages/price-backend
 COPY ./packages/price-experience-api ./packages/price-experience-api
 
@@ -21,6 +22,7 @@ USER 1001
 
 
 # Run install for all required packages
+RUN yarn workspace @verkkokauppa/core install
 RUN yarn workspace @verkkokauppa/price-backend install
 RUN yarn workspace @verkkokauppa/price-experience-api install
 

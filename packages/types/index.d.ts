@@ -1,8 +1,8 @@
 export interface CommonBackendRequest {
-  id: string;
+  id: string
 }
-export type CommonBackendHandler<T> = (p: CommonBackendRequest) => Promise<T>;
+export type CommonBackendHandler<T> = (p: CommonBackendRequest) => Promise<T>
 
 export interface CommonExperienceRequest {
-  id: string;
+  id: string
 }

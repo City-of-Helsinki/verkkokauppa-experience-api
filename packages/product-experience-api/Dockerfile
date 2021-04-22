@@ -10,6 +10,7 @@ COPY ./tsconfig.base.json ./tsconfig.base.json
 
 # Copy package and dependent packages
 COPY ./packages/types ./packages/types
+COPY ./packages/core ./packages/core
 COPY ./packages/product-backend ./packages/product-backend
 COPY ./packages/price-backend ./packages/price-backend
 COPY ./packages/product-experience-api ./packages/product-experience-api
@@ -21,6 +22,7 @@ RUN chown -R 1001:0 ${APP_ROOT} && chmod -R ug+rwx ${APP_ROOT} && \
 USER 1001
 
 # Run install for all required packages
+RUN yarn workspace @verkkokauppa/core install
 RUN yarn workspace @verkkokauppa/product-backend install
 RUN yarn workspace @verkkokauppa/price-backend install
 RUN yarn workspace @verkkokauppa/product-experience-api install

@@ -1,5 +1,5 @@
 import app from './app'
-import logger from './logger'
+import { logger } from '@verkkokauppa/core'
 
 const PORT = process.env.PORT || 8080
 const serve = () =>
