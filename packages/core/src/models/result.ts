@@ -7,7 +7,7 @@ export class Result<T> {
   public isSuccess: boolean
   public isFailure: boolean
   public error?: T | string
-  private _data?: T
+  private readonly _data?: T
 
   public constructor(p: ResultProps<T>) {
     const { isSuccess, error, data } = p
