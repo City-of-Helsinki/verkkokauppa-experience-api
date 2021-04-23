@@ -4,6 +4,8 @@ trigger:
   paths:
     include:
     - packages/price-experience-api
+    - packages/price-backend
+    - packages/core
   tags:
     include:
       - price-experience-api/*
