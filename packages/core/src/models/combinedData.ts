@@ -6,7 +6,7 @@ export class CombinedData {
     this._data = {
       ...this._data,
       ...value,
-      originals: { ...this._data?.originals, [identifier]: value.originals },
+      original: { ...this._data?.original, [identifier]: value.original },
     }
   }
   public serialize() {
