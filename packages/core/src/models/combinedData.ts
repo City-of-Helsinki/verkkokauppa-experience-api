@@ -1,6 +1,6 @@
-export class CombinedData {
-  private _data?: any
+import { Data } from './data'
 
+export class CombinedData extends Data {
   public add(p: { value: any; identifier: string }) {
     const { value, identifier } = p
     this._data = {

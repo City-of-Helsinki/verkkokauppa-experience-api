@@ -1,18 +1,21 @@
 import axios, { AxiosResponse } from 'axios'
-import type { CommonBackendHandler } from '@verkkokauppa/types'
-
-type ProductBackendOriginals = {
-  [key: string]: any
-}
+import type {
+  CommonBackendHandler,
+  CommonBackendOriginals,
+  CommonBackendRequest,
+} from '@verkkokauppa/types'
 
 type ProductBackendResponse = {
   id: string
   name: string
   [key: string]: any
-  original: ProductBackendOriginals
+  original: CommonBackendOriginals
 }
 
-export const getProduct: CommonBackendHandler<AxiosResponse<ProductBackendResponse>> = async (p) => {
+export const getProduct: CommonBackendHandler<
+  CommonBackendRequest,
+  AxiosResponse<ProductBackendResponse>
+> = async (p) => {
   const { id } = p
   if (!process.env.PRODUCT_BACKEND_URL) {
     throw new Error('No product backend URL set')

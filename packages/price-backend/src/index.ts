@@ -1,17 +1,18 @@
 import axios, { AxiosResponse } from 'axios'
-import type { CommonBackendHandler } from '@verkkokauppa/types'
-
-type PriceBackendOriginals = {
-  [key: string]: any
-}
+import type {
+  CommonBackendHandler,
+  CommonBackendOriginals,
+  CommonBackendRequest,
+} from '@verkkokauppa/types'
 
 type PriceBackendResponse = {
   id: string
   price: number
-  original: PriceBackendOriginals
+  original: CommonBackendOriginals
 }
 
 export const getPrice: CommonBackendHandler<
+  CommonBackendRequest,
   AxiosResponse<PriceBackendResponse>
 > = async (p) => {
   const { id } = p
