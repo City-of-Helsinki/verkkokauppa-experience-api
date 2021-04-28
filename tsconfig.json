@@ -19,6 +19,12 @@
     "files": [],
     "references": [
         {
+            "path": "packages/cart-backend"
+        },
+        {
+            "path": "packages/cart-experience-api"
+        },
+        {
             "path": "packages/core"
         },
         {

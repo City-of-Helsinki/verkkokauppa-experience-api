@@ -9,6 +9,8 @@ services:
     volumes:
       - ./packages/product-experience-api/src:/opt/app-root/src/packages/product-experience-api/src
       - ./packages/product-experience-api/nodemon.json:/opt/app-root/src/packages/product-experience-api/nodemon.json
+      - ./packages/product-backend/src:/opt/app-root/src/packages/product-backend/src
+      - ./packages/price-backend/src:/opt/app-root/src/packages/price-backend/src
     container_name: product-experience-api
     expose:
       - '8080'
@@ -17,8 +19,8 @@ services:
     command: yarn workspace @verkkokauppa/product-experience-api dev
     environment:
       - SERVICE_NAME=product-experience-api
-      - PRODUCT_BACKEND_URL=https://1d250bb7-3f90-4dfd-b698-7ce524efb1fd.mock.pstmn.io
-      - PRICE_BACKEND_URL=https://7c62f33b-5691-4f45-8db0-f506c61e5b8d.mock.pstmn.io
+      - PRODUCT_BACKEND_URL=https://ff102df2-94c3-4243-a4a1-6e449f78c633.mock.pstmn.io
+      - PRICE_BACKEND_URL=https://3d615742-ed93-4415-8972-76c7103c5000.mock.pstmn.io
   price-experience-api:
     build:
       context: ./
@@ -27,6 +29,7 @@ services:
     volumes:
       - ./packages/price-experience-api/src:/opt/app-root/src/packages/price-experience-api/src
       - ./packages/price-experience-api/nodemon.json:/opt/app-root/src/packages/price-experience-api/nodemon.json
+      - ./packages/price-backend/src:/opt/app-root/src/packages/price-backend/src
     container_name: price-experience-api
     expose:
       - '8080'
@@ -35,4 +38,23 @@ services:
     command: yarn workspace @verkkokauppa/price-experience-api dev
     environment:
       - SERVICE_NAME=price-experience-api
-      - PRICE_BACKEND_URL=https://7c62f33b-5691-4f45-8db0-f506c61e5b8d.mock.pstmn.io
+      - PRICE_BACKEND_URL=https://3d615742-ed93-4415-8972-76c7103c5000.mock.pstmn.io
+  cart-experience-api:
+    build:
+      context: ./
+      dockerfile: packages/cart-experience-api/Dockerfile
+      target: base
+    volumes:
+      - ./packages/cart-experience-api/src:/opt/app-root/src/packages/cart-experience-api/src
+      - ./packages/cart-experience-api/nodemon.json:/opt/app-root/src/packages/cart-experience-api/nodemon.json
+      - ./packages/cart-backend/src:/opt/app-root/src/packages/cart-backend/src
+    container_name: cart-experience-api
+    expose:
+      - '8080'
+    ports:
+      - '8083:8080'
+      - '9229:9229'
+    command: yarn workspace @verkkokauppa/cart-experience-api dev
+    environment:
+      - SERVICE_NAME=cart-experience-api
+      - CART_BACKEND_URL=https://d526e9ec-74bf-4314-b708-f759a9d46958.mock.pstmn.io

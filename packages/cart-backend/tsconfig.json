@@ -11,12 +11,6 @@
     "references": [
         {
             "path": "../types"
-        },
-        {
-            "path": "../price-backend"
-        },
-        {
-            "path": "../core"
         }
     ]
 }

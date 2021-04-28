@@ -29,8 +29,12 @@ export abstract class AbstractController {
     }
   }
 
-  public created(res: Response) {
-    return res.sendStatus(201)
+  public created<T>(res: Response, dto?: T) {
+    if (dto) {
+      return res.status(201).json(dto)
+    } else {
+      return res.status(201)
+    }
   }
 
   public clientError(res: Response, message?: string) {
