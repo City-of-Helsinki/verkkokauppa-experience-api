@@ -9,7 +9,6 @@ COPY ./tsconfig.json ./tsconfig.json
 COPY ./tsconfig.base.json ./tsconfig.base.json
 
 # Copy package and dependent packages
-COPY ./packages/types ./packages/types
 COPY ./packages/core ./packages/core
 COPY ./packages/cart-backend ./packages/cart-backend
 COPY ./packages/cart-experience-api ./packages/cart-experience-api

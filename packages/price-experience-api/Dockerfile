@@ -9,7 +9,6 @@ COPY ./tsconfig.json ./tsconfig.json
 COPY ./tsconfig.base.json ./tsconfig.base.json
 
 # Copy package and dependent packages
-COPY ./packages/types ./packages/types
 COPY ./packages/core ./packages/core
 COPY ./packages/price-backend ./packages/price-backend
 COPY ./packages/price-experience-api ./packages/price-experience-api

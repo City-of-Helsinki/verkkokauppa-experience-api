@@ -1,27 +1,31 @@
 import { AbstractController, CombinedData, logger } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
 import { getPrice } from '@verkkokauppa/price-backend'
-import type { CommonExperienceRequest } from '@verkkokauppa/types'
 
 export class GetController extends AbstractController {
-  protected async implementation(
-    req: Request<CommonExperienceRequest>,
-    res: Response
-  ): Promise<any> {
-    const { id } = req.params
+  protected async implementation(req: Request, res: Response): Promise<any> {
+    const { productId } = req.params
+
+    if (productId === undefined) {
+      return this.clientError(res, 'Product ID not specified')
+    }
+
     const combinedData = new CombinedData()
 
-    logger.debug(`Fetch price data for ${id}`)
-
-    const pricePromise = getPrice({ id })
+    logger.debug(`Fetch price data for ${productId}`)
 
     try {
-      const priceResult = await pricePromise
-      combinedData.add({ value: priceResult.data, identifier: 'price' })
+      combinedData.add({
+        value: await getPrice({ productId }),
+        identifier: 'price',
+      })
     } catch (error) {
       logger.error(error)
       if (error.response.status === 404) {
-        return this.notFound(res, `Price data for product ${id} not found`)
+        return this.notFound(
+          res,
+          `Price data for product ${productId} not found`
+        )
       }
       if (error.response.status === 400) {
         return this.clientError(res, 'Invalid request')

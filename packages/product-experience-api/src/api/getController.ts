@@ -2,26 +2,28 @@ import { AbstractController, CombinedData, logger } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
 import { getProduct } from '@verkkokauppa/product-backend'
 import { getPrice } from '@verkkokauppa/price-backend'
-import type { CommonExperienceRequest } from '@verkkokauppa/types'
 
 export class GetController extends AbstractController {
-  protected async implementation(
-    req: Request<CommonExperienceRequest>,
-    res: Response
-  ): Promise<any> {
-    const { id } = req.params
+  protected async implementation(req: Request, res: Response): Promise<any> {
+    const { productId } = req.params
+
+    if (productId === undefined) {
+      return this.clientError(res, 'Product ID not specified')
+    }
+
     const combinedData = new CombinedData()
 
-    logger.debug(`Fetch product and price data for ${id}`)
+    logger.debug(`Fetch product and price data for ${productId}`)
 
     try {
-      const productPromise = getProduct({ id })
-      const productResult = await productPromise
-      combinedData.add({ value: productResult.data, identifier: 'product' })
+      combinedData.add({
+        value: await getProduct({ productId }),
+        identifier: 'product',
+      })
     } catch (error) {
       logger.error(error)
       if (error.response.status === 404) {
-        return this.notFound(res, `No product data found for ${id}`)
+        return this.notFound(res, `No product data found for ${productId}`)
       }
       if (error.response.status === 400) {
         return this.clientError(res, 'Invalid request')
@@ -29,11 +31,12 @@ export class GetController extends AbstractController {
       return this.fail(res, error.toString())
     }
     try {
-      const pricePromise = getPrice({ id })
-      const priceResult = await pricePromise
-      combinedData.add({ value: priceResult.data, identifier: 'price' })
+      combinedData.add({
+        value: await getPrice({ productId }),
+        identifier: 'price',
+      })
     } catch (error) {
-      logger.warn(`No price data found for ${id}`)
+      logger.warn(`No price data found for ${productId}`)
       logger.warn(error)
     }
     return this.success<any>(res, combinedData.serialize())
