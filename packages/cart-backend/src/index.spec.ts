@@ -19,7 +19,7 @@ describe('Test Create Cart from backend', () => {
       user: 'test@test.dev.hel',
       createdAt: '1619157868',
     }
-    axiosMock.get.mockResolvedValue(mockData)
+    axiosMock.get.mockResolvedValue({ data: mockData })
     const result = await createCart({
       namespace: 'testNameSpace',
       user: 'test@test.dev.hel',
@@ -43,7 +43,7 @@ describe('Test Get Cart from backend', () => {
       user: 'test@test.dev.hel',
       createdAt: '1619157868',
     }
-    axiosMock.get.mockResolvedValue(mockData)
+    axiosMock.get.mockResolvedValue({ data: mockData })
     const result = await getCart({
       cartId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
     })
@@ -76,7 +76,7 @@ describe('Test Add Cart Item', () => {
         },
       ],
     }
-    axiosMock.get.mockResolvedValue(mockData)
+    axiosMock.get.mockResolvedValue({ data: mockData })
     const result = await addItemToCart({
       cartId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
       productId: '30a245ed-5fca-4fcf-8b2a-cdf1ce6fca0d',
@@ -104,7 +104,7 @@ describe('Test Remove Cart Item', () => {
       },
       items: [],
     }
-    axiosMock.get.mockResolvedValue(mockData)
+    axiosMock.get.mockResolvedValue({ data: mockData })
     const result = await removeItemFromCart({
       cartId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
       productId: '30a245ed-5fca-4fcf-8b2a-cdf1ce6fca0d',

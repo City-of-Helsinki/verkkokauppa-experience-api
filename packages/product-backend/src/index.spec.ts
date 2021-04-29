@@ -14,7 +14,7 @@ describe('Test Single Product from backend', () => {
   it('Should fetch correctly with backend url set', async () => {
     process.env.PRODUCT_BACKEND_URL = 'test.dev.hel'
     const mockData = { productId: 'test', name: 'Test' }
-    axiosMock.get.mockResolvedValue(mockData)
+    axiosMock.get.mockResolvedValue({ data: mockData })
     const result = await getProduct({ productId: 'test' })
     await expect(result).toBe(mockData)
   })
