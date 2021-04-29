@@ -10,16 +10,13 @@
     ],
     "references": [
         {
-            "path": "../types"
+            "path": "../core"
         },
         {
             "path": "../price-backend"
         },
         {
             "path": "../product-backend"
-        },
-        {
-            "path": "../core"
         }
     ]
 }

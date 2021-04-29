@@ -12,8 +12,5 @@
   },
   "dependencies": {
     "axios": "^0.21.1"
-  },
-  "devDependencies": {
-    "@verkkokauppa/types": "^1.0.0"
   }
 }

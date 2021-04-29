@@ -13,6 +13,9 @@
             ],
             "@verkkokauppa/price-backend/*": [
                 "price-backend/src/*"
+            ],
+            "@verkkokauppa/core/*": [
+                "core/src/*"
             ]
         }
     },
@@ -38,9 +41,6 @@
         },
         {
             "path": "packages/product-experience-api"
-        },
-        {
-            "path": "packages/types"
         }
     ]
 }
