@@ -1,4 +1,11 @@
-import { addItemToCart, createCart, getCart, removeItemFromCart } from './index'
+import {
+  addItemToCart,
+  createCart,
+  createCartWithItems,
+  findCart,
+  getCart,
+  removeItemFromCart,
+} from './index'
 import axios from 'axios'
 
 jest.mock('axios')
@@ -26,6 +33,37 @@ describe('Test Create Cart from backend', () => {
     })
     await expect(result).toBe(mockData)
   })
+  it('Should create cart with items correctly with backend url set', async () => {
+    process.env.CART_BACKEND_URL = 'test.dev.hel'
+    const mockData = {
+      cart: {
+        cartId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
+        namespace: 'testNameSpace',
+        user: 'test@test.dev.hel',
+        createdAt: '1619157868',
+      },
+      items: [
+        {
+          cartId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
+          cartItemId: '19699acf-b0a3-440f-818f-e582825fa3a7',
+          productId: '30a245ed-5fca-4fcf-8b2a-cdf1ce6fca0d',
+          quantity: 1,
+        },
+      ],
+    }
+    axiosMock.get.mockResolvedValue({ data: mockData })
+    const result = await createCartWithItems({
+      namespace: 'testNameSpace',
+      user: 'test@test.dev.hel',
+      items: [
+        {
+          productId: '30a245ed-5fca-4fcf-8b2a-cdf1ce6fca0d',
+          quantity: 1,
+        },
+      ],
+    })
+    await expect(result).toBe(mockData)
+  })
 })
 
 describe('Test Get Cart from backend', () => {
@@ -46,6 +84,30 @@ describe('Test Get Cart from backend', () => {
     axiosMock.get.mockResolvedValue({ data: mockData })
     const result = await getCart({
       cartId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
+    })
+    await expect(result).toBe(mockData)
+  })
+})
+
+describe('Test Find existing Cart from backend', () => {
+  it('Should throw error with no backend url set', async () => {
+    process.env.CART_BACKEND_URL = ''
+    await expect(
+      findCart({ namespace: 'test', user: 'test@test.dev.hel.fi' })
+    ).rejects.toThrow('No cart backend URL set')
+  })
+  it('Should get cart correctly with backend url set', async () => {
+    process.env.CART_BACKEND_URL = 'test.dev.hel'
+    const mockData = {
+      cartId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
+      namespace: 'testNameSpace',
+      user: 'test@test.dev.hel',
+      createdAt: '1619157868',
+    }
+    axiosMock.get.mockResolvedValue({ data: mockData })
+    const result = await findCart({
+      namespace: 'test',
+      user: 'test@test.dev.hel.fi',
     })
     await expect(result).toBe(mockData)
   })
