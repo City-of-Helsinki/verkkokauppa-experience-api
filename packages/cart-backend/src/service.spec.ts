@@ -25,13 +25,14 @@ describe('Test Create Cart from backend', () => {
       namespace: 'testNameSpace',
       user: 'test@test.dev.hel',
       createdAt: '1619157868',
+      items: [],
     }
     axiosMock.get.mockResolvedValue({ data: mockData })
     const result = await createCart({
       namespace: 'testNameSpace',
       user: 'test@test.dev.hel',
     })
-    await expect(result).toBe(mockData)
+    expect(result).toEqual(mockData)
   })
   it('Should create cart with items correctly with backend url set', async () => {
     process.env.CART_BACKEND_URL = 'test.dev.hel'
@@ -62,7 +63,10 @@ describe('Test Create Cart from backend', () => {
         },
       ],
     })
-    await expect(result).toBe(mockData)
+    expect(result).toEqual({
+      ...mockData.cart,
+      items: mockData.items,
+    })
   })
 })
 
@@ -76,16 +80,22 @@ describe('Test Get Cart from backend', () => {
   it('Should get cart correctly with backend url set', async () => {
     process.env.CART_BACKEND_URL = 'test.dev.hel'
     const mockData = {
-      cartId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
-      namespace: 'testNameSpace',
-      user: 'test@test.dev.hel',
-      createdAt: '1619157868',
+      cart: {
+        cartId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
+        namespace: 'testNameSpace',
+        user: 'test@test.dev.hel',
+        createdAt: '1619157868',
+      },
+      items: [],
     }
     axiosMock.get.mockResolvedValue({ data: mockData })
     const result = await getCart({
       cartId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
     })
-    await expect(result).toBe(mockData)
+    expect(result).toEqual({
+      ...mockData.cart,
+      items: [],
+    })
   })
 })
 
@@ -103,13 +113,14 @@ describe('Test Find existing Cart from backend', () => {
       namespace: 'testNameSpace',
       user: 'test@test.dev.hel',
       createdAt: '1619157868',
+      items: [],
     }
     axiosMock.get.mockResolvedValue({ data: mockData })
     const result = await findCart({
       namespace: 'test',
       user: 'test@test.dev.hel.fi',
     })
-    await expect(result).toBe(mockData)
+    expect(result).toEqual(mockData)
   })
 })
 
@@ -144,7 +155,10 @@ describe('Test Add Cart Item', () => {
       productId: '30a245ed-5fca-4fcf-8b2a-cdf1ce6fca0d',
       quantity: 1,
     })
-    await expect(result).toBe(mockData)
+    expect(result).toEqual({
+      ...mockData.cart,
+      items: mockData.items,
+    })
   })
 })
 
@@ -171,6 +185,9 @@ describe('Test Remove Cart Item', () => {
       cartId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
       productId: '30a245ed-5fca-4fcf-8b2a-cdf1ce6fca0d',
     })
-    await expect(result).toBe(mockData)
+    expect(result).toEqual({
+      ...mockData.cart,
+      items: mockData.items,
+    })
   })
 })
