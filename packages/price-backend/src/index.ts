@@ -4,7 +4,12 @@ type PriceBackendResponse = {
   productId: string
   price: number
   original: {
-    [key: string]: any
+    productId: string
+    netValue: string
+    vatPercentage: string
+    grossValue: string
+    vatValue: string
+    id: string
   }
 }
 
