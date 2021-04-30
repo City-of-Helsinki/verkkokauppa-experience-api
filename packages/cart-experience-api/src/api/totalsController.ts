@@ -10,14 +10,11 @@ export class TotalsController extends AbstractController {
       return this.clientError(res, 'Cart ID not specified')
     }
     const dto = new Data()
-    // Fetch prices for items
-    // Calculate item totals from prices
-    // Calculate cart totals from item totals
-    // Extract item totals to rowTotals
-    logger.debug(`Calculate totals for cart ${cartId}`)
 
     try {
+      logger.debug(`Get cart ${cartId}`)
       const cart = await getCart({ cartId })
+      logger.debug(`Calculate totals for cart ${cartId}`)
       dto.data = await calculate(cart)
     } catch (error) {
       logger.error(error)
