@@ -59,3 +59,4 @@ services:
       - SERVICE_NAME=cart-experience-api
       - CART_BACKEND_URL=https://d526e9ec-74bf-4314-b708-f759a9d46958.mock.pstmn.io
       - PRICE_BACKEND_URL=https://3d615742-ed93-4415-8972-76c7103c5000.mock.pstmn.io
+      - PRODUCT_BACKEND_URL=https://ff102df2-94c3-4243-a4a1-6e449f78c633.mock.pstmn.io

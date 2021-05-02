@@ -13,6 +13,7 @@
     "dev": "NODE_ENV=development nodemon src/index.ts"
   },
   "dependencies": {
+    "@verkkokauppa/product-backend": "^1.0.0",
     "@verkkokauppa/price-backend": "^1.0.0",
     "@verkkokauppa/cart-backend": "^1.0.0",
     "@verkkokauppa/core": "^1.0.0",

@@ -1,6 +1,8 @@
 import { AbstractController, Data, logger } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
 import { getCart } from '@verkkokauppa/cart-backend'
+import { getProduct } from '../../../product-backend'
+import { getPrice } from '@verkkokauppa/price-backend'
 
 export class GetController extends AbstractController {
   protected async implementation(req: Request, res: Response): Promise<any> {
@@ -13,7 +15,21 @@ export class GetController extends AbstractController {
     logger.debug(`Fetch cart ${cartId}`)
 
     try {
-      dto.data = await getCart({ cartId })
+      const result = await getCart({ cartId })
+      dto.data = {
+        ...result,
+        items: await Promise.all(
+          result.items.map(async (item) => {
+            const product = await getProduct(item)
+            const productPrice = await getPrice(item)
+            return {
+              ...item,
+              name: product.name,
+              price: parseFloat(productPrice.price),
+            }
+          })
+        ),
+      }
     } catch (error) {
       logger.error(error)
       if (error.response.status === 404) {
