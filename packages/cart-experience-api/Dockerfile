@@ -12,6 +12,7 @@ COPY ./tsconfig.base.json ./tsconfig.base.json
 COPY ./packages/core ./packages/core
 COPY ./packages/cart-backend ./packages/cart-backend
 COPY ./packages/price-backend ./packages/price-backend
+COPY ./packages/product-backend ./packages/product-backend
 COPY ./packages/cart-experience-api ./packages/cart-experience-api
 
 # Chown to correct user
@@ -24,6 +25,7 @@ USER 1001
 # Run install for all required packages
 RUN yarn workspace @verkkokauppa/core install
 RUN yarn workspace @verkkokauppa/price-backend install
+RUN yarn workspace @verkkokauppa/product-backend install
 RUN yarn workspace @verkkokauppa/cart-backend install
 RUN yarn workspace @verkkokauppa/cart-experience-api install
 
@@ -31,6 +33,7 @@ RUN yarn workspace @verkkokauppa/cart-experience-api install
 FROM base as production
 RUN yarn workspace @verkkokauppa/core build
 RUN yarn workspace @verkkokauppa/price-backend build
+RUN yarn workspace @verkkokauppa/product-backend build
 RUN yarn workspace @verkkokauppa/cart-backend build
 RUN yarn workspace @verkkokauppa/cart-experience-api build
 EXPOSE 8080

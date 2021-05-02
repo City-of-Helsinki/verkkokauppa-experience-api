@@ -2,7 +2,7 @@ import axios from 'axios'
 
 type PriceBackendResponse = {
   productId: string
-  price: number
+  price: string
   original: {
     productId: string
     netValue: string
