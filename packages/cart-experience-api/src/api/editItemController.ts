@@ -14,7 +14,7 @@ export class EditItemController extends AbstractController {
       return this.clientError(res, 'Cart ID not specified')
     }
     if (quantity === undefined) {
-      return this.clientError(res, 'Quantity ID not specified')
+      return this.clientError(res, 'Quantity not specified')
     }
     const dto = new Data()
 
@@ -35,7 +35,6 @@ export class EditItemController extends AbstractController {
           quantity: quantity || 1,
         })
       }
-      
     } catch (error) {
       logger.error(error)
       if (error.response.status === 400) {
