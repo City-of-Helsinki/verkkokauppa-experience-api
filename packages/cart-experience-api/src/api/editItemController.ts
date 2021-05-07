@@ -5,8 +5,8 @@ import { editItemInCart , removeItemFromCart } from '@verkkokauppa/cart-backend'
 
 export class EditItemController extends AbstractController {
   protected async implementation(req: Request, res: Response): Promise<any> {
-    const { cartId } = req.params
-    const { productId, quantity } = req.body
+    const { cartId, productId } = req.params
+    const { quantity } = req.body
     if (productId === undefined) {
       return this.clientError(res, 'Product ID not specified')
     }
