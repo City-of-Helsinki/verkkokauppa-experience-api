@@ -7,10 +7,11 @@ services:
       dockerfile: packages/product-experience-api/Dockerfile
       target: base
     volumes:
-      - ./packages/product-experience-api/src:/opt/app-root/src/packages/product-experience-api/src
+      - ./packages/product-experience-api/:/opt/app-root/src/packages/product-experience-api/
       - ./packages/product-experience-api/nodemon.json:/opt/app-root/src/packages/product-experience-api/nodemon.json
-      - ./packages/product-backend/src:/opt/app-root/src/packages/product-backend/src
-      - ./packages/price-backend/src:/opt/app-root/src/packages/price-backend/src
+      - ./packages/product-backend/:/opt/app-root/src/packages/product-backend/
+      - ./packages/price-backend/:/opt/app-root/src/packages/price-backend/
+      - ./packages/core/:/opt/app-root/src/packages/core/
     container_name: product-experience-api
     expose:
       - '8080'
@@ -27,9 +28,10 @@ services:
       dockerfile: packages/price-experience-api/Dockerfile
       target: base
     volumes:
-      - ./packages/price-experience-api/src:/opt/app-root/src/packages/price-experience-api/src
+      - ./packages/price-experience-api/:/opt/app-root/src/packages/price-experience-api/
       - ./packages/price-experience-api/nodemon.json:/opt/app-root/src/packages/price-experience-api/nodemon.json
-      - ./packages/price-backend/src:/opt/app-root/src/packages/price-backend/src
+      - ./packages/price-backend/:/opt/app-root/src/packages/price-backend/
+      - ./packages/core/:/opt/app-root/src/packages/core/
     container_name: price-experience-api
     expose:
       - '8080'
@@ -45,9 +47,12 @@ services:
       dockerfile: packages/cart-experience-api/Dockerfile
       target: base
     volumes:
-      - ./packages/cart-experience-api/src:/opt/app-root/src/packages/cart-experience-api/src
+      - ./packages/cart-experience-api/:/opt/app-root/src/packages/cart-experience-api/
       - ./packages/cart-experience-api/nodemon.json:/opt/app-root/src/packages/cart-experience-api/nodemon.json
-      - ./packages/cart-backend/src:/opt/app-root/src/packages/cart-backend/src
+      - ./packages/cart-backend/:/opt/app-root/src/packages/cart-backend/
+      - ./packages/core/:/opt/app-root/src/packages/core/
+      - ./packages/product-backend/:/opt/app-root/src/packages/product-backend/
+      - ./packages/price-backend/:/opt/app-root/src/packages/price-backend/
     container_name: cart-experience-api
     expose:
       - '8080'

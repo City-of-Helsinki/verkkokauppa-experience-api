@@ -100,6 +100,20 @@ export const addItemToCart = async (p: {
   return { ...result.data.cart, items: result.data.items }
 }
 
+export const editItemInCart = async (p: {
+  cartId: string
+  productId: string
+  quantity: number
+}): Promise<Cart> => {
+  const { cartId, productId, quantity } = p
+  if (!process.env.CART_BACKEND_URL) {
+    throw new Error('No cart backend URL set')
+  }
+  const url = `${process.env.CART_BACKEND_URL}/cart/editItem?cartId=${cartId}&productId=${productId}&quantity=${quantity}`
+  const result = await axios.get<CartWithItemsBackendResponse>(url)
+  return { ...result.data.cart, items: result.data.items }
+}
+
 export const removeItemFromCart = async (p: {
   cartId: string
   productId: string
