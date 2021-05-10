@@ -1,5 +1,6 @@
 import {
   addItemToCart,
+  editItemInCart,
   createCart,
   createCartWithItems,
   findCart,
@@ -154,6 +155,44 @@ describe('Test Add Cart Item', () => {
       cartId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
       productId: '30a245ed-5fca-4fcf-8b2a-cdf1ce6fca0d',
       quantity: 1,
+    })
+    expect(result).toEqual({
+      ...mockData.cart,
+      items: mockData.items,
+    })
+  })
+})
+
+describe('Test Edit Cart Item', () => {
+  it('Should throw error with no backend url set', async () => {
+    process.env.CART_BACKEND_URL = ''
+    await expect(
+      editItemInCart({ cartId: 'test', productId: 'test', quantity: 2 })
+    ).rejects.toThrow('No cart backend URL set')
+  })
+  it('Should edit item to cart correctly when backend url set', async () => {
+    process.env.CART_BACKEND_URL = 'test.dev.hel'
+    const mockData = {
+      cart: {
+        cartId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
+        namespace: 'testNameSpace',
+        user: 'test@test.dev.hel',
+        createdAt: '1619157868',
+      },
+      items: [
+        {
+          cartId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
+          cartItemId: '19699acf-b0a3-440f-818f-e582825fa3a7',
+          productId: '30a245ed-5fca-4fcf-8b2a-cdf1ce6fca0d',
+          quantity: 2,
+        },
+      ],
+    }
+    axiosMock.get.mockResolvedValue({ data: mockData })
+    const result = await editItemInCart({
+      cartId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
+      productId: '30a245ed-5fca-4fcf-8b2a-cdf1ce6fca0d',
+      quantity: 2,
     })
     expect(result).toEqual({
       ...mockData.cart,
