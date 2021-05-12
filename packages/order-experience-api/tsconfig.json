@@ -13,12 +13,6 @@
             "path": "../order-backend"
         },
         {
-            "path": "../product-backend"
-        },
-        {
-            "path": "../price-backend"
-        },
-        {
             "path": "../cart-backend"
         },
         {
