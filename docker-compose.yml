@@ -65,3 +65,27 @@ services:
       - CART_BACKEND_URL=https://d526e9ec-74bf-4314-b708-f759a9d46958.mock.pstmn.io
       - PRICE_BACKEND_URL=https://3d615742-ed93-4415-8972-76c7103c5000.mock.pstmn.io
       - PRODUCT_BACKEND_URL=https://ff102df2-94c3-4243-a4a1-6e449f78c633.mock.pstmn.io
+  order-experience-api:
+    build:
+      context: ./
+      dockerfile: packages/order-experience-api/Dockerfile
+      target: base
+    volumes:
+      - ./packages/order-experience-api/:/opt/app-root/src/packages/order-experience-api/
+      - ./packages/order-experience-api/nodemon.json:/opt/app-root/src/packages/order-experience-api/nodemon.json
+      - ./packages/order-backend/:/opt/app-root/src/packages/order-backend/
+      - ./packages/core/:/opt/app-root/src/packages/core/
+      - ./packages/product-backend/:/opt/app-root/src/packages/product-backend/
+      - ./packages/price-backend/:/opt/app-root/src/packages/price-backend/
+    container_name: order-experience-api
+    expose:
+      - '8080'
+    ports:
+      - '8084:8080'
+    command: yarn workspace @verkkokauppa/order-experience-api dev
+    environment:
+      - SERVICE_NAME=order-experience-api
+      - CART_BACKEND_URL=https://d526e9ec-74bf-4314-b708-f759a9d46958.mock.pstmn.io
+      - PRICE_BACKEND_URL=https://3d615742-ed93-4415-8972-76c7103c5000.mock.pstmn.io
+      - PRODUCT_BACKEND_URL=https://ff102df2-94c3-4243-a4a1-6e449f78c633.mock.pstmn.io
+      - ORDER_BACKEND_URL=https://d04f2785-8b0b-4d0b-b52d-46c1878f6fa9.mock.pstmn.io/
