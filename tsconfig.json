@@ -31,6 +31,12 @@
             "path": "packages/core"
         },
         {
+            "path": "packages/order-backend"
+        },
+        {
+            "path": "packages/order-experience-api"
+        },
+        {
             "path": "packages/price-backend"
         },
         {
