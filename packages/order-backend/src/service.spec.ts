@@ -10,7 +10,7 @@ describe('Test Create Order from backend', () => {
   it('Should throw error with no backend url set', async () => {
     process.env.ORDER_BACKEND_URL = ''
     await expect(
-      createOrder({ namespace: 'test', user: 'test' })
+      createOrder({ namespace: 'asiakaspysakointi', user: 'test' })
     ).rejects.toThrow('No order backend URL set')
   })
   it('Should create order correctly with backend url set', async () => {
@@ -20,6 +20,7 @@ describe('Test Create Order from backend', () => {
       namespace: 'testNameSpace',
       user: 'test@test.dev.hel',
       createdAt: '1619157868',
+      items: [],
     }
     axiosMock.get.mockResolvedValue({ data: mockData })
     const result = await createOrder({

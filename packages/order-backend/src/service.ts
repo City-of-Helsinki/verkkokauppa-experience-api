@@ -25,7 +25,7 @@ export const createOrder = async (p: {
 }): Promise<Order> => {
   const { namespace, user } = p
   if (!process.env.ORDER_BACKEND_URL) {
-    throw new Error('No cart backend URL set')
+    throw new Error('No order backend URL set')
   }
   const url = `${process.env.ORDER_BACKEND_URL}/order/create?namespace=${namespace}&user=${user}`
   const result = await axios.get<OrderBackendResponse>(url)
