@@ -14,8 +14,6 @@
   },
   "dependencies": {
     "@verkkokauppa/order-backend": "^1.0.0",
-    "@verkkokauppa/product-backend": "^1.0.0",
-    "@verkkokauppa/price-backend": "^1.0.0",
     "@verkkokauppa/cart-backend": "^1.0.0",
     "@verkkokauppa/core": "^1.0.0",
     "axios": "^0.21.1",
