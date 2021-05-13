@@ -1,6 +1,7 @@
 import { AbstractController, Data, logger } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
 import { cancelOrder } from '@verkkokauppa/order-backend'
+import { createCartWithItems } from '@verkkokauppa/cart-backend'
 
 export class CancelController extends AbstractController {
   protected async implementation(req: Request, res: Response): Promise<any> {
@@ -12,7 +13,13 @@ export class CancelController extends AbstractController {
     logger.debug(`Cancel Order ${orderId}`)
 
     try {
-      dto.data = await cancelOrder({ orderId })
+      const order = await cancelOrder({ orderId })
+      const cart = await createCartWithItems({
+        namespace: order.namespace,
+        user: order.user || '',
+        items: order.items,
+      })
+      dto.data = { order, cart }
     } catch (error) {
       logger.error(error)
       if (error.response.status === 400) {
