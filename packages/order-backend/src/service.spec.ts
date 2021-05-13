@@ -13,6 +13,7 @@ describe('Test Create Order', () => {
   })
   it('Should create order correctly with backend url set', async () => {
     process.env.ORDER_BACKEND_URL = 'test.dev.hel'
+    process.env.CHECKOUT_BASE_URL = 'https://checkout.dev.hel'
     const mockData = {
       orderId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
       namespace: 'testNameSpace',
@@ -25,10 +26,14 @@ describe('Test Create Order', () => {
       namespace: 'testNameSpace',
       user: 'test@test.dev.hel',
     })
-    expect(result).toEqual(mockData)
+    expect(result).toEqual({
+      ...mockData,
+      checkoutUrl: `https://checkout.dev.hel?orderId=${mockData.orderId}`,
+    })
   })
   it('Should create order with items correctly with backend url set', async () => {
     process.env.ORDER_BACKEND_URL = 'test.dev.hel'
+    process.env.CHECKOUT_BASE_URL = 'https://checkout.dev.hel'
     const mockData = {
       order: {
         orderId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
@@ -75,6 +80,7 @@ describe('Test Create Order', () => {
     expect(result).toEqual({
       ...mockData.order,
       items: mockData.items,
+      checkoutUrl: `https://checkout.dev.hel?orderId=${mockData.order.orderId}`,
     })
   })
 })
