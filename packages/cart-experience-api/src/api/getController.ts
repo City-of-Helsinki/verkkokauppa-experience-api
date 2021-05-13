@@ -1,7 +1,7 @@
 import { AbstractController, Data, logger } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
 import { getCart } from '@verkkokauppa/cart-backend'
-import { getProduct } from '../../../product-backend'
+import { getProduct } from '@verkkokauppa/product-backend'
 import { getPrice } from '@verkkokauppa/price-backend'
 
 export class GetController extends AbstractController {
