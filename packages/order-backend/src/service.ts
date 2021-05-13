@@ -23,6 +23,7 @@ export interface Order {
   user?: string
   createdAt: string
   items: OrderItem[]
+  checkoutUrl?: string
 }
 
 interface OrderBackendResponse {
@@ -47,7 +48,11 @@ export const createOrder = async (p: {
   }
   const url = `${process.env.ORDER_BACKEND_URL}/order/create?namespace=${namespace}&user=${user}`
   const result = await axios.get<OrderBackendResponse>(url)
-  return { ...result.data, items: [] }
+  return {
+    ...result.data,
+    items: [],
+    checkoutUrl: `${process.env.CHECKOUT_BASE_URL}?orderId=${result.data.orderId}`,
+  }
 }
 
 export const createOrderWithItems = async (p: {
@@ -71,5 +76,9 @@ export const createOrderWithItems = async (p: {
   }
   const url = `${process.env.ORDER_BACKEND_URL}/order/createWithItems`
   const result = await axios.post<OrderWithItemsBackendResponse>(url, dto)
-  return { ...result.data.order, items: result.data.items }
+  return {
+    ...result.data.order,
+    items: result.data.items,
+    checkoutUrl: `${process.env.CHECKOUT_BASE_URL}?orderId=${result.data.order.orderId}`,
+  }
 }

@@ -90,3 +90,4 @@ services:
       - PRICE_BACKEND_URL=https://3d615742-ed93-4415-8972-76c7103c5000.mock.pstmn.io
       - PRODUCT_BACKEND_URL=https://ff102df2-94c3-4243-a4a1-6e449f78c633.mock.pstmn.io
       - ORDER_BACKEND_URL=https://d04f2785-8b0b-4d0b-b52d-46c1878f6fa9.mock.pstmn.io/
+      - CHECKOUT_BASE_URL=https://checkout-test.dev.hel.fi
