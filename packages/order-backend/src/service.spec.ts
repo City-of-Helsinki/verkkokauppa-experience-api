@@ -161,7 +161,44 @@ describe('Test Set Customer To Order', () => {
       customerEmail: 'testi.henkilo@email.com'
     })
     expect(result).toEqual({
-      ...mockData,
+      ...mockData.order,
+      items: [],
+      checkoutUrl: `https://checkout.dev.hel?orderId=${mockData.order.orderId}`,
+    })
+  })
+  it('Should set customer correctly with backend url set for order with items', async () => {
+    process.env.ORDER_BACKEND_URL = 'test.dev.hel'
+    const mockData = {
+      order: {
+        orderId: 'e91a3c70-b281-41a5-b6f4-3fd6d12291cf',
+        namespace: 'testNameSpace',
+        user: 'test@test.dev.hel',
+        createdAt: '1619157868',
+        status: 'cancelled',
+        customerName: 'Testi Henkilö',
+        customerEmail: 'testi.henkilo@email.com'
+      },
+      items: [
+        {
+          productId: '30a245ed-5fca-4fcf-8b2a-cdf1ce6fca0d',
+          quantity: 1,
+          productName: 'Product Name',
+          unit: 'pcs',
+          rowPriceNet: 100,
+          rowPriceVat: 24,
+          rowPriceTotal: 124,
+        },
+      ],
+    }
+    axiosMock.post.mockResolvedValue({ data: mockData })
+    const result = await setCustomerToOrder({
+      orderId: 'e91a3c70-b281-41a5-b6f4-3fd6d12291cf',
+      customerName: 'Testi Henkilö',
+      customerEmail: 'testi.henkilo@email.com'
+    })
+    expect(result).toEqual({
+      ...mockData.order,
+      items: mockData.items,
       checkoutUrl: `https://checkout.dev.hel?orderId=${mockData.order.orderId}`,
     })
   })
