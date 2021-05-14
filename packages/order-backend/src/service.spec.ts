@@ -1,4 +1,4 @@
-import { cancelOrder, createOrder, createOrderWithItems, addItemToOrder } from './index'
+import { cancelOrder, createOrder, createOrderWithItems, addItemToOrder, setCustomerToOrder } from './index'
 import axios from 'axios'
 
 jest.mock('axios')
@@ -179,6 +179,79 @@ describe('Test Add items to order', () => {
     expect(result).toEqual({
       ...mockData.order,
       items: mockData.items,
+    })
+  })
+})
+
+describe('Test Set Customer To Order', () => {
+  it('Should throw error with no backend url set', async () => {
+    process.env.ORDER_BACKEND_URL = ''
+    await expect(
+      setCustomerToOrder({ 
+        orderId: 'e91a3c70-b281-41a5-b6f4-3fd6d12291cf', 
+        customerName: 'Testi Henkilö', 
+        customerEmail: 'testi.henkilo@email.com' 
+      })
+    ).rejects.toThrow('No order backend URL set')
+  })
+  it('Should set customer correctly with backend url set for order without items', async () => {
+    process.env.ORDER_BACKEND_URL = 'test.dev.hel'
+    const mockData = {
+      order: {
+        orderId: 'e91a3c70-b281-41a5-b6f4-3fd6d12291cf',
+        namespace: 'testNameSpace',
+        user: 'test@test.dev.hel',
+        createdAt: '1619157868',
+        status: 'cancelled',
+        customerName: 'Testi Henkilö',
+        customerEmail: 'testi.henkilo@email.com'
+      },
+      items: [],
+    }
+    axiosMock.post.mockResolvedValue({ data: mockData })
+    const result = await setCustomerToOrder({
+      orderId: 'e91a3c70-b281-41a5-b6f4-3fd6d12291cf',
+      customerName: 'Testi Henkilö',
+      customerEmail: 'testi.henkilo@email.com'
+    })
+    expect(result).toEqual({
+      ...mockData.order,
+      items: []
+    })
+  })
+  it('Should set customer correctly with backend url set for order with items', async () => {
+    process.env.ORDER_BACKEND_URL = 'test.dev.hel'
+    const mockData = {
+      order: {
+        orderId: 'e91a3c70-b281-41a5-b6f4-3fd6d12291cf',
+        namespace: 'testNameSpace',
+        user: 'test@test.dev.hel',
+        createdAt: '1619157868',
+        status: 'cancelled',
+        customerName: 'Testi Henkilö',
+        customerEmail: 'testi.henkilo@email.com'
+      },
+      items: [
+        {
+          productId: '30a245ed-5fca-4fcf-8b2a-cdf1ce6fca0d',
+          quantity: 1,
+          productName: 'Product Name',
+          unit: 'pcs',
+          rowPriceNet: 100,
+          rowPriceVat: 24,
+          rowPriceTotal: 124,
+        },
+      ],
+    }
+    axiosMock.post.mockResolvedValue({ data: mockData })
+    const result = await setCustomerToOrder({
+      orderId: 'e91a3c70-b281-41a5-b6f4-3fd6d12291cf',
+      customerName: 'Testi Henkilö',
+      customerEmail: 'testi.henkilo@email.com'
+    })
+    expect(result).toEqual({
+      ...mockData.order,
+      items: mockData.items
     })
   })
 })
