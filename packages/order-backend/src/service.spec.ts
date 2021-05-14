@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { cancelOrder, createOrder, createOrderWithItems, setCustomerToOrder } from './index'
+=======
+import { cancelOrder, createOrder, createOrderWithItems, addItemToOrder } from './index'
+>>>>>>> master
 import axios from 'axios'
 
 jest.mock('axios')
@@ -121,6 +125,60 @@ describe('Test Cancel Order', () => {
     axiosMock.get.mockResolvedValue({ data: mockData })
     const result = await cancelOrder({
       orderId: mockData.order.orderId,
+    })
+    expect(result).toEqual({
+      ...mockData.order,
+      items: mockData.items,
+    })
+  })
+})
+
+describe('Test Add items to order', () => {
+  it('Should throw error with no backend url set', async () => {
+    process.env.ORDER_BACKEND_URL = ''
+    await expect(
+      addItemToOrder({ orderId: '145d8829-07b7-4b03-ab0e-24063958ab9b', items: []})
+    ).rejects.toThrow('No order backend URL set')
+  })
+  it('Should add items correctly to order with backend url set', async () => {
+    process.env.ORDER_BACKEND_URL = 'test.dev.hel'
+    const mockData = {
+      order: {
+        orderId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
+        namespace: 'testNameSpace',
+        user: 'test@test.dev.hel',
+        createdAt: '1619157868',
+        customerName: 'Customer Name',
+        customerEmaiL: 'test@test.dev.hel',
+      },
+      items: [
+        {
+          orderId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
+          orderItemId: '19699acf-b0a3-440f-818f-e582825fa3a7',
+          productId: '30a245ed-5fca-4fcf-8b2a-cdf1ce6fca0d',
+          quantity: 1,
+          productName: 'Product Name',
+          unit: 'pcs',
+          rowPriceNet: '100',
+          rowPriceVat: '24',
+          rowPriceTotal: '124',
+        },
+      ],
+    }
+    axiosMock.get.mockResolvedValue({ data: mockData })
+    const result = await addItemToOrder({
+      orderId: mockData.order.orderId,
+      items: [
+        {
+          productId: '30a245ed-5fca-4fcf-8b2a-cdf1ce6fca0d',
+          quantity: 1,
+          productName: 'Product Name',
+          unit: 'pcs',
+          rowPriceNet: 100,
+          rowPriceVat: 24,
+          rowPriceTotal: 124,
+        },
+      ],
     })
     expect(result).toEqual({
       ...mockData.order,
