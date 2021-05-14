@@ -14,7 +14,9 @@ const totalsController = new TotalsController()
 const editItemController = new EditItemController()
 
 const router = Router()
-router.put('/:cartId/edit/items/:productId', (req, res) => editItemController.execute(req, res))
+router.put('/:cartId/items/:productId', (req, res) =>
+  editItemController.execute(req, res)
+)
 router.delete('/:cartId/items/:productId', (req, res) =>
   removeItemController.execute(req, res)
 )
@@ -24,4 +26,3 @@ router.get('/:cartId', (req, res) => getController.execute(req, res))
 router.post('/', (req, res) => createController.execute(req, res))
 
 export default router
-
