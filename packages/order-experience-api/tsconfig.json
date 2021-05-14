@@ -3,7 +3,25 @@
     "compilerOptions": {
         "rootDir": "./src",
         "outDir": "./dist",
-        "composite": true
+        "composite": true,
+        "baseUrl": "./",
+        "paths": {
+            "@verkkokauppa/order-backend": [
+                "../order-backend"
+            ],
+            "@verkkokauppa/cart-backend": [
+                "../cart-backend"
+            ],
+            "@verkkokauppa/product-backend": [
+                "../product-backend"
+            ],
+            "@verkkokauppa/price-backend": [
+                "../price-backend"
+            ],
+            "@verkkokauppa/core": [
+                "../core"
+            ]
+        }
     },
     "include": [
         "src/**/*"
@@ -14,6 +32,12 @@
         },
         {
             "path": "../cart-backend"
+        },
+        {
+            "path": "../product-backend"
+        },
+        {
+            "path": "../price-backend"
         },
         {
             "path": "../core"

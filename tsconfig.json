@@ -16,6 +16,18 @@
             ],
             "@verkkokauppa/core/*": [
                 "core/src/*"
+            ],
+            "@verkkokauppa/cart-backend/*": [
+                "cart-backend/src/*"
+            ],
+            "@verkkokauppa/order-backend/*": [
+                "order-backend/src/*"
+            ],
+            "@verkkokauppa/cart-experience-api/*": [
+                "cart-experience-api/src/*"
+            ],
+            "@verkkokauppa/order-experience-api/*": [
+                "order-experience-api/src/*"
             ]
         }
     },
