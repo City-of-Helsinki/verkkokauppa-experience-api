@@ -15,6 +15,9 @@ export class TotalsController extends AbstractController {
       logger.debug(`Get cart ${cartId}`)
       const cart = await getCart({ cartId })
       logger.debug(`Calculate totals for cart ${cartId}`)
+      if (!cart.items || cart.items.length === 0) {
+        return this.clientError(res, 'Cart has no items to calculate totals')
+      }
       dto.data = await calculate(cart)
     } catch (error) {
       logger.error(error)
