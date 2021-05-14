@@ -140,7 +140,8 @@ describe('Test Set Customer To Order', () => {
       })
     ).rejects.toThrow('No order backend URL set')
   })
-  it('Should set customer correctly with backend url set', async () => {
+  it('Should set customer correctly with backend url set for order without items', async () => {
+    process.env.ORDER_BACKEND_URL = 'test.dev.hel'
     const mockData = {
       order: {
         orderId: 'e91a3c70-b281-41a5-b6f4-3fd6d12291cf',
