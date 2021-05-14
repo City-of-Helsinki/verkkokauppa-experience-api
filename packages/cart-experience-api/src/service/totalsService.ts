@@ -24,7 +24,9 @@ type CartWithItemsAndTotals = Cart & {
 export const calculate = async (p: Cart): Promise<CartWithItemsAndTotals> => {
   const { cartId, items } = p
   logger.debug(`Start calculate process for cartId: ${cartId}`)
-
+  if (!items || items.length === 0) {
+    throw new Error('No items to calculate totals for')
+  }
   const cart = {
     ...p,
     items: await Promise.all(items.map((item) => calculateItem({ item }))),
