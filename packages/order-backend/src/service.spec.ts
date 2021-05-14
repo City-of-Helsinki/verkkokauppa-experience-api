@@ -161,7 +161,7 @@ describe('Test Set Customer To Order', () => {
     })
     expect(result).toEqual({
       ...mockData,
-      checkoutUrl: `https://checkout.dev.hel?orderId=${mockData.orderId}`,
+      checkoutUrl: `https://checkout.dev.hel?orderId=${mockData.order.orderId}`,
     })
   })
 })
