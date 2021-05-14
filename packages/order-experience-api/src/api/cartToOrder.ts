@@ -28,6 +28,7 @@ export class CartToOrder extends AbstractController {
       dto.data = await createOrderWithItems({
         namespace: cart.namespace,
         user: cart.user || '',
+        customer,
         items: await Promise.all(
           cart.items.map(async (cartItem) => {
             //TODO: Remove calculation logic once totals are stored in cart
