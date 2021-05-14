@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { cancelOrder, createOrder, createOrderWithItems, setCustomerToOrder } from './index'
-=======
-import { cancelOrder, createOrder, createOrderWithItems, addItemToOrder } from './index'
->>>>>>> master
+import { cancelOrder, createOrder, createOrderWithItems, addItemToOrder, setCustomerToOrder } from './index'
 import axios from 'axios'
 
 jest.mock('axios')
