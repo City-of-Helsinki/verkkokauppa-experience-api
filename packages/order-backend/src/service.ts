@@ -95,3 +95,26 @@ export const cancelOrder = async (p: { orderId: string }): Promise<Order> => {
     items: result.data.items,
   }
 }
+
+export const setCustomerToOrder = async (p: {
+  orderId: string
+  customerName: string
+  customerEmail: string
+}): Promise<Order> => {
+  const { orderId, customerName, customerEmail} = p
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+  const dto = {
+    orderId,
+    customerName,
+    customerEmail
+  }
+  const url = `${process.env.ORDER_BACKEND_URL}/order/setCustomer?orderId=${orderId}&customerName=${customerName}&customerEmail=${customerEmail}`
+  const result = await axios.post<OrderWithItemsBackendResponse>(url, dto)
+  return {
+    ...result.data.order,
+    items: result.data.items,
+    checkoutUrl: `${process.env.CHECKOUT_BASE_URL}?orderId=${result.data.order.orderId}`,
+  }
+}
