@@ -162,8 +162,7 @@ describe('Test Set Customer To Order', () => {
     })
     expect(result).toEqual({
       ...mockData.order,
-      items: [],
-      checkoutUrl: `https://checkout.dev.hel?orderId=${mockData.order.orderId}`,
+      items: []
     })
   })
   it('Should set customer correctly with backend url set for order with items', async () => {
@@ -198,8 +197,7 @@ describe('Test Set Customer To Order', () => {
     })
     expect(result).toEqual({
       ...mockData.order,
-      items: mockData.items,
-      checkoutUrl: `https://checkout.dev.hel?orderId=${mockData.order.orderId}`,
+      items: mockData.items
     })
   })
 })
