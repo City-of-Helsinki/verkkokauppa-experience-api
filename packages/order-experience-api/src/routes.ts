@@ -11,14 +11,14 @@ const setCustomerController = new SetCustomerController()
 
 const router = Router()
 router.post('/', (req, res) => createController.execute(req, res))
-router.post('/:orderId/', (req, res) => setCustomerController.execute(req, res))
+router.post('/:orderId/customer', (req, res) => setCustomerController.execute(req, res))
 router.post('/:orderId/cancel', (req, res) =>
   cancelController.execute(req, res)
 )
 router.post('/convert/:cartId', (req, res) =>
   cartToOrderController.execute(req, res)
 )
-router.post('/:orderId/', (req, res) => setCustomerController.execute(req, res))
+
 
 
 export default router
