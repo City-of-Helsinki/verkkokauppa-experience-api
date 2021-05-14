@@ -1,4 +1,4 @@
-import { cancelOrder, createOrder, createOrderWithItems } from './index'
+import { cancelOrder, createOrder, createOrderWithItems, setCustomerToOrder } from './index'
 import axios from 'axios'
 
 jest.mock('axios')
@@ -125,6 +125,43 @@ describe('Test Cancel Order', () => {
     expect(result).toEqual({
       ...mockData.order,
       items: mockData.items,
+    })
+  })
+})
+
+describe('Test Set Customer To Order', () => {
+  it('Should throw error with no backend url set', async () => {
+    process.env.ORDER_BACKEND_URL = ''
+    await expect(
+      setCustomerToOrder({ 
+        orderId: 'e91a3c70-b281-41a5-b6f4-3fd6d12291cf', 
+        customerName: 'Testi Henkilö', 
+        customerEmail: 'testi.henkilo@email.com' 
+      })
+    ).rejects.toThrow('No order backend URL set')
+  })
+  it('Should set customer correctly with backend url set', async () => {
+    const mockData = {
+      order: {
+        orderId: 'e91a3c70-b281-41a5-b6f4-3fd6d12291cf',
+        namespace: 'testNameSpace',
+        user: 'test@test.dev.hel',
+        createdAt: '1619157868',
+        status: 'cancelled',
+        customerName: 'Testi Henkilö',
+        customerEmail: 'testi.henkilo@email.com'
+      },
+      items: [],
+    }
+    axiosMock.post.mockResolvedValue({ data: mockData })
+    const result = await setCustomerToOrder({
+      orderId: 'e91a3c70-b281-41a5-b6f4-3fd6d12291cf',
+      customerName: 'Testi Henkilö',
+      customerEmail: 'testi.henkilo@email.com'
+    })
+    expect(result).toEqual({
+      ...mockData,
+      checkoutUrl: `https://checkout.dev.hel?orderId=${mockData.orderId}`,
     })
   })
 })

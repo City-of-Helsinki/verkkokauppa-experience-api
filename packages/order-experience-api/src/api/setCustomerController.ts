@@ -4,7 +4,8 @@ import { setCustomerToOrder } from '@verkkokauppa/order-backend'
 
 export class SetCustomerController extends AbstractController {
   protected async implementation(req: Request, res: Response): Promise<any> {
-    const { orderId, customerName, customerEmail } = req.params
+    const { orderId } = req.params
+    const { customerName, customerEmail } = req.body
 
     if (orderId === undefined) {
       return this.clientError(res, 'Order ID not specified')
