@@ -111,7 +111,6 @@ export const addItemToOrder = async (p: {
   const result = await axios.post<OrderWithItemsBackendResponse>(url, dto)
   return {
     ...result.data.order,
-    items: result.data.items,
-    checkoutUrl: `${process.env.CHECKOUT_BASE_URL}?orderId=${result.data.order.orderId}`,
+    items: result.data.items
   }
 }
