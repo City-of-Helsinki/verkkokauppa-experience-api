@@ -17,6 +17,6 @@ router.post('/:orderId/cancel', (req, res) =>
 router.post('/convert/:cartId', (req, res) =>
   cartToOrderController.execute(req, res)
 )
-router.post('/:orderId/setItems', (req, res) => addItemController.execute(req, res))
+router.post('/:orderId/items', (req, res) => addItemController.execute(req, res))
 
 export default router
