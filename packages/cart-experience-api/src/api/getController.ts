@@ -16,19 +16,23 @@ export class GetController extends AbstractController {
 
     try {
       const result = await getCart({ cartId })
+      const items =
+        result.items && result.items.length > 0
+          ? await Promise.all(
+              result.items.map(async (item) => {
+                const product = await getProduct(item)
+                const productPrice = await getPrice(item)
+                return {
+                  ...item,
+                  name: product.name,
+                  price: parseFloat(productPrice.price),
+                }
+              })
+            )
+          : []
       dto.data = {
         ...result,
-        items: await Promise.all(
-          result.items.map(async (item) => {
-            const product = await getProduct(item)
-            const productPrice = await getPrice(item)
-            return {
-              ...item,
-              name: product.name,
-              price: parseFloat(productPrice.price),
-            }
-          })
-        ),
+        items,
       }
     } catch (error) {
       logger.error(error)
