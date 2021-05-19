@@ -58,8 +58,10 @@ export const createCart = async (p: {
   if (!process.env.CART_BACKEND_URL) {
     throw new Error('No cart backend URL set')
   }
-  const url = `${process.env.CART_BACKEND_URL}/cart/create?namespace=${namespace}&user=${user}`
-  const result = await axios.get<CartBackendResponse>(url)
+  const url = `${process.env.CART_BACKEND_URL}/cart/create`
+  const result = await axios.get<CartBackendResponse>(url, {
+    params: { namespace, user },
+  })
   return { ...result.data, items: [] }
 }
 
@@ -68,8 +70,10 @@ export const getCart = async (p: { cartId: string }): Promise<Cart> => {
   if (!process.env.CART_BACKEND_URL) {
     throw new Error('No cart backend URL set')
   }
-  const url = `${process.env.CART_BACKEND_URL}/cart/getCartWithItems?cartId=${cartId}`
-  const result = await axios.get<CartWithItemsBackendResponse>(url)
+  const url = `${process.env.CART_BACKEND_URL}/cart/getCartWithItems`
+  const result = await axios.get<CartWithItemsBackendResponse>(url, {
+    params: { cartId },
+  })
   return { ...result.data.cart, items: result.data.items }
 }
 
@@ -81,8 +85,10 @@ export const findCart = async (p: {
   if (!process.env.CART_BACKEND_URL) {
     throw new Error('No cart backend URL set')
   }
-  const url = `${process.env.CART_BACKEND_URL}/cart/getByNames?namespace=${namespace}&user=${user}`
-  const result = await axios.get<CartBackendResponse>(url)
+  const url = `${process.env.CART_BACKEND_URL}/cart/getByNames`
+  const result = await axios.get<CartBackendResponse>(url, {
+    params: { namespace, user },
+  })
   return { ...result.data, items: [] }
 }
 
@@ -95,8 +101,10 @@ export const addItemToCart = async (p: {
   if (!process.env.CART_BACKEND_URL) {
     throw new Error('No cart backend URL set')
   }
-  const url = `${process.env.CART_BACKEND_URL}/cart/addItem?cartId=${cartId}&productId=${productId}`
-  const result = await axios.get<CartWithItemsBackendResponse>(url)
+  const url = `${process.env.CART_BACKEND_URL}/cart/addItem`
+  const result = await axios.get<CartWithItemsBackendResponse>(url, {
+    params: { cartId, productId },
+  })
   return { ...result.data.cart, items: result.data.items }
 }
 
@@ -109,8 +117,10 @@ export const editItemInCart = async (p: {
   if (!process.env.CART_BACKEND_URL) {
     throw new Error('No cart backend URL set')
   }
-  const url = `${process.env.CART_BACKEND_URL}/cart/editItem?cartId=${cartId}&productId=${productId}&quantity=${quantity}`
-  const result = await axios.get<CartWithItemsBackendResponse>(url)
+  const url = `${process.env.CART_BACKEND_URL}/cart/editItem`
+  const result = await axios.get<CartWithItemsBackendResponse>(url, {
+    params: { cartId, productId, quantity },
+  })
   return { ...result.data.cart, items: result.data.items }
 }
 
@@ -122,8 +132,10 @@ export const removeItemFromCart = async (p: {
   if (!process.env.CART_BACKEND_URL) {
     throw new Error('No cart backend URL set')
   }
-  const url = `${process.env.CART_BACKEND_URL}/cart/removeItem?cartId=${cartId}&productId=${productId}`
-  const result = await axios.get<CartWithItemsBackendResponse>(url)
+  const url = `${process.env.CART_BACKEND_URL}/cart/removeItem`
+  const result = await axios.get<CartWithItemsBackendResponse>(url, {
+    params: { cartId, productId },
+  })
   return { ...result.data.cart, items: result.data.items }
 }
 export const createCartWithItems = async (p: {
@@ -154,10 +166,11 @@ export const updateCartTotals = async (p: {
   if (!process.env.CART_BACKEND_URL) {
     throw new Error('No cart backend URL set')
   }
-  const url = `${process.env.CART_BACKEND_URL}/cart/totals?cartId=${cartId}`
+  const url = `${process.env.CART_BACKEND_URL}/cart/totals`
   const result = await axios.post<CartWithTotalsBackendResponse>(
     url,
-    cartTotals
+    cartTotals,
+    { params: { cartId } }
   )
   return result.data
 }

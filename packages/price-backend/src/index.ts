@@ -20,7 +20,9 @@ export const getPrice = async (p: {
   if (!process.env.PRICE_BACKEND_URL) {
     throw new Error('No price backend URL set')
   }
-  const url = `${process.env.PRICE_BACKEND_URL}/price/get?productId=${productId}`
-  const result = await axios.get<PriceBackendResponse>(url)
+  const url = `${process.env.PRICE_BACKEND_URL}/price/get`
+  const result = await axios.get<PriceBackendResponse>(url, {
+    params: { productId },
+  })
   return result.data
 }
