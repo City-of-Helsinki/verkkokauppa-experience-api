@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { stringify } from 'qs'
 
 interface OrderItemRequest {
   productId: string
@@ -46,8 +47,13 @@ export const createOrder = async (p: {
   if (!process.env.ORDER_BACKEND_URL) {
     throw new Error('No order backend URL set')
   }
-  const url = `${process.env.ORDER_BACKEND_URL}/order/create?namespace=${namespace}&user=${user}`
-  const result = await axios.get<OrderBackendResponse>(url)
+  const url = `${process.env.ORDER_BACKEND_URL}/order/create`
+  const result = await axios.get<OrderBackendResponse>(url, {
+    params: {
+      namespace,
+      user,
+    },
+  })
   return {
     ...result.data,
     items: [],
@@ -88,8 +94,10 @@ export const cancelOrder = async (p: { orderId: string }): Promise<Order> => {
   if (!process.env.ORDER_BACKEND_URL) {
     throw new Error('No order backend URL set')
   }
-  const url = `${process.env.ORDER_BACKEND_URL}/order/cancel?orderId=${orderId}`
-  const result = await axios.get<OrderWithItemsBackendResponse>(url)
+  const url = `${process.env.ORDER_BACKEND_URL}/order/cancel`
+  const result = await axios.get<OrderWithItemsBackendResponse>(url, {
+    params: { orderId },
+  })
   return {
     ...result.data.order,
     items: result.data.items,
@@ -106,8 +114,13 @@ export const setCustomerToOrder = async (p: {
     throw new Error('No order backend URL set')
   }
 
-  const url = `${process.env.ORDER_BACKEND_URL}/order/setCustomer?orderId=${orderId}&customerName=${customerName}&customerEmail=${customerEmail}`
-  const result = await axios.post<OrderWithItemsBackendResponse>(url)
+  const url = `${process.env.ORDER_BACKEND_URL}/order/setCustomer`
+  const result = await axios.post<OrderWithItemsBackendResponse>(url, null, {
+    params: { orderId, customerName, customerEmail },
+    paramsSerializer: function (params) {
+      return stringify(params, { arrayFormat: 'brackets' })
+    },
+  })
   return {
     ...result.data.order,
     items: result.data.items,
@@ -125,8 +138,10 @@ export const addItemToOrder = async (p: {
   const dto = {
     items,
   }
-  const url = `${process.env.ORDER_BACKEND_URL}/order/setItems?orderId=${orderId}`
-  const result = await axios.post<OrderWithItemsBackendResponse>(url, dto)
+  const url = `${process.env.ORDER_BACKEND_URL}/order/setItems`
+  const result = await axios.post<OrderWithItemsBackendResponse>(url, dto, {
+    params: { orderId },
+  })
   return {
     ...result.data.order,
     items: result.data.items,
@@ -138,8 +153,10 @@ export const getOrder = async (p: { orderId: string }): Promise<Order> => {
   if (!process.env.ORDER_BACKEND_URL) {
     throw new Error('No order backend URL set')
   }
-  const url = `${process.env.ORDER_BACKEND_URL}/order/get?orderId=${orderId}`
-  const result = await axios.get<OrderWithItemsBackendResponse>(url)
+  const url = `${process.env.ORDER_BACKEND_URL}/order/get`
+  const result = await axios.get<OrderWithItemsBackendResponse>(url, {
+    params: { orderId },
+  })
   return {
     ...result.data.order,
     items: result.data.items,
