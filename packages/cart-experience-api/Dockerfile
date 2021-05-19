@@ -7,6 +7,7 @@ RUN npm install -g yarn
 COPY ./package*.json .
 COPY ./tsconfig.json ./tsconfig.json
 COPY ./tsconfig.base.json ./tsconfig.base.json
+COPY ./jest.config.js ./jest.config.js
 
 # Copy package and dependent packages
 COPY ./packages/core ./packages/core
