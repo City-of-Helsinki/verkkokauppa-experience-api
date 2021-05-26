@@ -6,6 +6,7 @@ trigger:
     - packages/order-experience-api
     - packages/order-backend
     - packages/core
+    - packages/cart-backend
   tags:
     include:
       - order-experience-api/*
