@@ -97,13 +97,13 @@ export const addItemToCart = async (p: {
   productId: string
   quantity: number
 }): Promise<Cart> => {
-  const { cartId, productId } = p
+  const { cartId, productId, quantity } = p
   if (!process.env.CART_BACKEND_URL) {
     throw new Error('No cart backend URL set')
   }
   const url = `${process.env.CART_BACKEND_URL}/cart/addItem`
   const result = await axios.get<CartWithItemsBackendResponse>(url, {
-    params: { cartId, productId },
+    params: { cartId, productId, quantity },
   })
   return { ...result.data.cart, items: result.data.items }
 }
