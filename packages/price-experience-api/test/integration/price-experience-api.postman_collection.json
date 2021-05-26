@@ -1,0 +1,182 @@
+{
+	"info": {
+		"_postman_id": "ebc65ced-11d9-4eb2-b38c-10c039a2ceac",
+		"name": "Talpa Price Experience API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Price 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response contains correct ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.productId).to.eql(pm.variables.get(\"productFound\"));",
+							"});",
+							"pm.test(\"Response original contains netValue\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.original.price.netValue).to.exist",
+							"});",
+							"pm.test(\"Response original contains vatPercentage\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.original.price.vatPercentage).to.exist",
+							"});",
+							"pm.test(\"Response original contains vatValue\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.original.price.vatValue).to.exist",
+							"});",
+							"pm.test(\"Response original contains grossValue\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.original.price.grossValue).to.exist",
+							"});",
+							"pm.test(\"Response original netValue is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.original.price.netValue).to.not.empty",
+							"});",
+							"pm.test(\"Response original vatPercentage is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.original.price.vatPercentage).to.not.empty",
+							"});",
+							"pm.test(\"Response original vatValue is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.original.price.vatValue).to.not.empty",
+							"});",
+							"pm.test(\"Response original grossValue is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.original.price.grossValue).to.not.empty",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{priceExperienceUrl}}/:id",
+					"host": [
+						"{{priceExperienceUrl}}"
+					],
+					"path": [
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{productFound}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Price 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"pm.test(\"Response contains correct error message\", function () {",
+							"    var data = pm.response.json();",
+							"    var productId = pm.variables.get(\"notFoundId\")",
+							"    pm.expect(data.message).to.eql(`Price data for product ${productId} not found`);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{priceExperienceUrl}}/:id",
+					"host": [
+						"{{priceExperienceUrl}}"
+					],
+					"path": [
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{notFoundId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Price 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Response contains correct error message\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.message).to.eql(\"Invalid request\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{priceExperienceUrl}}/:id",
+					"host": [
+						"{{priceExperienceUrl}}"
+					],
+					"path": [
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{invalidId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
