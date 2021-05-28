@@ -17,6 +17,7 @@ type CartItemWithTotals = CartItem & {
 }
 
 type CartWithItemsAndTotals = Cart & {
+  user?: string
   items: CartItemWithTotals[]
   cartTotals: CartTotals
 }
