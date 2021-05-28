@@ -1,0 +1,206 @@
+{
+	"info": {
+		"_postman_id": "b381f581-f2c2-48d8-a358-0a9d9c1af6f1",
+		"name": "Talpa Product Experience API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Product 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response contains correct ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.id).to.eql(pm.variables.get(\"productFound\"));",
+							"});",
+							"pm.test(\"Response contains name\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.name).to.exist",
+							"});",
+							"pm.test(\"Response name is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.name).to.not.empty",
+							"});",
+							"pm.test(\"Response contains price\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.price).to.exist",
+							"});",
+							"pm.test(\"Response price > 0\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(parseFloat(data.price)).to.gt(0)",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{productExperienceUrl}}/:id",
+					"host": [
+						"{{productExperienceUrl}}"
+					],
+					"path": [
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{productFound}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Product 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"pm.test(\"Response contains correct error message\", function () {",
+							"    var data = pm.response.json();",
+							"    var productId = pm.variables.get(\"notFoundId\")",
+							"    pm.expect(data.message).to.eql(`No product data found for ${productId}`);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{productExperienceUrl}}/:id",
+					"host": [
+						"{{productExperienceUrl}}"
+					],
+					"path": [
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{notFoundId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Product 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Response contains correct error message\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.message).to.eql(\"Invalid request\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{productExperienceUrl}}/:id",
+					"host": [
+						"{{productExperienceUrl}}"
+					],
+					"path": [
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{invalidId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Product 201",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response contains correct ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.id).to.eql(pm.variables.get(\"productFound\"));",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"namespace\": \"testNameSpace\",\n    \"productId\": \"testID-123\",\n    \"name\": \"Some Product Name\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{productExperienceUrl}}",
+					"host": [
+						"{{productExperienceUrl}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
