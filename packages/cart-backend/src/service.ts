@@ -10,7 +10,7 @@ export interface CartItem {
 export interface Cart {
   cartId: string
   namespace: string
-  user?: string
+  user: string
   createdAt: string
   items: CartItem[]
   cartTotals?: CartTotals
@@ -24,7 +24,7 @@ interface CartItemRequest {
 interface CartBackendResponse {
   cartId: string
   namespace: string
-  user?: string
+  user: string
   createdAt: string
 }
 type CartWithItemsBackendResponse = {
@@ -173,4 +173,19 @@ export const updateCartTotals = async (p: {
     { params: { cartId } }
   )
   return result.data
+}
+
+export const clearCart = async (p: {
+  namespace: string
+  user: string
+}): Promise<Cart> => {
+  const { namespace, user } = p
+  if (!process.env.CART_BACKEND_URL) {
+    throw new Error('No cart backend URL set')
+  }
+  const url = `${process.env.CART_BACKEND_URL}/cart/clear`
+  const result = await axios.get<CartBackendResponse>(url, {
+    params: { namespace, user },
+  })
+  return { ...result.data, items: [] }
 }

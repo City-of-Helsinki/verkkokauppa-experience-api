@@ -15,23 +15,30 @@ export type OrderItem = OrderItemRequest & {
   orderId: string
 }
 interface OrderCustomer {
-  name: string
+  firstName: string
+  lastName: string
   email: string
 }
 export interface Order {
   orderId: string
   namespace: string
-  user?: string
+  user: string
   createdAt: string
   items: OrderItem[]
   checkoutUrl?: string
+  customer?: OrderCustomer
+  status?: string
 }
 
 interface OrderBackendResponse {
   orderId: string
   namespace: string
-  user?: string
+  user: string
   createdAt: string
+  customerFirstName?: string
+  customerLastName?: string
+  customerEmail?: string
+  status?: string
 }
 
 type OrderWithItemsBackendResponse = {
@@ -65,26 +72,29 @@ export const createOrderWithItems = async (p: {
   namespace: string
   user: string
   items: OrderItemRequest[]
-  customer?: OrderCustomer
+  customer: OrderCustomer
 }): Promise<Order> => {
   const { namespace, user, customer, items } = p
   if (!process.env.ORDER_BACKEND_URL) {
     throw new Error('No order backend URL set')
   }
-  const dto = {
+  const requestDto = {
     order: {
       namespace,
       user,
-      customerName: customer?.name,
+      customerFirstName: customer?.firstName,
+      customerLastName: customer?.lastName,
       customerEmail: customer?.email,
     },
     items,
   }
   const url = `${process.env.ORDER_BACKEND_URL}/order/createWithItems`
-  const result = await axios.post<OrderWithItemsBackendResponse>(url, dto)
+  const result = await axios.post<OrderWithItemsBackendResponse>(
+    url,
+    requestDto
+  )
   return {
-    ...result.data.order,
-    items: result.data.items,
+    ...transFormBackendOrder(result.data),
     checkoutUrl: `${process.env.CHECKOUT_BASE_URL}?orderId=${result.data.order.orderId}`,
   }
 }
@@ -98,33 +108,31 @@ export const cancelOrder = async (p: { orderId: string }): Promise<Order> => {
   const result = await axios.get<OrderWithItemsBackendResponse>(url, {
     params: { orderId },
   })
-  return {
-    ...result.data.order,
-    items: result.data.items,
-  }
+  return transFormBackendOrder(result.data)
 }
 
 export const setCustomerToOrder = async (p: {
   orderId: string
-  customerName: string
-  customerEmail: string
+  customer: OrderCustomer
 }): Promise<Order> => {
-  const { orderId, customerName, customerEmail } = p
+  const { orderId, customer } = p
   if (!process.env.ORDER_BACKEND_URL) {
     throw new Error('No order backend URL set')
   }
 
   const url = `${process.env.ORDER_BACKEND_URL}/order/setCustomer`
   const result = await axios.post<OrderWithItemsBackendResponse>(url, null, {
-    params: { orderId, customerName, customerEmail },
+    params: {
+      orderId,
+      customerEmail: customer.email,
+      customerFirstName: customer.firstName,
+      customerLastName: customer.lastName,
+    },
     paramsSerializer: function (params) {
       return stringify(params, { arrayFormat: 'brackets' })
     },
   })
-  return {
-    ...result.data.order,
-    items: result.data.items,
-  }
+  return transFormBackendOrder(result.data)
 }
 
 export const addItemToOrder = async (p: {
@@ -142,10 +150,7 @@ export const addItemToOrder = async (p: {
   const result = await axios.post<OrderWithItemsBackendResponse>(url, dto, {
     params: { orderId },
   })
-  return {
-    ...result.data.order,
-    items: result.data.items,
-  }
+  return transFormBackendOrder(result.data)
 }
 
 export const getOrder = async (p: { orderId: string }): Promise<Order> => {
@@ -157,8 +162,38 @@ export const getOrder = async (p: { orderId: string }): Promise<Order> => {
   const result = await axios.get<OrderWithItemsBackendResponse>(url, {
     params: { orderId },
   })
+  return transFormBackendOrder(result.data)
+}
+
+const transFormBackendOrder = (p: OrderWithItemsBackendResponse): Order => {
+  const {
+    order: {
+      orderId,
+      namespace,
+      user,
+      createdAt,
+      customerEmail,
+      customerFirstName,
+      customerLastName,
+      status,
+    },
+    items,
+  } = p
+  let customer
+  if (customerFirstName && customerLastName && customerEmail) {
+    customer = {
+      firstName: customerFirstName,
+      lastName: customerLastName,
+      email: customerEmail,
+    }
+  }
   return {
-    ...result.data.order,
-    items: result.data.items,
+    orderId,
+    namespace,
+    user,
+    createdAt,
+    items,
+    customer,
+    status,
   }
 }

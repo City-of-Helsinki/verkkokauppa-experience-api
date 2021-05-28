@@ -5,28 +5,30 @@ import { setCustomerToOrder } from '@verkkokauppa/order-backend'
 export class SetCustomerController extends AbstractController {
   protected async implementation(req: Request, res: Response): Promise<any> {
     const { orderId } = req.params
-    const { customerName, customerEmail } = req.body
+    const { customer } = req.body
 
     if (orderId === undefined) {
       return this.clientError(res, 'Order ID not specified')
     }
-    if (customerName === undefined) {
-      return this.clientError(res, 'Customer name not specified')
+    if (customer.firstName === undefined) {
+      return this.clientError(res, 'Customer firstname not specified')
     }
-    if (customerEmail === undefined) {
+    if (customer.lastName === undefined) {
+      return this.clientError(res, 'Customer lastname not specified')
+    }
+    if (customer.email === undefined) {
       return this.clientError(res, 'Customer email not specified')
     }
     const dto = new Data()
 
     logger.debug(
-      `Setting Customer with name: ${customerName} and email ${customerEmail} to order ${orderId}`
+      `Setting Customer with name: ${customer.firstName} ${customer.lastName} and email ${customer.email} to order ${orderId}`
     )
 
     try {
       dto.data = await setCustomerToOrder({
         orderId,
-        customerName,
-        customerEmail
+        customer,
       })
     } catch (error) {
       logger.error(error)
