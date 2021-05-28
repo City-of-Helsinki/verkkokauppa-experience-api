@@ -1,0 +1,910 @@
+{
+	"info": {
+		"_postman_id": "6c4c6483-51f5-4fd9-a74d-fad4182285ae",
+		"name": "Talpa Cart Experience API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Cart Without Items 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response contains correct ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.cartId).to.eql(pm.variables.get(\"cartFound\"));",
+							"});",
+							"pm.test(\"Response contains namespace\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.namespace).to.exist",
+							"});",
+							"pm.test(\"Response namespace is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.namespace).to.not.empty",
+							"});",
+							"pm.test(\"Response contains user\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.user).to.exist",
+							"});",
+							"pm.test(\"Response user is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.user).to.not.empty",
+							"});",
+							"pm.test(\"Response contains createdAt\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.createdAt).to.exist",
+							"});",
+							"pm.test(\"Response createdAt is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{cartExperienceUrl}}/:id",
+					"host": [
+						"{{cartExperienceUrl}}"
+					],
+					"path": [
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{cartFound}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Cart With Items 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response contains correct ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.cartId).to.eql(pm.variables.get(\"cartWithItems\"));",
+							"});",
+							"pm.test(\"Response contains namespace\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.namespace).to.exist",
+							"});",
+							"pm.test(\"Response namespace is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.namespace).to.not.empty",
+							"});",
+							"pm.test(\"Response contains user\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.user).to.exist",
+							"});",
+							"pm.test(\"Response user is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.user).to.not.empty",
+							"});",
+							"pm.test(\"Response contains createdAt\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.createdAt).to.exist",
+							"});",
+							"pm.test(\"Response createdAt is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response contains createdAt\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.createdAt).to.exist",
+							"});",
+							"pm.test(\"Response createdAt is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response cart contains items\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items).to.not.empty",
+							"});",
+							"pm.test(\"Response cart item has correct cart ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].cartId).to.eql(pm.variables.get(\"cartWithItems\"));",
+							"});",
+							"pm.test(\"Response cart item has correct product ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
+							"});",
+							"pm.test(\"Response cart item has correct quantity\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].quantity).to.eql(2);",
+							"});",
+							"pm.test(\"Response cart item has correct unit\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].unit).to.eql(\"pcs\");",
+							"});",
+							"pm.test(\"Response cart item has name\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].name).to.not.empty",
+							"});",
+							"pm.test(\"Response cart item has price > 0\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].price).to.gt(0)",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{cartExperienceUrl}}/:id",
+					"host": [
+						"{{cartExperienceUrl}}"
+					],
+					"path": [
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{cartWithItems}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Cart Totals",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response contains correct ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.cartId).to.eql(pm.variables.get(\"cartWithItems\"));",
+							"});",
+							"pm.test(\"Response contains namespace\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.namespace).to.exist",
+							"});",
+							"pm.test(\"Response namespace is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.namespace).to.not.empty",
+							"});",
+							"pm.test(\"Response contains user\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.user).to.exist",
+							"});",
+							"pm.test(\"Response user is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.user).to.not.empty",
+							"});",
+							"pm.test(\"Response contains createdAt\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.createdAt).to.exist",
+							"});",
+							"pm.test(\"Response createdAt is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response contains createdAt\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.createdAt).to.exist",
+							"});",
+							"pm.test(\"Response createdAt is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response cart contains items\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items).to.not.empty",
+							"});",
+							"pm.test(\"Response cart item has correct cart ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].cartId).to.eql(pm.variables.get(\"cartWithItems\"));",
+							"});",
+							"pm.test(\"Response cart item has correct product ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
+							"});",
+							"pm.test(\"Response cart item has correct quantity\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].quantity).to.eql(2);",
+							"});",
+							"pm.test(\"Response cart item has correct unit\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].unit).to.eql(\"pcs\");",
+							"});",
+							"pm.test(\"Response cart item has rowTotal\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].rowTotal).to.not.empty",
+							"});",
+							"pm.test(\"Response cart item has correct rowTotal netValue\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].rowTotal.netValue).to.eql(200)",
+							"});",
+							"pm.test(\"Response cart item has correct rowTotal grossValue\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].rowTotal.grossValue).to.eql(248)",
+							"});",
+							"pm.test(\"Response cart item has correct rowTotal vatValue\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].rowTotal.vatValue).to.eql(48)",
+							"});",
+							"pm.test(\"Response cart item has unitPrice\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].unitPrice).to.not.empty",
+							"});",
+							"pm.test(\"Response cart item has correct unitPrice netValue\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].unitPrice.netValue).to.eql(100)",
+							"});",
+							"pm.test(\"Response cart item has correct unitPrice grossValue\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].unitPrice.grossValue).to.eql(124)",
+							"});",
+							"pm.test(\"Response cart item has correct unitPrice vatValue\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].unitPrice.vatValue).to.eql(24)",
+							"});",
+							"pm.test(\"Response cart item has correct rowTotal vatPercentage\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].unitPrice.vatPercentage).to.eql(24)",
+							"});",
+							"pm.test(\"Response has cartTotals\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.cartTotals).to.not.empty",
+							"});",
+							"pm.test(\"Response cartTotals has correct id\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.cartTotals.cartId).to.eql(pm.variables.get(\"cartWithItems\"))",
+							"});",
+							"pm.test(\"Response cartTotals has correct netValue\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.cartTotals.netValue).to.eql(200)",
+							"});",
+							"pm.test(\"Response cartTotals has correct grossValue\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.cartTotals.grossValue).to.eql(248)",
+							"});",
+							"pm.test(\"Response cartTotals has correct vatValue\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.cartTotals.vatValue).to.eql(48)",
+							"});",
+							"pm.test(\"Response cartTotals has rowTotals\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.cartTotals.rowTotals).to.not.empty",
+							"});",
+							"pm.test(\"Response cartTotals rowTotal has correct netValue\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.cartTotals.rowTotals[0].netValue).to.eql(200)",
+							"});",
+							"pm.test(\"Response cartTotals rowTotal has correct grossValue\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.cartTotals.rowTotals[0].grossValue).to.eql(248)",
+							"});",
+							"pm.test(\"Response cartTotals rowTotal has correct vatValue\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.cartTotals.rowTotals[0].vatValue).to.eql(48)",
+							"});",
+							"pm.test(\"Response cartTotals rowTotal has correct vatPercentage\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.cartTotals.rowTotals[0].vatPercentage).to.eql(24)",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{cartExperienceUrl}}/:id/totals",
+					"host": [
+						"{{cartExperienceUrl}}"
+					],
+					"path": [
+						":id",
+						"totals"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{cartWithItems}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Cart 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"pm.test(\"Response contains correct error message\", function () {",
+							"    var data = pm.response.json();",
+							"    var cartId = pm.variables.get(\"notFoundId\")",
+							"    pm.expect(data.message).to.eql(`Cart ${cartId} not found`);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{cartExperienceUrl}}/:id",
+					"host": [
+						"{{cartExperienceUrl}}"
+					],
+					"path": [
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{notFoundId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Cart 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Response contains correct error message\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.message).to.eql(\"Invalid request\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{cartExperienceUrl}}/:id",
+					"host": [
+						"{{cartExperienceUrl}}"
+					],
+					"path": [
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{invalidId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Cart 201",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"pm.test(\"Response contains correct ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.cartId).to.eql(pm.variables.get(\"cartFound\"));",
+							"});",
+							"pm.test(\"Response contains namespace\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.namespace).to.exist",
+							"});",
+							"pm.test(\"Response namespace is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.namespace).to.not.empty",
+							"});",
+							"pm.test(\"Response contains user\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.user).to.exist",
+							"});",
+							"pm.test(\"Response user is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.user).to.not.empty",
+							"});",
+							"pm.test(\"Response contains createdAt\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.createdAt).to.exist",
+							"});",
+							"pm.test(\"Response createdAt is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"namespace\": \"testNameSpace1\",\n    \"user\": \"testUser1\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{cartExperienceUrl}}",
+					"host": [
+						"{{cartExperienceUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Cart with Items 201",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"pm.test(\"Response contains correct ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.cartId).to.eql(pm.variables.get(\"cartWithItems\"));",
+							"});",
+							"pm.test(\"Response contains namespace\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.namespace).to.exist",
+							"});",
+							"pm.test(\"Response namespace is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.namespace).to.not.empty",
+							"});",
+							"pm.test(\"Response contains user\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.user).to.exist",
+							"});",
+							"pm.test(\"Response user is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.user).to.not.empty",
+							"});",
+							"pm.test(\"Response contains createdAt\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.createdAt).to.exist",
+							"});",
+							"pm.test(\"Response createdAt is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response cart contains items\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items).to.not.empty",
+							"});",
+							"pm.test(\"Response cart item has correct cart ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].cartId).to.eql(pm.variables.get(\"cartWithItems\"));",
+							"});",
+							"pm.test(\"Response cart item has correct product ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
+							"});",
+							"pm.test(\"Response cart item has correct quantity\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].quantity).to.eql(1);",
+							"});",
+							"pm.test(\"Response cart item has correct unit\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].unit).to.eql(\"pcs\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"namespace\": \"testNameSpaceWithItems\",\n    \"user\": \"testWithItems\", \n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": 2\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{cartExperienceUrl}}",
+					"host": [
+						"{{cartExperienceUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Item 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response contains correct ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.cartId).to.eql(pm.variables.get(\"cartToAddItem\"));",
+							"});",
+							"pm.test(\"Response contains namespace\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.namespace).to.exist",
+							"});",
+							"pm.test(\"Response namespace is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.namespace).to.not.empty",
+							"});",
+							"pm.test(\"Response contains user\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.user).to.exist",
+							"});",
+							"pm.test(\"Response user is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.user).to.not.empty",
+							"});",
+							"pm.test(\"Response contains createdAt\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.createdAt).to.exist",
+							"});",
+							"pm.test(\"Response createdAt is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response contains items\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items).to.not.empty",
+							"});",
+							"pm.test(\"Response item has correct cart ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].cartId).to.eql(pm.variables.get(\"cartToAddItem\"));",
+							"});",
+							"pm.test(\"Response item has correct product ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
+							"});",
+							"pm.test(\"Response item has correct quantity\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].quantity).to.eql(1);",
+							"});",
+							"pm.test(\"Response item has correct unit\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].unit).to.eql(\"pcs\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"productId\": \"{{productFound}}\",\n    \"quantity\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{cartExperienceUrl}}/:cartId/items",
+					"host": [
+						"{{cartExperienceUrl}}"
+					],
+					"path": [
+						":cartId",
+						"items"
+					],
+					"variable": [
+						{
+							"key": "cartId",
+							"value": "{{cartToAddItem}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove Item 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response contains correct ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.cartId).to.eql(pm.variables.get(\"cartFound\"));",
+							"});",
+							"pm.test(\"Response contains namespace\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.namespace).to.exist",
+							"});",
+							"pm.test(\"Response namespace is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.namespace).to.not.empty",
+							"});",
+							"pm.test(\"Response contains user\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.user).to.exist",
+							"});",
+							"pm.test(\"Response user is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.user).to.not.empty",
+							"});",
+							"pm.test(\"Response contains createdAt\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.createdAt).to.exist",
+							"});",
+							"pm.test(\"Response createdAt is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response does not contain items\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items).to.empty",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const url = pm.variables.get(\"cartExperienceUrl\")",
+							"const cartId = pm.variables.get(\"cartFound\")",
+							"pm.sendRequest({",
+							"    url: `${url}/${cartId}/items`,",
+							"    method: 'POST',",
+							"    header: {",
+							"        'content-type': 'application/json',",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify({ productId: pm.variables.get(\"productFound\"), quantity: 1 })",
+							"    }",
+							"}, function (err, res) {",
+							"    console.log(res);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{cartExperienceUrl}}/:cartId/items/:productId",
+					"host": [
+						"{{cartExperienceUrl}}"
+					],
+					"path": [
+						":cartId",
+						"items",
+						":productId"
+					],
+					"variable": [
+						{
+							"key": "cartId",
+							"value": "{{cartFound}}"
+						},
+						{
+							"key": "productId",
+							"value": "{{productFound}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit Item 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response contains correct ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.cartId).to.eql(pm.variables.get(\"cartWithItems\"));",
+							"});",
+							"pm.test(\"Response contains namespace\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.namespace).to.exist",
+							"});",
+							"pm.test(\"Response namespace is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.namespace).to.not.empty",
+							"});",
+							"pm.test(\"Response contains user\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.user).to.exist",
+							"});",
+							"pm.test(\"Response user is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.user).to.not.empty",
+							"});",
+							"pm.test(\"Response contains createdAt\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.createdAt).to.exist",
+							"});",
+							"pm.test(\"Response createdAt is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response item contains correct amount\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].quantity).to.eq(2)",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"quantity\": 2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{cartExperienceUrl}}/:cartId/items/:productId",
+					"host": [
+						"{{cartExperienceUrl}}"
+					],
+					"path": [
+						":cartId",
+						"items",
+						":productId"
+					],
+					"variable": [
+						{
+							"key": "cartId",
+							"value": "{{cartWithItems}}"
+						},
+						{
+							"key": "productId",
+							"value": "{{productFound}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
