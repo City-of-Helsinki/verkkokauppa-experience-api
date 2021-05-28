@@ -141,6 +141,7 @@ describe('Test total calculator service', () => {
       cartId: '5585142a-6e0e-4439-bfcc-860e99711deb',
       namespace: 'test',
       createdAt: '123',
+      user: 'test',
       items: [item],
       cartTotals: {
         cartId: '5585142a-6e0e-4439-bfcc-860e99711deb',
