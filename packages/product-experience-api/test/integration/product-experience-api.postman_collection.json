@@ -68,6 +68,8 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"/*",
+							"Disable until KYV-144",
 							"pm.test(\"Status code is 404\", function () {",
 							"    pm.response.to.have.status(404);",
 							"});",
@@ -75,7 +77,8 @@
 							"    var data = pm.response.json();",
 							"    var productId = pm.variables.get(\"notFoundId\")",
 							"    pm.expect(data.message).to.eql(`No product data found for ${productId}`);",
-							"});"
+							"});",
+							"*/"
 						],
 						"type": "text/javascript"
 					}
@@ -109,13 +112,17 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"/*",
+							"Disable until KYV-144",
+							"",
 							"pm.test(\"Status code is 400\", function () {",
 							"    pm.response.to.have.status(400);",
 							"});",
 							"pm.test(\"Response contains correct error message\", function () {",
 							"    var data = pm.response.json();",
 							"    pm.expect(data.message).to.eql(\"Invalid request\");",
-							"});"
+							"});",
+							"*/"
 						],
 						"type": "text/javascript"
 					}

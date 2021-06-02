@@ -372,6 +372,8 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"/*",
+							"Disable until KYV-144",
 							"pm.test(\"Status code is 404\", function () {",
 							"    pm.response.to.have.status(404);",
 							"});",
@@ -379,7 +381,8 @@
 							"    var data = pm.response.json();",
 							"    var cartId = pm.variables.get(\"notFoundId\")",
 							"    pm.expect(data.message).to.eql(`Cart ${cartId} not found`);",
-							"});"
+							"});",
+							"*/"
 						],
 						"type": "text/javascript"
 					}
@@ -578,7 +581,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"namespace\": \"testNameSpaceWithItems\",\n    \"user\": \"testWithItems\", \n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": 2\n        }\n    ]\n}",
+					"raw": "{\n    \"namespace\": \"asukaspysakointi\",\n    \"user\": \"testWithItems\", \n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": 2\n        }\n    ]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -728,7 +731,7 @@
 							"});",
 							"pm.test(\"Response does not contain items\", function () {",
 							"    var data = pm.response.json();",
-							"    pm.expect(data.items).to.empty",
+							"    pm.expect(data.items).to.null",
 							"});"
 						],
 						"type": "text/javascript"
