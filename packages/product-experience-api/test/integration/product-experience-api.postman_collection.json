@@ -156,13 +156,16 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"/*",
+							"Disable until create endpoint is implemented",
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
 							"pm.test(\"Response contains correct ID\", function () {",
 							"    var data = pm.response.json();",
 							"    pm.expect(data.id).to.eql(pm.variables.get(\"productFound\"));",
-							"});"
+							"});",
+							"*/"
 						],
 						"type": "text/javascript"
 					}
