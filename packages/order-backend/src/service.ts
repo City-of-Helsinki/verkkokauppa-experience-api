@@ -1,50 +1,12 @@
 import axios from 'axios'
 import { stringify } from 'qs'
-
-interface OrderItemRequest {
-  productId: string
-  productName: string
-  quantity: number
-  unit: string
-  rowPriceNet: number
-  rowPriceVat: number
-  rowPriceTotal: number
-}
-export type OrderItem = OrderItemRequest & {
-  orderItemId: string
-  orderId: string
-}
-interface OrderCustomer {
-  firstName: string
-  lastName: string
-  email: string
-}
-export interface Order {
-  orderId: string
-  namespace: string
-  user: string
-  createdAt: string
-  items: OrderItem[]
-  checkoutUrl?: string
-  customer?: OrderCustomer
-  status?: string
-}
-
-interface OrderBackendResponse {
-  orderId: string
-  namespace: string
-  user: string
-  createdAt: string
-  customerFirstName?: string
-  customerLastName?: string
-  customerEmail?: string
-  status?: string
-}
-
-type OrderWithItemsBackendResponse = {
-  order: OrderBackendResponse
-  items: OrderItem[]
-}
+import type {
+  Order,
+  OrderCustomer,
+  OrderBackendResponse,
+  OrderItemRequest,
+  OrderWithItemsBackendResponse
+} from './types'
 
 export const createOrder = async (p: {
   namespace: string
