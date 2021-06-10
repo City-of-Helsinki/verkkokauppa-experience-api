@@ -1,7 +1,6 @@
 import { AbstractController, Data, logger } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
-import { editItemInCart , removeItemFromCart } from '@verkkokauppa/cart-backend'
-
+import { editItemInCart, removeItemFromCart } from '@verkkokauppa/cart-backend'
 
 export class EditItemController extends AbstractController {
   protected async implementation(req: Request, res: Response): Promise<any> {
