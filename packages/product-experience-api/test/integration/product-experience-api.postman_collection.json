@@ -156,16 +156,21 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"/*",
-							"Disable until create endpoint is implemented",
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
+							"var data = pm.response.json();",
+							"var requestData = JSON.parse(pm.request.body);",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
 							"});",
-							"pm.test(\"Response contains correct ID\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.id).to.eql(pm.variables.get(\"productFound\"));",
+							"pm.test(\"Response contains correct mapped ID\", function () {",
+							"    pm.expect(data.productId).to.eql(pm.variables.get(\"productFound\"));",
 							"});",
-							"*/"
+							"pm.test(\"Response contains correct namespace\", function () {",
+							"    pm.expect(data.namespace).to.eql(requestData.namespace);",
+							"});",
+							"pm.test(\"Response contains correct namespace entity ID\", function () {",
+							"    pm.expect(data.namespaceEntityId).to.eql(requestData.namespaceEntityId);",
+							"});"
 						],
 						"type": "text/javascript"
 					}
@@ -176,7 +181,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"namespace\": \"testNameSpace\",\n    \"productId\": \"testID-123\",\n    \"name\": \"Some Product Name\"\n}",
+					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"namespaceEntityId\": \"{{namespaceProductFound}}\",\n    \"name\": \"Some Product Name\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -187,6 +192,55 @@
 					"raw": "{{productExperienceUrl}}",
 					"host": [
 						"{{productExperienceUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Product Mapping 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"var productId = pm.request.url.path[0];",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response contains correct ID\", function () {",
+							"    pm.expect(data.productId).to.eql(productId);",
+							"});",
+							"pm.test(\"Response contains correct namespace\", function () {",
+							"    pm.expect(data.namespace).to.eql(pm.variables.get(\"namespace\"))",
+							"});",
+							"pm.test(\"Response contains correct namespaceEntityId\", function () {",
+							"    pm.expect(data.namespaceEntityId).to.eql(pm.variables.get(\"namespaceProductFound\"))",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{productExperienceUrl}}/:id/mapping",
+					"host": [
+						"{{productExperienceUrl}}"
+					],
+					"path": [
+						":id",
+						"mapping"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{productFound}}"
+						}
 					]
 				}
 			},
