@@ -8,11 +8,11 @@ module.exports = {
   root: true,
   extends: [
     'eslint:recommended',
-    'prettier',
     'plugin:import/errors',
     'plugin:import/warnings',
     'plugin:import/typescript',
     'plugin:jest/recommended',
+    'prettier',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -20,12 +20,16 @@ module.exports = {
     sourceType: 'module',
     project: ['packages/*/tsconfig.json'],
   },
-  plugins: ['@typescript-eslint', 'jest'],
+  plugins: ['@typescript-eslint', 'jest', 'prettier'],
   rules: {
     'no-unused-vars': 'off',
     '@typescript-eslint/no-use-before-define': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
     semi: ['error', 'never'],
     '@typescript-eslint/semi': ['error', 'never'],
+    '@typescript-eslint/indent': 'off',
+    'prettier/prettier': 'error',
+    'arrow-body-style': 'off',
+    'prefer-arrow-callback': 'off',
   },
 }

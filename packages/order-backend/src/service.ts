@@ -5,7 +5,7 @@ import type {
   OrderCustomer,
   OrderBackendResponse,
   OrderItemRequest,
-  OrderWithItemsBackendResponse
+  OrderWithItemsBackendResponse,
 } from './types'
 
 export const createOrder = async (p: {
