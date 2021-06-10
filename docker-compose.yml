@@ -10,6 +10,7 @@ services:
       - ./packages/product-experience-api/:/opt/app-root/src/packages/product-experience-api/
       - ./packages/product-experience-api/nodemon.json:/opt/app-root/src/packages/product-experience-api/nodemon.json
       - ./packages/product-backend/:/opt/app-root/src/packages/product-backend/
+      - ./packages/product-mapping-backend/:/opt/app-root/src/packages/product-mapping-backend/
       - ./packages/price-backend/:/opt/app-root/src/packages/price-backend/
       - ./packages/core/:/opt/app-root/src/packages/core/
     container_name: product-experience-api
@@ -21,6 +22,7 @@ services:
     environment:
       - SERVICE_NAME=product-experience-api
       - PRODUCT_BACKEND_URL=https://ff102df2-94c3-4243-a4a1-6e449f78c633.mock.pstmn.io
+      - PRODUCT_MAPPING_BACKEND_URL=https://9678a076-6612-441d-8970-30ddbc8a84da.mock.pstmn.io
       - PRICE_BACKEND_URL=https://3d615742-ed93-4415-8972-76c7103c5000.mock.pstmn.io
   price-experience-api:
     build:

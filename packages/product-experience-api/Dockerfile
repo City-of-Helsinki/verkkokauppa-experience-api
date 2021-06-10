@@ -12,6 +12,7 @@ COPY ./jest.config.js ./jest.config.js
 # Copy package and dependent packages
 COPY ./packages/core ./packages/core
 COPY ./packages/product-backend ./packages/product-backend
+COPY ./packages/product-mapping-backend ./packages/product-mapping-backend
 COPY ./packages/price-backend ./packages/price-backend
 COPY ./packages/product-experience-api ./packages/product-experience-api
 
@@ -24,6 +25,7 @@ USER 1001
 # Run install for all required packages
 RUN yarn workspace @verkkokauppa/core install
 RUN yarn workspace @verkkokauppa/product-backend install
+RUN yarn workspace @verkkokauppa/product-mapping-backend install
 RUN yarn workspace @verkkokauppa/price-backend install
 RUN yarn workspace @verkkokauppa/product-experience-api install
 
@@ -31,6 +33,7 @@ RUN yarn workspace @verkkokauppa/product-experience-api install
 FROM base as production
 RUN yarn workspace @verkkokauppa/core build
 RUN yarn workspace @verkkokauppa/product-backend build
+RUN yarn workspace @verkkokauppa/product-mapping-backend build
 RUN yarn workspace @verkkokauppa/price-backend build
 RUN yarn workspace @verkkokauppa/product-experience-api build
 EXPOSE 8080
