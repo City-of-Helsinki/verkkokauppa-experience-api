@@ -13,6 +13,8 @@
 					"script": {
 						"exec": [
 							"var data = pm.response.json()",
+							"var requestData = JSON.parse(pm.request.body);",
+							"",
 							"if (data.cartId) {",
 							"    pm.environment.set(\"cartFound\", data.cartId)",
 							"}",
@@ -22,17 +24,11 @@
 							"pm.test(\"Response contains correct ID\", function () {",
 							"    pm.expect(data.cartId).to.eql(pm.variables.get(\"cartFound\"));",
 							"});",
-							"pm.test(\"Response contains namespace\", function () {",
-							"    pm.expect(data.namespace).to.exist",
+							"pm.test(\"Response contains correct namespace\", function () {",
+							"    pm.expect(data.namespace).to.eql(requestData.namespace)",
 							"});",
-							"pm.test(\"Response namespace is not empty\", function () {",
-							"    pm.expect(data.namespace).to.not.empty",
-							"});",
-							"pm.test(\"Response contains user\", function () {",
-							"    pm.expect(data.user).to.exist",
-							"});",
-							"pm.test(\"Response user is not empty\", function () {",
-							"    pm.expect(data.user).to.not.empty",
+							"pm.test(\"Response contains correct user\", function () {",
+							"    pm.expect(data.user).to.eql(requestData.user)",
 							"});",
 							"pm.test(\"Response contains createdAt\", function () {",
 							"    pm.expect(data.createdAt).to.exist",
@@ -147,6 +143,8 @@
 					"script": {
 						"exec": [
 							"var data = pm.response.json()",
+							"var requestData = JSON.parse(pm.request.body);",
+							"",
 							"if (data.cartId) {",
 							"    pm.environment.set(\"cartWithItems\", data.cartId)",
 							"}",
@@ -157,21 +155,13 @@
 							"    var data = pm.response.json();",
 							"    pm.expect(data.cartId).to.eql(pm.variables.get(\"cartWithItems\"));",
 							"});",
-							"pm.test(\"Response contains namespace\", function () {",
+							"pm.test(\"Response contains correct namespace\", function () {",
 							"    var data = pm.response.json();",
-							"    pm.expect(data.namespace).to.exist",
+							"    pm.expect(data.namespace).to.eql(requestData.namespace)",
 							"});",
-							"pm.test(\"Response namespace is not empty\", function () {",
+							"pm.test(\"Response contains correct user\", function () {",
 							"    var data = pm.response.json();",
-							"    pm.expect(data.namespace).to.not.empty",
-							"});",
-							"pm.test(\"Response contains user\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.user).to.exist",
-							"});",
-							"pm.test(\"Response user is not empty\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.user).to.not.empty",
+							"    pm.expect(data.user).to.eql(requestData.user)",
 							"});",
 							"pm.test(\"Response contains createdAt\", function () {",
 							"    var data = pm.response.json();",
@@ -191,11 +181,11 @@
 							"});",
 							"pm.test(\"Response cart item has correct product ID\", function () {",
 							"    var data = pm.response.json();",
-							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
+							"    pm.expect(data.items[0].productId).to.eql(requestData.items[0].productId);",
 							"});",
 							"pm.test(\"Response cart item has correct quantity\", function () {",
 							"    var data = pm.response.json();",
-							"    pm.expect(data.items[0].quantity).to.eql(2);",
+							"    pm.expect(data.items[0].quantity).to.eql(requestData.items[0].quantity);",
 							"});",
 							"pm.test(\"Response cart item has correct unit\", function () {",
 							"    var data = pm.response.json();",
@@ -608,52 +598,46 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"var data = pm.response.json();",
+							"var requestData = JSON.parse(pm.request.body);",
+							"var cartId = pm.request.url.path[0];",
+							"",
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
 							"pm.test(\"Response contains correct ID\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.cartId).to.eql(pm.variables.get(\"cartFound\"));",
+							"    pm.expect(data.cartId).to.eql(cartId);",
 							"});",
 							"pm.test(\"Response contains namespace\", function () {",
-							"    var data = pm.response.json();",
 							"    pm.expect(data.namespace).to.exist",
 							"});",
 							"pm.test(\"Response namespace is not empty\", function () {",
-							"    var data = pm.response.json();",
 							"    pm.expect(data.namespace).to.not.empty",
 							"});",
 							"pm.test(\"Response contains user\", function () {",
-							"    var data = pm.response.json();",
 							"    pm.expect(data.user).to.exist",
 							"});",
 							"pm.test(\"Response user is not empty\", function () {",
-							"    var data = pm.response.json();",
 							"    pm.expect(data.user).to.not.empty",
 							"});",
 							"pm.test(\"Response contains createdAt\", function () {",
-							"    var data = pm.response.json();",
 							"    pm.expect(data.createdAt).to.exist",
 							"});",
 							"pm.test(\"Response createdAt is not empty\", function () {",
-							"    var data = pm.response.json();",
 							"    pm.expect(data.createdAt).to.not.empty",
 							"});",
 							"pm.test(\"Response contains items\", function () {",
-							"    var data = pm.response.json();",
 							"    pm.expect(data.items).to.not.empty",
 							"});",
 							"pm.test(\"Response item has correct cart ID\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.items[0].cartId).to.eql(pm.variables.get(\"cartFound\"));",
+							"    pm.expect(data.items[0].cartId).to.eql(cartId);",
 							"});",
 							"pm.test(\"Response item has correct product ID\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
+							"    pm.expect(data.items[0].productId).to.eql(requestData.productId);",
 							"});",
 							"pm.test(\"Response item has correct quantity\", function () {",
 							"    var data = pm.response.json();",
-							"    pm.expect(data.items[0].quantity).to.eql(1);",
+							"    pm.expect(data.items[0].quantity).to.eql(requestData.quantity);",
 							"});",
 							"pm.test(\"Response item has correct unit\", function () {",
 							"    var data = pm.response.json();",
@@ -696,18 +680,20 @@
 			"response": []
 		},
 		{
-			"name": "Remove Item 200",
+			"name": "Clear Cart 200",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
+							"var cartId = pm.request.url.path[0];",
+							"",
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
 							"pm.test(\"Response contains correct ID\", function () {",
 							"    var data = pm.response.json();",
-							"    pm.expect(data.cartId).to.eql(pm.variables.get(\"cartFound\"));",
+							"    pm.expect(data.cartId).to.eql(cartId);",
 							"});",
 							"pm.test(\"Response contains namespace\", function () {",
 							"    var data = pm.response.json();",
@@ -733,14 +719,57 @@
 							"    var data = pm.response.json();",
 							"    pm.expect(data.createdAt).to.not.empty",
 							"});",
-							"pm.test(\"Response does not contain items\", function () {",
+							"pm.test(\"Response contains createdAt\", function () {",
 							"    var data = pm.response.json();",
-							"    pm.expect(data.items).to.null",
+							"    pm.expect(data.createdAt).to.exist",
+							"});",
+							"pm.test(\"Response createdAt is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response cart is empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items).to.empty",
 							"});"
 						],
 						"type": "text/javascript"
 					}
 				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{cartExperienceUrl}}/:id/clear",
+					"host": [
+						"{{cartExperienceUrl}}"
+					],
+					"path": [
+						":id",
+						"clear"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{cartFound}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove Item 200",
+			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
@@ -759,6 +788,54 @@
 							"    }",
 							"}, function (err, res) {",
 							"    console.log(res);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var cartId = pm.request.url.path[0];",
+							"var removedProductId = pm.request.url.path[2];",
+							"",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response contains correct cart ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.cartId).to.eql(cartId);",
+							"});",
+							"pm.test(\"Response contains namespace\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.namespace).to.exist",
+							"});",
+							"pm.test(\"Response namespace is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.namespace).to.not.empty",
+							"});",
+							"pm.test(\"Response contains user\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.user).to.exist",
+							"});",
+							"pm.test(\"Response user is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.user).to.not.empty",
+							"});",
+							"pm.test(\"Response contains createdAt\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.createdAt).to.exist",
+							"});",
+							"pm.test(\"Response createdAt is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response does not contain removed item\", function () {",
+							"    var data = pm.response.json();",
+							"    var productFound = data.items.find(item => item.productId === removedProductId)",
+							"    pm.expect(productFound).to.undefined",
 							"});"
 						],
 						"type": "text/javascript"
