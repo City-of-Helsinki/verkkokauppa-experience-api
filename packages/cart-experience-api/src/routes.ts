@@ -24,7 +24,7 @@ router.delete('/:cartId/items/:productId', (req, res) =>
 )
 router.post('/:cartId/items', (req, res) => addItemController.execute(req, res))
 router.get('/:cartId/totals', (req, res) => totalsController.execute(req, res))
-router.get('/:cartId/clear', (req, res) => clearController.execute(req, res))
+router.put('/:cartId/clear', (req, res) => clearController.execute(req, res))
 router.get('/:cartId', (req, res) => getController.execute(req, res))
 router.post('/', (req, res) => createController.execute(req, res))
 

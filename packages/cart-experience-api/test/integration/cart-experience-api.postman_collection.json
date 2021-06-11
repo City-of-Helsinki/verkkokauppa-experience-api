@@ -746,7 +746,7 @@
 				}
 			],
 			"request": {
-				"method": "GET",
+				"method": "PUT",
 				"header": [],
 				"url": {
 					"raw": "{{cartExperienceUrl}}/:id/clear",
