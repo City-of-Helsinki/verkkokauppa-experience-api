@@ -21,7 +21,6 @@ export interface RecurringOrder {
     priceVat: string;
     priceTotal: string;
     quantity: number;
-    failureCount: number;
     currentBillingCycle: number;
     numberOfBillingCycles: number;
     paidThroughDate: Date;
