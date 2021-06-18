@@ -7,7 +7,7 @@ export const getPaymentRequestData = async (parameters: Order): Promise<string> 
     throw new Error('No payment API backend URL set')
   }
 
-  let paymentMethodUrl = "billing" // TODO: or online based on something?
+  let paymentMethodUrl = "online" // TODO: can be 'billing' later!
   const url = `${process.env.PAYMENT_BACKEND_URL}/payment/${paymentMethodUrl}/createFromOrder`
 
   // We use POST instead of GET since we need to send complex parameters,
