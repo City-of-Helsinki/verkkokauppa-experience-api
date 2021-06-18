@@ -14,14 +14,12 @@ export class AddItemController extends AbstractController {
     }
     const dto = new Data()
 
-    logger.debug(
-      `Add items to order ${orderId}`
-    )
+    logger.debug(`Add items to order ${orderId}`)
 
     try {
       dto.data = await addItemToOrder({
         orderId,
-        items
+        items,
       })
     } catch (error) {
       logger.error(error)
