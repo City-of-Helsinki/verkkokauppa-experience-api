@@ -14,6 +14,7 @@ COPY ./packages/core ./packages/core
 COPY ./packages/order-backend ./packages/order-backend
 COPY ./packages/price-backend ./packages/price-backend
 COPY ./packages/product-backend ./packages/product-backend
+COPY ./packages/payment-backend ./packages/payment-backend
 COPY ./packages/payment-experience-api ./packages/payment-experience-api
 
 # Chown to correct user
@@ -28,6 +29,7 @@ RUN yarn workspace @verkkokauppa/core install
 RUN yarn workspace @verkkokauppa/order-backend install
 RUN yarn workspace @verkkokauppa/price-backend install
 RUN yarn workspace @verkkokauppa/product-backend install
+RUN yarn workspace @verkkokauppa/payment-backend install
 RUN yarn workspace @verkkokauppa/payment-experience-api install
 
 # Create production build
@@ -36,6 +38,7 @@ RUN yarn workspace @verkkokauppa/core build
 RUN yarn workspace @verkkokauppa/order-backend build
 RUN yarn workspace @verkkokauppa/price-backend build
 RUN yarn workspace @verkkokauppa/product-backend build
+RUN yarn workspace @verkkokauppa/payment-backend build
 RUN yarn workspace @verkkokauppa/payment-experience-api build
 EXPOSE 8080
 CMD yarn workspace @verkkokauppa/payment-experience-api start -d
