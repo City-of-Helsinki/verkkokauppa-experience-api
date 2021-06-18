@@ -15,6 +15,9 @@
             "@verkkokauppa/price-backend": [
                 "../price-backend"
             ],
+            "@verkkokauppa/payment-backend": [
+                "../payment-backend"
+            ],
             "@verkkokauppa/core": [
                 "../core"
             ]
@@ -32,6 +35,9 @@
         },
         {
             "path": "../price-backend"
+        },
+        {
+            "path": "../payment-backend"
         },
         {
             "path": "../core"
