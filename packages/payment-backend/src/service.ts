@@ -4,7 +4,7 @@ import type {OrderCustomer, OrderItemRequest} from "./types"
 export const getPaymentRequestData = async (parameters: {
   namespace: string
   user: string
-  items: OrderItemRequest[] // TODO: ok?
+  items: OrderItemRequest[]
   customer: OrderCustomer
 }): Promise<string> => {
   const { namespace, user, customer, items } = parameters
@@ -12,7 +12,9 @@ export const getPaymentRequestData = async (parameters: {
     throw new Error('No payment API backend URL set')
   }
 
-  // TODO: ok?
+  // TODO: decide whether billing or online here?
+
+  // TODO: order and items
   const requestDto = {
     order: {
       namespace,
@@ -23,7 +25,7 @@ export const getPaymentRequestData = async (parameters: {
     },
     items,
   }
-  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/payment-request-data`
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/billing tai online/createFromOrder`
 
   // We use POST instead of GET since we need to send complex parameters,
   // although using GET would be semantically more correct.
@@ -32,5 +34,5 @@ export const getPaymentRequestData = async (parameters: {
     requestDto
   )
 
-  return `${process.env.PAYMENT_BACKEND_URL}?orderId=${result}` // TODO: ok?
+  return result // TODO: ok?
 }

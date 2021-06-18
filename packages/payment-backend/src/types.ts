@@ -6,6 +6,7 @@ export interface OrderItemRequest {
     rowPriceNet: number
     rowPriceVat: number
     rowPriceTotal: number
+    // TODO: recurring order item stuff
 }
 export type OrderItem = OrderItemRequest & {
     orderItemId: string
@@ -25,4 +26,5 @@ export interface Order {
     checkoutUrl?: string
     customer?: OrderCustomer
     status?: string
+    // TODO: type
 }

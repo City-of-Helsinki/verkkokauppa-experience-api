@@ -38,8 +38,8 @@ export class GetPaymentRequestDataController extends AbstractController {
       // TODO: mistä saadaan käyttäjän tiedot kuten namespace yms?
       // TODO: kasaa näistä olio joka lähetetään postina getin sijaan
 
-      // TODO: elä oikeestaan tässä lähetä vaan tee oma backend tälle paskalle
-      // TODO: lähetä joku perkeleen request => nimi? sisältö?
+      // TODO: elä oikeestaan tässä lähetä vaan tee oma backend tälle
+      // TODO: lähetä joku request => nimi? sisältö?
 
     } catch (error) {
       /*logger.error(error)
