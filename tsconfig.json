@@ -49,6 +49,12 @@
             "path": "packages/order-experience-api"
         },
         {
+            "path": "packages/payment-backend"
+        },
+        {
+            "path": "packages/payment-experience-api"
+        },
+        {
             "path": "packages/price-backend"
         },
         {
