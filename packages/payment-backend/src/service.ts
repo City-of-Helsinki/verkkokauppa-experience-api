@@ -1,14 +1,24 @@
 import axios from 'axios'
 import type {Order} from "./types"
 
-export const getPaymentRequestData = async (parameters: Order): Promise<string> => {
-  const order = parameters
+const PAYMENT_METHOD_MAP = new Map()
+    .set('invoice', 'billing')
+    .set('visma-pay', 'online')
+
+export const getPaymentRequestData = async (parameters: {order: Order, paymentMethod: string}): Promise<string> => {
+  const {order, paymentMethod}  = parameters
   if (!process.env.PAYMENT_BACKEND_URL) {
     throw new Error('No payment API backend URL set')
   }
 
-  let paymentMethodUrl = "online" // TODO: can be 'billing' later!
-  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/${paymentMethodUrl}/createFromOrder`
+  let paymentMethodPart = null
+  if (PAYMENT_METHOD_MAP.has(paymentMethod)) {
+    paymentMethodPart = PAYMENT_METHOD_MAP.get(paymentMethod)
+  } else {
+    throw new Error('Unsupported payment method given as parameter')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/${paymentMethodPart}/createFromOrder`
 
   // We use POST instead of GET since we need to send complex parameters,
   // although using GET would be semantically more correct.
