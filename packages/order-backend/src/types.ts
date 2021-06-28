@@ -6,6 +6,9 @@ export interface OrderItemRequest {
   rowPriceNet: number
   rowPriceVat: number
   rowPriceTotal: number
+  startDate?: Date
+  periodUnit?: string
+  periodFrequency?: number
 }
 
 export type OrderItem = OrderItemRequest & {
