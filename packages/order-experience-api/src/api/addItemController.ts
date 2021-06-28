@@ -1,6 +1,7 @@
 import { AbstractController, Data, logger } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
-import { addItemToOrder } from '@verkkokauppa/order-backend'
+import { addItemsToOrder } from '@verkkokauppa/order-backend'
+import { validateItems } from '../lib/validation'
 
 export class AddItemController extends AbstractController {
   protected async implementation(req: Request, res: Response): Promise<any> {
@@ -17,7 +18,10 @@ export class AddItemController extends AbstractController {
     logger.debug(`Add items to order ${orderId}`)
 
     try {
-      dto.data = await addItemToOrder({
+      if (!(await validateItems({ items }))) {
+        return this.clientError(res, 'Order items are not valid')
+      }
+      dto.data = await addItemsToOrder({
         orderId,
         items,
       })

@@ -97,7 +97,7 @@ export const setCustomerToOrder = async (p: {
   return transFormBackendOrder(result.data)
 }
 
-export const addItemToOrder = async (p: {
+export const addItemsToOrder = async (p: {
   orderId: string
   items: OrderItemRequest[]
 }): Promise<Order> => {

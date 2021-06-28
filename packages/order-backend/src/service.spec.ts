@@ -2,7 +2,7 @@ import {
   cancelOrder,
   createOrder,
   createOrderWithItems,
-  addItemToOrder,
+  addItemsToOrder,
   setCustomerToOrder,
   getOrder,
 } from './index'
@@ -151,7 +151,7 @@ describe('Test Add items to order', () => {
   it('Should throw error with no backend url set', async () => {
     process.env.ORDER_BACKEND_URL = ''
     await expect(
-      addItemToOrder({
+      addItemsToOrder({
         orderId: orderMock.orderId,
         items: [],
       })
@@ -179,7 +179,7 @@ describe('Test Add items to order', () => {
       ],
     }
     axiosMock.get.mockResolvedValue({ data: mockData })
-    const result = await addItemToOrder({
+    const result = await addItemsToOrder({
       orderId: mockData.order.orderId,
       items: [
         {
