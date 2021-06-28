@@ -12,8 +12,8 @@ export interface RecurringOrder {
   startDate: Date // TODO: date format ok x 6?
   nextDate: Date
   endDate: Date
-  pauseStartDate: Date
-  pauseEndDate: Date
+  pauseStartDate: Date // TODO: Not needed?
+  pauseEndDate: Date // TODO: Not needed?
   periodUnit: string
   periodFrequency: number
   product: Product

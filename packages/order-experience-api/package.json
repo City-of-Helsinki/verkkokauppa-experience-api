@@ -13,17 +13,18 @@
     "dev": "NODE_ENV=development nodemon src/index.ts"
   },
   "dependencies": {
-    "@verkkokauppa/order-backend": "^1.0.0",
     "@verkkokauppa/cart-backend": "^1.0.0",
-    "@verkkokauppa/product-backend": "^1.0.0",
-    "@verkkokauppa/price-backend": "^1.0.0",
     "@verkkokauppa/core": "^1.0.0",
+    "@verkkokauppa/order-backend": "^1.0.0",
+    "@verkkokauppa/price-backend": "^1.0.0",
+    "@verkkokauppa/product-backend": "^1.0.0",
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "winston": "^3.3.3"
+    "winston": "^3.3.3",
+    "yup": "^0.32.9"
   },
   "devDependencies": {
     "@types/compression": "^1.7.0",

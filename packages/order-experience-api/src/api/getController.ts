@@ -1,7 +1,5 @@
 import { AbstractController, Data, logger } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
-import { getProduct } from '@verkkokauppa/product-backend'
-import { getPrice } from '@verkkokauppa/price-backend'
 import { getOrder } from '@verkkokauppa/order-backend'
 
 export class GetController extends AbstractController {
@@ -15,30 +13,7 @@ export class GetController extends AbstractController {
     logger.debug(`Fetch order ${orderId}`)
 
     try {
-      const result = await getOrder({ orderId })
-      const items =
-        result.items && result.items.length > 0
-          ? await Promise.all(
-              result.items.map(async (item) => {
-                const product = await getProduct(item)
-                const price = await getPrice(item)
-                return {
-                  ...item,
-                  productName: product.name,
-                  rowPriceNet:
-                    parseFloat(price.original.netValue) * item.quantity,
-                  rowPriceVat:
-                    parseFloat(price.original.vatValue) * item.quantity,
-                  rowPriceTotal:
-                    parseFloat(price.original.grossValue) * item.quantity,
-                }
-              })
-            )
-          : []
-      dto.data = {
-        ...result,
-        items,
-      }
+      dto.data = await getOrder({ orderId })
     } catch (error) {
       logger.error(error)
       if (error.response.status === 404) {
