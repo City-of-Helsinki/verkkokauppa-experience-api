@@ -16,10 +16,8 @@ export const createRecurringOrder = async (
 ): Promise<IdWrapper> => {
   checkBackendUrlExists()
 
-  const url = `${
-    process.env.ORDER_BACKEND_URL + RECURRING_ORDER_API_ROOT
-  }/create`
-  const result = await axios.get<IdWrapper>(url, {
+  const url = `${process.env.ORDER_BACKEND_URL + RECURRING_ORDER_API_ROOT}`
+  const result = await axios.post<IdWrapper>(url, {
     params: p,
   })
 
@@ -31,12 +29,11 @@ export const createRecurringOrdersFromOrder = async (
 ): Promise<string[]> => {
   checkBackendUrlExists()
 
+  const { orderId } = p
   const url = `${
     process.env.ORDER_BACKEND_URL + RECURRING_ORDER_API_ROOT
   }/create-from-order`
-  const result = await axios.get<string[]>(url, {
-    params: p,
-  })
+  const result = await axios.post<string[]>(url, { orderId })
 
   return result.data
 }
@@ -63,7 +60,7 @@ export const searchActiveRecurringOrder = async (
   const url = `${
     process.env.ORDER_BACKEND_URL + RECURRING_ORDER_API_ROOT
   }/search/active`
-  const result = await axios.get<RecurringOrder[]>(url, {
+  const result = await axios.post<RecurringOrder[]>(url, {
     params: p,
   })
 
