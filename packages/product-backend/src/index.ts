@@ -1,4 +1,6 @@
 import axios from 'axios'
+import type { ProductAccounting } from './models/ProductAccounting'
+export type { ProductAccounting } from './models/ProductAccounting'
 
 type ProductBackendResponse = {
   id: string
@@ -21,3 +23,26 @@ export const getProduct = async (p: {
   })
   return result.data
 }
+
+type ProductAccountingBackendResponse = {
+  productId: string
+  vatCode: string
+  internalOrder: string
+  profitCenter: string
+  project: string
+  operationArea: string
+}
+
+export const createProductAccounting = async (pa: {
+  productAccounting: ProductAccounting
+}): Promise<ProductBackendResponse> => {
+
+  const { productAccounting } = pa;
+  if (!process.env.PRODUCT_BACKEND_URL) {
+    throw new Error('No product backend URL set')
+  }
+
+  const url = `${process.env.PRODUCT_BACKEND_URL}/product/` + productAccounting.productId + '/accounting';
+  const result = await axios.get<ProductAccountingBackendResponse>(url);
+  return result.data
+};
