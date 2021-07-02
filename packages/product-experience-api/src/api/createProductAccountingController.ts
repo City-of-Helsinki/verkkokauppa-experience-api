@@ -4,7 +4,7 @@ import { createProductAccounting, ProductAccounting} from '@verkkokauppa/product
 
 
 
-export class CreateController extends AbstractController {
+export class CreateProductAccountingController extends AbstractController {
   protected async implementation(req: Request, res: Response): Promise<any> {
     const productAccounting: ProductAccounting = req.body
     
