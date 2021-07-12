@@ -27,4 +27,17 @@ export interface Order {
     status?: string
 }
 
+export interface PaymentMethodListRequest {
+    namespace: string
+    totalPrice: number
+    currency?: string
+}
+
+export interface PaymentMethod {
+    name: string
+    code: number
+    group: string
+    img: string
+}
+
 // TODO: other fields (TBD)
