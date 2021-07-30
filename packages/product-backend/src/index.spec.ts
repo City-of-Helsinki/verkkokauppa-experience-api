@@ -39,9 +39,9 @@ describe('Test Create Accounting info', () => {
   })
   it('Should create accouting info correctly with backend url set', async () => {
     process.env.PRODUCT_BACKEND_URL = 'test.dev.hel'
-    const mockData = Object.assign({}, productAccounting)
+    const mockData = { ...productAccounting }
     axiosMock.post.mockResolvedValue({ data: productAccounting })
     const result = await createProductAccounting({ productAccounting })
-    await expect(result).toBe(mockData)
+    await expect(result).toStrictEqual(mockData)
   })
 })
