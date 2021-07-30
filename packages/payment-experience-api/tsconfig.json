@@ -1,0 +1,34 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        "rootDir": "./src",
+        "outDir": "./dist",
+        "composite": true,
+        "baseUrl": "./",
+        "paths": {
+            "@verkkokauppa/order-backend": [
+                "../order-backend"
+            ],
+            "@verkkokauppa/payment-backend": [
+                "../payment-backend"
+            ],
+            "@verkkokauppa/core": [
+                "../core"
+            ]
+        }
+    },
+    "include": [
+        "src/**/*"
+    ],
+    "references": [
+        {
+            "path": "../order-backend"
+        },
+        {
+            "path": "../payment-backend"
+        },
+        {
+            "path": "../core"
+        }
+    ]
+}
