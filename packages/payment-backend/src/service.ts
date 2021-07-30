@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { Order } from './types'
+import type { Order, PaymentMethod, PaymentMethodListRequest } from "./types"
 
 const PAYMENT_METHOD_MAP = new Map()
   .set('invoice', 'billing')
@@ -27,5 +27,21 @@ export const createPaymentFromOrder = async (parameters: {
   // although using GET would be semantically more correct.
   const result = await axios.post<string>(url, order)
 
+  return result.data
+}
+
+export const getPaymentMethodList = async (parameters: {request: PaymentMethodListRequest}): Promise<PaymentMethod[]> => {
+  const {request}  = parameters
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/online/get-payment-method-list`
+
+  // We use POST instead of GET since we need to send complex parameters,
+  // although using GET would be semantically more correct.
+  const result = await axios.post<PaymentMethod[]>(
+      url, request
+  )
   return result.data
 }
