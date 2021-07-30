@@ -45,6 +45,9 @@ export const createProductAccounting = async (p: {
     `${process.env.PRODUCT_BACKEND_URL}/product/` +
     productAccounting.productId +
     '/accounting'
-  const result = await axios.get<ProductAccountingBackendResponse>(url)
+  const result = await axios.post<ProductAccountingBackendResponse>(
+    url,
+    productAccounting
+  )
   return result.data
 }
