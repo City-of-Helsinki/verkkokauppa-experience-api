@@ -9,12 +9,6 @@
             "@verkkokauppa/order-backend": [
                 "../order-backend"
             ],
-            "@verkkokauppa/product-backend": [
-                "../product-backend"
-            ],
-            "@verkkokauppa/price-backend": [
-                "../price-backend"
-            ],
             "@verkkokauppa/payment-backend": [
                 "../payment-backend"
             ],
@@ -29,12 +23,6 @@
     "references": [
         {
             "path": "../order-backend"
-        },
-        {
-            "path": "../product-backend"
-        },
-        {
-            "path": "../price-backend"
         },
         {
             "path": "../payment-backend"
