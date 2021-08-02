@@ -1,13 +1,15 @@
 import { AbstractController, Data, logger } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
-import { createProductAccounting, ProductAccounting} from '@verkkokauppa/product-backend'
-
-
+import {
+  createProductAccounting,
+  ProductAccounting,
+} from '@verkkokauppa/product-backend'
 
 export class CreateProductAccountingController extends AbstractController {
   protected async implementation(req: Request, res: Response): Promise<any> {
-    const productAccounting: ProductAccounting = req.body
-    
+    const { productId } = req.params
+    const productAccounting: ProductAccounting = { productId, ...req.body }
+
     if (productAccounting.productId === undefined) {
       return this.clientError(res, 'Product id is not specified')
     }
