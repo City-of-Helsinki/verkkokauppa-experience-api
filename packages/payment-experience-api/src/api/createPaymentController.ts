@@ -8,7 +8,8 @@ export class CreatePaymentController extends AbstractController {
     request: Request,
     result: Response
   ): Promise<any> {
-    const { orderId, paymentMethod } = request.params
+    const { orderId } = request.params
+    const { paymentMethod } = request.body
     if (orderId === undefined) {
       return this.clientError(result, 'Order ID not specified')
     }
