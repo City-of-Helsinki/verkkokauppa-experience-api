@@ -4,6 +4,7 @@ import { createOrderWithItems } from '@verkkokauppa/order-backend'
 import { getCart } from '@verkkokauppa/cart-backend'
 import { getPrice } from '@verkkokauppa/price-backend'
 import { getProduct } from '@verkkokauppa/product-backend'
+import { calculateTotalsFromItems } from '../lib/totals'
 
 export class CartToOrder extends AbstractController {
   protected async implementation(req: Request, res: Response): Promise<any> {
@@ -25,29 +26,32 @@ export class CartToOrder extends AbstractController {
 
     try {
       const cart = await getCart({ cartId })
+      const items = await Promise.all(
+        cart.items.map(async (cartItem) => {
+          //TODO: Remove calculation logic once totals are stored in cart
+          const product = await getProduct(cartItem)
+          const price = await getPrice(cartItem)
+          return {
+            productId: cartItem.productId,
+            productName: product.name,
+            quantity: cartItem.quantity,
+            unit: cartItem.unit,
+            rowPriceNet:
+              parseFloat(price.original.netValue) * cartItem.quantity,
+            rowPriceVat:
+              parseFloat(price.original.vatValue) * cartItem.quantity,
+            rowPriceTotal:
+              parseFloat(price.original.grossValue) * cartItem.quantity,
+          }
+        })
+      )
+
       dto.data = await createOrderWithItems({
         namespace: cart.namespace,
         user: cart.user || '',
         customer,
-        items: await Promise.all(
-          cart.items.map(async (cartItem) => {
-            //TODO: Remove calculation logic once totals are stored in cart
-            const product = await getProduct(cartItem)
-            const price = await getPrice(cartItem)
-            return {
-              productId: cartItem.productId,
-              productName: product.name,
-              quantity: cartItem.quantity,
-              unit: cartItem.unit,
-              rowPriceNet:
-                parseFloat(price.original.netValue) * cartItem.quantity,
-              rowPriceVat:
-                parseFloat(price.original.vatValue) * cartItem.quantity,
-              rowPriceTotal:
-                parseFloat(price.original.grossValue) * cartItem.quantity,
-            }
-          })
-        ),
+        items,
+        ...calculateTotalsFromItems({ items }),
       })
     } catch (error) {
       logger.error(error)

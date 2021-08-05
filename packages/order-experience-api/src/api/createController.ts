@@ -2,6 +2,7 @@ import { AbstractController, Data, logger } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
 import { createOrder, createOrderWithItems } from '@verkkokauppa/order-backend'
 import { validateItems } from '../lib/validation'
+import { calculateTotalsFromItems } from '../lib/totals'
 
 export class CreateController extends AbstractController {
   protected async implementation(req: Request, res: Response): Promise<any> {
@@ -52,6 +53,7 @@ export class CreateController extends AbstractController {
         user,
         items,
         customer,
+        ...calculateTotalsFromItems({ items }),
       })
     } catch (error) {
       logger.error(error)

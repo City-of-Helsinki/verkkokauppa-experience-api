@@ -33,10 +33,13 @@ export const createOrder = async (p: {
 export const createOrderWithItems = async (p: {
   namespace: string
   user: string
+  priceNet: number
+  priceVat: number
+  priceTotal: number
   items: OrderItemRequest[]
   customer: OrderCustomer
 }): Promise<Order> => {
-  const { namespace, user, customer, items } = p
+  const { namespace, user, customer, items, priceNet, priceVat, priceTotal } = p
   if (!process.env.ORDER_BACKEND_URL) {
     throw new Error('No order backend URL set')
   }
@@ -47,6 +50,9 @@ export const createOrderWithItems = async (p: {
       customerFirstName: customer?.firstName,
       customerLastName: customer?.lastName,
       customerEmail: customer?.email,
+      priceNet: priceNet.toString(),
+      priceVat: priceVat.toString(),
+      priceTotal: priceTotal.toString(),
     },
     items,
   }
@@ -55,10 +61,7 @@ export const createOrderWithItems = async (p: {
     url,
     requestDto
   )
-  return {
-    ...transFormBackendOrder(result.data),
-    checkoutUrl: `${process.env.CHECKOUT_BASE_URL}?orderId=${result.data.order.orderId}`,
-  }
+  return transFormBackendOrder(result.data)
 }
 
 export const cancelOrder = async (p: { orderId: string }): Promise<Order> => {
@@ -157,5 +160,28 @@ const transFormBackendOrder = (p: OrderWithItemsBackendResponse): Order => {
     items,
     customer,
     status,
+    checkoutUrl: `${process.env.CHECKOUT_BASE_URL}?orderId=${orderId}`,
   }
+}
+
+export const setOrderTotals = async (p: {
+  orderId: string
+  priceNet: string | number
+  priceVat: string | number
+  priceTotal: string | number
+}): Promise<Order> => {
+  const { orderId, priceNet, priceVat, priceTotal } = p
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+  const url = `${process.env.ORDER_BACKEND_URL}/order/setTotals`
+  const result = await axios.get<OrderWithItemsBackendResponse>(url, {
+    params: {
+      orderId,
+      priceNet: priceNet.toString(),
+      priceVat: priceVat.toString(),
+      priceTotal: priceTotal.toString(),
+    },
+  })
+  return transFormBackendOrder(result.data)
 }

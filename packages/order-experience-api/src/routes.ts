@@ -10,6 +10,7 @@ import { GetRecurringOrderController } from './api/getRecurringOrder'
 import { SearchActiveRecurringOrderController } from './api/searchActiveRecurringOrder'
 import { CreateRecurringOrderController } from './api/createRecurringOrder'
 import { CreateRecurringOrdersFromOrderController } from './api/createRecurringOrdersFromOrder'
+import { CalculateTotalsController } from './api/calculateTotals'
 
 const createController = new CreateController()
 const cartToOrderController = new CartToOrder()
@@ -21,6 +22,7 @@ const getRecurringOrderCtrl = new GetRecurringOrderController()
 const searchActiveRecurringOrderCtrl = new SearchActiveRecurringOrderController()
 const createRecurringOrderCtrl = new CreateRecurringOrderController()
 const createRecurringOrdersFromOrderCtrl = new CreateRecurringOrdersFromOrderController()
+const calculateTotalsController = new CalculateTotalsController()
 
 const router = Router()
 router.post('/', (req, res) => createController.execute(req, res))
@@ -36,6 +38,9 @@ router.post('/:orderId/items', (req, res) =>
 )
 router.post('/:orderId/cancel', (req, res) =>
   cancelController.execute(req, res)
+)
+router.post('/:orderId/calculateTotals', (req, res) =>
+  calculateTotalsController.execute(req, res)
 )
 router.post('/convert/:cartId', (req, res) =>
   cartToOrderController.execute(req, res)
