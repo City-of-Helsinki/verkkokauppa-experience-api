@@ -27,6 +27,9 @@ export interface Order {
   user: string
   createdAt: string
   items: OrderItem[]
+  priceNet?: number
+  priceVat?: number
+  priceTotal?: number
   checkoutUrl?: string
   customer?: OrderCustomer
   status?: string
