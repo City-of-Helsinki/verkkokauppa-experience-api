@@ -155,7 +155,7 @@ const transFormBackendOrder = (p: OrderWithItemsBackendResponse): Order => {
       email: customerEmail,
     }
   }
-  return {
+  let data: any = {
     orderId,
     namespace,
     user,
@@ -163,11 +163,17 @@ const transFormBackendOrder = (p: OrderWithItemsBackendResponse): Order => {
     items,
     customer,
     status,
-    priceNet: parseFloat(priceNet),
-    priceVat: parseFloat(priceVat),
-    priceTotal: parseFloat(priceTotal),
     checkoutUrl: `${process.env.CHECKOUT_BASE_URL}?orderId=${orderId}`,
   }
+  if (priceNet && priceVat && priceTotal) {
+    data = {
+      ...data,
+      priceNet: parseFloat(priceNet),
+      priceVat: parseFloat(priceVat),
+      priceTotal: parseFloat(priceTotal),
+    }
+  }
+  return data
 }
 
 export const setOrderTotals = async (p: {
