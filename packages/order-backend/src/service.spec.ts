@@ -87,9 +87,9 @@ describe('Test Create Order', () => {
     const result = await createOrderWithItems({
       namespace: 'testNameSpace',
       user: 'test@test.dev.hel',
-      priceNet: 100,
-      priceVat: 24,
-      priceTotal: 124,
+      priceNet: '100',
+      priceVat: '24',
+      priceTotal: '124',
       items: [
         {
           productId: '30a245ed-5fca-4fcf-8b2a-cdf1ce6fca0d',

@@ -19,8 +19,9 @@ export class GetPaymentMethodListController extends AbstractController {
       dto.data = await getPaymentMethodList({
         request: {
           namespace: order.namespace,
-          totalPrice: calculateTotalPrice(order.items), // TODO: we have to calculate totals here?!
-          // TODO: currency, where to get from?
+          totalPrice: order.priceTotal
+            ? parseFloat(order.priceTotal)
+            : calculateTotalPrice(order.items),
         },
       })
     } catch (error) {
@@ -35,7 +36,7 @@ export class GetPaymentMethodListController extends AbstractController {
 const calculateTotalPrice = (items: OrderItem[]): number => {
   let totalPrice = 0
   for (const item of items) {
-    totalPrice += item.rowPriceTotal
+    totalPrice += parseFloat(item.rowPriceTotal)
   }
   return totalPrice
 }

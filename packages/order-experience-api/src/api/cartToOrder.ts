@@ -36,12 +36,15 @@ export class CartToOrder extends AbstractController {
             productName: product.name,
             quantity: cartItem.quantity,
             unit: cartItem.unit,
-            rowPriceNet:
-              parseFloat(price.original.netValue) * cartItem.quantity,
-            rowPriceVat:
-              parseFloat(price.original.vatValue) * cartItem.quantity,
-            rowPriceTotal:
-              parseFloat(price.original.grossValue) * cartItem.quantity,
+            rowPriceNet: (
+              parseFloat(price.original.netValue) * cartItem.quantity
+            ).toString(),
+            rowPriceVat: (
+              parseFloat(price.original.vatValue) * cartItem.quantity
+            ).toString(),
+            rowPriceTotal: (
+              parseFloat(price.original.grossValue) * cartItem.quantity
+            ).toString(),
           }
         })
       )
