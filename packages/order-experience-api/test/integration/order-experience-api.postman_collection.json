@@ -142,7 +142,7 @@
 							"});",
 							"pm.test(\"Response does not contain items\", function () {",
 							"    var data = pm.response.json();",
-							"    pm.expect(data.items).to.empty",
+							"    pm.expect(data.items).to.not.contain",
 							"});"
 						],
 						"type": "text/javascript"
