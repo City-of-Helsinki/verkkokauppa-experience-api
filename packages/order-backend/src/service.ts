@@ -141,6 +141,9 @@ const transFormBackendOrder = (p: OrderWithItemsBackendResponse): Order => {
       customerFirstName,
       customerLastName,
       status,
+      priceNet,
+      priceVat,
+      priceTotal,
     },
     items,
   } = p
@@ -160,6 +163,9 @@ const transFormBackendOrder = (p: OrderWithItemsBackendResponse): Order => {
     items,
     customer,
     status,
+    priceNet: parseFloat(priceNet),
+    priceVat: parseFloat(priceVat),
+    priceTotal: parseFloat(priceTotal),
     checkoutUrl: `${process.env.CHECKOUT_BASE_URL}?orderId=${orderId}`,
   }
 }
