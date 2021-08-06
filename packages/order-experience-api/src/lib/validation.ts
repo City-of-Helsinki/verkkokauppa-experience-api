@@ -9,9 +9,9 @@ export const validateItems = (p: {
     productName: yup.string().required(),
     quantity: yup.number().required(),
     unit: yup.string().required(),
-    rowPriceNet: yup.number().required(),
-    rowPriceVat: yup.number().required(),
-    rowPriceTotal: yup.number().required(),
+    rowPriceNet: yup.string().required(),
+    rowPriceVat: yup.string().required(),
+    rowPriceTotal: yup.string().required(),
   })
   const schema = yup.array().of(itemSchema)
   const { items } = p

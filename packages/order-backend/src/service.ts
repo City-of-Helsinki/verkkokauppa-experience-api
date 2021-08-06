@@ -33,9 +33,9 @@ export const createOrder = async (p: {
 export const createOrderWithItems = async (p: {
   namespace: string
   user: string
-  priceNet: number
-  priceVat: number
-  priceTotal: number
+  priceNet: string
+  priceVat: string
+  priceTotal: string
   items: OrderItemRequest[]
   customer: OrderCustomer
 }): Promise<Order> => {

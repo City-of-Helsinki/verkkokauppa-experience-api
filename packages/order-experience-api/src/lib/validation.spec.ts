@@ -8,9 +8,9 @@ describe('Test Order Validations', () => {
         productName: 'Name',
         quantity: 1,
         unit: 'pcs',
-        rowPriceNet: 100,
-        rowPriceVat: 24,
-        rowPriceTotal: 124,
+        rowPriceNet: '100',
+        rowPriceVat: '24',
+        rowPriceTotal: '124',
       },
     ]
     const result = await validateItems({ items })

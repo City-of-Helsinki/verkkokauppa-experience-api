@@ -1,43 +1,49 @@
 export interface OrderItemRequest {
-    productId: string
-    productName: string
-    quantity: number
-    unit: string
-    rowPriceNet: number
-    rowPriceVat: number
-    rowPriceTotal: number
+  productId: string
+  productName: string
+  quantity: number
+  unit: string
+  rowPriceNet: string
+  rowPriceVat: string
+  rowPriceTotal: string
 }
+
 export type OrderItem = OrderItemRequest & {
-    orderItemId: string
-    orderId: string
+  orderItemId: string
+  orderId: string
 }
+
 export interface OrderCustomer {
-    firstName: string
-    lastName: string
-    email: string
+  firstName: string
+  lastName: string
+  email: string
 }
+
 export interface Order {
-    orderId: string
-    namespace: string
-    user: string
-    createdAt: string
-    items: OrderItem[]
-    checkoutUrl?: string
-    customer?: OrderCustomer
-    status?: string
+  orderId: string
+  namespace: string
+  user: string
+  createdAt: string
+  items: OrderItem[]
+  checkoutUrl?: string
+  customer?: OrderCustomer
+  status?: string
+  priceNet?: string
+  priceVat?: string
+  priceTotal?: string
 }
 
 export interface PaymentMethodListRequest {
-    namespace: string
-    totalPrice: number
-    currency?: string
+  namespace: string
+  totalPrice: number
+  currency?: string
 }
 
 export interface PaymentMethod {
-    name: string
-    code: number
-    group: string
-    img: string
+  name: string
+  code: number
+  group: string
+  img: string
 }
 
 // TODO: other fields (TBD)
