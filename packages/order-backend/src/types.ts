@@ -47,6 +47,10 @@ export interface OrderBackendResponse {
 }
 
 export type OrderWithItemsBackendResponse = {
-  order: OrderBackendResponse
+  order: OrderBackendResponse & {
+    priceNet: string
+    priceVat: string
+    priceTotal: string
+  }
   items: OrderItem[]
 }
