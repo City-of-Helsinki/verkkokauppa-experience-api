@@ -38,7 +38,7 @@ export const getPaymentMethodList = async (parameters: {
     throw new Error('No payment API backend URL set')
   }
 
-  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/online/get-payment-method-list`
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/online/get-available-methods`
 
   // We use POST instead of GET since we need to send complex parameters,
   // although using GET would be semantically more correct.
