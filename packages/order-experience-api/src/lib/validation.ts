@@ -1,4 +1,7 @@
-import type { OrderItemRequest } from '@verkkokauppa/order-backend'
+import type {
+  OrderCustomer,
+  OrderItemRequest,
+} from '@verkkokauppa/order-backend'
 import * as yup from 'yup'
 
 export const validateItems = (p: {
@@ -16,4 +19,17 @@ export const validateItems = (p: {
   const schema = yup.array().of(itemSchema)
   const { items } = p
   return schema.isValid(items)
+}
+
+export const validateCustomer = (p: OrderCustomer): Promise<boolean> => {
+  const customerSchema = yup.object().shape({
+    firstName: yup.string().required(),
+    lastName: yup.string().required(),
+    email: yup.string().email().required(),
+    phone: yup
+      .string()
+      .matches(/^\+(?:[0-9] ?){6,14}[0-9]$/)
+      .required(),
+  })
+  return customerSchema.isValid(p)
 }

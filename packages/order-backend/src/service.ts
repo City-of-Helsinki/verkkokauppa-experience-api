@@ -49,6 +49,7 @@ export const createOrderWithItems = async (p: {
       user,
       customerFirstName: customer?.firstName,
       customerLastName: customer?.lastName,
+      customerPhone: customer?.phone,
       customerEmail: customer?.email,
       priceNet: priceNet.toString(),
       priceVat: priceVat.toString(),
@@ -92,6 +93,7 @@ export const setCustomerToOrder = async (p: {
       customerEmail: customer.email,
       customerFirstName: customer.firstName,
       customerLastName: customer.lastName,
+      customerPhone: customer.phone,
     },
     paramsSerializer: function (params) {
       return stringify(params, { arrayFormat: 'brackets' })
@@ -140,6 +142,7 @@ const transFormBackendOrder = (p: OrderWithItemsBackendResponse): Order => {
       customerEmail,
       customerFirstName,
       customerLastName,
+      customerPhone,
       status,
       priceNet,
       priceVat,
@@ -153,6 +156,7 @@ const transFormBackendOrder = (p: OrderWithItemsBackendResponse): Order => {
       firstName: customerFirstName,
       lastName: customerLastName,
       email: customerEmail,
+      phone: customerPhone,
     }
   }
   let data: any = {

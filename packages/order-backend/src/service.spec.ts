@@ -23,6 +23,7 @@ const orderBackendCustomerMock = {
   customerFirstName: 'Customer',
   customerLastName: 'Name',
   customerEmail: 'test@test.dev.hel',
+  customerPhone: '+358401231233',
 }
 
 const orderCustomerMock = {
@@ -30,6 +31,7 @@ const orderCustomerMock = {
     firstName: 'Customer',
     lastName: 'Name',
     email: 'test@test.dev.hel',
+    phone: '+358401231233',
   },
 }
 
