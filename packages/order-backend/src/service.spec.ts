@@ -65,6 +65,9 @@ describe('Test Create Order', () => {
       order: {
         ...orderMock,
         ...orderBackendCustomerMock,
+        priceNet: '100',
+        priceVat: '24',
+        priceTotal: '124',
       },
       items: [
         {
@@ -103,6 +106,9 @@ describe('Test Create Order', () => {
     expect(result).toEqual({
       ...orderMock,
       ...orderCustomerMock,
+      priceNet: 100,
+      priceVat: 24,
+      priceTotal: 124,
       items: mockData.items,
       checkoutUrl: `https://checkout.dev.hel?orderId=${mockData.order.orderId}`,
     })
@@ -183,7 +189,7 @@ describe('Test Add items to order', () => {
         },
       ],
     }
-    axiosMock.get.mockResolvedValue({ data: mockData })
+    axiosMock.post.mockResolvedValue({ data: mockData })
     const result = await addItemsToOrder({
       orderId: mockData.order.orderId,
       items: [
@@ -344,7 +350,7 @@ describe('Test Calculate Totals for Order', () => {
       })
     ).rejects.toThrow('No order backend URL set')
   })
-  it('Should set totals for order correctly with backend url set', async () => {
+  it('Should set zero totals for order correctly with backend url set', async () => {
     process.env.ORDER_BACKEND_URL = 'test.dev.hel'
     process.env.CHECKOUT_BASE_URL = 'https://checkout.dev.hel'
     const mockData = {
@@ -356,7 +362,7 @@ describe('Test Calculate Totals for Order', () => {
       },
       items: [],
     }
-    axiosMock.get.mockResolvedValue({ data: mockData })
+    axiosMock.post.mockResolvedValue({ data: mockData })
     const result = await setOrderTotals({
       orderId: mockData.order.orderId,
       priceNet: 0,
@@ -368,6 +374,9 @@ describe('Test Calculate Totals for Order', () => {
       items: [],
       customer: undefined,
       status: undefined,
+      priceNet: 0,
+      priceVat: 0,
+      priceTotal: 0,
       checkoutUrl: `${process.env.CHECKOUT_BASE_URL}?orderId=${mockData.order.orderId}`,
     })
   })
@@ -396,7 +405,7 @@ describe('Test Calculate Totals for Order', () => {
         },
       ],
     }
-    axiosMock.get.mockResolvedValue({ data: mockData })
+    axiosMock.post.mockResolvedValue({ data: mockData })
     const result = await setOrderTotals({
       orderId: orderMock.orderId,
       priceNet: 100,
@@ -407,6 +416,9 @@ describe('Test Calculate Totals for Order', () => {
       ...orderMock,
       ...orderCustomerMock,
       items: mockData.items,
+      priceNet: 100,
+      priceVat: 24,
+      priceTotal: 124,
       checkoutUrl: `https://checkout.dev.hel?orderId=${mockData.order.orderId}`,
     })
   })
