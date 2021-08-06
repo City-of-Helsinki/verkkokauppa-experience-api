@@ -175,7 +175,7 @@ export const setOrderTotals = async (p: {
     throw new Error('No order backend URL set')
   }
   const url = `${process.env.ORDER_BACKEND_URL}/order/setTotals`
-  const result = await axios.get<OrderWithItemsBackendResponse>(url, {
+  const result = await axios.post<OrderWithItemsBackendResponse>(url, null, {
     params: {
       orderId,
       priceNet: priceNet.toString(),
