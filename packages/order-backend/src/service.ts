@@ -168,9 +168,9 @@ const transFormBackendOrder = (p: OrderWithItemsBackendResponse): Order => {
   if (priceNet && priceVat && priceTotal) {
     data = {
       ...data,
-      priceNet: parseFloat(priceNet),
-      priceVat: parseFloat(priceVat),
-      priceTotal: parseFloat(priceTotal),
+      priceNet,
+      priceVat,
+      priceTotal,
     }
   }
   return data

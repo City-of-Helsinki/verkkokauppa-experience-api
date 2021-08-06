@@ -3,9 +3,9 @@ export interface OrderItemRequest {
   productName: string
   quantity: number
   unit: string
-  rowPriceNet: number
-  rowPriceVat: number
-  rowPriceTotal: number
+  rowPriceNet: string
+  rowPriceVat: string
+  rowPriceTotal: string
   startDate?: Date
   periodUnit?: string
   periodFrequency?: number
@@ -27,9 +27,9 @@ export interface Order {
   user: string
   createdAt: string
   items: OrderItem[]
-  priceNet?: number
-  priceVat?: number
-  priceTotal?: number
+  priceNet?: string
+  priceVat?: string
+  priceTotal?: string
   checkoutUrl?: string
   customer?: OrderCustomer
   status?: string
