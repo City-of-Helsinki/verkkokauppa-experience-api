@@ -20,6 +20,7 @@ export interface OrderCustomer {
   firstName: string
   lastName: string
   email: string
+  phone: string
 }
 export interface Order {
   orderId: string
@@ -43,6 +44,7 @@ export interface OrderBackendResponse {
   customerFirstName?: string
   customerLastName?: string
   customerEmail?: string
+  customerPhone?: string
   status?: string
 }
 

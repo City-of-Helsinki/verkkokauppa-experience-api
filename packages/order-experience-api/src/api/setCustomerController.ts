@@ -1,6 +1,7 @@
 import { AbstractController, Data, logger } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
 import { setCustomerToOrder } from '@verkkokauppa/order-backend'
+import { validateCustomer } from '../lib/validation'
 
 export class SetCustomerController extends AbstractController {
   protected async implementation(req: Request, res: Response): Promise<any> {
@@ -10,19 +11,13 @@ export class SetCustomerController extends AbstractController {
     if (orderId === undefined) {
       return this.clientError(res, 'Order ID not specified')
     }
-    if (customer.firstName === undefined) {
-      return this.clientError(res, 'Customer firstname not specified')
-    }
-    if (customer.lastName === undefined) {
-      return this.clientError(res, 'Customer lastname not specified')
-    }
-    if (customer.email === undefined) {
-      return this.clientError(res, 'Customer email not specified')
+    if (!(await validateCustomer(customer))) {
+      return this.clientError(res, 'Required fields are missing for customer')
     }
     const dto = new Data()
 
     logger.debug(
-      `Setting Customer with name: ${customer.firstName} ${customer.lastName} and email ${customer.email} to order ${orderId}`
+      `Setting Customer with name: ${customer.firstName} ${customer.lastName}, email ${customer.email} and phone ${customer.phone} to order ${orderId}`
     )
 
     try {
