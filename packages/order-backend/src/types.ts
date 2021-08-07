@@ -22,6 +22,8 @@ export interface OrderCustomer {
   email: string
   phone: string
 }
+export type OrderType = 'subscription' | 'order'
+
 export interface Order {
   orderId: string
   namespace: string
@@ -34,6 +36,7 @@ export interface Order {
   checkoutUrl?: string
   customer?: OrderCustomer
   status?: string
+  type: OrderType
 }
 
 export interface OrderBackendResponse {
@@ -46,6 +49,7 @@ export interface OrderBackendResponse {
   customerEmail?: string
   customerPhone?: string
   status?: string
+  type: OrderType
 }
 
 export type OrderWithItemsBackendResponse = {

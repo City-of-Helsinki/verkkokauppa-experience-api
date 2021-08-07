@@ -17,6 +17,7 @@ const orderMock = {
   namespace: 'testNameSpace',
   user: 'test@test.dev.hel',
   createdAt: '1619157868',
+  type: 'order',
 }
 
 const orderBackendCustomerMock = {
