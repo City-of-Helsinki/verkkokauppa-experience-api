@@ -4,6 +4,9 @@ import type { Order, PaymentMethod, PaymentMethodListRequest } from './types'
 const PAYMENT_METHOD_MAP = new Map()
   .set('invoice', 'billing')
   .set('visma-pay', 'online')
+  .set('nordea', 'online')
+  .set('osuuspankki', 'online')
+  .set('creditcards', 'online')
 
 export const createPaymentFromOrder = async (parameters: {
   order: Order
