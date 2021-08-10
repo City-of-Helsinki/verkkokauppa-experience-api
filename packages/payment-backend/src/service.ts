@@ -30,7 +30,7 @@ export const createPaymentFromOrder = async (parameters: {
   const result = await axios.post<string>(url, {
     paymentMethod,
     language,
-    order: { order },
+    order: { order, items: order.items },
   })
 
   return result.data
