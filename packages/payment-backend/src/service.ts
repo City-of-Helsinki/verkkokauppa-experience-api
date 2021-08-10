@@ -11,8 +11,9 @@ const PAYMENT_METHOD_MAP = new Map()
 export const createPaymentFromOrder = async (parameters: {
   order: Order
   paymentMethod: string
+  language: string
 }): Promise<string> => {
-  const { order, paymentMethod } = parameters
+  const { order, paymentMethod, language } = parameters
   if (!process.env.PAYMENT_BACKEND_URL) {
     throw new Error('No payment API backend URL set')
   }
@@ -26,9 +27,11 @@ export const createPaymentFromOrder = async (parameters: {
 
   const url = `${process.env.PAYMENT_BACKEND_URL}/payment/${paymentMethodPart}/createFromOrder`
 
-  // We use POST instead of GET since we need to send complex parameters,
-  // although using GET would be semantically more correct.
-  const result = await axios.post<string>(url, order)
+  const result = await axios.post<string>(url, {
+    paymentMethod,
+    language,
+    order: { order },
+  })
 
   return result.data
 }
