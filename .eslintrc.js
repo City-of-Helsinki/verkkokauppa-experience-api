@@ -28,8 +28,13 @@ module.exports = {
     semi: ['error', 'never'],
     '@typescript-eslint/semi': ['error', 'never'],
     '@typescript-eslint/indent': 'off',
-    'prettier/prettier': 'error',
     'arrow-body-style': 'off',
     'prefer-arrow-callback': 'off',
+    'prettier/prettier': [
+      'error',
+      {
+        'endOfLine': 'auto',
+      }
+    ]
   },
 }
