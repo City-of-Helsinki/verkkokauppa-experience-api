@@ -9,6 +9,9 @@ export interface OrderItemRequest {
   startDate?: Date
   periodUnit?: string
   periodFrequency?: number
+  priceNet: string
+  priceGross: string
+  vatPercentage: string
 }
 
 export type OrderItem = OrderItemRequest & {
