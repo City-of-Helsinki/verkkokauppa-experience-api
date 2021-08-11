@@ -47,6 +47,7 @@ export class CartToOrder extends AbstractController {
             ).toString(),
             priceNet: price.original.netValue,
             priceGross: price.original.grossValue,
+            priceVat: price.original.vatValue,
             vatPercentage: price.original.vatPercentage,
           }
         })
