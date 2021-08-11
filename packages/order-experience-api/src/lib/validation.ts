@@ -15,6 +15,7 @@ export const itemsSchema = yup.array().of(
     rowPriceTotal: yup.string().required(),
     priceNet: yup.string().required(),
     priceGross: yup.string().required(),
+    priceVat: yup.string().required(),
     vatPercentage: yup.string().required(),
   })
 )

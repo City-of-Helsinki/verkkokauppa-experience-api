@@ -11,6 +11,7 @@ export interface OrderItemRequest {
   periodFrequency?: number
   priceNet: string
   priceGross: string
+  priceVat: string
   vatPercentage: string
 }
 

@@ -17,7 +17,8 @@ describe('Test Order Validations', () => {
         rowPriceVat: '24',
         rowPriceTotal: '124',
         priceNet: '50',
-        priceGross: '64',
+        priceGross: '62',
+        priceVat: '12',
         vatPercentage: '24',
       },
     ]
@@ -35,6 +36,7 @@ describe('Test Order Validations', () => {
       '[0].rowPriceTotal is a required field',
       '[0].priceNet is a required field',
       '[0].priceGross is a required field',
+      '[0].priceVat is a required field',
       '[0].vatPercentage is a required field',
     ]
 
