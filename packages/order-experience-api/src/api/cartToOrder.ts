@@ -45,6 +45,10 @@ export class CartToOrder extends AbstractController {
             rowPriceTotal: (
               parseFloat(price.original.grossValue) * cartItem.quantity
             ).toString(),
+            priceNet: price.original.netValue,
+            priceGross: price.original.grossValue,
+            priceVat: price.original.vatValue,
+            vatPercentage: price.original.vatPercentage,
           }
         })
       )

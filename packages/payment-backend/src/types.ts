@@ -6,6 +6,10 @@ export interface OrderItemRequest {
   rowPriceNet: string
   rowPriceVat: string
   rowPriceTotal: string
+  priceNet: string
+  priceGross: string
+  priceVat: string
+  vatPercentage: string
 }
 
 export type OrderItem = OrderItemRequest & {
