@@ -24,6 +24,7 @@ const orderMock = {
       priceVat: '24',
       priceNet: '100',
       priceGross: '124',
+      vatPercentage: '24',
     },
   ],
 }
