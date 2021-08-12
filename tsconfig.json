@@ -43,6 +43,9 @@
             "path": "packages/cart-experience-api"
         },
         {
+            "path": "packages/configuration-backend"
+        },
+        {
             "path": "packages/core"
         },
         {

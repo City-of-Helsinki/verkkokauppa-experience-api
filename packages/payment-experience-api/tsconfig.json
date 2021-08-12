@@ -6,14 +6,17 @@
         "composite": true,
         "baseUrl": "./",
         "paths": {
+            "@verkkokauppa/core": [
+                "../core"
+            ],
             "@verkkokauppa/order-backend": [
                 "../order-backend"
             ],
             "@verkkokauppa/payment-backend": [
                 "../payment-backend"
             ],
-            "@verkkokauppa/core": [
-                "../core"
+            "@verkkokauppa/configuration-backend": [
+                "../configuration-backend"
             ]
         }
     },
@@ -22,13 +25,16 @@
     ],
     "references": [
         {
+            "path": "../core"
+        },
+        {
             "path": "../order-backend"
         },
         {
             "path": "../payment-backend"
         },
         {
-            "path": "../core"
+            "path": "../configuration-backend"
         }
     ]
 }
