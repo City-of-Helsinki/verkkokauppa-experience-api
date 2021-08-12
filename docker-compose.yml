@@ -60,7 +60,6 @@ services:
       - '8080'
     ports:
       - '8083:8080'
-      - '9229:9229'
     command: yarn workspace @verkkokauppa/cart-experience-api dev
     environment:
       - SERVICE_NAME=cart-experience-api
@@ -93,3 +92,32 @@ services:
       - PRODUCT_BACKEND_URL=https://ff102df2-94c3-4243-a4a1-6e449f78c633.mock.pstmn.io
       - ORDER_BACKEND_URL=https://d04f2785-8b0b-4d0b-b52d-46c1878f6fa9.mock.pstmn.io
       - CHECKOUT_BASE_URL=https://checkout-test.dev.hel.fi
+  payment-experience-api:
+    build:
+      context: ./
+      dockerfile: packages/payment-experience-api/Dockerfile
+      target: base
+    volumes:
+      - ./packages/payment-experience-api/:/opt/app-root/src/packages/payment-experience-api/
+      - ./packages/order-backend/:/opt/app-root/src/packages/order-backend/
+      - ./packages/payment-backend/:/opt/app-root/src/packages/payment-backend/
+      - ./packages/configuration-backend/:/opt/app-root/src/packages/configuration-backend/
+      - ./packages/core/:/opt/app-root/src/packages/core/
+    container_name: payment-experience-api
+    expose:
+      - '8080'
+    ports:
+      - '8085:8080'
+      - '9229:9229'
+    command: yarn workspace @verkkokauppa/payment-experience-api dev
+    environment:
+      - SERVICE_NAME=payment-experience-api
+      - PAYMENT_BACKEND_URL=https://e35c9302-ad69-4a59-ace3-208cb5040f6b.mock.pstmn.io
+      - PRICE_BACKEND_URL=https://3d615742-ed93-4415-8972-76c7103c5000.mock.pstmn.io
+      - PRODUCT_BACKEND_URL=https://ff102df2-94c3-4243-a4a1-6e449f78c633.mock.pstmn.io
+      - ORDER_BACKEND_URL=https://d04f2785-8b0b-4d0b-b52d-46c1878f6fa9.mock.pstmn.io
+      - CONFIGURATION_BACKEND_URL=https://d04f2785-8b0b-4d0b-b52d-46c1878f6fa9.mock.pstmn.io
+      - CHECKOUT_BASE_URL=https://checkout-test.dev.hel.fi
+      - VISMA_PAY_PRIVATE_KEY=MOCKKEY
+      - VISMA_PAY_API_KEY=MOCKKEY
+      - REDIRECT_PAYMENT_URL_BASE=http://localhost:8080/
