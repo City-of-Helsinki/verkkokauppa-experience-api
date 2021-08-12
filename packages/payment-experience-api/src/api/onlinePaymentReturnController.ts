@@ -15,7 +15,10 @@ export class OnlinePaymentReturnController extends AbstractController {
     }
     try {
       const vismaStatus = checkVismaStatus({ query })
-      const orderId = query.ORDER_NUMBER?.toString() || ''
+      const orderId = query.ORDER_NUMBER?.toString()
+      if (!orderId) {
+        return this.fail(result, 'No orderId specified')
+      }
       const order = await getOrder({ orderId })
       const redirectUrl = createUserRedirectUrl({
         order,
