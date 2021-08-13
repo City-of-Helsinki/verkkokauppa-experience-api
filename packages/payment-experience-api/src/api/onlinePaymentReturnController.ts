@@ -17,6 +17,7 @@ export class OnlinePaymentReturnController extends AbstractController {
     try {
       const vismaStatus = await checkVismaReturnUrl({ params: query })
       if (!vismaStatus.isValid) {
+        console.log('VismaStatus is not valid, redirect to failure url')
         return result.redirect(302, this.getFailureRedirectUrl().toString())
       }
       const orderId = query.ORDER_NUMBER?.toString()
@@ -24,6 +25,9 @@ export class OnlinePaymentReturnController extends AbstractController {
         console.error('No orderId specified')
         return result.redirect(302, this.getFailureRedirectUrl().toString())
       }
+      console.log(
+        `VismaStatus for order ${orderId}: ${JSON.stringify(vismaStatus)}`
+      )
       const order = await getOrder({ orderId })
       const redirectUrl = createUserRedirectUrl({
         order,
