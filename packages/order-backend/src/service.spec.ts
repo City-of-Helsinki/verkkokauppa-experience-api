@@ -47,7 +47,7 @@ describe('Test Create Order', () => {
     process.env.ORDER_BACKEND_URL = 'test.dev.hel'
     process.env.CHECKOUT_BASE_URL = 'https://checkout.dev.hel'
     const mockData = {
-      ...orderMock,
+      order: orderMock,
       items: [],
     }
     axiosMock.get.mockResolvedValue({ data: mockData })
@@ -58,7 +58,7 @@ describe('Test Create Order', () => {
     expect(result).toEqual({
       ...orderMock,
       items: [],
-      checkoutUrl: `https://checkout.dev.hel?orderId=${mockData.orderId}`,
+      checkoutUrl: `https://checkout.dev.hel?orderId=${mockData.order.orderId}`,
     })
   })
   it('Should create order with items correctly with backend url set', async () => {

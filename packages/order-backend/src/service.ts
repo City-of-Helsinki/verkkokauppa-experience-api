@@ -3,7 +3,6 @@ import { stringify } from 'qs'
 import type {
   Order,
   OrderCustomer,
-  OrderBackendResponse,
   OrderItemRequest,
   OrderWithItemsBackendResponse,
 } from './types'
@@ -17,17 +16,13 @@ export const createOrder = async (p: {
     throw new Error('No order backend URL set')
   }
   const url = `${process.env.ORDER_BACKEND_URL}/order/create`
-  const result = await axios.get<OrderBackendResponse>(url, {
+  const result = await axios.get<OrderWithItemsBackendResponse>(url, {
     params: {
       namespace,
       user,
     },
   })
-  return {
-    ...result.data,
-    items: [],
-    checkoutUrl: `${process.env.CHECKOUT_BASE_URL}?orderId=${result.data.orderId}`,
-  }
+  return transFormBackendOrder(result.data)
 }
 
 export const createOrderWithItems = async (p: {
