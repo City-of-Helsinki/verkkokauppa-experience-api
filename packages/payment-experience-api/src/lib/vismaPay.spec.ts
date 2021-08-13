@@ -35,7 +35,7 @@ describe('Test User redirection creation', () => {
     await expect(
       createUserRedirectUrl({
         order: orderMock,
-        vismaStatus: { canRetry: false, isPaymentPaid: false },
+        vismaStatus: { canRetry: false, isPaymentPaid: false, isValid: true },
       })
     ).rejects.toThrow('No default redirect url specified')
   })
@@ -51,7 +51,7 @@ describe('Test User redirection creation', () => {
     axiosMock.get.mockResolvedValue({ data: configMock })
     const result = await createUserRedirectUrl({
       order: orderMock,
-      vismaStatus: { canRetry: false, isPaymentPaid: false },
+      vismaStatus: { canRetry: false, isPaymentPaid: false, isValid: true },
     })
     expect(result.toString()).toBe(
       `${process.env.REDIRECT_PAYMENT_URL_BASE}/145d8829-07b7-4b03-ab0e-24063958ab9b/failure?retry=false`
@@ -70,7 +70,7 @@ describe('Test User redirection creation', () => {
     axiosMock.get.mockResolvedValue({ data: configMock })
     const result = await createUserRedirectUrl({
       order: orderMock,
-      vismaStatus: { canRetry: false, isPaymentPaid: false },
+      vismaStatus: { canRetry: false, isPaymentPaid: false, isValid: true },
     })
     expect(result.toString()).toBe(
       `${configMock.configurationValue}/145d8829-07b7-4b03-ab0e-24063958ab9b/failure?retry=false`
@@ -88,7 +88,7 @@ describe('Test User redirection creation', () => {
     axiosMock.get.mockResolvedValue({ data: configMock })
     const result = await createUserRedirectUrl({
       order: orderMock,
-      vismaStatus: { canRetry: true, isPaymentPaid: false },
+      vismaStatus: { canRetry: true, isPaymentPaid: false, isValid: true },
     })
     expect(result.toString()).toBe(
       `${process.env.REDIRECT_PAYMENT_URL_BASE}/145d8829-07b7-4b03-ab0e-24063958ab9b/failure?retry=true`
@@ -107,7 +107,7 @@ describe('Test User redirection creation', () => {
     axiosMock.get.mockResolvedValue({ data: configMock })
     const result = await createUserRedirectUrl({
       order: orderMock,
-      vismaStatus: { canRetry: true, isPaymentPaid: false },
+      vismaStatus: { canRetry: true, isPaymentPaid: false, isValid: true },
     })
     expect(result.toString()).toBe(
       `${configMock.configurationValue}/145d8829-07b7-4b03-ab0e-24063958ab9b/failure?retry=true`
@@ -125,7 +125,7 @@ describe('Test User redirection creation', () => {
     axiosMock.get.mockResolvedValue({ data: configMock })
     const result = await createUserRedirectUrl({
       order: orderMock,
-      vismaStatus: { canRetry: false, isPaymentPaid: true },
+      vismaStatus: { canRetry: false, isPaymentPaid: true, isValid: true },
     })
     expect(result.toString()).toBe(
       `${process.env.REDIRECT_PAYMENT_URL_BASE}/145d8829-07b7-4b03-ab0e-24063958ab9b/success`
@@ -144,10 +144,29 @@ describe('Test User redirection creation', () => {
     axiosMock.get.mockResolvedValue({ data: configMock })
     const result = await createUserRedirectUrl({
       order: orderMock,
-      vismaStatus: { canRetry: false, isPaymentPaid: true },
+      vismaStatus: { canRetry: false, isPaymentPaid: true, isValid: true },
     })
     expect(result.toString()).toBe(
       `${configMock.configurationValue}/145d8829-07b7-4b03-ab0e-24063958ab9b/success`
+    )
+  })
+  it('Should return general error url if return url is not valid', async () => {
+    process.env.REDIRECT_PAYMENT_URL_BASE = 'https://test.dev.hel'
+    process.env.CONFIGURATION_BACKEND_URL = 'https://test.dev.hel'
+    const configMock = {
+      configurationId: '2f815a93-4c5c-442f-ba09-f294ecc12679',
+      namespace: 'test',
+      configurationKey: 'PAYMENT_RETURN_URL',
+      configurationValue: 'https://service.dev.hel',
+      restricted: false,
+    }
+    axiosMock.get.mockResolvedValue({ data: configMock })
+    const result = await createUserRedirectUrl({
+      order: orderMock,
+      vismaStatus: { canRetry: false, isPaymentPaid: true, isValid: false },
+    })
+    expect(result.toString()).toBe(
+      `${process.env.REDIRECT_PAYMENT_URL_BASE}/failure`
     )
   })
 })

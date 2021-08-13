@@ -1,5 +1,11 @@
 import axios from 'axios'
-import type { Order, PaymentMethod, PaymentMethodListRequest } from './types'
+import type {
+  Order,
+  PaymentMethod,
+  PaymentMethodListRequest,
+  VismaStatus,
+} from './types'
+import type { ParsedQs } from 'qs'
 
 const PAYMENT_METHOD_MAP = new Map()
   .set('invoice', 'billing')
@@ -49,5 +55,21 @@ export const getPaymentMethodList = async (parameters: {
   // We use POST instead of GET since we need to send complex parameters,
   // although using GET would be semantically more correct.
   const result = await axios.post<PaymentMethod[]>(url, request)
+  return result.data
+}
+
+export const checkVismaReturnUrl = async (p: {
+  params: ParsedQs
+}): Promise<VismaStatus> => {
+  const { params } = p
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/online/check-return-url`
+
+  const result = await axios.get<VismaStatus>(url, {
+    params,
+  })
   return result.data
 }
