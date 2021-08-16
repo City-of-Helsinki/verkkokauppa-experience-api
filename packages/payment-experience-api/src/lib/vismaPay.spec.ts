@@ -35,7 +35,7 @@ describe('Test User redirection creation', () => {
     await expect(
       createUserRedirectUrl({
         order: orderMock,
-        vismaStatus: { canRetry: false, isPaymentPaid: false, isValid: true },
+        vismaStatus: { canRetry: false, paymentPaid: false, valid: true },
       })
     ).rejects.toThrow('No default redirect url specified')
   })
@@ -51,7 +51,7 @@ describe('Test User redirection creation', () => {
     axiosMock.get.mockResolvedValue({ data: configMock })
     const result = await createUserRedirectUrl({
       order: orderMock,
-      vismaStatus: { canRetry: false, isPaymentPaid: false, isValid: true },
+      vismaStatus: { canRetry: false, paymentPaid: false, valid: true },
     })
     expect(result.toString()).toBe(
       `${process.env.REDIRECT_PAYMENT_URL_BASE}/145d8829-07b7-4b03-ab0e-24063958ab9b/failure?retry=false`
@@ -70,7 +70,7 @@ describe('Test User redirection creation', () => {
     axiosMock.get.mockResolvedValue({ data: configMock })
     const result = await createUserRedirectUrl({
       order: orderMock,
-      vismaStatus: { canRetry: false, isPaymentPaid: false, isValid: true },
+      vismaStatus: { canRetry: false, paymentPaid: false, valid: true },
     })
     expect(result.toString()).toBe(
       `${configMock.configurationValue}/145d8829-07b7-4b03-ab0e-24063958ab9b/failure?retry=false`
@@ -88,7 +88,7 @@ describe('Test User redirection creation', () => {
     axiosMock.get.mockResolvedValue({ data: configMock })
     const result = await createUserRedirectUrl({
       order: orderMock,
-      vismaStatus: { canRetry: true, isPaymentPaid: false, isValid: true },
+      vismaStatus: { canRetry: true, paymentPaid: false, valid: true },
     })
     expect(result.toString()).toBe(
       `${process.env.REDIRECT_PAYMENT_URL_BASE}/145d8829-07b7-4b03-ab0e-24063958ab9b/failure?retry=true`
@@ -107,7 +107,7 @@ describe('Test User redirection creation', () => {
     axiosMock.get.mockResolvedValue({ data: configMock })
     const result = await createUserRedirectUrl({
       order: orderMock,
-      vismaStatus: { canRetry: true, isPaymentPaid: false, isValid: true },
+      vismaStatus: { canRetry: true, paymentPaid: false, valid: true },
     })
     expect(result.toString()).toBe(
       `${configMock.configurationValue}/145d8829-07b7-4b03-ab0e-24063958ab9b/failure?retry=true`
@@ -125,7 +125,7 @@ describe('Test User redirection creation', () => {
     axiosMock.get.mockResolvedValue({ data: configMock })
     const result = await createUserRedirectUrl({
       order: orderMock,
-      vismaStatus: { canRetry: false, isPaymentPaid: true, isValid: true },
+      vismaStatus: { canRetry: false, paymentPaid: true, valid: true },
     })
     expect(result.toString()).toBe(
       `${process.env.REDIRECT_PAYMENT_URL_BASE}/145d8829-07b7-4b03-ab0e-24063958ab9b/success`
@@ -144,7 +144,7 @@ describe('Test User redirection creation', () => {
     axiosMock.get.mockResolvedValue({ data: configMock })
     const result = await createUserRedirectUrl({
       order: orderMock,
-      vismaStatus: { canRetry: false, isPaymentPaid: true, isValid: true },
+      vismaStatus: { canRetry: false, paymentPaid: true, valid: true },
     })
     expect(result.toString()).toBe(
       `${configMock.configurationValue}/145d8829-07b7-4b03-ab0e-24063958ab9b/success`
@@ -163,7 +163,7 @@ describe('Test User redirection creation', () => {
     axiosMock.get.mockResolvedValue({ data: configMock })
     const result = await createUserRedirectUrl({
       order: orderMock,
-      vismaStatus: { canRetry: false, isPaymentPaid: true, isValid: false },
+      vismaStatus: { canRetry: false, paymentPaid: true, valid: false },
     })
     expect(result.toString()).toBe(
       `${process.env.REDIRECT_PAYMENT_URL_BASE}/failure`
