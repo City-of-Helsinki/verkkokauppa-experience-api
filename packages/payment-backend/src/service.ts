@@ -1,6 +1,7 @@
 import axios from 'axios'
 import type {
   Order,
+  Payment,
   PaymentMethod,
   PaymentMethodListRequest,
   VismaStatus,
@@ -18,7 +19,7 @@ export const createPaymentFromOrder = async (parameters: {
   order: Order
   paymentMethod: string
   language: string
-}): Promise<string> => {
+}): Promise<Payment> => {
   const { order, paymentMethod, language } = parameters
   if (!process.env.PAYMENT_BACKEND_URL) {
     throw new Error('No payment API backend URL set')
@@ -33,7 +34,7 @@ export const createPaymentFromOrder = async (parameters: {
 
   const url = `${process.env.PAYMENT_BACKEND_URL}/payment/${paymentMethodPart}/createFromOrder`
 
-  const result = await axios.post<string>(url, {
+  const result = await axios.post<Payment>(url, {
     paymentMethod,
     language,
     order: { order, items: order.items },
@@ -70,6 +71,38 @@ export const checkVismaReturnUrl = async (p: {
 
   const result = await axios.get<VismaStatus>(url, {
     params,
+  })
+  return result.data
+}
+
+export const getPaymentUrl = async (p: {
+  namespace: string
+  orderId: string
+}): Promise<string> => {
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/online/url`
+
+  const result = await axios.get<string>(url, {
+    params: p,
+  })
+  return result.data
+}
+
+export const getPaymentStatus = async (p: {
+  namespace: string
+  orderId: string
+}): Promise<string> => {
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/online/status`
+
+  const result = await axios.get<string>(url, {
+    params: p,
   })
   return result.data
 }

@@ -57,3 +57,18 @@ export type VismaStatus = {
   canRetry: boolean
   isValid: boolean
 }
+
+export interface Payment {
+  paymentId: string
+  namespace: string
+  orderId: string
+  status: string
+  paymentMethod: string
+  paymentType: string
+  totalExclTax: number
+  total: number
+  taxAmount: number
+  description: string | null
+  additionalInfo: string
+  token: string
+}
