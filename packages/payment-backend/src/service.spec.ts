@@ -1,5 +1,9 @@
 import axios from 'axios'
-import { createPaymentFromOrder } from './service'
+import {
+  createPaymentFromOrder,
+  getPaymentStatus,
+  getPaymentUrl,
+} from './service'
 
 jest.mock('axios')
 const axiosMock = axios as jest.Mocked<typeof axios>
@@ -83,5 +87,48 @@ describe('Test Create Payment for Order', () => {
       paymentMethod: 'nordea',
     })
     expect(result).toEqual(mockData)
+  })
+})
+
+describe('Test Get Payment Url', () => {
+  it('Should throw error with no backend url set', async () => {
+    process.env.PAYMENT_BACKEND_URL = ''
+    await expect(
+      getPaymentUrl({
+        namespace: '',
+        orderId: '',
+      })
+    ).rejects.toThrow('No payment API backend URL set')
+  })
+  it('Should get payment url correctly', async () => {
+    process.env.PAYMENT_BACKEND_URL = 'test.dev.hel'
+    const paymentUrl = 'https://test.dev.hel/token/123'
+    axiosMock.get.mockResolvedValue({ data: paymentUrl })
+    const result = await getPaymentUrl({
+      namespace: 'test',
+      orderId: 'test',
+    })
+    expect(result).toEqual(paymentUrl)
+  })
+})
+describe('Test Get Payment Status', () => {
+  it('Should throw error with no backend url set', async () => {
+    process.env.PAYMENT_BACKEND_URL = ''
+    await expect(
+      getPaymentStatus({
+        namespace: '',
+        orderId: '',
+      })
+    ).rejects.toThrow('No payment API backend URL set')
+  })
+  it('Should get payment status correctly', async () => {
+    process.env.PAYMENT_BACKEND_URL = 'test.dev.hel'
+    const status = 'PAID'
+    axiosMock.get.mockResolvedValue({ data: status })
+    const result = await getPaymentStatus({
+      namespace: 'test',
+      orderId: 'test',
+    })
+    expect(result).toEqual(status)
   })
 })
