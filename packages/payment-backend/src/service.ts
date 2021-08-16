@@ -79,6 +79,7 @@ export const getPaymentUrl = async (p: {
   namespace: string
   orderId: string
 }): Promise<string> => {
+  const { namespace, orderId } = p
   if (!process.env.PAYMENT_BACKEND_URL) {
     throw new Error('No payment API backend URL set')
   }
@@ -86,7 +87,7 @@ export const getPaymentUrl = async (p: {
   const url = `${process.env.PAYMENT_BACKEND_URL}/payment/online/url`
 
   const result = await axios.get<string>(url, {
-    params: p,
+    params: { namespace, orderId },
   })
   return result.data
 }
@@ -95,6 +96,7 @@ export const getPaymentStatus = async (p: {
   namespace: string
   orderId: string
 }): Promise<string> => {
+  const { namespace, orderId } = p
   if (!process.env.PAYMENT_BACKEND_URL) {
     throw new Error('No payment API backend URL set')
   }
@@ -102,7 +104,7 @@ export const getPaymentStatus = async (p: {
   const url = `${process.env.PAYMENT_BACKEND_URL}/payment/online/status`
 
   const result = await axios.get<string>(url, {
-    params: p,
+    params: { namespace, orderId },
   })
   return result.data
 }
