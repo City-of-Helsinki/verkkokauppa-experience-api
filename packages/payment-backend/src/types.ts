@@ -53,9 +53,9 @@ export interface PaymentMethod {
 // TODO: other fields (TBD)
 
 export type VismaStatus = {
-  isPaymentPaid: boolean
+  paymentPaid: boolean
   canRetry: boolean
-  isValid: boolean
+  valid: boolean
 }
 
 export interface Payment {

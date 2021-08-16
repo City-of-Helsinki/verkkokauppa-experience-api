@@ -16,14 +16,20 @@ export class OnlinePaymentReturnController extends AbstractController {
     }
     try {
       const vismaStatus = await checkVismaReturnUrl({ params: query })
-      if (!vismaStatus.isValid) {
+      if (!vismaStatus.valid) {
         console.log('VismaStatus is not valid, redirect to failure url')
-        return result.redirect(302, this.getFailureRedirectUrl().toString())
+        return result.redirect(
+          302,
+          OnlinePaymentReturnController.getFailureRedirectUrl().toString()
+        )
       }
       const orderId = query.ORDER_NUMBER?.toString()
       if (!orderId) {
         console.error('No orderId specified')
-        return result.redirect(302, this.getFailureRedirectUrl().toString())
+        return result.redirect(
+          302,
+          OnlinePaymentReturnController.getFailureRedirectUrl().toString()
+        )
       }
       console.log(
         `VismaStatus for order ${orderId}: ${JSON.stringify(vismaStatus)}`
@@ -36,11 +42,14 @@ export class OnlinePaymentReturnController extends AbstractController {
       return result.redirect(302, redirectUrl.toString())
     } catch (error) {
       logger.error(error)
-      return result.redirect(302, this.getFailureRedirectUrl().toString())
+      return result.redirect(
+        302,
+        OnlinePaymentReturnController.getFailureRedirectUrl().toString()
+      )
     }
   }
 
-  private getFailureRedirectUrl() {
+  private static getFailureRedirectUrl() {
     if (!process.env.REDIRECT_PAYMENT_URL_BASE) {
       throw new Error('No default redirect url specified')
     }
