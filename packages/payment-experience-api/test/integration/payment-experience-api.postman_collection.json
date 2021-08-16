@@ -129,7 +129,7 @@
 			"response": []
 		},
 		{
-			"name": "Create Payment 201",
+			"name": "Create Payment 201 with single item",
 			"event": [
 				{
 					"listen": "test",
@@ -137,19 +137,98 @@
 						"exec": [
 							"var data = pm.response.json();",
 							"var requestData = JSON.parse(pm.request.body);",
-							"/*",
+							"",
 							"pm.test(\"Status code is 201\", function () {",
 							"    pm.response.to.have.status(201);",
 							"});",
-							"pm.test(\"Response contains correct mapped ID\", function () {",
-							"    pm.expect(data.productId).to.eql(pm.variables.get(\"productFound\"));",
+							"pm.test(\"Response contains payment ID\", function () {",
+							"    pm.expect(data.paymentId).to.not.empty",
 							"});",
 							"pm.test(\"Response contains correct namespace\", function () {",
-							"    pm.expect(data.namespace).to.eql(requestData.namespace);",
+							"    pm.expect(data.namespace).to.eql(pm.environment.get('namespace'));",
 							"});",
-							"pm.test(\"Response contains correct namespace entity ID\", function () {",
-							"    pm.expect(data.namespaceEntityId).to.eql(requestData.namespaceEntityId);",
-							"});*/"
+							"pm.test(\"Response contains correct orderId\", function () {",
+							"    pm.expect(data.orderId).to.eql(pm.environment.get('orderWithItems'));",
+							"});",
+							"pm.test(\"Response contains correct status\", function () {",
+							"    pm.expect(data.status).to.eql('payment_created');",
+							"});",
+							"pm.test(\"Response contains correct paymentMethod\", function () {",
+							"    pm.expect(data.paymentMethod).to.eql(requestData.paymentMethod);",
+							"});",
+							"pm.test(\"Response contains correct paymentType\", function () {",
+							"    pm.expect(data.paymentType).to.eql('order');",
+							"});",
+							"pm.test(\"Response contains correct totalExclTax\", function () {",
+							"    pm.expect(data.totalExclTax).to.eql(100);",
+							"});",
+							"pm.test(\"Response contains correct total\", function () {",
+							"    pm.expect(data.total).to.eql(124);",
+							"});",
+							"pm.test(\"Response contains correct taxAmount\", function () {",
+							"    pm.expect(data.taxAmount).to.eql(24);",
+							"});",
+							"pm.test(\"Response contains token\", function () {",
+							"    pm.expect(data.token).to.not.empty",
+							"});",
+							"pm.test(\"Response contains additionalInfo\", function () {",
+							"    pm.expect(data.additionalInfo).to.not.empty",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const url = pm.variables.get(\"orderExperienceUrl\")",
+							"pm.sendRequest({",
+							"    url: `${url}`,",
+							"    method: 'POST',",
+							"    header: {",
+							"        'content-type': 'application/json',",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify(",
+							"            {",
+							"                \"namespace\": \"asukaspysakointi\",",
+							"                \"user\": pm.variables.replaceIn('{{$randomUserName}}'),",
+							"                \"priceNet\": \"100\",",
+							"                \"priceVat\": \"24\",",
+							"                \"priceTotal\": \"124\",",
+							"                \"items\": [",
+							"                    {",
+							"                        \"productId\": pm.variables.get('productFound'),",
+							"                        \"quantity\": 1,",
+							"                        \"productName\": \"Product Name\",",
+							"                        \"unit\": \"pcs\",",
+							"                        \"rowPriceNet\": \"100\",",
+							"                        \"rowPriceVat\": \"24\",",
+							"                        \"rowPriceTotal\": \"124\",",
+							"                        \"vatPercentage\": \"24\",",
+							"                        \"priceNet\": \"100\",",
+							"                        \"priceVat\": \"24\",",
+							"                        \"priceGross\": \"124\"",
+							"                    }",
+							"                ],",
+							"                \"customer\": {",
+							"                    \"firstName\": pm.variables.get('testCustomerFirstName'),",
+							"                    \"lastName\": pm.variables.get('testCustomerLastName'),",
+							"                    \"email\": pm.variables.get('testCustomerEmail'),",
+							"                    \"phone\": \"0401231233\"",
+							"                }",
+							"            }",
+							"        )",
+							"    }",
+							"}, function (err, res) {",
+							"    const orderId = res.json().orderId",
+							"    if (orderId) {",
+							"        console.log('Set orderFound variable to '+orderId)",
+							"        pm.environment.set('orderWithItems', orderId)",
+							"    }",
+							"});"
 						],
 						"type": "text/javascript"
 					}
@@ -160,7 +239,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"namespaceEntityId\": \"{{namespaceProductFound}}\",\n    \"name\": \"Some Product Name\"\n}",
+					"raw": "{\n    \"paymentMethod\": \"nordea\",\n    \"language\": \"fi\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -168,9 +247,154 @@
 					}
 				},
 				"url": {
-					"raw": "{{paymentExperienceUrl}}",
+					"raw": "{{paymentExperienceUrl}}/:orderId",
 					"host": [
 						"{{paymentExperienceUrl}}"
+					],
+					"path": [
+						":orderId"
+					],
+					"variable": [
+						{
+							"key": "orderId",
+							"value": "{{orderWithItems}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Payment 201 with single item qty 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"var requestData = JSON.parse(pm.request.body);",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"pm.test(\"Response contains payment ID\", function () {",
+							"    pm.expect(data.paymentId).to.not.empty",
+							"});",
+							"pm.test(\"Response contains correct namespace\", function () {",
+							"    pm.expect(data.namespace).to.eql(pm.environment.get('namespace'));",
+							"});",
+							"pm.test(\"Response contains correct orderId\", function () {",
+							"    pm.expect(data.orderId).to.eql(pm.environment.get('orderWithItems'));",
+							"});",
+							"pm.test(\"Response contains correct status\", function () {",
+							"    pm.expect(data.status).to.eql('payment_created');",
+							"});",
+							"pm.test(\"Response contains correct paymentMethod\", function () {",
+							"    pm.expect(data.paymentMethod).to.eql(requestData.paymentMethod);",
+							"});",
+							"pm.test(\"Response contains correct paymentType\", function () {",
+							"    pm.expect(data.paymentType).to.eql('order');",
+							"});",
+							"pm.test(\"Response contains correct totalExclTax\", function () {",
+							"    pm.expect(data.totalExclTax).to.eql(200);",
+							"});",
+							"pm.test(\"Response contains correct total\", function () {",
+							"    pm.expect(data.total).to.eql(248);",
+							"});",
+							"pm.test(\"Response contains correct taxAmount\", function () {",
+							"    pm.expect(data.taxAmount).to.eql(48);",
+							"});",
+							"pm.test(\"Response contains token\", function () {",
+							"    pm.expect(data.token).to.not.empty",
+							"});",
+							"pm.test(\"Response contains additionalInfo\", function () {",
+							"    pm.expect(data.additionalInfo).to.not.empty",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const url = pm.variables.get(\"orderExperienceUrl\")",
+							"pm.sendRequest({",
+							"    url: `${url}`,",
+							"    method: 'POST',",
+							"    header: {",
+							"        'content-type': 'application/json',",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify(",
+							"            {",
+							"                \"namespace\": \"asukaspysakointi\",",
+							"                \"user\": pm.variables.replaceIn('{{$randomUserName}}'),",
+							"                \"priceNet\": \"200\",",
+							"                \"priceVat\": \"48\",",
+							"                \"priceTotal\": \"248\",",
+							"                \"items\": [",
+							"                    {",
+							"                        \"productId\": pm.variables.get('productFound'),",
+							"                        \"quantity\": 2,",
+							"                        \"productName\": \"Product Name\",",
+							"                        \"unit\": \"pcs\",",
+							"                        \"rowPriceNet\": \"200\",",
+							"                        \"rowPriceVat\": \"48\",",
+							"                        \"rowPriceTotal\": \"248\",",
+							"                        \"vatPercentage\": \"24\",",
+							"                        \"priceNet\": \"100\",",
+							"                        \"priceVat\": \"24\",",
+							"                        \"priceGross\": \"124\"",
+							"                    }",
+							"                ],",
+							"                \"customer\": {",
+							"                    \"firstName\": pm.variables.get('testCustomerFirstName'),",
+							"                    \"lastName\": pm.variables.get('testCustomerLastName'),",
+							"                    \"email\": pm.variables.get('testCustomerEmail'),",
+							"                    \"phone\": \"0401231233\"",
+							"                }",
+							"            }",
+							"        )",
+							"    }",
+							"}, function (err, res) {",
+							"    const orderId = res.json().orderId",
+							"    if (orderId) {",
+							"        console.log('Set orderFound variable to '+orderId)",
+							"        pm.environment.set('orderWithItems', orderId)",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"paymentMethod\": \"nordea\",\n    \"language\": \"fi\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{paymentExperienceUrl}}/:orderId",
+					"host": [
+						"{{paymentExperienceUrl}}"
+					],
+					"path": [
+						":orderId"
+					],
+					"variable": [
+						{
+							"key": "orderId",
+							"value": "{{orderWithItems}}"
+						}
 					]
 				}
 			},
