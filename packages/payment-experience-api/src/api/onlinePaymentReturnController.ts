@@ -35,7 +35,7 @@ export class OnlinePaymentReturnController extends AbstractController {
         `VismaStatus for order ${orderId}: ${JSON.stringify(vismaStatus)}`
       )
       const order = await getOrder({ orderId })
-      const redirectUrl = createUserRedirectUrl({
+      const redirectUrl = await createUserRedirectUrl({
         order,
         vismaStatus,
       })
