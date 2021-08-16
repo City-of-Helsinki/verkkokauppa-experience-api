@@ -1,7 +1,10 @@
 import { AbstractController, Data, logger } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
 import { getOrder } from '@verkkokauppa/order-backend'
-import { createPaymentFromOrder } from '@verkkokauppa/payment-backend'
+import {
+  createPaymentFromOrder,
+  getPaymentUrl,
+} from '@verkkokauppa/payment-backend'
 import { DEFAULT_LANGUAGE } from '../constants'
 
 export class CreatePaymentController extends AbstractController {
@@ -18,11 +21,13 @@ export class CreatePaymentController extends AbstractController {
     const dto = new Data()
     try {
       const order = await getOrder({ orderId })
-      dto.data = await createPaymentFromOrder({
+      const payment = await createPaymentFromOrder({
         order,
         paymentMethod: typeof paymentMethod === 'string' ? paymentMethod : '',
         language: typeof language === 'string' ? language : DEFAULT_LANGUAGE,
       })
+      const paymentUrl = await getPaymentUrl(order)
+      dto.data = { ...payment, paymentUrl }
     } catch (error) {
       logger.error(error)
       return this.fail(result, error.toString())
