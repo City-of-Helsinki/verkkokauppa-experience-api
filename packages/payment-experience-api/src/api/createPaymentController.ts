@@ -28,6 +28,6 @@ export class CreatePaymentController extends AbstractController {
       return this.fail(result, error.toString())
     }
 
-    return this.success<any>(result, dto.serialize())
+    return this.created<any>(result, dto.serialize())
   }
 }
