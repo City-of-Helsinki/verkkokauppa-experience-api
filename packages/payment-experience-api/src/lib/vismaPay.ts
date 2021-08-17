@@ -31,12 +31,14 @@ export const createUserRedirectUrl = async ({
     //Redirect url is already default if exception is caught when fetching configuration
   }
 
-  redirectUrl.pathname = `${order.orderId}/${
-    vismaStatus.paymentPaid ? 'success' : 'failure'
-  }`
-
-  if (!vismaStatus.paymentPaid) {
-    redirectUrl.searchParams.append('retry', vismaStatus.canRetry.toString())
+  if (vismaStatus.paymentPaid) {
+    redirectUrl.pathname = `${order.orderId}/success`
+  } else if (!vismaStatus.paymentPaid && vismaStatus.canRetry) {
+    redirectUrl.pathname = `${order.orderId}/paymentmethod`
+    redirectUrl.searchParams.append('paymentPaid', 'false')
+  } else {
+    redirectUrl.pathname = `${order.orderId}/failure`
   }
+
   return redirectUrl
 }

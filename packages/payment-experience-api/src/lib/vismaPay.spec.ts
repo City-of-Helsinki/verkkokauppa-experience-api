@@ -54,7 +54,7 @@ describe('Test User redirection creation', () => {
       vismaStatus: { canRetry: false, paymentPaid: false, valid: true },
     })
     expect(result.toString()).toBe(
-      `${process.env.REDIRECT_PAYMENT_URL_BASE}/145d8829-07b7-4b03-ab0e-24063958ab9b/failure?retry=false`
+      `${process.env.REDIRECT_PAYMENT_URL_BASE}/145d8829-07b7-4b03-ab0e-24063958ab9b/failure`
     )
   })
   it('Should return service failure if order is not paid and with service specific configuration set', async () => {
@@ -73,7 +73,7 @@ describe('Test User redirection creation', () => {
       vismaStatus: { canRetry: false, paymentPaid: false, valid: true },
     })
     expect(result.toString()).toBe(
-      `${configMock.configurationValue}/145d8829-07b7-4b03-ab0e-24063958ab9b/failure?retry=false`
+      `${configMock.configurationValue}/145d8829-07b7-4b03-ab0e-24063958ab9b/failure`
     )
   })
   it('Should return checkout failure with retry if order is not paid and no service specific configuration set', async () => {
@@ -91,7 +91,7 @@ describe('Test User redirection creation', () => {
       vismaStatus: { canRetry: true, paymentPaid: false, valid: true },
     })
     expect(result.toString()).toBe(
-      `${process.env.REDIRECT_PAYMENT_URL_BASE}/145d8829-07b7-4b03-ab0e-24063958ab9b/failure?retry=true`
+      `${process.env.REDIRECT_PAYMENT_URL_BASE}/145d8829-07b7-4b03-ab0e-24063958ab9b/paymentmethod?paymentPaid=false`
     )
   })
   it('Should return service failure with retry if order is not paid and with service specific configuration set', async () => {
@@ -110,7 +110,7 @@ describe('Test User redirection creation', () => {
       vismaStatus: { canRetry: true, paymentPaid: false, valid: true },
     })
     expect(result.toString()).toBe(
-      `${configMock.configurationValue}/145d8829-07b7-4b03-ab0e-24063958ab9b/failure?retry=true`
+      `${configMock.configurationValue}/145d8829-07b7-4b03-ab0e-24063958ab9b/paymentmethod?paymentPaid=false`
     )
   })
   it('Should return checkout success if order is paid and no service specific configuration set', async () => {
