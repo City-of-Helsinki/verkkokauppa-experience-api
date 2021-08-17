@@ -3,12 +3,15 @@ import { Router } from 'express'
 import { CreatePaymentController } from './api/createPaymentController'
 import { GetPaymentMethodListController } from './api/getPaymentMethodListController'
 import { OnlinePaymentReturnController } from './api/onlinePaymentReturnController'
+import { GetPaymentController } from './api/getPaymentController'
 
 const createPaymentController = new CreatePaymentController()
 const getPaymentMethodListCtrl = new GetPaymentMethodListController()
 const onlinePaymentReturnController = new OnlinePaymentReturnController()
+const getPaymentController = new GetPaymentController()
 
 const router = Router()
+router.get('/:orderId', (req, res) => getPaymentController.execute(req, res))
 router.post('/:orderId', (req, res) =>
   createPaymentController.execute(req, res)
 )
