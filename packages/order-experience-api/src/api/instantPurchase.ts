@@ -1,9 +1,14 @@
 import { AbstractController, Data } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
 import * as yup from 'yup'
-import { addItemsToOrder, createOrder } from '@verkkokauppa/order-backend'
+import {
+  addItemsToOrder,
+  createOrder,
+  setOrderTotals,
+} from '@verkkokauppa/order-backend'
 import { getProduct } from '@verkkokauppa/product-backend'
 import { getPrice } from '@verkkokauppa/price-backend'
+import { calculateTotalsFromItems } from '../lib/totals'
 
 export class InstantPurchase extends AbstractController {
   private static readonly bodySchema = yup.object().shape({
@@ -67,9 +72,14 @@ export class InstantPurchase extends AbstractController {
         user: body.user,
       })
 
-      const order = await addItemsToOrder({
+      await addItemsToOrder({
         orderId,
         items: orderItems,
+      })
+
+      const order = await setOrderTotals({
+        orderId,
+        ...calculateTotalsFromItems({ items: orderItems }),
       })
 
       return this.created(res, new Data(order).serialize())

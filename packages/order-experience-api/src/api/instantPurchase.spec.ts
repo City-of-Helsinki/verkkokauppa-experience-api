@@ -23,6 +23,10 @@ const addItemsToOrderMock = require('@verkkokauppa/order-backend').addItemsToOrd
   () => ({})
 )
 
+const setOrderTotalsMock = require('@verkkokauppa/order-backend').setOrderTotals.mockImplementation(
+  () => ({})
+)
+
 beforeEach(() => {
   jest.clearAllMocks()
 })
@@ -98,7 +102,7 @@ describe('Test instantPurchase', () => {
       user: 'user1',
     })
   })
-  it('Should add order items to the order', async () => {
+  it('Should add order items and totals to the order', async () => {
     getProductMock
       .mockImplementationOnce(() => ({ name: 'n1' }))
       .mockImplementationOnce(() => ({ name: 'n2' }))
@@ -156,17 +160,32 @@ describe('Test instantPurchase', () => {
         },
       ],
     })
+    expect(setOrderTotalsMock).toHaveBeenCalledTimes(1)
+    expect(setOrderTotalsMock.mock.calls[0][0]).toEqual({
+      orderId: 'oid1',
+      priceNet: '250',
+      priceVat: '60',
+      priceTotal: '310',
+    })
   })
-  it('Should return created order with order items', async () => {
+  it('Should return created order with order items and totals', async () => {
     const createdSpy = jest.spyOn(AbstractController.prototype, 'created')
-    addItemsToOrderMock.mockImplementationOnce(() => ({ orderId: '100' }))
+    setOrderTotalsMock.mockImplementationOnce(() => ({
+      orderId: '100',
+      items: [],
+      priceNet: 10,
+    }))
     const res = await instantPurchase.implementation(
       { body: requestBody } as Request,
       mockResponse
     )
     expect(createdSpy).toHaveBeenCalledTimes(1)
     expect(createdSpy.mock.calls[0]?.[0]).toBe(mockResponse)
-    expect(createdSpy.mock.calls[0]?.[1]).toEqual({ orderId: '100' })
+    expect(createdSpy.mock.calls[0]?.[1]).toEqual({
+      orderId: '100',
+      items: [],
+      priceNet: 10,
+    })
     expect(res).toBe(createdSpy.mock.results[0]?.value)
   })
   it('Should throw for unknown errors', async () => {
