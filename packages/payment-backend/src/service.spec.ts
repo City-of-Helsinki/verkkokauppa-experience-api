@@ -1,6 +1,7 @@
 import axios from 'axios'
 import {
   createPaymentFromOrder,
+  getPaymentForOrder,
   getPaymentStatus,
   getPaymentUrl,
 } from './service'
@@ -130,5 +131,38 @@ describe('Test Get Payment Status', () => {
       orderId: 'test',
     })
     expect(result).toEqual(status)
+  })
+})
+
+describe('Test Get Payment for order', () => {
+  it('Should throw error with no backend url set', async () => {
+    process.env.PAYMENT_BACKEND_URL = ''
+    await expect(
+      getPaymentForOrder({
+        orderId: '',
+      })
+    ).rejects.toThrow('No payment API backend URL set')
+  })
+  it('Should get payment for order correctly', async () => {
+    process.env.PAYMENT_BACKEND_URL = 'test.dev.hel'
+    const mockData = {
+      paymentId: 'pid1',
+      namespace: 'namespace1',
+      orderId: 'oid1',
+      status: 'paid',
+      paymentMethod: 'cash',
+      paymentType: 'type',
+      totalExclTax: '100',
+      total: '124',
+      taxAmount: '24',
+      description: '',
+      additionalInfo: '',
+      token: '12345678',
+    }
+    axiosMock.get.mockResolvedValue({ data: mockData })
+    const result = await getPaymentForOrder({
+      orderId: 'test',
+    })
+    expect(result).toEqual(mockData)
   })
 })
