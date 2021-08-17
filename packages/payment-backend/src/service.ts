@@ -108,3 +108,19 @@ export const getPaymentStatus = async (p: {
   })
   return result.data
 }
+
+export const getPaymentForOrder = async (p: {
+  orderId: string
+}): Promise<Payment> => {
+  const { orderId } = p
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/online/get`
+
+  const result = await axios.get<Payment>(url, {
+    params: { orderId },
+  })
+  return result.data
+}
