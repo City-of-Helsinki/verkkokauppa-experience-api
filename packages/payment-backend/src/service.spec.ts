@@ -140,6 +140,7 @@ describe('Test Get Payment for order', () => {
     await expect(
       getPaymentForOrder({
         orderId: '',
+        namespace: '',
       })
     ).rejects.toThrow('No payment API backend URL set')
   })
@@ -162,6 +163,7 @@ describe('Test Get Payment for order', () => {
     axiosMock.get.mockResolvedValue({ data: mockData })
     const result = await getPaymentForOrder({
       orderId: 'test',
+      namespace: 'test',
     })
     expect(result).toEqual(mockData)
   })
