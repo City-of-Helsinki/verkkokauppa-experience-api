@@ -20,6 +20,9 @@
             ],
             "@verkkokauppa/product-backend": [
                 "../product-backend"
+            ],
+            "@verkkokauppa/configuration-backend": [
+                "../configuration-backend"
             ]
         }
     },
@@ -41,6 +44,9 @@
         },
         {
             "path": "../product-backend"
+        },
+        {
+            "path": "../configuration-backend"
         }
     ]
 }

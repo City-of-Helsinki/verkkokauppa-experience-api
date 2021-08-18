@@ -6,6 +6,8 @@ import {
   createCartWithItems,
   clearCart,
 } from '@verkkokauppa/cart-backend'
+import { getPublicServiceConfiguration } from '@verkkokauppa/configuration-backend'
+import { URL } from 'url'
 
 export class CancelController extends AbstractController {
   protected async implementation(req: Request, res: Response): Promise<any> {
@@ -15,20 +17,18 @@ export class CancelController extends AbstractController {
     }
     const dto = new Data()
     logger.debug(`Cancel Order ${orderId}`)
-
     try {
       const order = await cancelOrder({ orderId })
       await clearCart(order)
-      if (order.items && order.items.length > 0) {
-        dto.data = {
-          order,
-          cart: await createCartWithItems(order),
-        }
-      } else {
-        dto.data = {
-          order,
-          cart: await createCart(order),
-        }
+      const cart =
+        order.items && order.items.length > 0
+          ? await createCartWithItems(order)
+          : await createCart(order)
+      const cancelUrl = await CancelController.createCancelUrl(cart)
+      dto.data = {
+        order,
+        cart,
+        cancelUrl,
       }
     } catch (error) {
       logger.error(error)
@@ -38,5 +38,28 @@ export class CancelController extends AbstractController {
       return this.fail(res, error.toString())
     }
     return this.success<any>(res, dto.serialize())
+  }
+
+  private static async createCancelUrl(p: {
+    namespace: string
+    cartId: string
+  }): Promise<string | null> {
+    const { namespace, cartId } = p
+    try {
+      const cancelRedirectUrlConfiguration = await getPublicServiceConfiguration(
+        {
+          namespace: namespace,
+          key: 'ORDER_CANCEL_REDIRECT_URL',
+        }
+      )
+      const cancelUrl = new URL(
+        cancelRedirectUrlConfiguration.configurationValue
+      )
+      cancelUrl.searchParams.append('cartId', cartId)
+      return cancelUrl.toString()
+    } catch (e) {
+      console.error(e)
+      return null
+    }
   }
 }
