@@ -43,7 +43,7 @@ export class CancelController extends AbstractController {
   private static async createCancelUrl(p: {
     namespace: string
     cartId: string
-  }): Promise<string> {
+  }): Promise<string | null> {
     const { namespace, cartId } = p
     try {
       const cancelRedirectUrlConfiguration = await getPublicServiceConfiguration(
@@ -59,7 +59,7 @@ export class CancelController extends AbstractController {
       return cancelUrl.toString()
     } catch (e) {
       console.error(e)
-      return ''
+      return null
     }
   }
 }
