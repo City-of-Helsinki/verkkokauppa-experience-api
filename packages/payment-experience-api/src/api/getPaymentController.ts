@@ -1,6 +1,7 @@
 import { AbstractController, Data, logger } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
 import { getPaymentForOrder } from '@verkkokauppa/payment-backend'
+import { getOrder } from '@verkkokauppa/order-backend'
 
 export class GetPaymentController extends AbstractController {
   protected async implementation(
@@ -14,7 +15,8 @@ export class GetPaymentController extends AbstractController {
 
     const dto = new Data()
     try {
-      dto.data = await getPaymentForOrder({ orderId })
+      const order = await getOrder({ orderId })
+      dto.data = await getPaymentForOrder(order)
     } catch (error) {
       logger.error(error)
       return this.fail(result, error.toString())
