@@ -72,6 +72,18 @@ export const cancelOrder = async (p: { orderId: string }): Promise<Order> => {
   return transFormBackendOrder(result.data)
 }
 
+export const confirmOrder = async (p: { orderId: string }): Promise<Order> => {
+  const { orderId } = p
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+  const url = `${process.env.ORDER_BACKEND_URL}/order/confirm`
+  const result = await axios.get<OrderWithItemsBackendResponse>(url, {
+    params: { orderId },
+  })
+  return transFormBackendOrder(result.data)
+}
+
 export const setCustomerToOrder = async (p: {
   orderId: string
   customer: OrderCustomer
