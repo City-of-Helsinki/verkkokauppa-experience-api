@@ -13,6 +13,7 @@ COPY ./jest.config.js ./jest.config.js
 COPY ./packages/core ./packages/core
 COPY ./packages/cart-backend ./packages/cart-backend
 COPY ./packages/order-backend ./packages/order-backend
+COPY ./packages/payment-backend ./packages/payment-backend
 COPY ./packages/price-backend ./packages/price-backend
 COPY ./packages/product-backend ./packages/product-backend
 COPY ./packages/configuration-backend ./packages/configuration-backend
