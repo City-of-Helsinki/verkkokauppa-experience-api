@@ -25,12 +25,10 @@ export const createPaymentFromOrder = async (parameters: {
     throw new Error('No payment API backend URL set')
   }
 
-  let paymentMethodPart = null
-  if (PAYMENT_METHOD_MAP.has(paymentMethod)) {
-    paymentMethodPart = PAYMENT_METHOD_MAP.get(paymentMethod)
-  } else {
+  if (!PAYMENT_METHOD_MAP.has(paymentMethod)) {
     throw new Error('Unsupported payment method given as parameter')
   }
+  const paymentMethodPart = PAYMENT_METHOD_MAP.get(paymentMethod)
 
   const url = `${process.env.PAYMENT_BACKEND_URL}/payment/${paymentMethodPart}/createFromOrder`
 
