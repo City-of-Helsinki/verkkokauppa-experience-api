@@ -25,6 +25,9 @@ export const createUserRedirectUrl = async ({
     })
     if (paymentReturnUrlConfiguration.configurationValue !== '') {
       redirectUrl = new URL(paymentReturnUrlConfiguration.configurationValue)
+      redirectUrl.pathname = vismaStatus.paymentPaid ? 'success' : 'failure'
+      redirectUrl.searchParams.append('orderId', order.orderId)
+      return redirectUrl
     }
   } catch (e) {
     console.log(e)
