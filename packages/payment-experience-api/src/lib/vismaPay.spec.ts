@@ -73,7 +73,7 @@ describe('Test User redirection creation', () => {
       vismaStatus: { canRetry: false, paymentPaid: false, valid: true },
     })
     expect(result.toString()).toBe(
-      `${configMock.configurationValue}/145d8829-07b7-4b03-ab0e-24063958ab9b/failure`
+      `${configMock.configurationValue}/failure?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b`
     )
   })
   it('Should return checkout failure with retry if order is not paid and no service specific configuration set', async () => {
@@ -110,7 +110,7 @@ describe('Test User redirection creation', () => {
       vismaStatus: { canRetry: true, paymentPaid: false, valid: true },
     })
     expect(result.toString()).toBe(
-      `${configMock.configurationValue}/145d8829-07b7-4b03-ab0e-24063958ab9b/summary?paymentPaid=false`
+      `${configMock.configurationValue}/failure?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b`
     )
   })
   it('Should return checkout success if order is paid and no service specific configuration set', async () => {
@@ -147,7 +147,7 @@ describe('Test User redirection creation', () => {
       vismaStatus: { canRetry: false, paymentPaid: true, valid: true },
     })
     expect(result.toString()).toBe(
-      `${configMock.configurationValue}/145d8829-07b7-4b03-ab0e-24063958ab9b/success`
+      `${configMock.configurationValue}/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b`
     )
   })
   it('Should return general error url if return url is not valid', async () => {
