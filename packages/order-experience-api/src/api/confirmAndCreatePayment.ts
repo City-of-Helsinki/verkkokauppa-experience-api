@@ -37,7 +37,10 @@ export class ConfirmAndCreatePayment extends AbstractController {
 
       const paymentUrl = await getPaymentUrl(order)
 
-      return this.created(res, new Data({ ...payment, paymentUrl }).serialize())
+      return this.created(
+        res,
+        new Data({ ...order, payment: { ...payment, paymentUrl } }).serialize()
+      )
     } catch (e) {
       if (e instanceof yup.ValidationError) {
         return this.clientError(res, 'Invalid request data')
