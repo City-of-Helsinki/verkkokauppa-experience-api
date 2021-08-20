@@ -44,7 +44,7 @@ describe('Test User redirection creation', () => {
     const configMock = {
       configurationId: '2f815a93-4c5c-442f-ba09-f294ecc12679',
       namespace: 'test',
-      configurationKey: 'PAYMENT_RETURN_URL',
+      configurationKey: 'ORDER_CREATED_REDIRECT_URL',
       configurationValue: '',
       restricted: false,
     }
@@ -63,7 +63,7 @@ describe('Test User redirection creation', () => {
     const configMock = {
       configurationId: '2f815a93-4c5c-442f-ba09-f294ecc12679',
       namespace: 'test',
-      configurationKey: 'PAYMENT_RETURN_URL',
+      configurationKey: 'ORDER_CREATED_REDIRECT_URL',
       configurationValue: 'https://service.dev.hel',
       restricted: false,
     }
@@ -81,7 +81,7 @@ describe('Test User redirection creation', () => {
     const configMock = {
       configurationId: '2f815a93-4c5c-442f-ba09-f294ecc12679',
       namespace: 'test',
-      configurationKey: 'PAYMENT_RETURN_URL',
+      configurationKey: 'ORDER_CREATED_REDIRECT_URL',
       configurationValue: '',
       restricted: false,
     }
@@ -100,7 +100,7 @@ describe('Test User redirection creation', () => {
     const configMock = {
       configurationId: '2f815a93-4c5c-442f-ba09-f294ecc12679',
       namespace: 'test',
-      configurationKey: 'PAYMENT_RETURN_URL',
+      configurationKey: 'ORDER_CREATED_REDIRECT_URL',
       configurationValue: 'https://service.dev.hel',
       restricted: false,
     }
@@ -118,7 +118,7 @@ describe('Test User redirection creation', () => {
     const configMock = {
       configurationId: '2f815a93-4c5c-442f-ba09-f294ecc12679',
       namespace: 'test',
-      configurationKey: 'PAYMENT_RETURN_URL',
+      configurationKey: 'ORDER_CREATED_REDIRECT_URL',
       configurationValue: '',
       restricted: false,
     }
@@ -137,7 +137,7 @@ describe('Test User redirection creation', () => {
     const configMock = {
       configurationId: '2f815a93-4c5c-442f-ba09-f294ecc12679',
       namespace: 'test',
-      configurationKey: 'PAYMENT_RETURN_URL',
+      configurationKey: 'ORDER_CREATED_REDIRECT_URL',
       configurationValue: 'https://service.dev.hel',
       restricted: false,
     }
@@ -156,7 +156,7 @@ describe('Test User redirection creation', () => {
     const configMock = {
       configurationId: '2f815a93-4c5c-442f-ba09-f294ecc12679',
       namespace: 'test',
-      configurationKey: 'PAYMENT_RETURN_URL',
+      configurationKey: 'ORDER_CREATED_REDIRECT_URL',
       configurationValue: 'https://service.dev.hel',
       restricted: false,
     }

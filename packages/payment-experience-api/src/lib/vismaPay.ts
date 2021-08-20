@@ -21,7 +21,7 @@ export const createUserRedirectUrl = async ({
   try {
     const paymentReturnUrlConfiguration = await getPublicServiceConfiguration({
       namespace: order.namespace,
-      key: 'PAYMENT_RETURN_URL',
+      key: 'ORDER_CREATED_REDIRECT_URL',
     })
     if (
       paymentReturnUrlConfiguration.configurationValue !== '' &&
