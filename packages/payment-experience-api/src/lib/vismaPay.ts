@@ -34,7 +34,7 @@ export const createUserRedirectUrl = async ({
   if (vismaStatus.paymentPaid) {
     redirectUrl.pathname = `${order.orderId}/success`
   } else if (!vismaStatus.paymentPaid && vismaStatus.canRetry) {
-    redirectUrl.pathname = `${order.orderId}/paymentmethod`
+    redirectUrl.pathname = `${order.orderId}/summary`
     redirectUrl.searchParams.append('paymentPaid', 'false')
   } else {
     redirectUrl.pathname = `${order.orderId}/failure`
