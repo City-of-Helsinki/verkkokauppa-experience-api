@@ -47,11 +47,29 @@ const requestBody = {
       productId: 'pid1',
       quantity: 1,
       unit: 'unit1',
+      meta: [
+        {
+          key: 'mk1',
+          value: 'mv1',
+          label: 'ml1',
+          visibleInCheckout: false,
+          ordinal: '1',
+        },
+      ],
     },
     {
       productId: 'pid2',
       quantity: 2,
       unit: 'unit2',
+      meta: [
+        {
+          key: 'mk2',
+          value: 'mv2',
+          label: 'ml2',
+          visibleInCheckout: false,
+          ordinal: '1',
+        },
+      ],
     },
   ],
   language: 'fi',
@@ -144,6 +162,15 @@ describe('Test instantPurchase', () => {
           priceVat: '12',
           priceGross: '62',
           vatPercentage: '24',
+          meta: [
+            {
+              key: 'mk1',
+              value: 'mv1',
+              label: 'ml1',
+              visibleInCheckout: false,
+              ordinal: '1',
+            },
+          ],
         },
         {
           productId: 'pid2',
@@ -157,6 +184,15 @@ describe('Test instantPurchase', () => {
           priceVat: '24',
           priceGross: '124',
           vatPercentage: '24',
+          meta: [
+            {
+              key: 'mk2',
+              value: 'mv2',
+              label: 'ml2',
+              visibleInCheckout: false,
+              ordinal: '1',
+            },
+          ],
         },
       ],
     })
