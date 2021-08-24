@@ -1,6 +1,9 @@
 import { AbstractController, logger } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
-import { createUserRedirectUrl } from '../lib/vismaPay'
+import {
+  createUserRedirectUrl,
+  parseOrderIdFromRedirect,
+} from '../lib/vismaPay'
 import { URL } from 'url'
 import { getOrder } from '@verkkokauppa/order-backend'
 import { checkVismaReturnUrl } from '@verkkokauppa/payment-backend'
@@ -23,7 +26,7 @@ export class OnlinePaymentReturnController extends AbstractController {
           OnlinePaymentReturnController.getFailureRedirectUrl().toString()
         )
       }
-      const orderId = query.ORDER_NUMBER?.toString()
+      const orderId = parseOrderIdFromRedirect({ query })
       if (!orderId) {
         console.error('No orderId specified')
         return result.redirect(

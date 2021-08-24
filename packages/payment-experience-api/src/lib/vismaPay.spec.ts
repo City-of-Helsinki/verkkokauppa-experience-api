@@ -1,4 +1,4 @@
-import { createUserRedirectUrl } from './vismaPay'
+import { createUserRedirectUrl, parseOrderIdFromRedirect } from './vismaPay'
 import axios from 'axios'
 
 jest.mock('axios')
@@ -167,6 +167,18 @@ describe('Test User redirection creation', () => {
     })
     expect(result.toString()).toBe(
       `${process.env.REDIRECT_PAYMENT_URL_BASE}/failure`
+    )
+  })
+})
+
+describe('Test parse orderId from redirect', () => {
+  it('Should return correct orderId from redirectUrl', () => {
+    const query = {
+      ORDER_NUMBER: 'f9ab55be-dbfe-3b39-bb38-60306d6958f3_at_20210824-0635',
+    }
+
+    expect(parseOrderIdFromRedirect({ query })).toBe(
+      'f9ab55be-dbfe-3b39-bb38-60306d6958f3'
     )
   })
 })
