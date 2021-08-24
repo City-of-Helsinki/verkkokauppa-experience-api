@@ -38,7 +38,7 @@ export class InstantPurchase extends AbstractController {
       })
 
       const orderItems = await Promise.all(
-        body.products.map(async ({ productId, quantity, unit }) => {
+        body.products.map(async ({ productId, quantity, unit, meta }) => {
           // TODO: handle missing product / price (404)
           const [product, price] = await Promise.all([
             getProduct({ productId }),
@@ -63,6 +63,7 @@ export class InstantPurchase extends AbstractController {
             priceGross: price.original.grossValue,
             priceVat: price.original.vatValue,
             vatPercentage: price.original.vatPercentage,
+            meta,
           }
         })
       )
