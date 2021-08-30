@@ -1,6 +1,8 @@
 import { AbstractController, Data, logger } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
 import { getOrder } from '@verkkokauppa/order-backend'
+import { getMerchantDetailsForOrder } from '@verkkokauppa/configuration-backend'
+import { transformConfigurationToMerchant } from '../lib/merchant'
 
 export class GetController extends AbstractController {
   protected async implementation(req: Request, res: Response): Promise<any> {
@@ -13,7 +15,13 @@ export class GetController extends AbstractController {
     logger.debug(`Fetch order ${orderId}`)
 
     try {
-      dto.data = await getOrder({ orderId })
+      const order = await getOrder({ orderId })
+      const merchantConfiguration = await getMerchantDetailsForOrder(order)
+
+      dto.data = {
+        ...order,
+        merchant: transformConfigurationToMerchant(merchantConfiguration),
+      }
     } catch (error) {
       logger.error(error)
       if (error.response.status === 404) {

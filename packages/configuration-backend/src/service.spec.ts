@@ -3,7 +3,7 @@ import {
   getAllRestrictedServiceConfiguration,
   getPublicServiceConfiguration,
   getRestrictedServiceConfiguration,
-} from './index'
+} from './service'
 import axios from 'axios'
 
 jest.mock('axios')
