@@ -3,11 +3,13 @@ import { Router } from 'express'
 import { CreatePaymentController } from './api/createPaymentController'
 import { GetPaymentMethodListController } from './api/getPaymentMethodListController'
 import { OnlinePaymentReturnController } from './api/onlinePaymentReturnController'
+import { OnlinePaymentNotifyController } from './api/onlinePaymentNotifyController'
 import { GetPaymentController } from './api/getPaymentController'
 
 const createPaymentController = new CreatePaymentController()
 const getPaymentMethodListCtrl = new GetPaymentMethodListController()
 const onlinePaymentReturnController = new OnlinePaymentReturnController()
+const onlinePaymentNotifyController = new OnlinePaymentNotifyController()
 const getPaymentController = new GetPaymentController()
 
 const router = Router()
@@ -20,5 +22,8 @@ router.get('/:orderId/paymentMethods', (req, res) =>
 )
 router.get('/onlinePayment/return', (req, res) =>
   onlinePaymentReturnController.execute(req, res)
+)
+router.get('/onlinePayment/notify', (req, res) =>
+  onlinePaymentNotifyController.execute(req, res)
 )
 export default router
