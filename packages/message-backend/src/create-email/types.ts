@@ -18,17 +18,29 @@ export interface EmailTemplateDto {
 }
 
 export interface OrderConfirmationEmailParameters {
-  receipt_header: string;
-  order_header: string;
-  merchant_header: string;
-  receipt_details?: (ReceiptDetailsEntity)[] | null;
-  order_details?: (DescriptionEntity)[] | null;
-  merchant_details?: (DescriptionEntity)[] | null;
+  headingHeader: string;
+  receiptHeader: string;
+  orderHeader: string;
+  merchantHeader: string;
+  headingDetails?: (HeadingDetailsEntity) | null;
+  receiptDetails?: (ReceiptDetailsEntity)[] | null;
+  orderDetails?: (DescriptionEntity)[] | null;
+  merchantDetails?: (DescriptionEntity)[] | null;
 }
 
 export interface ReceiptDetailsEntity {
   description: string;
   fieldValue: string;
+  bold?: boolean | null;
+  className?: string | null;
+}
+
+export interface HeadingDetailsEntity {
+  orderId: string;
+  endDate: string;
+  service: string;
+  serviceProvider: string;
+  serviceProviderUrl: string;
   bold?: boolean | null;
   className?: string | null;
 }

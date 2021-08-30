@@ -5,8 +5,18 @@ describe('Test Calculate Totals for Order', () => {
     it('Should throw error with no backend url set', async () => {
 
         const templateParams: OrderConfirmationEmailParameters = {
-            receipt_header: "Maksutiedot",
-            receipt_details: [
+            headingHeader: "Tilausvahvistus ja kuitti",
+            headingDetails:
+                {
+                    orderId: "",
+                    endDate: "",
+                    service: "",
+                    serviceProvider: "",
+                    serviceProviderUrl: "",
+                }
+            ,
+            receiptHeader: "Maksutiedot",
+            receiptDetails: [
                 {
                     description: "Kiinteähintainen tuote",
                     fieldValue: "10.50 €",
@@ -30,8 +40,8 @@ describe('Test Calculate Totals for Order', () => {
                     fieldValue: "06.05.2021 13:55:42"
                 },
             ],
-            order_header: "Tilaajan tiedot",
-            order_details: [
+            orderHeader: "Tilaajan tiedot",
+            orderDetails: [
                 {
                     description: "Essi esimerkki",
                 },
@@ -49,8 +59,8 @@ describe('Test Calculate Totals for Order', () => {
                     description: "123456 Esimerkkitoimipaikka",
                 },
             ],
-            merchant_header: "Myyjän tiedot",
-            merchant_details: [
+            merchantHeader: "Myyjän tiedot",
+            merchantDetails: [
                 {
                     description: "Helsingin kaupunki",
                 },
@@ -73,7 +83,7 @@ describe('Test Calculate Totals for Order', () => {
             ],
         };
 
-        const template = HandleBarTemplate<OrderConfirmationEmailParameters>();
+        const template = HandleBarTemplate<OrderConfirmationEmailParameters>("en");
         template.setFileName("orderConfirmation");
         const compiledTemplate = template.createTemplate();
 
