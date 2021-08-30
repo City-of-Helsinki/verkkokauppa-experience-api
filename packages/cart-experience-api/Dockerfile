@@ -5,6 +5,7 @@ RUN npm install -g yarn
 
 # Copy monorepo general contents
 COPY ./package*.json .
+COPY ./yarn.lock .
 COPY ./tsconfig.json ./tsconfig.json
 COPY ./tsconfig.base.json ./tsconfig.base.json
 COPY ./jest.config.js ./jest.config.js
