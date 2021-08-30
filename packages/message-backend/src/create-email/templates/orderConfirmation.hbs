@@ -452,7 +452,7 @@
         <td align="center">
             <table class="email-content" width="100%" cellpadding="0" cellspacing="0" role="presentation">
                 <!-- Email Body -->
-                {{#if receipt_header}}
+                {{#if headingDetails}}
                     <tr>
                         <td class="email-body" width="100%" cellpadding="0" cellspacing="0">
                             <table class="email-body_inner" align="center" width="414" cellpadding="0" cellspacing="0" role="presentation">
@@ -460,13 +460,48 @@
                                 <tr>
                                     <td class="content-cell">
                                         <div class="f-fallback">
-                                            <h1 style="margin-bottom: 0">{{receipt_header}}</h1>
+                                            <h1 style="margin-bottom: 0" class="TODO">{{I18n 'orderConfirmation.header'}}</h1>
 
                                             <table class="purchase" width="100%" cellpadding="0" cellspacing="0" role="presentation">
                                                 <tr>
                                                     <td colspan="2">
                                                         <table class="purchase_content" width="100%" cellpadding="0" cellspacing="0">
-                                                            {{#each receipt_details}}
+                                                            <tr>
+                                                                <td width="100%" class="purchase_item"><span class="f-fallback text-bold">{{headingDetails.orderId}}</span></td>
+                                                             </tr>
+
+                                                            <tr>
+                                                                <td width="100%" class="purchase_item"><span class="f-fallback text-bold">{{headingDetails.orderId}}</span></td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                {{/if}}
+
+
+                {{#if receiptHeader}}
+                    <tr>
+                        <td class="email-body" width="100%" cellpadding="0" cellspacing="0">
+                            <table class="email-body_inner" align="center" width="414" cellpadding="0" cellspacing="0" role="presentation">
+                                <!-- Body content -->
+                                <tr>
+                                    <td class="content-cell">
+                                        <div class="f-fallback">
+                                            <h1 style="margin-bottom: 0">{{receiptHeader}}</h1>
+
+                                            <table class="purchase" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                                                <tr>
+                                                    <td colspan="2">
+                                                        <table class="purchase_content" width="100%" cellpadding="0" cellspacing="0">
+                                                            {{#each receiptDetails}}
                                                             <tr>
                                                                 <td width="80%" class="purchase_item {{#if className}} {{className}} {{/if}} {{#if bold}} text-bold{{/if}}"><span class="f-fallback">{{description}}</span></td>
                                                                 <td class="align-right {{#if className}} {{className}} {{/if}}" width="20%" class="purchase_item"><span class="f-fallback no-wrap {{#if bold}}text-bold{{/if}}">{{fieldValue}}</span></td>
@@ -485,7 +520,7 @@
                     </tr>
                 {{/if}}
 
-                {{#if order_header}}
+                {{#if orderHeader}}
                     <tr>
                         <td class="email-body" width="100%" cellpadding="0" cellspacing="0">
                             <table class="email-body_inner" align="center" width="414" cellpadding="0" cellspacing="0" role="presentation">
@@ -494,13 +529,13 @@
                                     <td class="content-cell">
                                         <div class="f-fallback">
                                             <hr>
-                                            <h1 style="margin-bottom: 0; margin-top: 1rem">{{order_header}}</h1>
+                                            <h1 style="margin-bottom: 0; margin-top: 1rem">{{orderHeader}}</h1>
 
                                             <table class="purchase" width="100%" cellpadding="0" cellspacing="0" role="presentation">
                                                 <tr>
                                                     <td colspan="2">
                                                         <table class="purchase_content" width="100%" cellpadding="0" cellspacing="0">
-                                                            {{#each order_details}}
+                                                            {{#each orderDetails}}
                                                                 <tr>
                                                                     <td width="80%" class="purchase_item {{#if className}} {{className}} {{/if}} {{#if bold}} text-bold{{/if}}"><span class="f-fallback">{{description}}</span></td>
                                                                     <td class="align-right {{#if className}} {{className}} {{/if}}" width="20%" class="purchase_item"><span class="f-fallback no-wrap {{#if bold}}text-bold{{/if}}">{{fieldValue}}</span></td>
@@ -519,7 +554,7 @@
                     </tr>
                 {{/if}}
 
-                {{#if merchant_header}}
+                {{#if merchantHeader}}
                     <tr>
                         <td class="email-body" width="100%" cellpadding="0" cellspacing="0">
                             <table class="email-body_inner" align="center" width="414" cellpadding="0" cellspacing="0" role="presentation">
@@ -528,13 +563,13 @@
                                     <td class="content-cell">
                                         <div class="f-fallback">
                                             <hr>
-                                            <h1 style="margin-bottom: 0; margin-top: 1rem">{{merchant_header}}</h1>
+                                            <h1 style="margin-bottom: 0; margin-top: 1rem">{{merchantHeader}}</h1>
 
                                             <table class="purchase" width="100%" cellpadding="0" cellspacing="0" role="presentation">
                                                 <tr>
                                                     <td colspan="2">
                                                         <table class="purchase_content" width="100%" cellpadding="0" cellspacing="0">
-                                                            {{#each merchant_details}}
+                                                            {{#each merchantDetails}}
                                                                 <tr>
                                                                     <td width="80%" class="purchase_item {{#if className}} {{className}} {{/if}} {{#if bold}} text-bold{{/if}}"><span class="f-fallback">{{description}}</span></td>
                                                                     <td class="align-right {{#if className}} {{className}} {{/if}}" width="20%" class="purchase_item"><span class="f-fallback no-wrap {{#if bold}}text-bold{{/if}}">{{fieldValue}}</span></td>
