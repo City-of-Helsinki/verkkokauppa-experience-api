@@ -1,4 +1,13 @@
 import { CombinedData } from './combinedData'
 import { Data } from './data'
 import { Result } from './result'
-export { CombinedData, Data, Result }
+import { ExperienceError, ExperienceFailure, StatusCode } from './error'
+
+export {
+  CombinedData,
+  Data,
+  Result,
+  ExperienceError,
+  ExperienceFailure,
+  StatusCode,
+}
