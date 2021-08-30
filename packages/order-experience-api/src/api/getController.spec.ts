@@ -117,4 +117,20 @@ describe('Test getController', () => {
     })
     expect(res).toBe(successSpy.mock.results[0]?.value)
   })
+  it('Should get order without merchant details', async () => {
+    const successSpy = jest.spyOn(AbstractController.prototype, 'success')
+    getMerchantDetailsForOrderMock.mockImplementationOnce(() => [])
+    getOrderMock.mockImplementationOnce(() => orderMock)
+    const res = await getController.implementation(
+      { params: { orderId: 'test123' }, body: requestBody } as any,
+      mockResponse
+    )
+    expect(successSpy).toHaveBeenCalledTimes(1)
+    expect(successSpy.mock.calls[0]?.[0]).toBe(mockResponse)
+    expect(successSpy.mock.calls[0]?.[1]).toEqual({
+      ...orderMock,
+      merchant: {},
+    })
+    expect(res).toBe(successSpy.mock.results[0]?.value)
+  })
 })
