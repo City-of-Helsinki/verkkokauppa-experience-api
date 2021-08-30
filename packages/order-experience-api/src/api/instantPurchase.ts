@@ -1,5 +1,5 @@
-import { AbstractController, Data } from '@verkkokauppa/core'
-import type { Request, Response } from 'express'
+import { AbstractController, Data, ValidatedRequest } from '@verkkokauppa/core'
+import type { Response } from 'express'
 import * as yup from 'yup'
 import {
   addItemsToOrder,
@@ -10,8 +10,8 @@ import { getProduct } from '@verkkokauppa/product-backend'
 import { getPrice } from '@verkkokauppa/price-backend'
 import { calculateTotalsFromItems } from '../lib/totals'
 
-export class InstantPurchase extends AbstractController {
-  private static readonly bodySchema = yup.object().shape({
+const requestSchema = yup.object().shape({
+  body: yup.object().shape({
     products: yup
       .array()
       .of(
@@ -29,67 +29,63 @@ export class InstantPurchase extends AbstractController {
       .required(),
     namespace: yup.string().required(),
     user: yup.string().required(),
-  })
+  }),
+})
 
-  protected async implementation(req: Request, res: Response): Promise<any> {
-    try {
-      const body = InstantPurchase.bodySchema.validateSync(req.body, {
-        abortEarly: false,
+export class InstantPurchase extends AbstractController<typeof requestSchema> {
+  protected readonly requestSchema = requestSchema
+
+  protected async implementation(
+    req: ValidatedRequest<typeof requestSchema>,
+    res: Response
+  ): Promise<any> {
+    const { body } = req
+
+    const orderItems = await Promise.all(
+      body.products.map(async ({ productId, quantity, unit, meta }) => {
+        const [product, price] = await Promise.all([
+          getProduct({ productId }),
+          getPrice({ productId }),
+        ])
+
+        return {
+          productId,
+          quantity,
+          unit,
+          productName: product.name,
+          rowPriceNet: (
+            parseFloat(price.original.netValue) * quantity
+          ).toString(),
+          rowPriceVat: (
+            parseFloat(price.original.vatValue) * quantity
+          ).toString(),
+          rowPriceTotal: (
+            parseFloat(price.original.grossValue) * quantity
+          ).toString(),
+          priceNet: price.original.netValue,
+          priceGross: price.original.grossValue,
+          priceVat: price.original.vatValue,
+          vatPercentage: price.original.vatPercentage,
+          meta,
+        }
       })
+    )
 
-      const orderItems = await Promise.all(
-        body.products.map(async ({ productId, quantity, unit, meta }) => {
-          // TODO: handle missing product / price (404)
-          const [product, price] = await Promise.all([
-            getProduct({ productId }),
-            getPrice({ productId }),
-          ])
+    const { orderId } = await createOrder({
+      namespace: body.namespace,
+      user: body.user,
+    })
 
-          return {
-            productId,
-            quantity,
-            unit,
-            productName: product.name,
-            rowPriceNet: (
-              parseFloat(price.original.netValue) * quantity
-            ).toString(),
-            rowPriceVat: (
-              parseFloat(price.original.vatValue) * quantity
-            ).toString(),
-            rowPriceTotal: (
-              parseFloat(price.original.grossValue) * quantity
-            ).toString(),
-            priceNet: price.original.netValue,
-            priceGross: price.original.grossValue,
-            priceVat: price.original.vatValue,
-            vatPercentage: price.original.vatPercentage,
-            meta,
-          }
-        })
-      )
+    await addItemsToOrder({
+      orderId,
+      items: orderItems,
+    })
 
-      const { orderId } = await createOrder({
-        namespace: body.namespace,
-        user: body.user,
-      })
+    const order = await setOrderTotals({
+      orderId,
+      ...calculateTotalsFromItems({ items: orderItems }),
+    })
 
-      await addItemsToOrder({
-        orderId,
-        items: orderItems,
-      })
-
-      const order = await setOrderTotals({
-        orderId,
-        ...calculateTotalsFromItems({ items: orderItems }),
-      })
-
-      return this.created(res, new Data(order).serialize())
-    } catch (e) {
-      if (e instanceof yup.ValidationError) {
-        // TODO: return the validation errors?
-        return this.clientError(res, 'Invalid request body')
-      }
-      throw e
-    }
+    return this.created(res, new Data(order).serialize())
   }
 }

@@ -1,37 +1,45 @@
-import { AbstractController, Data, logger } from '@verkkokauppa/core'
-import type { Request, Response } from 'express'
+import { AbstractController, Data, ValidatedRequest } from '@verkkokauppa/core'
+import type { Response } from 'express'
 import { getOrder } from '@verkkokauppa/order-backend'
 import {
   createPaymentFromOrder,
   getPaymentUrl,
 } from '@verkkokauppa/payment-backend'
 import { DEFAULT_LANGUAGE } from '../constants'
+import * as yup from 'yup'
 
-export class CreatePaymentController extends AbstractController {
+const requestSchema = yup.object().shape({
+  body: yup.object().shape({
+    paymentMethod: yup.string().default(''),
+    language: yup.string().default(DEFAULT_LANGUAGE),
+  }),
+  params: yup.object().shape({
+    orderId: yup.string().required(),
+  }),
+})
+
+export class CreatePaymentController extends AbstractController<
+  typeof requestSchema
+> {
+  protected readonly requestSchema = requestSchema
+
   protected async implementation(
-    request: Request,
+    request: ValidatedRequest<typeof requestSchema>,
     result: Response
   ): Promise<any> {
-    const { orderId } = request.params
-    const { paymentMethod, language } = request.body
-    if (orderId === undefined) {
-      return this.clientError(result, 'Order ID not specified')
-    }
+    const {
+      body: { paymentMethod, language },
+      params: { orderId },
+    } = request
 
-    const dto = new Data()
-    try {
-      const order = await getOrder({ orderId })
-      const payment = await createPaymentFromOrder({
-        order,
-        paymentMethod: typeof paymentMethod === 'string' ? paymentMethod : '',
-        language: typeof language === 'string' ? language : DEFAULT_LANGUAGE,
-      })
-      const paymentUrl = await getPaymentUrl(order)
-      dto.data = { ...payment, paymentUrl }
-    } catch (error) {
-      logger.error(error)
-      return this.fail(result, error.toString())
-    }
+    const order = await getOrder({ orderId })
+    const payment = await createPaymentFromOrder({
+      order,
+      paymentMethod,
+      language,
+    })
+    const paymentUrl = await getPaymentUrl(order)
+    const dto = new Data({ ...payment, paymentUrl })
 
     return this.created<any>(result, dto.serialize())
   }
