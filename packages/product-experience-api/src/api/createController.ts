@@ -1,33 +1,39 @@
-import { AbstractController, Data, logger } from '@verkkokauppa/core'
-import type { Request, Response } from 'express'
+import {
+  AbstractController,
+  Data,
+  logger,
+  ValidatedRequest,
+} from '@verkkokauppa/core'
+import type { Response } from 'express'
 import { createProductMapping } from '@verkkokauppa/product-mapping-backend'
+import * as yup from 'yup'
 
-export class CreateController extends AbstractController {
-  protected async implementation(req: Request, res: Response): Promise<any> {
-    const { namespace, namespaceEntityId } = req.body
+const requestSchema = yup.object().shape({
+  body: yup.object().shape({
+    namespace: yup.string().required(),
+    namespaceEntityId: yup.string().required(),
+  }),
+})
 
-    if (namespace === undefined) {
-      return this.clientError(res, 'Namespace is not specified')
-    }
-    if (namespaceEntityId === undefined) {
-      return this.clientError(res, 'Namespace Entity ID is not specified')
-    }
+export class CreateController extends AbstractController<typeof requestSchema> {
+  protected readonly requestSchema = requestSchema
 
-    const dto = new Data()
+  protected async implementation(
+    req: ValidatedRequest<typeof requestSchema>,
+    res: Response
+  ): Promise<any> {
+    const {
+      body: { namespace, namespaceEntityId },
+    } = req
 
     logger.debug(
       `Create product mapping for namespace: ${namespace} and product ${namespaceEntityId}`
     )
 
-    try {
-      dto.data = await createProductMapping({ namespace, namespaceEntityId })
-    } catch (error) {
-      logger.error(error)
-      if (error.response.status === 400) {
-        return this.clientError(res, 'Invalid request')
-      }
-      return this.fail(res, error.toString())
-    }
+    const dto = new Data(
+      await createProductMapping({ namespace, namespaceEntityId })
+    )
+
     return this.created<any>(res, dto.serialize())
   }
 }

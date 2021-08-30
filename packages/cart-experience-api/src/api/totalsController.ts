@@ -1,38 +1,45 @@
-import { AbstractController, Data, logger } from '@verkkokauppa/core'
-import type { Request, Response } from 'express'
+import {
+  AbstractController,
+  Data,
+  logger,
+  ValidatedRequest,
+} from '@verkkokauppa/core'
+import type { Response } from 'express'
 import { getCart } from '@verkkokauppa/cart-backend'
 import { calculate } from '../service/totalsService'
+import * as yup from 'yup'
 
-export class TotalsController extends AbstractController {
-  protected async implementation(req: Request, res: Response): Promise<any> {
-    const { cartId } = req.params
-    if (cartId === undefined) {
-      return this.clientError(res, 'Cart ID not specified')
-    }
+const requestSchema = yup.object().shape({
+  params: yup.object().shape({
+    cartId: yup.string().required(),
+  }),
+})
+
+export class TotalsController extends AbstractController<typeof requestSchema> {
+  protected readonly requestSchema = requestSchema
+
+  protected async implementation(
+    req: ValidatedRequest<typeof requestSchema>,
+    res: Response
+  ): Promise<any> {
+    const {
+      params: { cartId },
+    } = req
+
     const dto = new Data()
 
-    try {
-      logger.debug(`Get cart ${cartId}`)
-      const cart = await getCart({ cartId })
-      logger.debug(`Calculate totals for cart ${cartId}`)
-      if (cart.items && cart.items.length > 0) {
-        dto.data = await calculate(cart)
-      } else {
-        dto.data = {
-          ...cart,
-          items: [],
-        }
+    logger.debug(`Get cart ${cartId}`)
+    const cart = await getCart({ cartId })
+    logger.debug(`Calculate totals for cart ${cartId}`)
+    if (cart.items && cart.items.length > 0) {
+      dto.data = await calculate(cart)
+    } else {
+      dto.data = {
+        ...cart,
+        items: [],
       }
-    } catch (error) {
-      logger.error(error)
-      if (error.response.status === 404) {
-        return this.notFound(res, `Cart ${cartId} not found`)
-      }
-      if (error.response.status === 400) {
-        return this.clientError(res, 'Invalid request')
-      }
-      return this.fail(res, error.toString())
     }
+
     return this.success<any>(res, dto.serialize())
   }
 }

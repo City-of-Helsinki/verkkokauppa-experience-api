@@ -27,15 +27,16 @@ export const validateItems = (p: {
   return itemsSchema.isValid(items)
 }
 
+export const customerSchema = yup.object().shape({
+  firstName: yup.string().required(),
+  lastName: yup.string().required(),
+  email: yup.string().email().required(),
+  phone: yup
+    .string()
+    .matches(/^\+(?:[0-9] ?){6,14}[0-9]$/)
+    .required(),
+})
+
 export const validateCustomer = (p: OrderCustomer): Promise<boolean> => {
-  const customerSchema = yup.object().shape({
-    firstName: yup.string().required(),
-    lastName: yup.string().required(),
-    email: yup.string().email().required(),
-    phone: yup
-      .string()
-      .matches(/^\+(?:[0-9] ?){6,14}[0-9]$/)
-      .required(),
-  })
   return customerSchema.isValid(p)
 }
