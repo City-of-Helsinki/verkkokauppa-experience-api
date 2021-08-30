@@ -9,6 +9,8 @@ import {
 import { getProduct } from '@verkkokauppa/product-backend'
 import { getPrice } from '@verkkokauppa/price-backend'
 import { calculateTotalsFromItems } from '../lib/totals'
+import { getMerchantDetailsForOrder } from '@verkkokauppa/configuration-backend'
+import { transformConfigurationToMerchant } from '../lib/merchant'
 
 export class InstantPurchase extends AbstractController {
   private static readonly bodySchema = yup.object().shape({
@@ -78,12 +80,22 @@ export class InstantPurchase extends AbstractController {
         items: orderItems,
       })
 
+      const merchantConfiguration = await getMerchantDetailsForOrder({
+        namespace: body.namespace,
+      })
+
       const order = await setOrderTotals({
         orderId,
         ...calculateTotalsFromItems({ items: orderItems }),
       })
 
-      return this.created(res, new Data(order).serialize())
+      return this.created(
+        res,
+        new Data({
+          ...order,
+          merchant: transformConfigurationToMerchant(merchantConfiguration),
+        }).serialize()
+      )
     } catch (e) {
       if (e instanceof yup.ValidationError) {
         // TODO: return the validation errors?
