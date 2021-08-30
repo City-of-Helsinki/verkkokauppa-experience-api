@@ -1,2 +1,2 @@
-import { AbstractController } from './abstractController'
-export { AbstractController }
+import { AbstractController, ValidatedRequest } from './abstractController'
+export { AbstractController, ValidatedRequest }
