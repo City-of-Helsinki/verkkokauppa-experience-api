@@ -24,6 +24,7 @@ export const createUserRedirectUrl = async ({
       key: 'ORDER_CREATED_REDIRECT_URL',
     })
     if (
+      paymentReturnUrlConfiguration.configurationValue &&
       paymentReturnUrlConfiguration.configurationValue !== '' &&
       vismaStatus.paymentPaid
     ) {
