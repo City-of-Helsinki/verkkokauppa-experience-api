@@ -7,6 +7,8 @@ import {
 import type { Response } from 'express'
 import { getOrder } from '@verkkokauppa/order-backend'
 import * as yup from 'yup'
+import { getMerchantDetailsForOrder } from '@verkkokauppa/configuration-backend'
+import { transformConfigurationToMerchant } from '../lib/merchant'
 
 const requestSchema = yup.object().shape({
   params: yup.object().shape({
@@ -24,8 +26,13 @@ export class GetController extends AbstractController<typeof requestSchema> {
     const { orderId } = req.params
 
     logger.debug(`Fetch order ${orderId}`)
+    const order = await getOrder({ orderId })
+    const merchantConfiguration = await getMerchantDetailsForOrder(order)
 
-    const dto = new Data(await getOrder({ orderId }))
+    const dto = new Data({
+      ...order,
+      merchant: transformConfigurationToMerchant(merchantConfiguration),
+    })
 
     return this.success<any>(res, dto.serialize())
   }

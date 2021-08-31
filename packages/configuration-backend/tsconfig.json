@@ -6,17 +6,17 @@
         "composite": true,
         "baseUrl": "./",
         "paths": {
-          "@verkkokauppa/core": [
-            "../core"
-          ]
+            "@verkkokauppa/core": [
+                "../core"
+            ]
         }
     },
     "include": [
         "src/**/*"
     ],
     "references": [
-      {
-        "path": "../core"
-      }
+        {
+            "path": "../core"
+        }
     ]
 }

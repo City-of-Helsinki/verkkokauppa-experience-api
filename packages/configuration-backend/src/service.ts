@@ -84,3 +84,22 @@ export const getRestrictedServiceConfiguration = async (p: {
     throw new GetRestrictedServiceConfigurationFailure(e)
   }
 }
+
+export const getMerchantDetailsForOrder = async (p: {
+  namespace: string
+}): Promise<ServiceConfiguration[]> => {
+  const { namespace } = p
+  const allConfiguration = await getAllPublicServiceConfiguration({ namespace })
+  const merchantFields = [
+    'MERCHANT_NAME',
+    'MERCHANT_STREET',
+    'MERCHANT_ZIP',
+    'MERCHANT_CITY',
+    'MERCHANT_EMAIL',
+    'MERCHANT_PHONE',
+    'MERCHANT_URL',
+  ]
+  return allConfiguration.filter((configuration) =>
+    merchantFields.includes(configuration.configurationKey)
+  )
+}

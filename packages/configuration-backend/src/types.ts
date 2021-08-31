@@ -7,6 +7,13 @@ export type PublicServiceConfigurationKeys = {
   PAYMENT_API_VERSION: string
   PAYMENT_RETURN_URL: string
   PAYMENT_NOTIFICATION_URL: string
+  MERCHANT_NAME: string
+  MERCHANT_STREET: string
+  MERCHANT_ZIP: string
+  MERCHANT_CITY: string
+  MERCHANT_EMAIL: string
+  MERCHANT_PHONE: string
+  MERCHANT_URL: string
 }
 
 export type RestrictedServiceConfigurationKeys = {
