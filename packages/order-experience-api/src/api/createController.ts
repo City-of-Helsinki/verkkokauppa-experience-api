@@ -15,8 +15,8 @@ const requestSchema = yup.object().shape({
   body: yup.object().shape({
     namespace: yup.string().required(),
     user: yup.string().required(),
-    items: itemsSchema.optional(),
-    customer: customerSchema.optional(),
+    items: itemsSchema.notRequired(),
+    customer: customerSchema.notRequired().default(undefined),
   }),
 })
 
