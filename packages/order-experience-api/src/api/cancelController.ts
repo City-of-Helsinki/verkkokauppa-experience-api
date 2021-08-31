@@ -1,5 +1,10 @@
-import { AbstractController, Data, logger } from '@verkkokauppa/core'
-import type { Request, Response } from 'express'
+import {
+  AbstractController,
+  Data,
+  logger,
+  ValidatedRequest,
+} from '@verkkokauppa/core'
+import type { Response } from 'express'
 import { cancelOrder } from '@verkkokauppa/order-backend'
 import {
   createCart,
@@ -8,35 +13,40 @@ import {
 } from '@verkkokauppa/cart-backend'
 import { getPublicServiceConfiguration } from '@verkkokauppa/configuration-backend'
 import { URL } from 'url'
+import * as yup from 'yup'
 
-export class CancelController extends AbstractController {
-  protected async implementation(req: Request, res: Response): Promise<any> {
-    const { orderId } = req.params
-    if (orderId === undefined) {
-      return this.clientError(res, 'Order ID not specified')
-    }
-    const dto = new Data()
+const requestSchema = yup.object().shape({
+  params: yup.object().shape({
+    orderId: yup.string().required(),
+  }),
+})
+
+export class CancelController extends AbstractController<typeof requestSchema> {
+  protected readonly requestSchema = requestSchema
+
+  protected async implementation(
+    req: ValidatedRequest<typeof requestSchema>,
+    res: Response
+  ): Promise<any> {
+    const {
+      params: { orderId },
+    } = req
+
     logger.debug(`Cancel Order ${orderId}`)
-    try {
-      const order = await cancelOrder({ orderId })
-      await clearCart(order)
-      const cart =
-        order.items && order.items.length > 0
-          ? await createCartWithItems(order)
-          : await createCart(order)
-      const cancelUrl = await CancelController.createCancelUrl(cart)
-      dto.data = {
-        order,
-        cart,
-        cancelUrl,
-      }
-    } catch (error) {
-      logger.error(error)
-      if (error.response.status === 400) {
-        return this.clientError(res, 'Invalid request')
-      }
-      return this.fail(res, error.toString())
-    }
+
+    const order = await cancelOrder({ orderId })
+    await clearCart(order)
+    const cart =
+      order.items && order.items.length > 0
+        ? await createCartWithItems(order)
+        : await createCart(order)
+    const cancelUrl = await CancelController.createCancelUrl(cart)
+    const dto = new Data({
+      order,
+      cart,
+      cancelUrl,
+    })
+
     return this.success<any>(res, dto.serialize())
   }
 

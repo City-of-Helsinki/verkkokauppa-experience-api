@@ -53,7 +53,7 @@ describe('Test Create Payment for Order', () => {
         order: orderMock,
         paymentMethod: '',
       })
-    ).rejects.toThrow('Unsupported payment method given as parameter')
+    ).rejects.toThrow()
   })
   it('Should throw error with incorrect payment method set', async () => {
     process.env.PAYMENT_BACKEND_URL = 'test.dev.hel'
@@ -63,7 +63,7 @@ describe('Test Create Payment for Order', () => {
         order: orderMock,
         paymentMethod: 'asd',
       })
-    ).rejects.toThrow('Unsupported payment method given as parameter')
+    ).rejects.toThrow()
   })
   it('Should create payment correctly', async () => {
     process.env.PAYMENT_BACKEND_URL = 'test.dev.hel'

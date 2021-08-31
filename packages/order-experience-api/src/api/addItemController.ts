@@ -1,37 +1,45 @@
-import { AbstractController, Data, logger } from '@verkkokauppa/core'
-import type { Request, Response } from 'express'
+import {
+  AbstractController,
+  Data,
+  logger,
+  ValidatedRequest,
+} from '@verkkokauppa/core'
+import type { Response } from 'express'
 import { addItemsToOrder } from '@verkkokauppa/order-backend'
-import { validateItems } from '../lib/validation'
+import { itemsSchema } from '../lib/validation'
+import * as yup from 'yup'
 
-export class AddItemController extends AbstractController {
-  protected async implementation(req: Request, res: Response): Promise<any> {
-    const { orderId } = req.params
-    const { items } = req.body
-    if (orderId === undefined) {
-      return this.clientError(res, 'Order ID not specified')
-    }
-    if (items === undefined) {
-      return this.clientError(res, 'Items not specified')
-    }
-    const dto = new Data()
+const requestSchema = yup.object().shape({
+  body: yup.object().shape({
+    items: itemsSchema.required().min(1),
+  }),
+  params: yup.object().shape({
+    orderId: yup.string().required(),
+  }),
+})
+
+export class AddItemController extends AbstractController<
+  typeof requestSchema
+> {
+  protected readonly requestSchema = requestSchema
+  protected async implementation(
+    req: ValidatedRequest<typeof requestSchema>,
+    res: Response
+  ): Promise<any> {
+    const {
+      params: { orderId },
+      body: { items },
+    } = req
 
     logger.debug(`Add items to order ${orderId}`)
 
-    try {
-      if (!(await validateItems({ items }))) {
-        return this.clientError(res, 'Order items are not valid')
-      }
-      dto.data = await addItemsToOrder({
+    const dto = new Data(
+      await addItemsToOrder({
         orderId,
         items,
       })
-    } catch (error) {
-      logger.error(error)
-      if (error.response.status === 400) {
-        return this.clientError(res, 'Invalid request')
-      }
-      return this.fail(res, error.toString())
-    }
+    )
+
     return this.success<any>(res, dto.serialize())
   }
 }

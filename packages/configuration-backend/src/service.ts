@@ -4,6 +4,12 @@ import type {
   RestrictedServiceConfigurationKeys,
   ServiceConfiguration,
 } from './types'
+import {
+  GetAllPublicServiceConfigurationFailure,
+  GetAllRestrictedServiceConfigurationFailure,
+  GetPublicServiceConfigurationFailure,
+  GetRestrictedServiceConfigurationFailure,
+} from './errors'
 
 export const getAllPublicServiceConfiguration = async (p: {
   namespace: string
@@ -13,10 +19,14 @@ export const getAllPublicServiceConfiguration = async (p: {
     throw new Error('No configuration backend URL set')
   }
   const url = `${process.env.CONFIGURATION_BACKEND_URL}/public/getAll`
-  const result = await axios.get<ServiceConfiguration[]>(url, {
-    params: { namespace },
-  })
-  return result.data
+  try {
+    const result = await axios.get<ServiceConfiguration[]>(url, {
+      params: { namespace },
+    })
+    return result.data
+  } catch (e) {
+    throw new GetAllPublicServiceConfigurationFailure(e)
+  }
 }
 
 export const getPublicServiceConfiguration = async (p: {
@@ -28,10 +38,14 @@ export const getPublicServiceConfiguration = async (p: {
     throw new Error('No configuration backend URL set')
   }
   const url = `${process.env.CONFIGURATION_BACKEND_URL}/public/get`
-  const result = await axios.get<ServiceConfiguration>(url, {
-    params: { namespace, key },
-  })
-  return result.data
+  try {
+    const result = await axios.get<ServiceConfiguration>(url, {
+      params: { namespace, key },
+    })
+    return result.data
+  } catch (e) {
+    throw new GetPublicServiceConfigurationFailure(e)
+  }
 }
 
 export const getAllRestrictedServiceConfiguration = async (p: {
@@ -42,10 +56,14 @@ export const getAllRestrictedServiceConfiguration = async (p: {
     throw new Error('No configuration backend URL set')
   }
   const url = `${process.env.CONFIGURATION_BACKEND_URL}/restricted/getAll`
-  const result = await axios.get<ServiceConfiguration[]>(url, {
-    params: { namespace },
-  })
-  return result.data
+  try {
+    const result = await axios.get<ServiceConfiguration[]>(url, {
+      params: { namespace },
+    })
+    return result.data
+  } catch (e) {
+    throw new GetAllRestrictedServiceConfigurationFailure(e)
+  }
 }
 
 export const getRestrictedServiceConfiguration = async (p: {
@@ -57,10 +75,14 @@ export const getRestrictedServiceConfiguration = async (p: {
     throw new Error('No configuration backend URL set')
   }
   const url = `${process.env.CONFIGURATION_BACKEND_URL}/restricted/get`
-  const result = await axios.get<ServiceConfiguration>(url, {
-    params: { namespace, key },
-  })
-  return result.data
+  try {
+    const result = await axios.get<ServiceConfiguration>(url, {
+      params: { namespace, key },
+    })
+    return result.data
+  } catch (e) {
+    throw new GetRestrictedServiceConfigurationFailure(e)
+  }
 }
 
 export const getMerchantDetailsForOrder = async (p: {

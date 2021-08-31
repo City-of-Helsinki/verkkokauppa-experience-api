@@ -1,5 +1,5 @@
-import { AbstractController } from '@verkkokauppa/core'
-import type { Request, Response } from 'express'
+import { AbstractController, ValidatedRequest } from '@verkkokauppa/core'
+import type { Response } from 'express'
 import { GetController } from './getController'
 
 jest.mock('@verkkokauppa/configuration-backend')
@@ -84,7 +84,7 @@ beforeEach(() => {
 })
 
 const getController = new (class extends GetController {
-  implementation(req: Request, res: Response): Promise<any> {
+  implementation(req: ValidatedRequest<any>, res: Response): Promise<any> {
     return super.implementation(req, res)
   }
 })()
