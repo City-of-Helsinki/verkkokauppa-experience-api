@@ -13,7 +13,8 @@ const requestSchema = yup.object().shape({
   }),
   body: yup.object().shape({
     paymentMethod: yup.string().required(),
-    paymentLanguage: yup.string().required(),
+    paymentMethodLabel: yup.string().required(),
+    language: yup.string().required(),
   }),
 })
 
@@ -28,7 +29,7 @@ export class ConfirmAndCreatePayment extends AbstractController<
   ): Promise<any> {
     const {
       params: { orderId },
-      body: { paymentMethod, paymentLanguage },
+      body: { paymentMethod, paymentMethodLabel, language },
     } = req
 
     const order = await confirmOrder({ orderId })
@@ -36,7 +37,8 @@ export class ConfirmAndCreatePayment extends AbstractController<
     const payment = await createPaymentFromOrder({
       order,
       paymentMethod,
-      language: paymentLanguage,
+      paymentMethodLabel,
+      language,
     })
 
     const paymentUrl = await getPaymentUrl(order)

@@ -11,6 +11,7 @@ import * as yup from 'yup'
 const requestSchema = yup.object().shape({
   body: yup.object().shape({
     paymentMethod: yup.string().default(''),
+    paymentMethodLabel: yup.string().default(''),
     language: yup.string().default(DEFAULT_LANGUAGE),
   }),
   params: yup.object().shape({
@@ -28,7 +29,7 @@ export class CreatePaymentController extends AbstractController<
     result: Response
   ): Promise<any> {
     const {
-      body: { paymentMethod, language },
+      body: { paymentMethod, paymentMethodLabel, language },
       params: { orderId },
     } = request
 
@@ -36,6 +37,7 @@ export class CreatePaymentController extends AbstractController<
     const payment = await createPaymentFromOrder({
       order,
       paymentMethod,
+      paymentMethodLabel,
       language,
     })
     const paymentUrl = await getPaymentUrl(order)
