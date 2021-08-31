@@ -1,22 +1,30 @@
-import { AbstractController, Data, logger } from '@verkkokauppa/core'
-import type { Request, Response } from 'express'
+import { AbstractController, Data, ValidatedRequest } from '@verkkokauppa/core'
+import type { Response } from 'express'
 import { getOrder, OrderItem } from '@verkkokauppa/order-backend'
 import { getPaymentMethodList } from '@verkkokauppa/payment-backend'
+import * as yup from 'yup'
 
-export class GetPaymentMethodListController extends AbstractController {
+const requestSchema = yup.object().shape({
+  params: yup.object().shape({
+    orderId: yup.string().required(),
+  }),
+})
+
+export class GetPaymentMethodListController extends AbstractController<
+  typeof requestSchema
+> {
+  protected readonly requestSchema = requestSchema
   protected async implementation(
-    request: Request,
+    request: ValidatedRequest<typeof requestSchema>,
     result: Response
   ): Promise<any> {
-    const { orderId } = request.params
-    if (orderId === undefined) {
-      return this.clientError(result, 'Order ID not specified')
-    }
+    const {
+      params: { orderId },
+    } = request
 
-    const dto = new Data()
-    try {
-      const order = await getOrder({ orderId })
-      dto.data = await getPaymentMethodList({
+    const order = await getOrder({ orderId })
+    const dto = new Data(
+      await getPaymentMethodList({
         request: {
           namespace: order.namespace,
           totalPrice: order.priceTotal
@@ -24,10 +32,7 @@ export class GetPaymentMethodListController extends AbstractController {
             : calculateTotalPrice(order.items),
         },
       })
-    } catch (error) {
-      logger.error(error)
-      return this.fail(result, error.toString())
-    }
+    )
 
     return this.success<any>(result, dto.serialize())
   }

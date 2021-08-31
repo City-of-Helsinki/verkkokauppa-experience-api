@@ -33,7 +33,7 @@
   },
   "dependencies": {},
   "lint-staged": {
-    "**/*.js": [
+    "**/*.ts": [
       "eslint --cache --fix",
       "git add"
     ]
