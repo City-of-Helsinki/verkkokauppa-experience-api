@@ -9,6 +9,8 @@ import {
 import { getProduct } from '@verkkokauppa/product-backend'
 import { getPrice } from '@verkkokauppa/price-backend'
 import { calculateTotalsFromItems } from '../lib/totals'
+import { getMerchantDetailsForOrder } from '@verkkokauppa/configuration-backend'
+import { transformConfigurationToMerchant } from '../lib/merchant'
 
 const requestSchema = yup.object().shape({
   body: yup.object().shape({
@@ -81,11 +83,21 @@ export class InstantPurchase extends AbstractController<typeof requestSchema> {
       items: orderItems,
     })
 
+    const merchantConfiguration = await getMerchantDetailsForOrder({
+      namespace: body.namespace,
+    })
+
     const order = await setOrderTotals({
       orderId,
       ...calculateTotalsFromItems({ items: orderItems }),
     })
 
-    return this.created(res, new Data(order).serialize())
+    return this.created(
+      res,
+      new Data({
+        ...order,
+        merchant: transformConfigurationToMerchant(merchantConfiguration),
+      }).serialize()
+    )
   }
 }

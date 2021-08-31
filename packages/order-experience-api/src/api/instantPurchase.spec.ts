@@ -5,6 +5,7 @@ import type { Request, Response } from 'express'
 jest.mock('@verkkokauppa/product-backend')
 jest.mock('@verkkokauppa/price-backend')
 jest.mock('@verkkokauppa/order-backend')
+jest.mock('@verkkokauppa/configuration-backend')
 
 const getProductMock = require('@verkkokauppa/product-backend').getProduct.mockImplementation(
   () => ({})
@@ -25,6 +26,25 @@ const addItemsToOrderMock = require('@verkkokauppa/order-backend').addItemsToOrd
 const setOrderTotalsMock = require('@verkkokauppa/order-backend').setOrderTotals.mockImplementation(
   () => ({})
 )
+
+const getMerchantDetailsForOrderMock = require('@verkkokauppa/configuration-backend').getMerchantDetailsForOrder.mockImplementation(
+  () => ({})
+)
+
+const merchantConfigurationMock = [
+  {
+    configurationId: 'i1',
+    namespace: 'n1',
+    configurationKey: 'MERCHANT_NAME',
+    configurationValue: 'name',
+  },
+  {
+    configurationId: 'i2',
+    namespace: 'n2',
+    configurationKey: 'MERCHANT_STREET',
+    configurationValue: 'street',
+  },
+]
 
 beforeEach(() => {
   jest.clearAllMocks()
@@ -190,6 +210,9 @@ describe('Test instantPurchase', () => {
       items: [],
       priceNet: 10,
     }))
+    getMerchantDetailsForOrderMock.mockImplementationOnce(
+      () => merchantConfigurationMock
+    )
     const res = await instantPurchase.implementation(
       { body: requestBody } as Request,
       mockResponse
@@ -200,6 +223,10 @@ describe('Test instantPurchase', () => {
       orderId: '100',
       items: [],
       priceNet: 10,
+      merchant: {
+        merchantName: 'name',
+        merchantStreet: 'street',
+      },
     })
     expect(res).toBe(createdSpy.mock.results[0]?.value)
   })
