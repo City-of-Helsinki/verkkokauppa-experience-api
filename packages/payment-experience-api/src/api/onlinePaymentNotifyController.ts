@@ -11,18 +11,13 @@ export class OnlinePaymentNotifyController extends AbstractController {
     result: Response
   ): Promise<any> {
     const { query } = request
-    try {
-      const vismaStatus = await checkVismaReturnUrl({ params: query })
-      const orderId = parseOrderIdFromRedirect({ query })
-      logger.debug(
-        `VismaStatus callback for order ${orderId}: ${JSON.stringify(
-          vismaStatus
-        )}`
-      )
-      return this.success(result)
-    } catch (error) {
-      logger.error(error)
-      return this.fail(result, 'Cannot validate notify callback')
-    }
+    const vismaStatus = await checkVismaReturnUrl({ params: query })
+    const orderId = parseOrderIdFromRedirect({ query })
+    logger.debug(
+      `VismaStatus callback for order ${orderId}: ${JSON.stringify(
+        vismaStatus
+      )}`
+    )
+    return this.success(result)
   }
 }
