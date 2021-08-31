@@ -27,9 +27,10 @@ const PAYMENT_METHOD_MAP = new Map()
 export const createPaymentFromOrder = async (parameters: {
   order: Order
   paymentMethod: string
+  paymentMethodLabel: string
   language: string
 }): Promise<Payment> => {
-  const { order, paymentMethod, language } = parameters
+  const { order, paymentMethod, paymentMethodLabel, language } = parameters
   if (!process.env.PAYMENT_BACKEND_URL) {
     throw new Error('No payment API backend URL set')
   }
@@ -45,6 +46,7 @@ export const createPaymentFromOrder = async (parameters: {
   try {
     const result = await axios.post<Payment>(url, {
       paymentMethod,
+      paymentMethodLabel,
       language,
       order: { order, items: order.items },
     })
