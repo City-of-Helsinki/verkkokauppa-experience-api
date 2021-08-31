@@ -1,67 +1,72 @@
-import { AbstractController, Data, logger } from '@verkkokauppa/core'
-import type { Request, Response } from 'express'
+import {
+  AbstractController,
+  Data,
+  logger,
+  ValidatedRequest,
+} from '@verkkokauppa/core'
+import type { Response } from 'express'
 import { createOrder, createOrderWithItems } from '@verkkokauppa/order-backend'
-import { validateItems } from '../lib/validation'
+import { customerSchema, itemsSchema } from '../lib/validation'
 import { calculateTotalsFromItems } from '../lib/totals'
+import * as yup from 'yup'
+import { RequestValidationError } from '@verkkokauppa/core/dist/errors'
 
-export class CreateController extends AbstractController {
-  protected async implementation(req: Request, res: Response): Promise<any> {
-    const { items } = req.body
+const requestSchema = yup.object().shape({
+  body: yup.object().shape({
+    namespace: yup.string().required(),
+    user: yup.string().required(),
+    items: itemsSchema.optional(),
+    customer: customerSchema.optional(),
+  }),
+})
+
+export class CreateController extends AbstractController<typeof requestSchema> {
+  protected readonly requestSchema = requestSchema
+
+  protected async implementation(
+    req: ValidatedRequest<typeof requestSchema>,
+    res: Response
+  ): Promise<any> {
+    const { items, customer } = req.body
 
     if (items && items.length > 0) {
+      if (customer === undefined) {
+        throw new RequestValidationError('body.customer is a required field')
+      }
       return this.createWithItems(req, res)
     } else {
       return this.create(req, res)
     }
   }
 
-  protected async create(req: Request, res: Response): Promise<any> {
+  protected async create(
+    req: ValidatedRequest<typeof requestSchema>,
+    res: Response
+  ): Promise<any> {
     const { namespace, user } = req.body
-    const dto = new Data()
     logger.debug(`Create Order for namespace ${namespace} and user ${user}`)
-
-    try {
-      dto.data = await createOrder({ namespace, user })
-    } catch (error) {
-      logger.error(error)
-      if (error.response.status === 400) {
-        return this.clientError(res, 'Invalid request')
-      }
-      return this.fail(res, error.toString())
-    }
+    const dto = new Data(await createOrder({ namespace, user }))
     return this.created<any>(res, dto.serialize())
   }
 
-  protected async createWithItems(req: Request, res: Response): Promise<any> {
+  protected async createWithItems(
+    req: ValidatedRequest<typeof requestSchema>,
+    res: Response
+  ): Promise<any> {
     const { namespace, user, items, customer } = req.body
-    if (customer === undefined) {
-      return this.clientError(res, 'Customer not specified')
-    }
-    if (namespace === undefined) {
-      return this.clientError(res, 'Namespace not specified')
-    }
-    const dto = new Data()
     logger.debug(
       `Create Order with Items for namespace ${namespace} and user ${user}`
     )
-    try {
-      if (!(await validateItems({ items }))) {
-        return this.clientError(res, 'Order items are not valid')
-      }
-      dto.data = await createOrderWithItems({
+    const dto = new Data(
+      await createOrderWithItems({
         namespace,
         user,
         items,
         customer,
         ...calculateTotalsFromItems({ items }),
       })
-    } catch (error) {
-      logger.error(error)
-      if (error.response.status === 400) {
-        return this.clientError(res, 'Invalid request')
-      }
-      return this.fail(res, error.toString())
-    }
+    )
+
     return this.created<any>(res, dto.serialize())
   }
 }

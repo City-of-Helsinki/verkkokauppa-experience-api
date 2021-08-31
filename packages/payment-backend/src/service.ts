@@ -7,6 +7,15 @@ import type {
   VismaStatus,
 } from './types'
 import type { ParsedQs } from 'qs'
+import {
+  CheckVismaReturnUrlFailure,
+  CreatePaymentFromOrderFailure,
+  GetPaymentForOrderFailure,
+  GetPaymentMethodListFailure,
+  GetPaymentStatusFailure,
+  GetPaymentUrlFailure,
+  PaymentMethodValidationError,
+} from './errors'
 
 const PAYMENT_METHOD_MAP = new Map()
   .set('invoice', 'billing')
@@ -25,20 +34,25 @@ export const createPaymentFromOrder = async (parameters: {
     throw new Error('No payment API backend URL set')
   }
 
+  // TODO: move validation outside, change PAYMENT_METHOD_MAP to be an object, use keyof typeof PAYMENT_METHOD_MAP in function signature
   if (!PAYMENT_METHOD_MAP.has(paymentMethod)) {
-    throw new Error('Unsupported payment method given as parameter')
+    throw new PaymentMethodValidationError()
   }
   const paymentMethodPart = PAYMENT_METHOD_MAP.get(paymentMethod)
 
   const url = `${process.env.PAYMENT_BACKEND_URL}/payment/${paymentMethodPart}/createFromOrder`
 
-  const result = await axios.post<Payment>(url, {
-    paymentMethod,
-    language,
-    order: { order, items: order.items },
-  })
+  try {
+    const result = await axios.post<Payment>(url, {
+      paymentMethod,
+      language,
+      order: { order, items: order.items },
+    })
 
-  return result.data
+    return result.data
+  } catch (e) {
+    throw new CreatePaymentFromOrderFailure(e)
+  }
 }
 
 export const getPaymentMethodList = async (parameters: {
@@ -51,10 +65,14 @@ export const getPaymentMethodList = async (parameters: {
 
   const url = `${process.env.PAYMENT_BACKEND_URL}/payment/online/get-available-methods`
 
-  // We use POST instead of GET since we need to send complex parameters,
-  // although using GET would be semantically more correct.
-  const result = await axios.post<PaymentMethod[]>(url, request)
-  return result.data
+  try {
+    // We use POST instead of GET since we need to send complex parameters,
+    // although using GET would be semantically more correct.
+    const result = await axios.post<PaymentMethod[]>(url, request)
+    return result.data
+  } catch (e) {
+    throw new GetPaymentMethodListFailure(e)
+  }
 }
 
 export const checkVismaReturnUrl = async (p: {
@@ -67,10 +85,14 @@ export const checkVismaReturnUrl = async (p: {
 
   const url = `${process.env.PAYMENT_BACKEND_URL}/payment/online/check-return-url`
 
-  const result = await axios.get<VismaStatus>(url, {
-    params,
-  })
-  return result.data
+  try {
+    const result = await axios.get<VismaStatus>(url, {
+      params,
+    })
+    return result.data
+  } catch (e) {
+    throw new CheckVismaReturnUrlFailure(e)
+  }
 }
 
 export const getPaymentUrl = async (p: {
@@ -84,10 +106,14 @@ export const getPaymentUrl = async (p: {
 
   const url = `${process.env.PAYMENT_BACKEND_URL}/payment/online/url`
 
-  const result = await axios.get<string>(url, {
-    params: { namespace, orderId },
-  })
-  return result.data
+  try {
+    const result = await axios.get<string>(url, {
+      params: { namespace, orderId },
+    })
+    return result.data
+  } catch (e) {
+    throw new GetPaymentUrlFailure(e)
+  }
 }
 
 export const getPaymentStatus = async (p: {
@@ -101,10 +127,14 @@ export const getPaymentStatus = async (p: {
 
   const url = `${process.env.PAYMENT_BACKEND_URL}/payment/online/status`
 
-  const result = await axios.get<string>(url, {
-    params: { namespace, orderId },
-  })
-  return result.data
+  try {
+    const result = await axios.get<string>(url, {
+      params: { namespace, orderId },
+    })
+    return result.data
+  } catch (e) {
+    throw new GetPaymentStatusFailure(e)
+  }
 }
 
 export const getPaymentForOrder = async (p: {
@@ -118,8 +148,12 @@ export const getPaymentForOrder = async (p: {
 
   const url = `${process.env.PAYMENT_BACKEND_URL}/payment/online/get`
 
-  const result = await axios.get<Payment>(url, {
-    params: { orderId, namespace },
-  })
-  return result.data
+  try {
+    const result = await axios.get<Payment>(url, {
+      params: { orderId, namespace },
+    })
+    return result.data
+  } catch (e) {
+    throw new GetPaymentForOrderFailure(e)
+  }
 }

@@ -9,13 +9,15 @@ import { getOrder } from '@verkkokauppa/order-backend'
 import { checkVismaReturnUrl } from '@verkkokauppa/payment-backend'
 
 export class OnlinePaymentReturnController extends AbstractController {
+  protected readonly requestSchema = null
+
   protected async implementation(
     request: Request,
     result: Response
   ): Promise<any> {
     const { query } = request
     if (!process.env.REDIRECT_PAYMENT_URL_BASE) {
-      return this.fail(result, 'No default redirect url specified')
+      throw new Error('No default redirect url specified')
     }
     try {
       const vismaStatus = await checkVismaReturnUrl({ params: query })

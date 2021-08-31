@@ -1,36 +1,52 @@
-import { AbstractController, Data, logger } from '@verkkokauppa/core'
-import type { Request, Response } from 'express'
-import { getOrder, setOrderTotals } from '@verkkokauppa/order-backend'
+import {
+  AbstractController,
+  Data,
+  logger,
+  ValidatedRequest,
+} from '@verkkokauppa/core'
+import type { Response } from 'express'
+import {
+  getOrder,
+  OrderValidationError,
+  setOrderTotals,
+} from '@verkkokauppa/order-backend'
 import { calculateTotalsFromItems } from '../lib/totals'
+import * as yup from 'yup'
 
-export class CalculateTotalsController extends AbstractController {
-  protected async implementation(req: Request, res: Response): Promise<any> {
-    const { orderId } = req.params
-    const dto = new Data()
+const requestSchema = yup.object().shape({
+  params: yup.object().shape({
+    orderId: yup.string().required(),
+  }),
+})
+
+export class CalculateTotalsController extends AbstractController<
+  typeof requestSchema
+> {
+  protected readonly requestSchema = requestSchema
+
+  protected async implementation(
+    req: ValidatedRequest<typeof requestSchema>,
+    res: Response
+  ): Promise<any> {
+    const {
+      params: { orderId },
+    } = req
+
     logger.debug(`Calculate totals for Order ${orderId}`)
-
-    if (orderId === undefined) {
-      return this.clientError(res, 'Order ID not specified')
-    }
 
     const order = await getOrder({ orderId })
 
     if (order.items === undefined) {
-      return this.clientError(res, 'No items specified for order')
+      throw new OrderValidationError('order must have at least one item')
     }
 
-    try {
-      dto.data = await setOrderTotals({
+    const dto = new Data(
+      await setOrderTotals({
         orderId,
         ...calculateTotalsFromItems(order),
       })
-    } catch (error) {
-      logger.error(error)
-      if (error.response.status === 400) {
-        return this.clientError(res, 'Invalid request')
-      }
-      return this.fail(res, error.toString())
-    }
+    )
+
     return this.success<any>(res, dto.serialize())
   }
 }

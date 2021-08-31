@@ -1,24 +1,48 @@
 import type { Request, Response } from 'express'
 import { logger } from '../logger'
+import type { AnyObjectSchema, Asserts, ObjectSchema } from 'yup'
+import { RequestValidationError, UnexpectedError } from '../errors'
+import { ExperienceError } from '../models'
 
-export abstract class AbstractController {
+type UnknownRequest = Request<unknown, unknown, unknown>
+export type ValidatedRequest<
+  TRequestSchema extends AnyObjectSchema
+> = UnknownRequest & Asserts<TRequestSchema>
+
+export abstract class AbstractController<
+  TRequestSchema extends AnyObjectSchema = ObjectSchema<{}>
+> {
+  protected abstract readonly requestSchema: TRequestSchema | null
+
+  protected async validateRequest(
+    req: UnknownRequest
+  ): Promise<ValidatedRequest<TRequestSchema>> {
+    if (this.requestSchema === null) {
+      return req
+    }
+    return this.requestSchema.validate(req, { abortEarly: false })
+  }
+
   protected abstract implementation(
-    req: Request<any>,
+    req: ValidatedRequest<TRequestSchema>,
     res: Response
   ): Promise<void | any>
 
-  public async execute(req: Request, res: Response): Promise<void> {
+  public async execute(req: UnknownRequest, res: Response): Promise<void> {
     try {
-      await this.implementation(req, res)
+      const validatedReq = await this.validateRequest(req)
+      try {
+        await this.implementation(validatedReq, res)
+      } catch (err) {
+        if (err instanceof ExperienceError) {
+          this.error(res, err)
+        } else {
+          this.error(res, new UnexpectedError(err))
+        }
+      }
     } catch (err) {
-      logger.error(`[AbstractController]: Uncaught controller error`)
-      logger.error(err)
-      this.fail(res, 'An unexpected error occurred')
+      this.error(res, new RequestValidationError(err.errors.join('\n')))
     }
-  }
-
-  public static json(res: Response, code: number, message: string) {
-    return res.status(code).json({ message })
   }
 
   public success<T>(res: Response, dto?: T) {
@@ -37,26 +61,13 @@ export abstract class AbstractController {
     }
   }
 
-  public clientError(res: Response, message?: string) {
-    return AbstractController.json(res, 400, message ? message : 'Unauthorized')
-  }
-
-  public unauthorized(res: Response, message?: string) {
-    return AbstractController.json(res, 401, message ? message : 'Unauthorized')
-  }
-
-  public forbidden(res: Response, message?: string) {
-    return AbstractController.json(res, 403, message ? message : 'Forbidden')
-  }
-
-  public notFound(res: Response, message?: string) {
-    return AbstractController.json(res, 404, message ? message : 'Not found')
-  }
-
-  public fail(res: Response, error: Error | string) {
-    console.log(error)
-    return res.status(500).json({
-      message: error.toString(),
-    })
+  public error(res: Response, error: ExperienceError, ...e: ExperienceError[]) {
+    const errors = [error, ...e]
+    errors.forEach((e) => e.log(logger))
+    // TODO: formulate statusCode over all errors
+    const statusCode = error.definition.responseStatus
+    return res
+      .status(statusCode)
+      .json({ errors: errors.map((e) => e.toResponseOutput()) })
   }
 }

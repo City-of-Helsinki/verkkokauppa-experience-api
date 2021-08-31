@@ -1,30 +1,35 @@
-import { AbstractController, Data, logger } from '@verkkokauppa/core'
-import type { Request, Response } from 'express'
+import {
+  AbstractController,
+  Data,
+  logger,
+  ValidatedRequest,
+} from '@verkkokauppa/core'
+import type { Response } from 'express'
 import { clearCart, getCart } from '@verkkokauppa/cart-backend'
+import * as yup from 'yup'
 
-export class ClearController extends AbstractController {
-  protected async implementation(req: Request, res: Response): Promise<any> {
-    const { cartId } = req.params
-    if (cartId === undefined) {
-      return this.clientError(res, 'Cart ID not specified')
-    }
-    const dto = new Data()
+const requestSchema = yup.object().shape({
+  params: yup.object().shape({
+    cartId: yup.string().required(),
+  }),
+})
+
+export class ClearController extends AbstractController<typeof requestSchema> {
+  protected readonly requestSchema = requestSchema
+
+  protected async implementation(
+    req: ValidatedRequest<typeof requestSchema>,
+    res: Response
+  ): Promise<any> {
+    const {
+      params: { cartId },
+    } = req
 
     logger.debug(`Clear cart ${cartId}`)
 
-    try {
-      const existingCart = await getCart({ cartId })
-      dto.data = await clearCart(existingCart)
-    } catch (error) {
-      logger.error(error)
-      if (error.response.status === 404) {
-        return this.notFound(res, `Cart ${cartId} not found`)
-      }
-      if (error.response.status === 400) {
-        return this.clientError(res, 'Invalid request')
-      }
-      return this.fail(res, error.toString())
-    }
+    const existingCart = await getCart({ cartId })
+    const dto = new Data(await clearCart(existingCart))
+
     return this.success<any>(res, dto.serialize())
   }
 }
