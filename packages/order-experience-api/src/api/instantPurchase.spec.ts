@@ -1,7 +1,6 @@
 import { InstantPurchase } from './instantPurchase'
 import { AbstractController } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
-import { MixedSchema } from 'yup'
 
 jest.mock('@verkkokauppa/product-backend')
 jest.mock('@verkkokauppa/price-backend')
@@ -52,7 +51,7 @@ beforeEach(() => {
 })
 
 const instantPurchase = new (class extends InstantPurchase {
-  implementation(req: Request, res: Response): Promise<any> {
+  implementation(req: any, res: Response): Promise<any> {
     return super.implementation(req, res)
   }
 })()
@@ -98,26 +97,6 @@ const requestBody = {
 }
 
 describe('Test instantPurchase', () => {
-  it('Should validate request body', async () => {
-    const validateSyncSpy = jest.spyOn(MixedSchema.prototype, 'validateSync')
-    const body = {}
-    await instantPurchase.implementation({ body } as Request, mockResponse)
-    expect(validateSyncSpy).toHaveBeenCalledTimes(1)
-    expect(validateSyncSpy.mock.calls[0]?.[0]).toBe(body)
-  })
-  it('Should return clientError for invalid request body', async () => {
-    const clientErrorSpy = jest.spyOn(
-      AbstractController.prototype,
-      'clientError'
-    )
-    const res = await instantPurchase.implementation(
-      { body: {} } as Request,
-      mockResponse
-    )
-    expect(clientErrorSpy).toHaveBeenCalledTimes(1)
-    expect(clientErrorSpy.mock.calls[0]?.[0]).toBe(mockResponse)
-    expect(res).toBe(clientErrorSpy.mock.results[0]?.value)
-  })
   it('Should fetch product and price for each product in request body', async () => {
     await instantPurchase.implementation(
       { body: requestBody } as Request,

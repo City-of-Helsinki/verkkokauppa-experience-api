@@ -6,6 +6,17 @@ import type {
   OrderItemRequest,
   OrderWithItemsBackendResponse,
 } from './types'
+import {
+  AddItemsToOrderFailure,
+  CancelOrderFailure,
+  ConfirmOrderFailure,
+  CreateOrderFailure,
+  CreateOrderWithItemsFailure,
+  GetOrderFailure,
+  OrderValidationError,
+  SetCustomerToOrderFailure,
+  SetOrderTotalsFailure,
+} from './errors'
 
 export const createOrder = async (p: {
   namespace: string
@@ -16,13 +27,17 @@ export const createOrder = async (p: {
     throw new Error('No order backend URL set')
   }
   const url = `${process.env.ORDER_BACKEND_URL}/order/create`
-  const result = await axios.get<OrderWithItemsBackendResponse>(url, {
-    params: {
-      namespace,
-      user,
-    },
-  })
-  return transFormBackendOrder(result.data)
+  try {
+    const result = await axios.get<OrderWithItemsBackendResponse>(url, {
+      params: {
+        namespace,
+        user,
+      },
+    })
+    return transFormBackendOrder(result.data)
+  } catch (e) {
+    throw new CreateOrderFailure(e)
+  }
 }
 
 export const createOrderWithItems = async (p: {
@@ -53,11 +68,15 @@ export const createOrderWithItems = async (p: {
     items,
   }
   const url = `${process.env.ORDER_BACKEND_URL}/order/createWithItems`
-  const result = await axios.post<OrderWithItemsBackendResponse>(
-    url,
-    requestDto
-  )
-  return transFormBackendOrder(result.data)
+  try {
+    const result = await axios.post<OrderWithItemsBackendResponse>(
+      url,
+      requestDto
+    )
+    return transFormBackendOrder(result.data)
+  } catch (e) {
+    throw new CreateOrderWithItemsFailure(e)
+  }
 }
 
 export const cancelOrder = async (p: { orderId: string }): Promise<Order> => {
@@ -66,10 +85,14 @@ export const cancelOrder = async (p: { orderId: string }): Promise<Order> => {
     throw new Error('No order backend URL set')
   }
   const url = `${process.env.ORDER_BACKEND_URL}/order/cancel`
-  const result = await axios.get<OrderWithItemsBackendResponse>(url, {
-    params: { orderId },
-  })
-  return transFormBackendOrder(result.data)
+  try {
+    const result = await axios.get<OrderWithItemsBackendResponse>(url, {
+      params: { orderId },
+    })
+    return transFormBackendOrder(result.data)
+  } catch (e) {
+    throw new CancelOrderFailure(e)
+  }
 }
 
 export const confirmOrder = async (p: { orderId: string }): Promise<Order> => {
@@ -78,10 +101,17 @@ export const confirmOrder = async (p: { orderId: string }): Promise<Order> => {
     throw new Error('No order backend URL set')
   }
   const url = `${process.env.ORDER_BACKEND_URL}/order/confirm`
-  const result = await axios.get<OrderWithItemsBackendResponse>(url, {
-    params: { orderId },
-  })
-  return transFormBackendOrder(result.data)
+  try {
+    const result = await axios.get<OrderWithItemsBackendResponse>(url, {
+      params: { orderId },
+    })
+    return transFormBackendOrder(result.data)
+  } catch (e) {
+    if (e.response?.status === 403) {
+      throw new OrderValidationError('order must have customer and totals')
+    }
+    throw new ConfirmOrderFailure(e)
+  }
 }
 
 export const setCustomerToOrder = async (p: {
@@ -94,19 +124,26 @@ export const setCustomerToOrder = async (p: {
   }
 
   const url = `${process.env.ORDER_BACKEND_URL}/order/setCustomer`
-  const result = await axios.post<OrderWithItemsBackendResponse>(url, null, {
-    params: {
-      orderId,
-      customerEmail: customer.email,
-      customerFirstName: customer.firstName,
-      customerLastName: customer.lastName,
-      customerPhone: customer.phone,
-    },
-    paramsSerializer: function (params) {
-      return stringify(params, { arrayFormat: 'brackets' })
-    },
-  })
-  return transFormBackendOrder(result.data)
+  try {
+    const result = await axios.post<OrderWithItemsBackendResponse>(url, null, {
+      params: {
+        orderId,
+        customerEmail: customer.email,
+        customerFirstName: customer.firstName,
+        customerLastName: customer.lastName,
+        customerPhone: customer.phone,
+      },
+      paramsSerializer: function (params) {
+        return stringify(params, { arrayFormat: 'brackets' })
+      },
+    })
+    return transFormBackendOrder(result.data)
+  } catch (e) {
+    if (e.response?.status === 400) {
+      throw new OrderValidationError('order is in an immutable state')
+    }
+    throw new SetCustomerToOrderFailure(e)
+  }
 }
 
 export const addItemsToOrder = async (p: {
@@ -121,10 +158,17 @@ export const addItemsToOrder = async (p: {
     items,
   }
   const url = `${process.env.ORDER_BACKEND_URL}/order/setItems`
-  const result = await axios.post<OrderWithItemsBackendResponse>(url, dto, {
-    params: { orderId },
-  })
-  return transFormBackendOrder(result.data)
+  try {
+    const result = await axios.post<OrderWithItemsBackendResponse>(url, dto, {
+      params: { orderId },
+    })
+    return transFormBackendOrder(result.data)
+  } catch (e) {
+    if (e.response?.status === 400) {
+      throw new OrderValidationError('order is in an immutable state')
+    }
+    throw new AddItemsToOrderFailure(e)
+  }
 }
 
 export const getOrder = async (p: { orderId: string }): Promise<Order> => {
@@ -133,10 +177,14 @@ export const getOrder = async (p: { orderId: string }): Promise<Order> => {
     throw new Error('No order backend URL set')
   }
   const url = `${process.env.ORDER_BACKEND_URL}/order/get`
-  const result = await axios.get<OrderWithItemsBackendResponse>(url, {
-    params: { orderId },
-  })
-  return transFormBackendOrder(result.data)
+  try {
+    const result = await axios.get<OrderWithItemsBackendResponse>(url, {
+      params: { orderId },
+    })
+    return transFormBackendOrder(result.data)
+  } catch (e) {
+    throw new GetOrderFailure(e)
+  }
 }
 
 const transFormBackendOrder = (p: OrderWithItemsBackendResponse): Order => {
@@ -200,13 +248,20 @@ export const setOrderTotals = async (p: {
     throw new Error('No order backend URL set')
   }
   const url = `${process.env.ORDER_BACKEND_URL}/order/setTotals`
-  const result = await axios.post<OrderWithItemsBackendResponse>(url, null, {
-    params: {
-      orderId,
-      priceNet: priceNet.toString(),
-      priceVat: priceVat.toString(),
-      priceTotal: priceTotal.toString(),
-    },
-  })
-  return transFormBackendOrder(result.data)
+  try {
+    const result = await axios.post<OrderWithItemsBackendResponse>(url, null, {
+      params: {
+        orderId,
+        priceNet: priceNet.toString(),
+        priceVat: priceVat.toString(),
+        priceTotal: priceTotal.toString(),
+      },
+    })
+    return transFormBackendOrder(result.data)
+  } catch (e) {
+    if (e.response?.status === 400) {
+      throw new OrderValidationError('order is in an immutable state')
+    }
+    throw new SetOrderTotalsFailure(e)
+  }
 }

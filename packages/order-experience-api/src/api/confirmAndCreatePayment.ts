@@ -1,5 +1,5 @@
-import { AbstractController, Data } from '@verkkokauppa/core'
-import type { Request, Response } from 'express'
+import { AbstractController, Data, ValidatedRequest } from '@verkkokauppa/core'
+import type { Response } from 'express'
 import { confirmOrder } from '@verkkokauppa/order-backend'
 import {
   createPaymentFromOrder,
@@ -7,45 +7,43 @@ import {
 } from '@verkkokauppa/payment-backend'
 import * as yup from 'yup'
 
-export class ConfirmAndCreatePayment extends AbstractController {
-  private static readonly reqSchema = yup.object().shape({
-    params: yup.object().shape({
-      orderId: yup.string().required(),
-    }),
-    body: yup.object().shape({
-      paymentMethod: yup.string().required(),
-      paymentLanguage: yup.string().required(),
-    }),
-  })
+const requestSchema = yup.object().shape({
+  params: yup.object().shape({
+    orderId: yup.string().required(),
+  }),
+  body: yup.object().shape({
+    paymentMethod: yup.string().required(),
+    paymentLanguage: yup.string().required(),
+  }),
+})
 
-  protected async implementation(req: Request, res: Response): Promise<any> {
-    try {
-      const {
-        params: { orderId },
-        body: { paymentMethod, paymentLanguage },
-      } = ConfirmAndCreatePayment.reqSchema.validateSync(req, {
-        abortEarly: false,
-      })
+export class ConfirmAndCreatePayment extends AbstractController<
+  typeof requestSchema
+> {
+  protected readonly requestSchema = requestSchema
 
-      const order = await confirmOrder({ orderId })
+  protected async implementation(
+    req: ValidatedRequest<typeof requestSchema>,
+    res: Response
+  ): Promise<any> {
+    const {
+      params: { orderId },
+      body: { paymentMethod, paymentLanguage },
+    } = req
 
-      const payment = await createPaymentFromOrder({
-        order,
-        paymentMethod,
-        language: paymentLanguage,
-      })
+    const order = await confirmOrder({ orderId })
 
-      const paymentUrl = await getPaymentUrl(order)
+    const payment = await createPaymentFromOrder({
+      order,
+      paymentMethod,
+      language: paymentLanguage,
+    })
 
-      return this.created(
-        res,
-        new Data({ ...order, payment: { ...payment, paymentUrl } }).serialize()
-      )
-    } catch (e) {
-      if (e instanceof yup.ValidationError) {
-        return this.clientError(res, 'Invalid request data')
-      }
-      throw e
-    }
+    const paymentUrl = await getPaymentUrl(order)
+
+    return this.created(
+      res,
+      new Data({ ...order, payment: { ...payment, paymentUrl } }).serialize()
+    )
   }
 }

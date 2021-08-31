@@ -1,31 +1,35 @@
-import { AbstractController, Data, logger } from '@verkkokauppa/core'
-import type { Request, Response } from 'express'
+import {
+  AbstractController,
+  Data,
+  logger,
+  ValidatedRequest,
+} from '@verkkokauppa/core'
+import type { Response } from 'express'
 import { getProductMapping } from '@verkkokauppa/product-mapping-backend'
+import * as yup from 'yup'
 
-export class GetMappingController extends AbstractController {
-  protected async implementation(req: Request, res: Response): Promise<any> {
-    const { productId } = req.params
+const requestSchema = yup.object().shape({
+  params: yup.object().shape({
+    productId: yup.string().required(),
+  }),
+})
 
-    if (productId === undefined) {
-      return this.clientError(res, 'Product ID not specified')
-    }
+export class GetMappingController extends AbstractController<
+  typeof requestSchema
+> {
+  protected readonly requestSchema = requestSchema
 
-    const dto = new Data()
+  protected async implementation(
+    req: ValidatedRequest<typeof requestSchema>,
+    res: Response
+  ): Promise<any> {
+    const {
+      params: { productId },
+    } = req
 
     logger.debug(`Fetch product mapping for ${productId}`)
 
-    try {
-      dto.data = await getProductMapping({ productId })
-    } catch (error) {
-      logger.error(error)
-      if (error.response.status === 404) {
-        return this.notFound(res, `No product mapping found for ${productId}`)
-      }
-      if (error.response.status === 400) {
-        return this.clientError(res, 'Invalid request')
-      }
-      return this.fail(res, error.toString())
-    }
+    const dto = new Data(await getProductMapping({ productId }))
 
     return this.success<any>(res, dto.serialize())
   }
