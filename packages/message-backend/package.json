@@ -13,7 +13,6 @@
   "dependencies": {
     "axios": "^0.21.1",
     "handlebars": "^4.7.7",
-    "handlebars-i18next": "^1.0.1",
     "i18next": "^20.4.0",
     "qs": "^6.10.1"
   }

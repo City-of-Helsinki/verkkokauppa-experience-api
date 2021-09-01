@@ -1,9 +1,5 @@
-# Order Backend Package
+# Message Backend Package
 
-Package offers methods to fetch and update order info from backend API
-
+Package offers methods to create emails from hbs templates.  
 
 ## Required Environment configuration
-| Config  | Default value | Example | Description |
-|---|---|---|---|
-| ORDER_BACKEND_URL | (none) | https://xyz.abc | Url used to communicate with backend API |

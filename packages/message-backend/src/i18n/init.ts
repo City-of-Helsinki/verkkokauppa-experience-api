@@ -15,7 +15,6 @@ i18next
             en: { translation: en },
             sv: { translation: sv },
         },
-        debug: true,
         fallbackLng: 'fi'
     }).then(() => {})
 
