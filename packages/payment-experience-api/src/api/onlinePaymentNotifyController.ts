@@ -8,7 +8,7 @@ export class OnlinePaymentNotifyController extends AbstractController {
 
   protected async implementation(
     request: Request,
-    result: Response
+    response: Response
   ): Promise<any> {
     const { query } = request
     const vismaStatus = await checkVismaReturnUrl({ params: query })
@@ -18,6 +18,6 @@ export class OnlinePaymentNotifyController extends AbstractController {
         vismaStatus
       )}`
     )
-    return this.success(result)
+    return this.success<any>(response, vismaStatus)
   }
 }
