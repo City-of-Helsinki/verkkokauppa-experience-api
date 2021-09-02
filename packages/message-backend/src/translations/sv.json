@@ -2,7 +2,7 @@
   "orderConfirmation": {
     "clock": "Kello",
     "order": {
-      "mainHeader": "Tilausvahvistus ja kuitti",
+      "mainHeader": "Tilausvahvistus ja kuitti SV",
       "header": "Kiitos tilauksestasi",
       "headerTwo": "Tilauksen tiedot:"
     },

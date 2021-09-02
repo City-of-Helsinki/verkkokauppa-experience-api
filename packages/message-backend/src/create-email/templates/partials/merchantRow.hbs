@@ -1,0 +1,85 @@
+<tr>
+    <td class="email-body" width="100%" cellpadding="0" cellspacing="0">
+        <table class="email-body_inner" align="center" width="414" cellpadding="0" cellspacing="0" role="presentation">
+            <!-- Body content -->
+            <tr>
+                <td class="content-cell">
+                    <div class="f-fallback">
+                        <hr>
+                        <h1 style="margin-bottom: 0; border-top: 1rem solid #ffffff">{{I18n 'orderConfirmation.merchant.headerTwo'}}</h1>
+
+                        <table class="purchase" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                            <tr>
+                                <td colspan="2">
+                                    <table class="purchase_content" width="100%" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{order.merchant.merchantName}}
+                                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{order.merchant.merchantStreet}}
+                                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{order.merchant.merchantCustomerService}}
+                                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{order.merchant.merchantPostalAddress}}
+                                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{merchantZip}} {{UPPER order.merchant.merchantName}}
+                                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{I18n 'orderConfirmation.merchant.businessId'}} {{order.merchant.merchantBusinessId}}
+                                                                </span>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{I18n 'orderConfirmation.merchant.textOne'}} {{order.merchant.merchantName}}
+                                                                </span>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{I18n 'orderConfirmation.merchant.textTwo'}}
+                                                                    <a href="{{order.merchant.merchantUrl}}" target="_blank">{{order.merchant.merchantUrl}}</a>
+                                                                </span>
+                                            </td>
+                                        </tr>
+
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
