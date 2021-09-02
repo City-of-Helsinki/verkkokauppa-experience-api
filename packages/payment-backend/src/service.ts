@@ -27,7 +27,7 @@ const PAYMENT_METHOD_MAP = new Map()
 export const createPaymentFromOrder = async (parameters: {
   order: Order
   paymentMethod: string
-  paymentMethodLabel: string
+  paymentMethodLabel?: string
   language: string
 }): Promise<Payment> => {
   const { order, paymentMethod, paymentMethodLabel, language } = parameters
@@ -46,7 +46,7 @@ export const createPaymentFromOrder = async (parameters: {
   try {
     const result = await axios.post<Payment>(url, {
       paymentMethod,
-      paymentMethodLabel,
+      paymentMethodLabel: paymentMethodLabel || paymentMethod,
       language,
       order: { order, items: order.items },
     })
