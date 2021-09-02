@@ -42,6 +42,7 @@ describe('Test Create Payment for Order', () => {
         language: '',
         order: orderMock,
         paymentMethod: '',
+        paymentMethodLabel: '',
       })
     ).rejects.toThrow('No payment API backend URL set')
   })
@@ -52,6 +53,7 @@ describe('Test Create Payment for Order', () => {
         language: '',
         order: orderMock,
         paymentMethod: '',
+        paymentMethodLabel: '',
       })
     ).rejects.toThrow()
   })
@@ -62,6 +64,7 @@ describe('Test Create Payment for Order', () => {
         language: '',
         order: orderMock,
         paymentMethod: 'asd',
+        paymentMethodLabel: 'Asd',
       })
     ).rejects.toThrow()
   })
@@ -86,6 +89,7 @@ describe('Test Create Payment for Order', () => {
       language: 'fi',
       order: orderMock,
       paymentMethod: 'nordea',
+      paymentMethodLabel: 'Nordea',
     })
     expect(result).toEqual(mockData)
   })

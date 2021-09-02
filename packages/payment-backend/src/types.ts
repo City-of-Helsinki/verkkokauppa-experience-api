@@ -45,7 +45,7 @@ export interface PaymentMethodListRequest {
 
 export interface PaymentMethod {
   name: string
-  code: number
+  code: string
   group: string
   img: string
 }
