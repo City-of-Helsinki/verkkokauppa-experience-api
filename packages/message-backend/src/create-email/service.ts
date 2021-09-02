@@ -82,6 +82,12 @@ export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
         }
     );
 
+    Handlebars.registerHelper('ChangeLng',
+        function (language: SUPPORTED_LANGUAGES) {
+            i18next.changeLanguage(language).then(() => {});
+        }
+    );
+
     Handlebars.registerHelper('ParseDateTime',
         function (date) {
             // Example date string 20210901-05184
@@ -106,6 +112,21 @@ export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
             });
         }
     );
+
+    const partialsDir = `${__dirname}${path.sep}templates${path.sep}partials`;
+
+    const filenames = fs.readdirSync(partialsDir);
+
+    filenames.forEach(function (filename: string) {
+        const matches = /^([^.]+).hbs$/.exec(filename);
+        if (!matches) {
+            return;
+        }
+        const name = matches[1] || '';
+        const template = fs.readFileSync(partialsDir + '/' + filename, 'utf8');
+        Handlebars.registerPartial(name, template);
+    });
+
     return {
         createTemplate,
         fileName,
