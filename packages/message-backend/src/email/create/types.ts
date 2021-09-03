@@ -1,7 +1,6 @@
-
 export interface EmailTemplateCreatePayload {
   orderId: string
-  emailMessageType: "orderConfirmation"
+  emailMessageType: 'orderConfirmation'
 }
 
 export interface EmailTemplateDto {
@@ -15,7 +14,7 @@ export interface EmailTemplateDto {
 }
 
 export interface OrderConfirmationEmailParameters {
-  order: Order;
+  order: Order
 }
 
 export type OrderCustomer = {
@@ -33,9 +32,7 @@ export type OrderMerchant = {
   merchantStreet: string
   merchantZip: string
   merchantCity: string
-  merchantCustomerService: string
   merchantBusinessId: string
-  merchantPostalAddress: string
   merchantEmail: string
   merchantPhone: string
   merchantUrl: string
@@ -66,7 +63,7 @@ export type OrderItem = OrderItemRequest & {
 }
 
 export interface Order {
-  payment: Payment | null;
+  payment: Payment | null
   orderId: string
   createdAt: string
   items: OrderItem[]
@@ -94,6 +91,5 @@ export interface Payment {
   additionalInfo: string
   token: string
 }
-
 
 export type HbsTemplateFiles = 'orderConfirmation'
