@@ -674,62 +674,61 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                     <table class=\\"purchase_content\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\">
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Helsingin kaupunki
-                                                                                </span>
+                                                                <span class=\\"f-fallback\\">
+                                                                    merchantName
+                                                                </span>
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Kaupunkiympäristö
-                                                                                </span>
+                                                                <span class=\\"f-fallback\\">
+                                                                    merchantStreet
+                                                                </span>
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Kaupunkiympäristön asiakaspalvelu
-                                                                                </span>
+                                                                <span class=\\"f-fallback\\">
+                                                                    merchantZip merchantCity
+                                                                </span>
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    PL 58231 (Työpajankatu 8)
-                                                                                </span>
+                                                                <span class=\\"f-fallback\\">
+                                                                    merchantEmail
+                                                                </span>
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                     HELSINGIN KAUPUNKI
-                                                                                </span>
+                                                                <span class=\\"f-fallback\\">
+                                                                    merchantPhone
+                                                                </span>
                                                             </td>
                                                         </tr>
+                                                            <tr>
+                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                                <span class=\\"f-fallback\\">
+                                                                    Y-tunnus merchantBusinessId
+                                                                </span>
+                                                                </td>
+                                                            </tr>
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Y-tunnus 0201256-6
-                                                                                </span>
+                                                                <span class=\\"f-fallback\\">
+                                                                    Mikäli sinulla on tilaukseen liittyen kysymyksiä kohdistathan ne suoraan palveluntarjoajalle: merchantName
+                                                                </span>
                                                             </td>
                                                         </tr>
                 
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Mikäli sinulla on tilaukseen liittyen kysymyksiä kohdistathan ne suoraan palveluntarjoajalle: Helsingin kaupunki
-                                                                                </span>
-                                                            </td>
-                                                        </tr>
-                
-                                                        <tr>
-                                                            <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Palveluntarjoaja toimittaa aina erikseen tarvittavat lisäohjeet palvelun/tuotteen käyttöön tai toimitukseen liittyen.
+                                                                <span class=\\"f-fallback\\">
+                                                                    Palveluntarjoaja toimittaa aina erikseen tarvittavat lisäohjeet palvelun/tuotteen käyttöön tai toimitukseen liittyen.
                 Käyttöehtoihin voit tutustua täällä:
-                                                                                    <a href=\\"https://www.google.com/\\" target=\\"_blank\\">https://www.google.com/</a>
-                                                                                </span>
+                                                                    <a href=\\"merchantUrl\\" target=\\"_blank\\">merchantUrl</a>
+                                                                </span>
                                                             </td>
                                                         </tr>
                 
@@ -984,62 +983,61 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                     <table class=\\"purchase_content\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\">
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Helsingin kaupunki
-                                                                                </span>
+                                                                <span class=\\"f-fallback\\">
+                                                                    merchantName
+                                                                </span>
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Kaupunkiympäristö
-                                                                                </span>
+                                                                <span class=\\"f-fallback\\">
+                                                                    merchantStreet
+                                                                </span>
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Kaupunkiympäristön asiakaspalvelu
-                                                                                </span>
+                                                                <span class=\\"f-fallback\\">
+                                                                    merchantZip merchantCity
+                                                                </span>
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    PL 58231 (Työpajankatu 8)
-                                                                                </span>
+                                                                <span class=\\"f-fallback\\">
+                                                                    merchantEmail
+                                                                </span>
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                     HELSINGIN KAUPUNKI
-                                                                                </span>
+                                                                <span class=\\"f-fallback\\">
+                                                                    merchantPhone
+                                                                </span>
                                                             </td>
                                                         </tr>
+                                                            <tr>
+                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                                <span class=\\"f-fallback\\">
+                                                                    Y-tunnus merchantBusinessId
+                                                                </span>
+                                                                </td>
+                                                            </tr>
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Y-tunnus 0201256-6
-                                                                                </span>
+                                                                <span class=\\"f-fallback\\">
+                                                                    Mikäli sinulla on tilaukseen liittyen kysymyksiä kohdistathan ne suoraan palveluntarjoajalle: merchantName
+                                                                </span>
                                                             </td>
                                                         </tr>
                 
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Mikäli sinulla on tilaukseen liittyen kysymyksiä kohdistathan ne suoraan palveluntarjoajalle: Helsingin kaupunki
-                                                                                </span>
-                                                            </td>
-                                                        </tr>
-                
-                                                        <tr>
-                                                            <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Palveluntarjoaja toimittaa aina erikseen tarvittavat lisäohjeet palvelun/tuotteen käyttöön tai toimitukseen liittyen.
+                                                                <span class=\\"f-fallback\\">
+                                                                    Palveluntarjoaja toimittaa aina erikseen tarvittavat lisäohjeet palvelun/tuotteen käyttöön tai toimitukseen liittyen.
                 Käyttöehtoihin voit tutustua täällä:
-                                                                                    <a href=\\"https://www.google.com/\\" target=\\"_blank\\">https://www.google.com/</a>
-                                                                                </span>
+                                                                    <a href=\\"merchantUrl\\" target=\\"_blank\\">merchantUrl</a>
+                                                                </span>
                                                             </td>
                                                         </tr>
                 
@@ -1294,62 +1292,61 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                     <table class=\\"purchase_content\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\">
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Helsingin kaupunki
-                                                                                </span>
+                                                                <span class=\\"f-fallback\\">
+                                                                    merchantName
+                                                                </span>
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Kaupunkiympäristö
-                                                                                </span>
+                                                                <span class=\\"f-fallback\\">
+                                                                    merchantStreet
+                                                                </span>
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Kaupunkiympäristön asiakaspalvelu
-                                                                                </span>
+                                                                <span class=\\"f-fallback\\">
+                                                                    merchantZip merchantCity
+                                                                </span>
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    PL 58231 (Työpajankatu 8)
-                                                                                </span>
+                                                                <span class=\\"f-fallback\\">
+                                                                    merchantEmail
+                                                                </span>
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                     HELSINGIN KAUPUNKI
-                                                                                </span>
+                                                                <span class=\\"f-fallback\\">
+                                                                    merchantPhone
+                                                                </span>
                                                             </td>
                                                         </tr>
+                                                            <tr>
+                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                                <span class=\\"f-fallback\\">
+                                                                    Y-tunnus merchantBusinessId
+                                                                </span>
+                                                                </td>
+                                                            </tr>
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Y-tunnus 0201256-6
-                                                                                </span>
+                                                                <span class=\\"f-fallback\\">
+                                                                    Mikäli sinulla on tilaukseen liittyen kysymyksiä kohdistathan ne suoraan palveluntarjoajalle: merchantName
+                                                                </span>
                                                             </td>
                                                         </tr>
                 
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Mikäli sinulla on tilaukseen liittyen kysymyksiä kohdistathan ne suoraan palveluntarjoajalle: Helsingin kaupunki
-                                                                                </span>
-                                                            </td>
-                                                        </tr>
-                
-                                                        <tr>
-                                                            <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Palveluntarjoaja toimittaa aina erikseen tarvittavat lisäohjeet palvelun/tuotteen käyttöön tai toimitukseen liittyen.
+                                                                <span class=\\"f-fallback\\">
+                                                                    Palveluntarjoaja toimittaa aina erikseen tarvittavat lisäohjeet palvelun/tuotteen käyttöön tai toimitukseen liittyen.
                 Käyttöehtoihin voit tutustua täällä:
-                                                                                    <a href=\\"https://www.google.com/\\" target=\\"_blank\\">https://www.google.com/</a>
-                                                                                </span>
+                                                                    <a href=\\"merchantUrl\\" target=\\"_blank\\">merchantUrl</a>
+                                                                </span>
                                                             </td>
                                                         </tr>
                 
