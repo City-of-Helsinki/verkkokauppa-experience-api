@@ -1,3 +1,3 @@
 //export * from './service'
-export * from './create-email/service'
+export * from './email/create/service'
 export * from './types'
