@@ -93,6 +93,9 @@ export const getCart = async (p: { cartId: string }): Promise<Cart> => {
     })
     return { ...result.data.cart, items: result.data.items }
   } catch (e) {
+    if (e.response?.status === 404) {
+      throw new CartNotFoundError()
+    }
     throw new GetCartFailure(e)
   }
 }
