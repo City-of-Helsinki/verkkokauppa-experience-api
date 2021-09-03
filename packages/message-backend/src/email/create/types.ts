@@ -8,11 +8,6 @@ export interface EmailTemplateDto {
   error?: string
 }
 
-export interface EmailTemplateDto {
-  template: string
-  error?: string
-}
-
 export interface OrderConfirmationEmailParameters {
   order: Order
 }
@@ -32,7 +27,7 @@ export type OrderMerchant = {
   merchantStreet: string
   merchantZip: string
   merchantCity: string
-  merchantBusinessId: string
+  merchantBusinessId?: string
   merchantEmail: string
   merchantPhone: string
   merchantUrl: string
@@ -84,6 +79,7 @@ export interface Payment {
   status: string
   paymentMethod: string
   paymentType: string
+  paymentMethodLabel: string
   totalExclTax: number
   total: number
   taxAmount: number
