@@ -66,6 +66,7 @@ describe('Create templates from parameters', () => {
         orderId: 'e8bcb47c-ed17-3f4b-ad1d-079001d9d2a3',
         status: 'payment_created',
         paymentMethod: 'nordea',
+        paymentMethodLabel: 'Nordea',
         paymentType: 'order',
         totalExclTax: 1440,
         total: 1488,

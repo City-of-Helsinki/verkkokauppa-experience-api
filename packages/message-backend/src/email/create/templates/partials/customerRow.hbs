@@ -34,6 +34,7 @@
                                                                 </span>
                                             </td>
                                         </tr>
+                                        {{#if order.customer.address}}
                                         <tr>
                                             <td width="100%" class="purchase_item">
                                                                 <span class="f-fallback">
@@ -41,13 +42,16 @@
                                                                 </span>
                                             </td>
                                         </tr>
-                                        <tr>
-                                            <td width="100%" class="purchase_item">
+                                        {{/if}}
+                                        {{#if order.customer.district}}
+                                            <tr>
+                                                <td width="100%" class="purchase_item">
                                                                 <span class="f-fallback">
                                                                     {{order.customer.district}}
                                                                 </span>
-                                            </td>
-                                        </tr>
+                                                </td>
+                                            </tr>
+                                        {{/if}}
 
                                     </table>
                                 </td>
