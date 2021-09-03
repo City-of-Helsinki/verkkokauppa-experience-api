@@ -85,6 +85,17 @@ export class GetOrderFailure extends ExperienceFailure {
   }
 }
 
+export class OrderNotFoundError extends ExperienceError {
+  constructor() {
+    super({
+      code: 'order-not-found',
+      message: 'Order not found',
+      responseStatus: StatusCode.NotFound,
+      logLevel: 'info',
+    })
+  }
+}
+
 export class SetOrderTotalsFailure extends ExperienceFailure {
   constructor(source: Error) {
     super({
