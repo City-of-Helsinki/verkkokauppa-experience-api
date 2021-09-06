@@ -13,6 +13,7 @@ import {
   CreateOrderFailure,
   CreateOrderWithItemsFailure,
   GetOrderFailure,
+  OrderNotFoundError,
   OrderValidationError,
   SetCustomerToOrderFailure,
   SetOrderTotalsFailure,
@@ -183,6 +184,9 @@ export const getOrder = async (p: { orderId: string }): Promise<Order> => {
     })
     return transFormBackendOrder(result.data)
   } catch (e) {
+    if (e.response?.status === 404) {
+      throw new OrderNotFoundError()
+    }
     throw new GetOrderFailure(e)
   }
 }

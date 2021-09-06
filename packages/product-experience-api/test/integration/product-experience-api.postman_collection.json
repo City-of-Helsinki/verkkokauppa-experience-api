@@ -68,17 +68,20 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"/*",
-							"Disable until KYV-144",
+							"var data = pm.response.json();",
+							"",
 							"pm.test(\"Status code is 404\", function () {",
 							"    pm.response.to.have.status(404);",
 							"});",
-							"pm.test(\"Response contains correct error message\", function () {",
-							"    var data = pm.response.json();",
-							"    var productId = pm.variables.get(\"notFoundId\")",
-							"    pm.expect(data.message).to.eql(`No product data found for ${productId}`);",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
 							"});",
-							"*/"
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"product-not-found\")",
+							"});",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"Product 123 not found\")",
+							"});"
 						],
 						"type": "text/javascript"
 					}
@@ -99,50 +102,6 @@
 						{
 							"key": "id",
 							"value": "{{notFoundId}}"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Product 400",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"/*",
-							"Disable until KYV-144",
-							"",
-							"pm.test(\"Status code is 400\", function () {",
-							"    pm.response.to.have.status(400);",
-							"});",
-							"pm.test(\"Response contains correct error message\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.message).to.eql(\"Invalid request\");",
-							"});",
-							"*/"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{productExperienceUrl}}/:id",
-					"host": [
-						"{{productExperienceUrl}}"
-					],
-					"path": [
-						":id"
-					],
-					"variable": [
-						{
-							"key": "id",
-							"value": "{{invalidId}}"
 						}
 					]
 				}
@@ -235,6 +194,125 @@
 					"path": [
 						":id",
 						"mapping"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{productFound}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Product Mapping 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
+							"});",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"product-mapping-not-found\")",
+							"});",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"Product mapping not found\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{productExperienceUrl}}/:id/mapping",
+					"host": [
+						"{{productExperienceUrl}}"
+					],
+					"path": [
+						":id",
+						"mapping"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{notFoundId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Product Accounting 201",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"var requestData = JSON.parse(pm.request.body);",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"pm.test(\"Response contains correct mapped ID\", function () {",
+							"    pm.expect(data.productId).to.eql(pm.variables.get(\"productFound\"));",
+							"});",
+							"pm.test(\"Response contains correct mainLedgerAccount\", function () {",
+							"    pm.expect(data.mainLedgerAccount).to.eql(requestData.mainLedgerAccount);",
+							"});",
+							"pm.test(\"Response contains correct vatCode\", function () {",
+							"    pm.expect(data.vatCode).to.eql(requestData.vatCode);",
+							"});",
+							"pm.test(\"Response contains correct internalOrder\", function () {",
+							"    pm.expect(data.internalOrder).to.eql(requestData.internalOrder);",
+							"});",
+							"pm.test(\"Response contains correct profitCenter\", function () {",
+							"    pm.expect(data.profitCenter).to.eql(requestData.profitCenter);",
+							"});",
+							"pm.test(\"Response contains correct project\", function () {",
+							"    pm.expect(data.project).to.eql(requestData.project);",
+							"});",
+							"pm.test(\"Response contains correct operationArea\", function () {",
+							"    pm.expect(data.operationArea).to.eql(requestData.operationArea);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"mainLedgerAccount\": \"mainLedgerAccount\",\n    \"vatCode\": \"24\",\n    \"internalOrder\": \"internalOrder\",\n    \"profitCenter\": \"profitCenter\",\n    \"project\": \"project\",\n    \"operationArea\": \"operationArea\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{productExperienceUrl}}/:id/accounting",
+					"host": [
+						"{{productExperienceUrl}}"
+					],
+					"path": [
+						":id",
+						"accounting"
 					],
 					"variable": [
 						{

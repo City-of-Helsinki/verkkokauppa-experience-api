@@ -3,9 +3,11 @@
 trigger:
   paths:
     include:
-    - packages/price-experience-api
-    - packages/price-backend
-    - packages/core
+      - packages/price-experience-api
+      - packages/price-backend
+      - packages/core
+    exclude:
+      - packages/price-experience-api/test/integration/price-experience-api.postman_collection.json
   tags:
     include:
       - price-experience-api/*

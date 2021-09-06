@@ -1,0 +1,66 @@
+<tr>
+    <td class="email-body" width="100%" cellpadding="0" cellspacing="0">
+        <table class="email-body_inner" align="center" width="414" cellpadding="0" cellspacing="0" role="presentation">
+            <!-- Body content -->
+            <tr>
+                <td class="content-cell">
+                    <div class="f-fallback">
+                        <hr>
+                        <h1 style="margin-bottom: 0;border-top: 1rem solid #ffffff">{{I18n 'orderConfirmation.customer.header'}}</h1>
+
+                        <table class="purchase" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                            <tr>
+                                <td colspan="2">
+                                    <table class="purchase_content" width="100%" cellpadding="0" cellspacing="0">
+
+                                        <tr>
+                                            <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{order.customer.firstName}} {{order.customer.lastName}}
+                                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{order.customer.email}}
+                                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="100%" class="purchase_item pb-1">
+                                                                <span class="f-fallback">
+                                                                    {{order.customer.phone}}
+                                                                </span>
+                                            </td>
+                                        </tr>
+                                        {{#if order.customer.address}}
+                                        <tr>
+                                            <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{order.customer.address}}
+                                                                </span>
+                                            </td>
+                                        </tr>
+                                        {{/if}}
+                                        {{#if order.customer.district}}
+                                            <tr>
+                                                <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{order.customer.district}}
+                                                                </span>
+                                                </td>
+                                            </tr>
+                                        {{/if}}
+
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>

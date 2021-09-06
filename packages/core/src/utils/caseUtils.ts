@@ -1,4 +1,4 @@
-export const toCamelCase = (source: string) =>
+export const toCamelCase = (source: string): string =>
   source
     .toLowerCase()
     .replace(/([-_][a-z])/g, (group) =>

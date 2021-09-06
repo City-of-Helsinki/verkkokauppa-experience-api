@@ -3,9 +3,11 @@
 trigger:
   paths:
     include:
-    - packages/cart-experience-api
-    - packages/cart-backend
-    - packages/core
+      - packages/cart-experience-api
+      - packages/cart-backend
+      - packages/core
+    exclude:
+      - packages/cart-experience-api/test/integration/cart-experience-api.postman_collection.json
   tags:
     include:
       - cart-experience-api/*

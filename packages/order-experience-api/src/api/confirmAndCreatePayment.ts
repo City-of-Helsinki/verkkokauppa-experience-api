@@ -3,9 +3,11 @@ import type { Response } from 'express'
 import { confirmOrder } from '@verkkokauppa/order-backend'
 import {
   createPaymentFromOrder,
+  getPaymentMethodList,
   getPaymentUrl,
 } from '@verkkokauppa/payment-backend'
 import * as yup from 'yup'
+import { calculateTotalsFromItems } from '../lib/totals'
 
 const requestSchema = yup.object().shape({
   params: yup.object().shape({
@@ -13,7 +15,7 @@ const requestSchema = yup.object().shape({
   }),
   body: yup.object().shape({
     paymentMethod: yup.string().required(),
-    paymentLanguage: yup.string().required(),
+    language: yup.string().required(),
   }),
 })
 
@@ -28,15 +30,25 @@ export class ConfirmAndCreatePayment extends AbstractController<
   ): Promise<any> {
     const {
       params: { orderId },
-      body: { paymentMethod, paymentLanguage },
+      body: { paymentMethod, language },
     } = req
 
     const order = await confirmOrder({ orderId })
-
+    const orderTotals = calculateTotalsFromItems(order)
+    const availablePaymentMethods = await getPaymentMethodList({
+      request: {
+        namespace: order.namespace,
+        totalPrice: parseFloat(orderTotals.priceTotal),
+      },
+    })
+    const currentPaymentMethod = availablePaymentMethods.find(
+      (availableMethod) => availableMethod.code === paymentMethod
+    )
     const payment = await createPaymentFromOrder({
       order,
       paymentMethod,
-      language: paymentLanguage,
+      paymentMethodLabel: currentPaymentMethod?.name || paymentMethod,
+      language,
     })
 
     const paymentUrl = await getPaymentUrl(order)
