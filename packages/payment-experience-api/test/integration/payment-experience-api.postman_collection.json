@@ -656,7 +656,7 @@
 			"response": []
 		},
 		{
-			"name": "Get Payment Methods 400 (not found order)",
+			"name": "Get Payment Methods 404 (not found order)",
 			"event": [
 				{
 					"listen": "test",
@@ -664,17 +664,17 @@
 						"exec": [
 							"var data = pm.response.json();",
 							"",
-							"pm.test(\"Status code is 400\", function () {",
-							"    pm.response.to.have.status(400);",
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
 							"});",
 							"pm.test(\"Response has only one error\", function () {",
 							"    pm.expect(data.errors.length).to.eq(1)",
 							"});",
 							"pm.test(\"Response has correct error code for invalid request\", function () {",
-							"    pm.expect(data.errors[0].code).to.eq(\"failed-to-get-order\")",
+							"    pm.expect(data.errors[0].code).to.eq(\"order-not-found\")",
 							"});",
 							"pm.test(\"Response has correct error message for invalid request\", function () {",
-							"    pm.expect(data.errors[0].message).to.eq(\"Failed to get order\")",
+							"    pm.expect(data.errors[0].message).to.eq(\"Order not found\")",
 							"});"
 						],
 						"type": "text/javascript"
