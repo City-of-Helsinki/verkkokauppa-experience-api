@@ -3,10 +3,12 @@
 trigger:
   paths:
     include:
-    - packages/product-experience-api
-    - packages/product-backend
-    - packages/price-backend
-    - packages/core
+      - packages/product-experience-api
+      - packages/product-backend
+      - packages/price-backend
+      - packages/core
+    exclude:
+      - packages/product-experience-api/test/integration/product-experience-api.postman_collection.json
   tags:
     include:
       - product-experience-api/*

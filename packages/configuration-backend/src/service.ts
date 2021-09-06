@@ -98,6 +98,7 @@ export const getMerchantDetailsForOrder = async (p: {
     'MERCHANT_EMAIL',
     'MERCHANT_PHONE',
     'MERCHANT_URL',
+    'MERCHANT_BUSINESS_ID',
   ]
   return allConfiguration.filter((configuration) =>
     merchantFields.includes(configuration.configurationKey)
