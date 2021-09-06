@@ -1,0 +1,31 @@
+<tr>
+    <td class="email-body" width="100%" cellpadding="0" cellspacing="0">
+        <table class="email-body_inner" align="center" width="414" cellpadding="0" cellspacing="0" role="presentation">
+            <!-- Body content -->
+            <tr>
+                <td class="content-cell">
+                    <div class="f-fallback">
+                        <h1 style="margin-bottom: 0">{{I18n 'orderConfirmation.order.mainHeader'}}</h1>
+
+                        <table class="purchase" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                            <tr>
+                                <td colspan="2">
+                                    <table class="purchase_content" width="100%" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{I18n 'orderConfirmation.order.header'}} {{order.orderId}} {{Date order.createdAt}} {{I18n 'orderConfirmation.clock'}} {{Time order.createdAt}}
+                                                                </span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
