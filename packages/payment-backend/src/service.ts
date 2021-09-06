@@ -14,7 +14,10 @@ import {
   GetPaymentMethodListFailure,
   GetPaymentStatusFailure,
   GetPaymentUrlFailure,
+  PaymentMethodsNotFound,
   PaymentMethodValidationError,
+  PaymentNotFound,
+  RejectCreatePaymentError,
 } from './errors'
 
 const PAYMENT_METHOD_MAP = new Map()
@@ -51,6 +54,9 @@ export const createPaymentFromOrder = async (parameters: {
 
     return result.data
   } catch (e) {
+    if (e.response?.status === 403) {
+      throw new RejectCreatePaymentError('Order status must be confirmed')
+    }
     throw new CreatePaymentFromOrderFailure(e)
   }
 }
@@ -71,6 +77,9 @@ export const getPaymentMethodList = async (parameters: {
     const result = await axios.post<PaymentMethod[]>(url, request)
     return result.data
   } catch (e) {
+    if (e.response?.status === 404) {
+      throw new PaymentMethodsNotFound()
+    }
     throw new GetPaymentMethodListFailure(e)
   }
 }
@@ -154,6 +163,34 @@ export const getPaymentForOrder = async (p: {
     })
     return result.data
   } catch (e) {
+    if (e.response?.status === 404) {
+      throw new PaymentNotFound()
+    }
+    throw new GetPaymentForOrderFailure(e)
+  }
+}
+
+export const getPaymentAndValidateUserForOrder = async (p: {
+  orderId: string
+  namespace: string
+  user: string
+}): Promise<Payment> => {
+  const { orderId, namespace, user } = p
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/online/get-and-validate-user`
+
+  try {
+    const result = await axios.get<Payment>(url, {
+      params: { orderId, namespace, user },
+    })
+    return result.data
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new PaymentNotFound()
+    }
     throw new GetPaymentForOrderFailure(e)
   }
 }

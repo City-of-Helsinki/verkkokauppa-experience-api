@@ -16,12 +16,34 @@ export class PaymentMethodValidationError extends ExperienceError {
   }
 }
 
+export class RejectCreatePaymentError extends ExperienceError {
+  constructor(message: string) {
+    super({
+      code: 'rejected-create-payment',
+      message,
+      logLevel: 'info',
+      responseStatus: StatusCode.Forbidden,
+    })
+  }
+}
+
 export class CreatePaymentFromOrderFailure extends ExperienceFailure {
   constructor(source: Error) {
     super({
       code: 'failed-to-create-payment-from-order',
       message: 'Failed to create payment from order',
       source,
+    })
+  }
+}
+
+export class PaymentMethodsNotFound extends ExperienceError {
+  constructor() {
+    super({
+      code: 'payment-methods-not-found',
+      message: 'Payment methods not found',
+      logLevel: 'info',
+      responseStatus: StatusCode.NotFound,
     })
   }
 }
@@ -62,6 +84,17 @@ export class GetPaymentStatusFailure extends ExperienceFailure {
       code: 'failed-to-get-payment-status',
       message: 'Failed to get payment status',
       source,
+    })
+  }
+}
+
+export class PaymentNotFound extends ExperienceError {
+  constructor() {
+    super({
+      code: 'payment-not-found',
+      message: 'Payment not found',
+      logLevel: 'info',
+      responseStatus: StatusCode.NotFound,
     })
   }
 }
