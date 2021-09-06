@@ -1,0 +1,27 @@
+{
+  "orderConfirmation": {
+    "clock": "Kello",
+    "order": {
+      "mainHeader": "Tilausvahvistus ja kuitti EN",
+      "header": "Kiitos tilauksestasi",
+      "headerTwo": "Tilauksen tiedot:"
+    },
+    "merchant": {
+      "header": "Palvelu: ",
+      "textOne": "Mikäli sinulla on tilaukseen liittyen kysymyksiä kohdistathan ne suoraan palveluntarjoajalle:",
+      "textTwo": "Palveluntarjoaja toimittaa aina erikseen tarvittavat lisäohjeet palvelun/tuotteen käyttöön tai toimitukseen liittyen.\nKäyttöehtoihin voit tutustua täällä:",
+      "headerTwo": "Myyjän tiedot",
+      "businessId": "Y-tunnus"
+    },
+    "customer": {
+      "header": "Tilaajan tiedot"
+    },
+    "receipt": {
+      "header": "Maksutiedot",
+      "alv": "Sis. alv",
+      "paidTotal": "Maksettu yhteensä",
+      "paymentMethod": "Maksutapa",
+      "date": "Päivämäärä"
+    }
+  }
+}
