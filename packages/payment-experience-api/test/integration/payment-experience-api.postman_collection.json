@@ -94,7 +94,7 @@
 							"                    \"firstName\": pm.variables.get('testCustomerFirstName'),",
 							"                    \"lastName\": pm.variables.get('testCustomerLastName'),",
 							"                    \"email\": pm.variables.get('testCustomerEmail'),",
-							"                    \"telephone\": \"0401231233\"",
+							"                    \"phone\": pm.variables.get('testCustomerPhone')",
 							"                }",
 							"            })",
 							"    }",
