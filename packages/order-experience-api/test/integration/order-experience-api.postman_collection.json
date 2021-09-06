@@ -46,7 +46,18 @@
 							"});",
 							"pm.test(\"Response status is created\", function () {",
 							"    pm.expect(data.status).to.eq(\"draft\")",
-							"});"
+							"});",
+							"pm.test(\"Response contains checkoutUrl\", function () {",
+							"    pm.expect(data.checkoutUrl).to.exist",
+							"});",
+							"pm.test(\"Response checkoutUrl has valid statusCode\", function() {",
+							"    pm.sendRequest({",
+							"        url: data.checkoutUrl,",
+							"        method: 'GET',",
+							"    }, function (err, res) {",
+							"        pm.expect(res.code).to.eql(200)",
+							"    })",
+							"})"
 						],
 						"type": "text/javascript"
 					}
@@ -57,7 +68,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"namespace\": \"asukaspysakointi\",\n    \"user\": \"{{$randomUserName}}\"\n}",
+					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{$randomUserName}}\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -74,67 +85,145 @@
 			"response": []
 		},
 		{
+			"name": "Confirm order without items 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
+							"});",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"order-validation-failed\")",
+							"});",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"order must have customer and totals\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var qty = 2",
+							"var priceNet = pm.environment.get('productFoundPriceNet')",
+							"var priceGross = pm.environment.get('productFoundPriceGross')",
+							"var priceVat = priceGross - priceNet",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', qty*priceNet)",
+							"pm.variables.set('rowPriceTotal', qty*priceGross)",
+							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"paymentMethod\": \"nordea\",\n    \"language\": \"fi\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/:id/confirmAndCreatePayment",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						":id",
+						"confirmAndCreatePayment"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{orderFound}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get Order Without Items 200",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
+							"var data = pm.response.json();",
+							"",
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
 							"pm.test(\"Response contains ID\", function () {",
-							"    var data = pm.response.json();",
 							"    pm.expect(data.orderId).to.not.empty",
 							"});",
 							"pm.test(\"Response contains correct order status\", function () {",
-							"    var data = pm.response.json();",
 							"    pm.expect(data.status).to.eql(\"draft\");",
 							"});",
 							"pm.test(\"Response contains namespace\", function () {",
-							"    var data = pm.response.json();",
 							"    pm.expect(data.namespace).to.exist",
 							"});",
 							"pm.test(\"Response namespace is not empty\", function () {",
-							"    var data = pm.response.json();",
 							"    pm.expect(data.namespace).to.not.empty",
 							"});",
 							"pm.test(\"Response contains user\", function () {",
-							"    var data = pm.response.json();",
 							"    pm.expect(data.user).to.exist",
 							"});",
 							"pm.test(\"Response user is not empty\", function () {",
-							"    var data = pm.response.json();",
 							"    pm.expect(data.user).to.not.empty",
 							"});",
 							"pm.test(\"Response contains createdAt\", function () {",
-							"    var data = pm.response.json();",
 							"    pm.expect(data.createdAt).to.exist",
 							"});",
 							"pm.test(\"Response createdAt is not empty\", function () {",
-							"    var data = pm.response.json();",
 							"    pm.expect(data.createdAt).to.not.empty",
 							"});",
 							"pm.test(\"Response contains createdAt\", function () {",
-							"    var data = pm.response.json();",
 							"    pm.expect(data.createdAt).to.exist",
 							"});",
 							"pm.test(\"Response createdAt is not empty\", function () {",
-							"    var data = pm.response.json();",
 							"    pm.expect(data.createdAt).to.not.empty",
 							"});",
 							"pm.test(\"Response contains status\", function () {",
-							"    var data = pm.response.json();",
 							"    pm.expect(data.status).to.exist",
 							"});",
 							"pm.test(\"Response status is not empty\", function () {",
-							"    var data = pm.response.json();",
 							"    pm.expect(data.status).to.not.empty",
 							"});",
 							"pm.test(\"Response does not contain items\", function () {",
-							"    var data = pm.response.json();",
 							"    pm.expect(data.items).to.not.contain",
-							"});"
+							"});",
+							"pm.test(\"Response contains checkoutUrl\", function () {",
+							"    pm.expect(data.checkoutUrl).to.exist",
+							"});",
+							"pm.test(\"Response checkoutUrl has valid statusCode\", function() {",
+							"    pm.sendRequest({",
+							"        url: data.checkoutUrl,",
+							"        method: 'GET',",
+							"    }, function (err, res) {",
+							"        pm.expect(res.code).to.eql(200)",
+							"    })",
+							"})"
 						],
 						"type": "text/javascript"
 					}
@@ -185,9 +274,28 @@
 							"pm.test(\"Status code is 201\", function () {",
 							"    pm.response.to.have.status(201);",
 							"});",
+							"/* General data */",
 							"pm.test(\"Response contains ID\", function () {",
 							"    pm.expect(data.orderId).to.eq(pm.environment.get(\"orderWithItems\"))",
 							"});",
+							"pm.test(\"Response user is not empty\", function () {",
+							"    pm.expect(data.user).to.not.empty",
+							"});",
+							"pm.test(\"Response createdAt is not empty\", function () {",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response contains checkoutUrl\", function () {",
+							"    pm.expect(data.checkoutUrl).to.exist",
+							"});",
+							"pm.test(\"Response checkoutUrl has valid statusCode\", function() {",
+							"    pm.sendRequest({",
+							"        url: data.checkoutUrl,",
+							"        method: 'GET',",
+							"    }, function (err, res) {",
+							"        pm.expect(res.code).to.eql(200)",
+							"    })",
+							"})",
+							"/* Customer data */",
 							"pm.test(\"Response contains correct order status\", function () {",
 							"    pm.expect(data.status).to.eql(\"draft\");",
 							"});",
@@ -203,12 +311,7 @@
 							"pm.test(\"Response namespace is not empty\", function () {",
 							"    pm.expect(data.namespace).to.not.empty",
 							"});",
-							"pm.test(\"Response user is not empty\", function () {",
-							"    pm.expect(data.user).to.not.empty",
-							"});",
-							"pm.test(\"Response createdAt is not empty\", function () {",
-							"    pm.expect(data.createdAt).to.not.empty",
-							"});",
+							"/* Item data */",
 							"pm.test(\"Response contains items\", function () {",
 							"    pm.expect(data.items).to.not.empty",
 							"});",
@@ -220,38 +323,61 @@
 							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
 							"});",
 							"pm.test(\"Response item has correct quantity\", function () {",
-							"    pm.expect(data.items[0].quantity).to.eql(2);",
+							"    pm.expect(data.items[0].quantity).to.eql(pm.variables.get('qty'));",
 							"});",
 							"pm.test(\"Response item has correct unit\", function () {",
 							"    pm.expect(data.items[0].unit).to.eql(\"pcs\");",
 							"});",
+							"/* Prices */",
 							"pm.test(\"Response item has correct rowPriceNet\", function () {",
-							"    pm.expect(data.items[0].rowPriceNet).to.eql(\"200\");",
+							"    pm.expect(data.items[0].rowPriceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
 							"});",
 							"pm.test(\"Response item has correct rowPriceVat\", function () {",
-							"    pm.expect(data.items[0].rowPriceVat).to.eql(\"48\");",
+							"    pm.expect(data.items[0].rowPriceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
 							"});",
 							"pm.test(\"Response item has correct rowPriceTotal\", function () {",
-							"    pm.expect(data.items[0].rowPriceTotal).to.eql(\"248\");",
+							"    pm.expect(data.items[0].rowPriceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
 							"});",
 							"pm.test(\"Response item has correct priceNet\", function () {",
-							"    pm.expect(data.items[0].priceNet).to.eql(\"100\");",
+							"    pm.expect(data.items[0].priceNet).to.eql(pm.variables.get('priceNet').toString());",
 							"});",
 							"pm.test(\"Response item has correct priceGross\", function () {",
-							"    pm.expect(data.items[0].priceGross).to.eql(\"124\");",
+							"    pm.expect(data.items[0].priceGross).to.eql(pm.variables.get('priceGross').toString());",
 							"});",
 							"pm.test(\"Response item has correct vatPercentage\", function () {",
 							"    pm.expect(data.items[0].vatPercentage).to.eql(\"24\");",
 							"})",
 							"pm.test(\"Response has correct priceNet\", function () {",
-							"    pm.expect(data.priceNet).to.eql(\"200\");",
+							"    pm.expect(data.priceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
 							"});",
 							"pm.test(\"Response has correct priceVat\", function () {",
-							"    pm.expect(data.priceVat).to.eql(\"48\");",
+							"    pm.expect(data.priceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
 							"});",
 							"pm.test(\"Response has correct priceTotal\", function () {",
-							"    pm.expect(data.priceTotal).to.eql(\"248\");",
-							"});"
+							"    pm.expect(data.priceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var qty = 2",
+							"var priceNet = pm.environment.get('productFoundPriceNet')",
+							"var priceGross = pm.environment.get('productFoundPriceGross')",
+							"var priceVat = priceGross - priceNet",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', qty*priceNet)",
+							"pm.variables.set('rowPriceTotal', qty*priceGross)",
+							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -262,7 +388,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"namespace\": \"asukaspysakointi\",\n    \"user\": \"{{$randomUserName}}\", \n    \"priceNet\": \"200\",\n    \"priceVat\": \"48\",\n    \"priceTotal\": \"248\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": 2,\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"200\",\n            \"rowPriceVat\": \"48\",\n            \"rowPriceTotal\": \"248\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"100\",\n            \"priceVat\": \"24\",\n            \"priceGross\": \"124\"\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"0401231233\"\n    }\n}",
+					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{$randomUserName}}\",\n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -279,7 +405,7 @@
 			"response": []
 		},
 		{
-			"name": "Create Order with Recurring Item 201",
+			"name": "Get Order With Items 200",
 			"event": [
 				{
 					"listen": "test",
@@ -290,14 +416,888 @@
 							"    pm.environment.set(\"orderWithItems\", data.orderId)",
 							"}",
 							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"/* General data */",
+							"pm.test(\"Response contains ID\", function () {",
+							"    pm.expect(data.orderId).to.eq(pm.environment.get(\"orderWithItems\"))",
+							"});",
+							"pm.test(\"Response user is not empty\", function () {",
+							"    pm.expect(data.user).to.not.empty",
+							"});",
+							"pm.test(\"Response createdAt is not empty\", function () {",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response contains checkoutUrl\", function () {",
+							"    pm.expect(data.checkoutUrl).to.exist",
+							"});",
+							"pm.test(\"Response checkoutUrl has valid statusCode\", function() {",
+							"    pm.sendRequest({",
+							"        url: data.checkoutUrl,",
+							"        method: 'GET',",
+							"    }, function (err, res) {",
+							"        pm.expect(res.code).to.eql(200)",
+							"    })",
+							"})",
+							"/* Customer data */",
+							"pm.test(\"Response contains correct order status\", function () {",
+							"    pm.expect(data.status).to.eql(\"draft\");",
+							"});",
+							"pm.test(\"Response contains correct customer firstname\", function () {",
+							"    pm.expect(data.customer.firstName).to.eql(pm.variables.get(\"testCustomerFirstName\"));",
+							"});",
+							"pm.test(\"Response contains correct customer lastname\", function () {",
+							"    pm.expect(data.customer.lastName).to.eql(pm.variables.get(\"testCustomerLastName\"));",
+							"});",
+							"pm.test(\"Response contains correct customer email\", function () {",
+							"    pm.expect(data.customer.email).to.eql(pm.variables.get(\"testCustomerEmail\"));",
+							"});",
+							"pm.test(\"Response namespace is not empty\", function () {",
+							"    pm.expect(data.namespace).to.not.empty",
+							"});",
+							"/* Item data */",
+							"pm.test(\"Response contains items\", function () {",
+							"    pm.expect(data.items).to.not.empty",
+							"});",
+							"pm.test(\"Response item has order ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].orderId).to.eq(pm.environment.get(\"orderWithItems\"))",
+							"});",
+							"pm.test(\"Response item has correct product ID\", function () {",
+							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
+							"});",
+							"pm.test(\"Response item has correct quantity\", function () {",
+							"    pm.expect(data.items[0].quantity).to.eql(pm.variables.get(\"qty\"));",
+							"});",
+							"pm.test(\"Response item has correct unit\", function () {",
+							"    pm.expect(data.items[0].unit).to.eql(\"pcs\");",
+							"});",
+							"/* Prices */",
+							"pm.test(\"Response item has correct rowPriceNet\", function () {",
+							"    pm.expect(data.items[0].rowPriceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
+							"});",
+							"pm.test(\"Response item has correct rowPriceVat\", function () {",
+							"    pm.expect(data.items[0].rowPriceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
+							"});",
+							"pm.test(\"Response item has correct rowPriceTotal\", function () {",
+							"    pm.expect(data.items[0].rowPriceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
+							"});",
+							"pm.test(\"Response item has correct priceNet\", function () {",
+							"    pm.expect(data.items[0].priceNet).to.eql(pm.variables.get('priceNet').toString());",
+							"});",
+							"pm.test(\"Response item has correct priceGross\", function () {",
+							"    pm.expect(data.items[0].priceGross).to.eql(pm.variables.get('priceGross').toString());",
+							"});",
+							"pm.test(\"Response item has correct vatPercentage\", function () {",
+							"    pm.expect(data.items[0].vatPercentage).to.eql(\"24\");",
+							"})",
+							"pm.test(\"Response has correct priceNet\", function () {",
+							"    pm.expect(data.priceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
+							"});",
+							"pm.test(\"Response has correct priceVat\", function () {",
+							"    pm.expect(data.priceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
+							"});",
+							"pm.test(\"Response has correct priceTotal\", function () {",
+							"    pm.expect(data.priceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
+							"});",
+							"/* Merchant details */",
+							"pm.test(\"Response has merchantUrl\", function () {",
+							"    pm.expect(data.merchant.merchantUrl).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantEmail\", function () {",
+							"    pm.expect(data.merchant.merchantEmail).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantName\", function () {",
+							"    pm.expect(data.merchant.merchantName).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantStreet\", function () {",
+							"    pm.expect(data.merchant.merchantStreet).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantPhone\", function () {",
+							"    pm.expect(data.merchant.merchantPhone).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantCity\", function () {",
+							"    pm.expect(data.merchant.merchantCity).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantZip\", function () {",
+							"    pm.expect(data.merchant.merchantZip).to.not.empty;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var qty = 2",
+							"var priceNet = pm.environment.get('productFoundPriceNet')",
+							"var priceGross = pm.environment.get('productFoundPriceGross')",
+							"var priceVat = priceGross - priceNet",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', qty*priceNet)",
+							"pm.variables.set('rowPriceTotal', qty*priceGross)",
+							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{orderExperienceUrl}}/:id",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{orderWithItems}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Order with Items and meta 201",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"if (data.orderId) {",
+							"    pm.environment.set(\"orderWithItemsAndMeta\", data.orderId)",
+							"}",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"/* General data */",
+							"pm.test(\"Response contains ID\", function () {",
+							"    pm.expect(data.orderId).to.eq(pm.environment.get(\"orderWithItemsAndMeta\"))",
+							"});",
+							"pm.test(\"Response user is not empty\", function () {",
+							"    pm.expect(data.user).to.not.empty",
+							"});",
+							"pm.test(\"Response createdAt is not empty\", function () {",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response contains checkoutUrl\", function () {",
+							"    pm.expect(data.checkoutUrl).to.exist",
+							"});",
+							"pm.test(\"Response checkoutUrl has valid statusCode\", function() {",
+							"    pm.sendRequest({",
+							"        url: data.checkoutUrl,",
+							"        method: 'GET',",
+							"    }, function (err, res) {",
+							"        pm.expect(res.code).to.eql(200)",
+							"    })",
+							"})",
+							"pm.test(\"Response namespace is not empty\", function () {",
+							"    pm.expect(data.namespace).to.not.empty",
+							"});",
+							"/* Customer data */",
+							"pm.test(\"Response contains correct order status\", function () {",
+							"    pm.expect(data.status).to.eql(\"draft\");",
+							"});",
+							"pm.test(\"Response contains correct customer firstname\", function () {",
+							"    pm.expect(data.customer.firstName).to.eql(pm.variables.get(\"testCustomerFirstName\"));",
+							"});",
+							"pm.test(\"Response contains correct customer lastname\", function () {",
+							"    pm.expect(data.customer.lastName).to.eql(pm.variables.get(\"testCustomerLastName\"));",
+							"});",
+							"pm.test(\"Response contains correct customer email\", function () {",
+							"    pm.expect(data.customer.email).to.eql(pm.variables.get(\"testCustomerEmail\"));",
+							"});",
+							"/* Item data */",
+							"pm.test(\"Response contains items\", function () {",
+							"    pm.expect(data.items).to.not.empty",
+							"});",
+							"pm.test(\"Response item has order ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].orderId).to.eq(pm.environment.get(\"orderWithItemsAndMeta\"))",
+							"});",
+							"pm.test(\"Response item has correct product ID\", function () {",
+							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
+							"});",
+							"pm.test(\"Response item has correct quantity\", function () {",
+							"    pm.expect(data.items[0].quantity).to.eql(pm.variables.get(\"qty\"));",
+							"});",
+							"pm.test(\"Response item has correct unit\", function () {",
+							"    pm.expect(data.items[0].unit).to.eql(\"pcs\");",
+							"});",
+							"/* Prices */",
+							"pm.test(\"Response item has correct rowPriceNet\", function () {",
+							"    pm.expect(data.items[0].rowPriceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
+							"});",
+							"pm.test(\"Response item has correct rowPriceVat\", function () {",
+							"    pm.expect(data.items[0].rowPriceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
+							"});",
+							"pm.test(\"Response item has correct rowPriceTotal\", function () {",
+							"    pm.expect(data.items[0].rowPriceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
+							"});",
+							"pm.test(\"Response item has correct priceNet\", function () {",
+							"    pm.expect(data.items[0].priceNet).to.eql(pm.variables.get('priceNet').toString());",
+							"});",
+							"pm.test(\"Response item has correct priceGross\", function () {",
+							"    pm.expect(data.items[0].priceGross).to.eql(pm.variables.get('priceGross').toString());",
+							"});",
+							"pm.test(\"Response item has correct vatPercentage\", function () {",
+							"    pm.expect(data.items[0].vatPercentage).to.eql(\"24\");",
+							"})",
+							"pm.test(\"Response has correct priceNet\", function () {",
+							"    pm.expect(data.priceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
+							"});",
+							"pm.test(\"Response has correct priceVat\", function () {",
+							"    pm.expect(data.priceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
+							"});",
+							"pm.test(\"Response has correct priceTotal\", function () {",
+							"    pm.expect(data.priceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
+							"});",
+							"",
+							"/* Item meta */",
+							"var firstMeta = data.items[0].meta.find(meta => meta.key === 'licensePlateNumber')",
+							"var secondMeta = data.items[0].meta.find(meta => meta.key === 'anotherMeta')",
+							"",
+							"pm.test(\"Response item first meta has correct key\", function () {",
+							"    pm.expect(firstMeta.key).to.eql(\"licensePlateNumber\");",
+							"})",
+							"pm.test(\"Response item first meta has correct value\", function () {",
+							"    pm.expect(firstMeta.value).to.eql(\"KYV-123\");",
+							"})",
+							"pm.test(\"Response item first meta has correct label\", function () {",
+							"    pm.expect(firstMeta.label).to.eql(\"Rekisterinumero\");",
+							"})",
+							"pm.test(\"Response item first meta not visible in checkout\", function () {",
+							"    pm.expect(firstMeta.visibleInCheckout).to.eql(\"false\");",
+							"})",
+							"pm.test(\"Response item first meta has correct ordinal\", function () {",
+							"    pm.expect(firstMeta.ordinal).to.eql(\"1\");",
+							"})",
+							"pm.test(\"Response item second meta has correct key\", function () {",
+							"    pm.expect(secondMeta.key).to.eql(\"anotherMeta\");",
+							"})",
+							"pm.test(\"Response item second meta has correct value\", function () {",
+							"    pm.expect(secondMeta.value).to.eql(\"valueForMeta\");",
+							"})",
+							"pm.test(\"Response item second meta has correct label\", function () {",
+							"    pm.expect(secondMeta.label).to.eql(\"Visible in Checkout\");",
+							"})",
+							"pm.test(\"Response item second meta not visible in checkout\", function () {",
+							"    pm.expect(secondMeta.visibleInCheckout).to.eql(\"true\");",
+							"})",
+							"pm.test(\"Response item second meta has correct ordinal\", function () {",
+							"    pm.expect(secondMeta.ordinal).to.eql(\"2\");",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var qty = 2",
+							"var priceNet = pm.environment.get('productFoundPriceNet')",
+							"var priceGross = pm.environment.get('productFoundPriceGross')",
+							"var priceVat = priceGross - priceNet",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', qty*priceNet)",
+							"pm.variables.set('rowPriceTotal', qty*priceGross)",
+							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"namespace\": \"asukaspysakointi\",\n    \"user\": \"{{$randomUserName}}\", \n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                },\n                {\n                    \"key\": \"anotherMeta\",\n                    \"value\": \"valueForMeta\",\n                    \"label\": \"Visible in Checkout\",\n                    \"visibleInCheckout\": true,\n                    \"ordinal\": \"2\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}",
+					"host": [
+						"{{orderExperienceUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Order With Items and meta 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"if (data.orderId) {",
+							"    pm.environment.set(\"orderWithItemsAndMeta\", data.orderId)",
+							"}",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response contains ID\", function () {",
+							"    pm.expect(data.orderId).to.eq(pm.environment.get(\"orderWithItemsAndMeta\"))",
+							"});",
+							"/* General data */",
+							"pm.test(\"Response user is not empty\", function () {",
+							"    pm.expect(data.user).to.not.empty",
+							"});",
+							"pm.test(\"Response createdAt is not empty\", function () {",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response contains checkoutUrl\", function () {",
+							"    pm.expect(data.checkoutUrl).to.exist",
+							"});",
+							"pm.test(\"Response checkoutUrl has valid statusCode\", function() {",
+							"    pm.sendRequest({",
+							"        url: data.checkoutUrl,",
+							"        method: 'GET',",
+							"    }, function (err, res) {",
+							"        pm.expect(res.code).to.eql(200)",
+							"    })",
+							"})",
+							"/* Customer data */",
+							"pm.test(\"Response contains correct order status\", function () {",
+							"    pm.expect(data.status).to.eql(\"draft\");",
+							"});",
+							"pm.test(\"Response contains correct customer firstname\", function () {",
+							"    pm.expect(data.customer.firstName).to.eql(pm.variables.get(\"testCustomerFirstName\"));",
+							"});",
+							"pm.test(\"Response contains correct customer lastname\", function () {",
+							"    pm.expect(data.customer.lastName).to.eql(pm.variables.get(\"testCustomerLastName\"));",
+							"});",
+							"pm.test(\"Response contains correct customer email\", function () {",
+							"    pm.expect(data.customer.email).to.eql(pm.variables.get(\"testCustomerEmail\"));",
+							"});",
+							"pm.test(\"Response namespace is not empty\", function () {",
+							"    pm.expect(data.namespace).to.not.empty",
+							"});",
+							"/* Item data */",
+							"pm.test(\"Response contains items\", function () {",
+							"    pm.expect(data.items).to.not.empty",
+							"});",
+							"pm.test(\"Response item has order ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].orderId).to.eq(pm.environment.get(\"orderWithItemsAndMeta\"))",
+							"});",
+							"pm.test(\"Response item has correct product ID\", function () {",
+							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
+							"});",
+							"pm.test(\"Response item has correct quantity\", function () {",
+							"    pm.expect(data.items[0].quantity).to.eql(pm.variables.get(\"qty\"));",
+							"});",
+							"pm.test(\"Response item has correct unit\", function () {",
+							"    pm.expect(data.items[0].unit).to.eql(\"pcs\");",
+							"});",
+							"/* Prices */",
+							"pm.test(\"Response item has correct rowPriceNet\", function () {",
+							"    pm.expect(data.items[0].rowPriceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
+							"});",
+							"pm.test(\"Response item has correct rowPriceVat\", function () {",
+							"    pm.expect(data.items[0].rowPriceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
+							"});",
+							"pm.test(\"Response item has correct rowPriceTotal\", function () {",
+							"    pm.expect(data.items[0].rowPriceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
+							"});",
+							"pm.test(\"Response item has correct priceNet\", function () {",
+							"    pm.expect(data.items[0].priceNet).to.eql(pm.variables.get('priceNet').toString());",
+							"});",
+							"pm.test(\"Response item has correct priceGross\", function () {",
+							"    pm.expect(data.items[0].priceGross).to.eql(pm.variables.get('priceGross').toString());",
+							"});",
+							"pm.test(\"Response item has correct vatPercentage\", function () {",
+							"    pm.expect(data.items[0].vatPercentage).to.eql(\"24\");",
+							"})",
+							"pm.test(\"Response has correct priceNet\", function () {",
+							"    pm.expect(data.priceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
+							"});",
+							"pm.test(\"Response has correct priceVat\", function () {",
+							"    pm.expect(data.priceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
+							"});",
+							"pm.test(\"Response has correct priceTotal\", function () {",
+							"    pm.expect(data.priceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
+							"});",
+							"",
+							"/* Item meta */",
+							"var firstMeta = data.items[0].meta.find(meta => meta.key === 'licensePlateNumber')",
+							"var secondMeta = data.items[0].meta.find(meta => meta.key === 'anotherMeta')",
+							"",
+							"pm.test(\"Response item first meta has correct key\", function () {",
+							"    pm.expect(firstMeta.key).to.eql(\"licensePlateNumber\");",
+							"})",
+							"pm.test(\"Response item first meta has correct value\", function () {",
+							"    pm.expect(firstMeta.value).to.eql(\"KYV-123\");",
+							"})",
+							"pm.test(\"Response item first meta has correct label\", function () {",
+							"    pm.expect(firstMeta.label).to.eql(\"Rekisterinumero\");",
+							"})",
+							"pm.test(\"Response item first meta not visible in checkout\", function () {",
+							"    pm.expect(firstMeta.visibleInCheckout).to.eql(\"false\");",
+							"})",
+							"pm.test(\"Response item first meta has correct ordinal\", function () {",
+							"    pm.expect(firstMeta.ordinal).to.eql(\"1\");",
+							"})",
+							"pm.test(\"Response item second meta has correct key\", function () {",
+							"    pm.expect(secondMeta.key).to.eql(\"anotherMeta\");",
+							"})",
+							"pm.test(\"Response item second meta has correct value\", function () {",
+							"    pm.expect(secondMeta.value).to.eql(\"valueForMeta\");",
+							"})",
+							"pm.test(\"Response item second meta has correct label\", function () {",
+							"    pm.expect(secondMeta.label).to.eql(\"Visible in Checkout\");",
+							"})",
+							"pm.test(\"Response item second meta not visible in checkout\", function () {",
+							"    pm.expect(secondMeta.visibleInCheckout).to.eql(\"true\");",
+							"})",
+							"pm.test(\"Response item second meta has correct ordinal\", function () {",
+							"    pm.expect(secondMeta.ordinal).to.eql(\"2\");",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var qty = 2",
+							"var priceNet = pm.environment.get('productFoundPriceNet')",
+							"var priceGross = pm.environment.get('productFoundPriceGross')",
+							"var priceVat = priceGross - priceNet",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', qty*priceNet)",
+							"pm.variables.set('rowPriceTotal', qty*priceGross)",
+							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{orderExperienceUrl}}/:id",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{orderWithItemsAndMeta}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Order with Recurring Item 201",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"var requestData = JSON.parse(pm.request.body);",
+							"",
+							"if (data.orderId) {",
+							"    pm.environment.set(\"orderWithRecurringItem\", data.orderId)",
+							"}",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"/* General data */",
+							"pm.test(\"Response contains ID\", function () {",
+							"    pm.expect(data.orderId).to.eq(pm.environment.get(\"orderWithRecurringItem\"))",
+							"});",
+							"pm.test(\"Response user is not empty\", function () {",
+							"    pm.expect(data.user).to.not.empty",
+							"});",
+							"pm.test(\"Response createdAt is not empty\", function () {",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response contains checkoutUrl\", function () {",
+							"    pm.expect(data.checkoutUrl).to.exist",
+							"});",
+							"pm.test(\"Response checkoutUrl has valid statusCode\", function() {",
+							"    pm.sendRequest({",
+							"        url: data.checkoutUrl,",
+							"        method: 'GET',",
+							"    }, function (err, res) {",
+							"        pm.expect(res.code).to.eql(200)",
+							"    })",
+							"})",
+							"/* Customer data */",
+							"pm.test(\"Response contains correct order status\", function () {",
+							"    pm.expect(data.status).to.eql(\"draft\");",
+							"});",
+							"pm.test(\"Response contains correct customer firstname\", function () {",
+							"    pm.expect(data.customer.firstName).to.eql(pm.variables.get(\"testCustomerFirstName\"));",
+							"});",
+							"pm.test(\"Response contains correct customer lastname\", function () {",
+							"    pm.expect(data.customer.lastName).to.eql(pm.variables.get(\"testCustomerLastName\"));",
+							"});",
+							"pm.test(\"Response contains correct customer email\", function () {",
+							"    pm.expect(data.customer.email).to.eql(pm.variables.get(\"testCustomerEmail\"));",
+							"});",
+							"pm.test(\"Response namespace is not empty\", function () {",
+							"    pm.expect(data.namespace).to.not.empty",
+							"});",
+							"/* Item data */",
+							"pm.test(\"Response contains items\", function () {",
+							"    pm.expect(data.items).to.not.empty",
+							"});",
+							"pm.test(\"Response item has order ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].orderId).to.eq(pm.environment.get(\"orderWithRecurringItem\"))",
+							"});",
+							"pm.test(\"Response item has correct product ID\", function () {",
+							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
+							"});",
+							"pm.test(\"Response item has correct quantity\", function () {",
+							"    pm.expect(data.items[0].quantity).to.eql(pm.variables.get('qty'));",
+							"});",
+							"pm.test(\"Response item has correct unit\", function () {",
+							"    pm.expect(data.items[0].unit).to.eql(\"pcs\");",
+							"});",
+							"/* Recurring item (activate once recurring item support is added)",
+							"pm.test(\"Response item has correct periodUnit\", function () {",
+							"    pm.expect(data.items[0].periodUnit).to.eql(requestData.items[0].periodUnit);",
+							"});",
+							"pm.test(\"Response item has correct startDate\", function () {",
+							"    pm.expect(data.items[0].startDate).to.eql(requestData.items[0].startDate);",
+							"});",
+							"pm.test(\"Response item has correct periodFrequency\", function () {",
+							"    pm.expect(data.items[0].periodFrequency).to.eql(requestData.items[0].periodFrequency);",
+							"});",
+							" */",
+							"/* Prices */",
+							"pm.test(\"Response item has correct rowPriceNet\", function () {",
+							"    pm.expect(data.items[0].rowPriceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
+							"});",
+							"pm.test(\"Response item has correct rowPriceVat\", function () {",
+							"    pm.expect(data.items[0].rowPriceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
+							"});",
+							"pm.test(\"Response item has correct rowPriceTotal\", function () {",
+							"    pm.expect(data.items[0].rowPriceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
+							"});",
+							"pm.test(\"Response item has correct priceNet\", function () {",
+							"    pm.expect(data.items[0].priceNet).to.eql(pm.variables.get('priceNet').toString());",
+							"});",
+							"pm.test(\"Response item has correct priceGross\", function () {",
+							"    pm.expect(data.items[0].priceGross).to.eql(pm.variables.get('priceGross').toString());",
+							"});",
+							"pm.test(\"Response item has correct vatPercentage\", function () {",
+							"    pm.expect(data.items[0].vatPercentage).to.eql(\"24\");",
+							"})",
+							"pm.test(\"Response has correct priceNet\", function () {",
+							"    pm.expect(data.priceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
+							"});",
+							"pm.test(\"Response has correct priceVat\", function () {",
+							"    pm.expect(data.priceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
+							"});",
+							"pm.test(\"Response has correct priceTotal\", function () {",
+							"    pm.expect(data.priceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var qty = 2",
+							"var priceNet = pm.environment.get('productFoundPriceNet')",
+							"var priceGross = pm.environment.get('productFoundPriceGross')",
+							"var priceVat = priceGross - priceNet",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', qty*priceNet)",
+							"pm.variables.set('rowPriceTotal', qty*priceGross)",
+							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"namespace\": \"asukaspysakointi\",\n    \"user\": \"{{$randomUserName}}\", \n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"startDate\": \"2021-07-01\",\n            \"periodFrequency\":\"1\",\n            \"periodUnit\": \"monthly\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\"\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}",
+					"host": [
+						"{{orderExperienceUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Order with Recurring Item with meta 201",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"var requestData = JSON.parse(pm.request.body);",
+							"",
+							"if (data.orderId) {",
+							"    pm.environment.set(\"orderWithRecurringItem\", data.orderId)",
+							"}",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"/* General data */",
+							"pm.test(\"Response contains ID\", function () {",
+							"    pm.expect(data.orderId).to.eq(pm.environment.get(\"orderWithRecurringItem\"))",
+							"});",
+							"pm.test(\"Response user is not empty\", function () {",
+							"    pm.expect(data.user).to.not.empty",
+							"});",
+							"pm.test(\"Response createdAt is not empty\", function () {",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response contains checkoutUrl\", function () {",
+							"    pm.expect(data.checkoutUrl).to.exist",
+							"});",
+							"pm.test(\"Response checkoutUrl has valid statusCode\", function() {",
+							"    pm.sendRequest({",
+							"        url: data.checkoutUrl,",
+							"        method: 'GET',",
+							"    }, function (err, res) {",
+							"        pm.expect(res.code).to.eql(200)",
+							"    })",
+							"})",
+							"/* Customer data */",
+							"pm.test(\"Response contains correct order status\", function () {",
+							"    pm.expect(data.status).to.eql(\"draft\");",
+							"});",
+							"pm.test(\"Response contains correct customer firstname\", function () {",
+							"    pm.expect(data.customer.firstName).to.eql(pm.variables.get(\"testCustomerFirstName\"));",
+							"});",
+							"pm.test(\"Response contains correct customer lastname\", function () {",
+							"    pm.expect(data.customer.lastName).to.eql(pm.variables.get(\"testCustomerLastName\"));",
+							"});",
+							"pm.test(\"Response contains correct customer email\", function () {",
+							"    pm.expect(data.customer.email).to.eql(pm.variables.get(\"testCustomerEmail\"));",
+							"});",
+							"pm.test(\"Response namespace is not empty\", function () {",
+							"    pm.expect(data.namespace).to.not.empty",
+							"});",
+							"/* Item data */",
+							"pm.test(\"Response contains items\", function () {",
+							"    pm.expect(data.items).to.not.empty",
+							"});",
+							"pm.test(\"Response item has order ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].orderId).to.eq(pm.environment.get(\"orderWithRecurringItem\"))",
+							"});",
+							"pm.test(\"Response item has correct product ID\", function () {",
+							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
+							"});",
+							"pm.test(\"Response item has correct quantity\", function () {",
+							"    pm.expect(data.items[0].quantity).to.eql(pm.variables.get('qty'));",
+							"});",
+							"pm.test(\"Response item has correct unit\", function () {",
+							"    pm.expect(data.items[0].unit).to.eql(\"pcs\");",
+							"});",
+							"/* Recurring item (activate once recurring item support is added)",
+							"pm.test(\"Response item has correct periodUnit\", function () {",
+							"    pm.expect(data.items[0].periodUnit).to.eql(requestData.items[0].periodUnit);",
+							"});",
+							"pm.test(\"Response item has correct startDate\", function () {",
+							"    pm.expect(data.items[0].startDate).to.eql(requestData.items[0].startDate);",
+							"});",
+							"pm.test(\"Response item has correct periodFrequency\", function () {",
+							"    pm.expect(data.items[0].periodFrequency).to.eql(requestData.items[0].periodFrequency);",
+							"});",
+							" */",
+							"/* Prices */",
+							"pm.test(\"Response item has correct rowPriceNet\", function () {",
+							"    pm.expect(data.items[0].rowPriceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
+							"});",
+							"pm.test(\"Response item has correct rowPriceVat\", function () {",
+							"    pm.expect(data.items[0].rowPriceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
+							"});",
+							"pm.test(\"Response item has correct rowPriceTotal\", function () {",
+							"    pm.expect(data.items[0].rowPriceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
+							"});",
+							"pm.test(\"Response item has correct priceNet\", function () {",
+							"    pm.expect(data.items[0].priceNet).to.eql(pm.variables.get('priceNet').toString());",
+							"});",
+							"pm.test(\"Response item has correct priceGross\", function () {",
+							"    pm.expect(data.items[0].priceGross).to.eql(pm.variables.get('priceGross').toString());",
+							"});",
+							"pm.test(\"Response item has correct vatPercentage\", function () {",
+							"    pm.expect(data.items[0].vatPercentage).to.eql(\"24\");",
+							"})",
+							"pm.test(\"Response has correct priceNet\", function () {",
+							"    pm.expect(data.priceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
+							"});",
+							"pm.test(\"Response has correct priceVat\", function () {",
+							"    pm.expect(data.priceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
+							"});",
+							"pm.test(\"Response has correct priceTotal\", function () {",
+							"    pm.expect(data.priceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
+							"});",
+							"/* Item meta */",
+							"var firstMeta = data.items[0].meta.find(meta => meta.key === 'licensePlateNumber')",
+							"var secondMeta = data.items[0].meta.find(meta => meta.key === 'anotherMeta')",
+							"",
+							"pm.test(\"Response item first meta has correct key\", function () {",
+							"    pm.expect(firstMeta.key).to.eql(\"licensePlateNumber\");",
+							"})",
+							"pm.test(\"Response item first meta has correct value\", function () {",
+							"    pm.expect(firstMeta.value).to.eql(\"KYV-123\");",
+							"})",
+							"pm.test(\"Response item first meta has correct label\", function () {",
+							"    pm.expect(firstMeta.label).to.eql(\"Rekisterinumero\");",
+							"})",
+							"pm.test(\"Response item first meta not visible in checkout\", function () {",
+							"    pm.expect(firstMeta.visibleInCheckout).to.eql(\"false\");",
+							"})",
+							"pm.test(\"Response item first meta has correct ordinal\", function () {",
+							"    pm.expect(firstMeta.ordinal).to.eql(\"1\");",
+							"})",
+							"pm.test(\"Response item second meta has correct key\", function () {",
+							"    pm.expect(secondMeta.key).to.eql(\"anotherMeta\");",
+							"})",
+							"pm.test(\"Response item second meta has correct value\", function () {",
+							"    pm.expect(secondMeta.value).to.eql(\"valueForMeta\");",
+							"})",
+							"pm.test(\"Response item second meta has correct label\", function () {",
+							"    pm.expect(secondMeta.label).to.eql(\"Visible in Checkout\");",
+							"})",
+							"pm.test(\"Response item second meta not visible in checkout\", function () {",
+							"    pm.expect(secondMeta.visibleInCheckout).to.eql(\"true\");",
+							"})",
+							"pm.test(\"Response item second meta has correct ordinal\", function () {",
+							"    pm.expect(secondMeta.ordinal).to.eql(\"2\");",
+							"})",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var qty = 2",
+							"var priceNet = pm.environment.get('productFoundPriceNet')",
+							"var priceGross = pm.environment.get('productFoundPriceGross')",
+							"var priceVat = priceGross - priceNet",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', qty*priceNet)",
+							"pm.variables.set('rowPriceTotal', qty*priceGross)",
+							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"namespace\": \"asukaspysakointi\",\n    \"user\": \"{{$randomUserName}}\", \n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"startDate\": \"2021-07-15\",\n            \"periodFrequency\":\"1\",\n            \"periodUnit\": \"monthly\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                },\n                {\n                    \"key\": \"anotherMeta\",\n                    \"value\": \"valueForMeta\",\n                    \"label\": \"Visible in Checkout\",\n                    \"visibleInCheckout\": true,\n                    \"ordinal\": \"2\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}",
+					"host": [
+						"{{orderExperienceUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Recurring Order from Order 201",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"/*var data = pm.response.json()",
+							"if (data.orderId) {",
+							"    pm.environment.set(\"orderWithRecurringItem\", data.orderId)",
+							"}",
+							"",
 							"pm.test(\"Status code is 201\", function () {",
 							"    pm.response.to.have.status(201);",
 							"});",
 							"pm.test(\"Response contains ID\", function () {",
-							"    pm.expect(data.orderId).to.eq(pm.environment.get(\"orderWithItems\"))",
+							"    pm.expect(data.orderId).to.eq(pm.environment.get(\"orderWithRecurringItem\"))",
 							"});",
 							"pm.test(\"Response contains correct order status\", function () {",
-							"    pm.expect(data.status).to.eql(\"draft\");",
+							"    pm.expect(data.status).to.eql(\"created\");",
 							"});",
 							"pm.test(\"Response contains correct customer firstname\", function () {",
 							"    pm.expect(data.customer.firstName).to.eql(pm.variables.get(\"testCustomerFirstName\"));",
@@ -341,7 +1341,7 @@
 							"});",
 							"pm.test(\"Response item has correct rowPriceTotal\", function () {",
 							"    pm.expect(data.items[0].rowPriceTotal).to.eql(\"248\");",
-							"});"
+							"});*/"
 						],
 						"type": "text/javascript"
 					}
@@ -352,7 +1352,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"namespace\": \"asukaspysakointi\",\n    \"user\": \"{{$randomUserName}}\", \n    \"priceNet\": \"200\",\n    \"priceVat\": \"48\",\n    \"priceTotal\": \"248\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": 2,\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"200\",\n            \"rowPriceVat\": \"48\",\n            \"rowPriceTotal\": \"248\",\n            \"startDate\": \"2021-07-01\",\n            \"periodFrequency\":\"1\",\n            \"periodUnit\": \"monthly\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"100\",\n            \"priceVat\": \"24\",\n            \"priceGross\": \"124\"\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\"\n    }\n}",
+					"raw": "{\n    \"orderId\": \"3e2bad97-e9ed-38b3-8d71-3ae336afdb64\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -360,9 +1360,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{orderExperienceUrl}}",
+					"raw": "{{orderExperienceUrl}}/recurringorder/create-from-order",
 					"host": [
 						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						"recurringorder",
+						"create-from-order"
 					]
 				}
 			},
@@ -452,100 +1456,6 @@
 					"path": [
 						"recurringorder",
 						"create"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Recurring Order from Order 201",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"/*var data = pm.response.json()",
-							"if (data.orderId) {",
-							"    pm.environment.set(\"orderWithItems\", data.orderId)",
-							"}",
-							"",
-							"pm.test(\"Status code is 201\", function () {",
-							"    pm.response.to.have.status(201);",
-							"});",
-							"pm.test(\"Response contains ID\", function () {",
-							"    pm.expect(data.orderId).to.eq(pm.environment.get(\"orderWithItems\"))",
-							"});",
-							"pm.test(\"Response contains correct order status\", function () {",
-							"    pm.expect(data.status).to.eql(\"created\");",
-							"});",
-							"pm.test(\"Response contains correct customer firstname\", function () {",
-							"    pm.expect(data.customer.firstName).to.eql(pm.variables.get(\"testCustomerFirstName\"));",
-							"});",
-							"pm.test(\"Response contains correct customer lastname\", function () {",
-							"    pm.expect(data.customer.lastName).to.eql(pm.variables.get(\"testCustomerLastName\"));",
-							"});",
-							"pm.test(\"Response contains correct customer email\", function () {",
-							"    pm.expect(data.customer.email).to.eql(pm.variables.get(\"testCustomerEmail\"));",
-							"});",
-							"pm.test(\"Response namespace is not empty\", function () {",
-							"    pm.expect(data.namespace).to.not.empty",
-							"});",
-							"pm.test(\"Response user is not empty\", function () {",
-							"    pm.expect(data.user).to.not.empty",
-							"});",
-							"pm.test(\"Response createdAt is not empty\", function () {",
-							"    pm.expect(data.createdAt).to.not.empty",
-							"});",
-							"pm.test(\"Response contains items\", function () {",
-							"    pm.expect(data.items).to.not.empty",
-							"});",
-							"pm.test(\"Response item has order ID\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.items[0].orderId).to.eq(pm.environment.get(\"orderWithItems\"))",
-							"});",
-							"pm.test(\"Response item has correct product ID\", function () {",
-							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
-							"});",
-							"pm.test(\"Response item has correct quantity\", function () {",
-							"    pm.expect(data.items[0].quantity).to.eql(2);",
-							"});",
-							"pm.test(\"Response item has correct unit\", function () {",
-							"    pm.expect(data.items[0].unit).to.eql(\"pcs\");",
-							"});",
-							"pm.test(\"Response item has correct rowPriceNet\", function () {",
-							"    pm.expect(data.items[0].rowPriceNet).to.eql(\"200\");",
-							"});",
-							"pm.test(\"Response item has correct rowPriceVat\", function () {",
-							"    pm.expect(data.items[0].rowPriceVat).to.eql(\"48\");",
-							"});",
-							"pm.test(\"Response item has correct rowPriceTotal\", function () {",
-							"    pm.expect(data.items[0].rowPriceTotal).to.eql(\"248\");",
-							"});*/"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"orderId\": \"3e2bad97-e9ed-38b3-8d71-3ae336afdb64\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{orderExperienceUrl}}/recurringorder/create-from-order",
-					"host": [
-						"{{orderExperienceUrl}}"
-					],
-					"path": [
-						"recurringorder",
-						"create-from-order"
 					]
 				}
 			},
@@ -662,7 +1572,196 @@
 			"response": []
 		},
 		{
-			"name": "Get Order With Items 200",
+			"name": "Convert Cart to Order 201",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"if (data.orderId) {",
+							"    pm.environment.set(\"orderFromCart\", data.orderId)",
+							"}",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"/* General data */",
+							"pm.test(\"Response contains ID\", function () {",
+							"    pm.expect(data.orderId).to.eq(pm.environment.get(\"orderFromCart\"))",
+							"});",
+							"pm.test(\"Response user is not empty\", function () {",
+							"    pm.expect(data.user).to.not.empty",
+							"});",
+							"pm.test(\"Response createdAt is not empty\", function () {",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response contains checkoutUrl\", function () {",
+							"    pm.expect(data.checkoutUrl).to.exist",
+							"});",
+							"pm.test(\"Response checkoutUrl has valid statusCode\", function() {",
+							"    pm.sendRequest({",
+							"        url: data.checkoutUrl,",
+							"        method: 'GET',",
+							"    }, function (err, res) {",
+							"        pm.expect(res.code).to.eql(200)",
+							"    })",
+							"})",
+							"/* Customer data */",
+							"pm.test(\"Response contains correct order status\", function () {",
+							"    pm.expect(data.status).to.eql(\"draft\");",
+							"});",
+							"pm.test(\"Response contains correct customer firstname\", function () {",
+							"    pm.expect(data.customer.firstName).to.eql(pm.variables.get(\"testCustomerFirstName\"));",
+							"});",
+							"pm.test(\"Response contains correct customer lastname\", function () {",
+							"    pm.expect(data.customer.lastName).to.eql(pm.variables.get(\"testCustomerLastName\"));",
+							"});",
+							"pm.test(\"Response contains correct customer email\", function () {",
+							"    pm.expect(data.customer.email).to.eql(pm.variables.get(\"testCustomerEmail\"));",
+							"});",
+							"pm.test(\"Response namespace is not empty\", function () {",
+							"    pm.expect(data.namespace).to.not.empty",
+							"});",
+							"/* Item data */",
+							"pm.test(\"Response contains items\", function () {",
+							"    pm.expect(data.items).to.not.empty",
+							"});",
+							"pm.test(\"Response item has order ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].orderId).to.eq(pm.environment.get(\"orderFromCart\"))",
+							"});",
+							"pm.test(\"Response item has correct product ID\", function () {",
+							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
+							"});",
+							"pm.test(\"Response item has correct quantity\", function () {",
+							"    pm.expect(data.items[0].quantity).to.eql(pm.variables.get(\"qty\"));",
+							"});",
+							"pm.test(\"Response item has correct unit\", function () {",
+							"    pm.expect(data.items[0].unit).to.eql(\"pcs\");",
+							"});",
+							"/* Prices */",
+							"pm.test(\"Response item has correct rowPriceNet\", function () {",
+							"    pm.expect(data.items[0].rowPriceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
+							"});",
+							"pm.test(\"Response item has correct rowPriceVat\", function () {",
+							"    pm.expect(data.items[0].rowPriceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
+							"});",
+							"pm.test(\"Response item has correct rowPriceTotal\", function () {",
+							"    pm.expect(data.items[0].rowPriceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
+							"});",
+							"pm.test(\"Response item has correct priceNet\", function () {",
+							"    pm.expect(data.items[0].priceNet).to.eql(pm.variables.get('priceNet').toString());",
+							"});",
+							"pm.test(\"Response item has correct priceGross\", function () {",
+							"    pm.expect(data.items[0].priceGross).to.eql(pm.variables.get('priceGross').toString());",
+							"});",
+							"pm.test(\"Response item has correct vatPercentage\", function () {",
+							"    pm.expect(data.items[0].vatPercentage).to.eql(\"24\");",
+							"})",
+							"pm.test(\"Response has correct priceNet\", function () {",
+							"    pm.expect(data.priceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
+							"});",
+							"pm.test(\"Response has correct priceVat\", function () {",
+							"    pm.expect(data.priceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
+							"});",
+							"pm.test(\"Response has correct priceTotal\", function () {",
+							"    pm.expect(data.priceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var qty = 2",
+							"var priceNet = pm.environment.get('productFoundPriceNet')",
+							"var priceGross = pm.environment.get('productFoundPriceGross')",
+							"var priceVat = priceGross - priceNet",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', qty*priceNet)",
+							"pm.variables.set('rowPriceTotal', qty*priceGross)",
+							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							"",
+							"const cartUrl = pm.variables.get(\"cartExperienceUrl\")",
+							"pm.sendRequest({",
+							"    url: cartUrl,",
+							"    method: 'POST',",
+							"    header: {",
+							"        'content-type': 'application/json',",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify(",
+							"            {",
+							"                namespace: \"asukaspysakointi\",",
+							"                user: pm.variables.replaceIn('{{$randomUserName}}'),",
+							"                items: [",
+							"                    {",
+							"                        productId: pm.variables.get('productFound'),",
+							"                        quantity: qty",
+							"                    }",
+							"                ]",
+							"}",
+							"        )",
+							"    }",
+							"}, function (error, res) {",
+							"    if (error) {",
+							"    console.log(error);",
+							"  } else {",
+							"      var data = res.json()",
+							"      console.log(data)",
+							"      if (data.cartId) {",
+							"        pm.environment.set(\"cartToOrder\", data.cartId)",
+							"      }",
+							"  }",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/convert/:cartId",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						"convert",
+						":cartId"
+					],
+					"variable": [
+						{
+							"key": "cartId",
+							"value": "{{cartToOrder}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cancel Order 200",
 			"event": [
 				{
 					"listen": "test",
@@ -673,32 +1772,860 @@
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
-							"pm.test(\"Response contains correct ID\", function () {",
-							"    pm.expect(data.orderId).to.eql(pm.environment.get('orderWithItems'));",
+							"pm.test(\"Response contains correct order ID\", function () {",
+							"    pm.expect(data.order.orderId).to.eql(pm.variables.get(\"orderFromCart\"));",
 							"});",
 							"pm.test(\"Response contains correct order status\", function () {",
-							"    pm.expect(data.status).to.eql(\"draft\");",
+							"    pm.expect(data.order.status).to.eql(\"cancelled\");",
 							"});",
-							"pm.test(\"Response contains namespace\", function () {",
-							"    pm.expect(data.namespace).to.exist",
+							"pm.test(\"Response contains order namespace\", function () {",
+							"    pm.expect(data.order.namespace).to.exist",
+							"});",
+							"pm.test(\"Response order namespace is not empty\", function () {",
+							"    pm.expect(data.order.namespace).to.not.empty",
+							"});",
+							"pm.test(\"Response contains order user\", function () {",
+							"    pm.expect(data.order.user).to.exist",
+							"});",
+							"pm.test(\"Response order user is not empty\", function () {",
+							"    pm.expect(data.order.user).to.not.empty",
+							"});",
+							"pm.test(\"Response contains order createdAt\", function () {",
+							"    pm.expect(data.order.createdAt).to.exist",
+							"});",
+							"pm.test(\"Response order createdAt is not empty\", function () {",
+							"    pm.expect(data.order.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response contains order items\", function () {",
+							"    pm.expect(data.order.items).to.not.empty",
+							"});",
+							"pm.test(\"Response order item has correct order ID\", function () {",
+							"    pm.expect(data.order.items[0].orderId).to.eql(pm.variables.get(\"orderFromCart\"));",
+							"});",
+							"pm.test(\"Response order item has correct product ID\", function () {",
+							"    pm.expect(data.order.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
+							"});",
+							"pm.test(\"Response order item has correct quantity\", function () {",
+							"    pm.expect(data.order.items[0].quantity).to.eql(pm.variables.get(\"qty\"));",
+							"});",
+							"pm.test(\"Response order item has correct unit\", function () {",
+							"    pm.expect(data.order.items[0].unit).to.eql(\"pcs\");",
+							"});",
+							"/* Price checks */",
+							"pm.test(\"Response order item has correct rowPriceNet\", function () {",
+							"    pm.expect(data.order.items[0].rowPriceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
+							"});",
+							"pm.test(\"Response order item has correct rowPriceVat\", function () {",
+							"    pm.expect(data.order.items[0].rowPriceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
+							"});",
+							"pm.test(\"Response order item has correct rowPriceTotal\", function () {",
+							"    pm.expect(data.order.items[0].rowPriceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
+							"});",
+							"pm.test(\"Response item has correct vatPercentage\", function () {",
+							"    pm.expect(data.order.items[0].vatPercentage).to.eql(\"24\");",
+							"})",
+							"pm.test(\"Response has correct priceNet\", function () {",
+							"    pm.expect(data.order.priceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
+							"});",
+							"pm.test(\"Response has correct priceVat\", function () {",
+							"    pm.expect(data.order.priceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
+							"});",
+							"pm.test(\"Response has correct priceTotal\", function () {",
+							"    pm.expect(data.order.priceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
+							"});",
+							"",
+							"/* Cart checks */",
+							"pm.test(\"Response contains cart ID\", function () {",
+							"    pm.expect(data.cart.cartId).to.not.empty",
+							"});",
+							"pm.test(\"Response contains cart namespace\", function () {",
+							"    pm.expect(data.cart.namespace).to.exist",
+							"});",
+							"pm.test(\"Response cart namespace is correct\", function () {",
+							"    pm.expect(data.cart.namespace).to.eq(data.order.namespace)",
+							"});",
+							"pm.test(\"Response contains cart user\", function () {",
+							"    pm.expect(data.cart.user).to.exist",
+							"});",
+							"pm.test(\"Response cart user is correct\", function () {",
+							"    pm.expect(data.cart.user).to.eq(data.order.user)",
+							"});",
+							"pm.test(\"Response contains cart createdAt\", function () {",
+							"    pm.expect(data.cart.createdAt).to.exist",
+							"});",
+							"pm.test(\"Response cart createdAt is not empty\", function () {",
+							"    pm.expect(data.cart.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response contains cart items\", function () {",
+							"    pm.expect(data.cart.items).to.not.empty",
+							"});",
+							"pm.test(\"Response cart item has cart ID\", function () {",
+							"    pm.expect(data.cart.items[0].cartId).to.not.empty",
+							"});",
+							"pm.test(\"Response cart item has correct product ID\", function () {",
+							"    pm.expect(data.cart.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
+							"});",
+							"pm.test(\"Response cart item has correct quantity\", function () {",
+							"    pm.expect(data.cart.items[0].quantity).to.eql(data.order.items[0].quantity);",
+							"});",
+							"pm.test(\"Response cart item has correct unit\", function () {",
+							"    pm.expect(data.cart.items[0].unit).to.eql(data.order.items[0].unit);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var qty = 2",
+							"var priceNet = pm.environment.get('productFoundPriceNet')",
+							"var priceGross = pm.environment.get('productFoundPriceGross')",
+							"var priceVat = priceGross - priceNet",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', qty*priceNet)",
+							"pm.variables.set('rowPriceTotal', qty*priceGross)",
+							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/:id/cancel",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						":id",
+						"cancel"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{orderFromCart}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Items to Order 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response contains correct order ID\", function () {",
+							"    pm.expect(data.orderId).to.eql(pm.variables.get(\"orderFound\"));",
+							"});",
+							"pm.test(\"Response contains order status\", function () {",
+							"    pm.expect(data.status).to.not.empty",
+							"});",
+							"pm.test(\"Response contains order namspace\", function () {",
+							"    pm.expect(data.namespace).to.not.empty",
+							"});",
+							"pm.test(\"Response contains order user\", function () {",
+							"    pm.expect(data.user).to.not.empty",
+							"});",
+							"pm.test(\"Response contains order createdAt\", function () {",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response contains checkoutUrl\", function () {",
+							"    pm.expect(data.checkoutUrl).to.exist",
+							"});",
+							"pm.test(\"Response checkoutUrl has valid statusCode\", function() {",
+							"    pm.sendRequest({",
+							"        url: data.checkoutUrl,",
+							"        method: 'GET',",
+							"    }, function (err, res) {",
+							"        pm.expect(res.code).to.eql(200)",
+							"    })",
+							"})",
+							"/* Items */",
+							"pm.test(\"Response contains order items\", function () {",
+							"    pm.expect(data.items).to.not.empty",
+							"});",
+							"pm.test(\"Response order item has correct order ID\", function () {",
+							"    pm.expect(data.items[0].orderId).to.eql(pm.variables.get(\"orderFound\"));",
+							"});",
+							"pm.test(\"Response order item has correct product ID\", function () {",
+							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
+							"});",
+							"pm.test(\"Response order item has correct quantity\", function () {",
+							"    pm.expect(data.items[0].quantity).to.eql(pm.variables.get(\"qty\"));",
+							"});",
+							"pm.test(\"Response order item has correct unit\", function () {",
+							"    pm.expect(data.items[0].unit).to.eql(\"pcs\");",
+							"});",
+							"/* Prices */",
+							"pm.test(\"Response item has correct rowPriceNet\", function () {",
+							"    pm.expect(data.items[0].rowPriceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
+							"});",
+							"pm.test(\"Response item has correct rowPriceVat\", function () {",
+							"    pm.expect(data.items[0].rowPriceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
+							"});",
+							"pm.test(\"Response item has correct rowPriceTotal\", function () {",
+							"    pm.expect(data.items[0].rowPriceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
+							"});",
+							"pm.test(\"Response item has correct priceNet\", function () {",
+							"    pm.expect(data.items[0].priceNet).to.eql(pm.variables.get('priceNet').toString());",
+							"});",
+							"pm.test(\"Response item has correct priceGross\", function () {",
+							"    pm.expect(data.items[0].priceGross).to.eql(pm.variables.get('priceGross').toString());",
+							"});",
+							"pm.test(\"Response item has correct vatPercentage\", function () {",
+							"    pm.expect(data.items[0].vatPercentage).to.eql(\"24\");",
+							"})",
+							"pm.test(\"Response item has correct vatPercentage\", function () {",
+							"    pm.expect(data.items[0].vatPercentage).to.eql(\"24\");",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var qty = 1",
+							"var priceNet = pm.environment.get('productFoundPriceNet')",
+							"var priceGross = pm.environment.get('productFoundPriceGross')",
+							"var priceVat = priceGross - priceNet",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', qty*priceNet)",
+							"pm.variables.set('rowPriceTotal', qty*priceGross)",
+							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"productName\": \"Testituote\",\n            \"quantity\": {{qty}},\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"vatPercentage\": \"24\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/:id/items",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						":id",
+						"items"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{orderFound}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Confirm order without customer 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
+							"});",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"order-validation-failed\")",
+							"});",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"order must have customer and totals\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var qty = 2",
+							"var priceNet = pm.environment.get('productFoundPriceNet')",
+							"var priceGross = pm.environment.get('productFoundPriceGross')",
+							"var priceVat = priceGross - priceNet",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', qty*priceNet)",
+							"pm.variables.set('rowPriceTotal', qty*priceGross)",
+							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"paymentMethod\": \"nordea\",\n    \"language\": \"fi\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/:id/confirmAndCreatePayment",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						":id",
+						"confirmAndCreatePayment"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{orderFound}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Items with meta to Order 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response contains correct order ID\", function () {",
+							"    pm.expect(data.orderId).to.eql(pm.variables.get(\"orderFound\"));",
+							"});",
+							"pm.test(\"Response contains order status\", function () {",
+							"    pm.expect(data.status).to.not.empty",
+							"});",
+							"pm.test(\"Response contains order namspace\", function () {",
+							"    pm.expect(data.namespace).to.not.empty",
+							"});",
+							"pm.test(\"Response contains order user\", function () {",
+							"    pm.expect(data.user).to.not.empty",
+							"});",
+							"pm.test(\"Response contains order createdAt\", function () {",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response contains order items\", function () {",
+							"    pm.expect(data.items).to.not.empty",
+							"});",
+							"pm.test(\"Response order item has correct order ID\", function () {",
+							"    pm.expect(data.items[0].orderId).to.eql(pm.variables.get(\"orderFound\"));",
+							"});",
+							"pm.test(\"Response order item has correct product ID\", function () {",
+							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
+							"});",
+							"pm.test(\"Response order item has correct quantity\", function () {",
+							"    pm.expect(data.items[0].quantity).to.eql(1);",
+							"});",
+							"pm.test(\"Response order item has correct unit\", function () {",
+							"    pm.expect(data.items[0].unit).to.eql(\"pcs\");",
+							"});",
+							"/* Prices */",
+							"pm.test(\"Response item has correct rowPriceNet\", function () {",
+							"    pm.expect(data.items[0].rowPriceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
+							"});",
+							"pm.test(\"Response item has correct rowPriceVat\", function () {",
+							"    pm.expect(data.items[0].rowPriceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
+							"});",
+							"pm.test(\"Response item has correct rowPriceTotal\", function () {",
+							"    pm.expect(data.items[0].rowPriceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
+							"});",
+							"pm.test(\"Response item has correct priceNet\", function () {",
+							"    pm.expect(data.items[0].priceNet).to.eql(pm.variables.get('priceNet').toString());",
+							"});",
+							"pm.test(\"Response item has correct priceGross\", function () {",
+							"    pm.expect(data.items[0].priceGross).to.eql(pm.variables.get('priceGross').toString());",
+							"});",
+							"pm.test(\"Response item has correct vatPercentage\", function () {",
+							"    pm.expect(data.items[0].vatPercentage).to.eql(\"24\");",
+							"})",
+							"pm.test(\"Response item has correct vatPercentage\", function () {",
+							"    pm.expect(data.items[0].vatPercentage).to.eql(\"24\");",
+							"})",
+							"/* Meta */",
+							"var firstMeta = data.items[0].meta.find(meta => meta.key === 'licensePlateNumber')",
+							"var secondMeta = data.items[0].meta.find(meta => meta.key === 'anotherMeta')",
+							"pm.test(\"Response item first meta has correct key\", function () {",
+							"    pm.expect(firstMeta.key).to.eql(\"licensePlateNumber\");",
+							"})",
+							"pm.test(\"Response item first meta has correct value\", function () {",
+							"    pm.expect(firstMeta.value).to.eql(\"KYV-123\");",
+							"})",
+							"pm.test(\"Response item first meta has correct label\", function () {",
+							"    pm.expect(firstMeta.label).to.eql(\"Rekisterinumero\");",
+							"})",
+							"pm.test(\"Response item first meta not visible in checkout\", function () {",
+							"    pm.expect(firstMeta.visibleInCheckout).to.eql(\"false\");",
+							"})",
+							"pm.test(\"Response item first meta has correct ordinal\", function () {",
+							"    pm.expect(firstMeta.ordinal).to.eql(\"1\");",
+							"})",
+							"pm.test(\"Response item second meta has correct key\", function () {",
+							"    pm.expect(secondMeta.key).to.eql(\"anotherMeta\");",
+							"})",
+							"pm.test(\"Response item second meta has correct value\", function () {",
+							"    pm.expect(secondMeta.value).to.eql(\"valueForMeta\");",
+							"})",
+							"pm.test(\"Response item second meta has correct label\", function () {",
+							"    pm.expect(secondMeta.label).to.eql(\"Visible in Checkout\");",
+							"})",
+							"pm.test(\"Response item second meta not visible in checkout\", function () {",
+							"    pm.expect(secondMeta.visibleInCheckout).to.eql(\"true\");",
+							"})",
+							"pm.test(\"Response item second meta has correct ordinal\", function () {",
+							"    pm.expect(secondMeta.ordinal).to.eql(\"2\");",
+							"})",
+							"pm.test(\"Response contains checkoutUrl\", function () {",
+							"    pm.expect(data.checkoutUrl).to.exist",
+							"});",
+							"pm.test(\"Response checkoutUrl has valid statusCode\", function() {",
+							"    pm.sendRequest({",
+							"        url: data.checkoutUrl,",
+							"        method: 'GET',",
+							"    }, function (err, res) {",
+							"        pm.expect(res.code).to.eql(200)",
+							"    })",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var qty = 1",
+							"var priceNet = pm.environment.get('productFoundPriceNet')",
+							"var priceGross = pm.environment.get('productFoundPriceGross')",
+							"var priceVat = priceGross - priceNet",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', qty*priceNet)",
+							"pm.variables.set('rowPriceTotal', qty*priceGross)",
+							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"productName\": \"Testituote\",\n            \"quantity\": \"{{qty}}\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"vatPercentage\": \"24\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                },\n                {\n                    \"key\": \"anotherMeta\",\n                    \"value\": \"valueForMeta\",\n                    \"label\": \"Visible in Checkout\",\n                    \"visibleInCheckout\": true,\n                    \"ordinal\": \"2\"\n                }\n            ]\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/:id/items",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						":id",
+						"items"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{orderFound}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Set Customer to Order 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response contains correct order ID\", function () {",
+							"    pm.expect(data.orderId).to.eql(pm.variables.get(\"orderFound\"));",
+							"});",
+							"pm.test(\"Response contains order status\", function () {",
+							"    pm.expect(data.status).to.not.empty",
+							"});",
+							"pm.test(\"Response contains order namspace\", function () {",
+							"    pm.expect(data.namespace).to.not.empty",
+							"});",
+							"pm.test(\"Response contains order user\", function () {",
+							"    pm.expect(data.user).to.not.empty",
+							"});",
+							"pm.test(\"Response contains order createdAt\", function () {",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response contains correct customer firstname\", function () {",
+							"    pm.expect(data.customer.firstName).to.eq(pm.variables.get(\"testCustomerFirstName\"))",
+							"});",
+							"pm.test(\"Response contains correct customer lastname\", function () {",
+							"    pm.expect(data.customer.lastName).to.eq(pm.variables.get(\"testCustomerLastName\"))",
+							"});",
+							"pm.test(\"Response contains correct customer email\", function () {",
+							"    pm.expect(data.customer.email).to.eq(pm.variables.get(\"testCustomerEmail\"))",
+							"});",
+							"pm.test(\"Response contains correct customer phone\", function () {",
+							"    pm.expect(data.customer.phone).to.eq(pm.variables.get(\"testCustomerPhone\"))",
+							"});",
+							"pm.test(\"Response has checkoutUrl\", function () {",
+							"    pm.expect(data.checkoutUrl).to.not.empty;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/:id/customer",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						":id",
+						"customer"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{orderFound}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Calculate Totals 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response contains correct order ID\", function () {",
+							"    pm.expect(data.orderId).to.eql(pm.variables.get(\"orderFound\"));",
+							"});",
+							"pm.test(\"Response contains order status\", function () {",
+							"    pm.expect(data.status).to.not.empty",
+							"});",
+							"pm.test(\"Response contains order namspace\", function () {",
+							"    pm.expect(data.namespace).to.not.empty",
+							"});",
+							"pm.test(\"Response contains order user\", function () {",
+							"    pm.expect(data.user).to.not.empty",
+							"});",
+							"pm.test(\"Response contains order createdAt\", function () {",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response contains correct priceNet\", function () {",
+							"    pm.expect(data.priceNet).to.eq(pm.variables.get(\"rowPriceNet\").toString())",
+							"});",
+							"pm.test(\"Response contains correct priceVat\", function () {",
+							"    pm.expect(data.priceVat).to.eq(pm.variables.get(\"rowPriceVat\").toString())",
+							"});",
+							"pm.test(\"Response contains correct priceTotal\", function () {",
+							"    pm.expect(data.priceTotal).to.eq(pm.variables.get(\"rowPriceTotal\").toString())",
+							"});",
+							"pm.test(\"Response has checkoutUrl\", function () {",
+							"    pm.expect(data.checkoutUrl).to.not.empty;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var qty = 1",
+							"var priceNet = pm.environment.get('productFoundPriceNet')",
+							"var priceGross = pm.environment.get('productFoundPriceGross')",
+							"var priceVat = priceGross - priceNet",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', qty*priceNet)",
+							"pm.variables.set('rowPriceTotal', qty*priceGross)",
+							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/:id/calculateTotals",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						":id",
+						"calculateTotals"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{orderFound}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Calculate Totals 200 without items in Order",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response contains correct order ID\", function () {",
+							"    pm.expect(data.orderId).to.eql(pm.variables.get(\"orderWithoutItems\"));",
+							"});",
+							"pm.test(\"Response contains order status\", function () {",
+							"    pm.expect(data.status).to.not.empty",
+							"});",
+							"pm.test(\"Response contains order namspace\", function () {",
+							"    pm.expect(data.namespace).to.not.empty",
+							"});",
+							"pm.test(\"Response contains order user\", function () {",
+							"    pm.expect(data.user).to.not.empty",
+							"});",
+							"pm.test(\"Response contains order createdAt\", function () {",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response contains correct priceNet\", function () {",
+							"    pm.expect(data.priceNet).to.eq('0')",
+							"});",
+							"pm.test(\"Response contains correct priceVat\", function () {",
+							"    pm.expect(data.priceVat).to.eq('0')",
+							"});",
+							"pm.test(\"Response contains correct priceTotal\", function () {",
+							"    pm.expect(data.priceTotal).to.eq('0')",
+							"});",
+							"pm.test(\"Response has checkoutUrl\", function () {",
+							"    pm.expect(data.checkoutUrl).to.not.empty;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const cartUrl = pm.variables.get(\"orderExperienceUrl\")",
+							"pm.sendRequest({",
+							"    url: cartUrl,",
+							"    method: 'POST',",
+							"    header: {",
+							"        'content-type': 'application/json',",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify(",
+							"            {",
+							"                \"namespace\": pm.variables.get('namespace'),",
+							"                \"user\": pm.variables.replaceIn('{{$randomUserName}}')",
+							"            }",
+							"        )",
+							"    }",
+							"}, function (error, res) {",
+							"    if (error) {",
+							"    console.log(error);",
+							"  } else {",
+							"      var data = res.json()",
+							"      if (data.orderId) {",
+							"        pm.environment.set(\"orderWithoutItems\", data.orderId)",
+							"      }",
+							"  }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/:id/calculateTotals",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						":id",
+						"calculateTotals"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{orderWithoutItems}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Confirm order with item meta 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"var requestData = JSON.parse(pm.request.body);",
+							"",
+							"if (data.orderId) {",
+							"    pm.environment.set(\"orderWithItems\", data.orderId)",
+							"}",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"pm.test(\"Response contains ID\", function () {",
+							"    pm.expect(data.orderId).to.eq(pm.environment.get(\"orderWithItems\"))",
+							"});",
+							"pm.test(\"Response has checkoutUrl\", function () {",
+							"    pm.expect(data.checkoutUrl).to.not.empty;",
+							"});",
+							"pm.test(\"Response checkoutUrl has valid statusCode\", function() {",
+							"    pm.sendRequest({",
+							"        url: data.checkoutUrl,",
+							"        method: 'GET',",
+							"    }, function (err, res) {",
+							"        pm.expect(res.code).to.eql(200)",
+							"    })",
+							"})",
+							"pm.test(\"Response contains correct order status\", function () {",
+							"    pm.expect(data.status).to.eql(\"confirmed\");",
 							"});",
 							"pm.test(\"Response namespace is not empty\", function () {",
 							"    pm.expect(data.namespace).to.not.empty",
 							"});",
-							"pm.test(\"Response contains user\", function () {",
-							"    pm.expect(data.user).to.exist",
-							"});",
 							"pm.test(\"Response user is not empty\", function () {",
 							"    pm.expect(data.user).to.not.empty",
-							"});",
-							"pm.test(\"Response contains createdAt\", function () {",
-							"    pm.expect(data.createdAt).to.exist",
-							"});",
-							"pm.test(\"Response createdAt is not empty\", function () {",
-							"    pm.expect(data.createdAt).to.not.empty",
-							"});",
-							"pm.test(\"Response contains createdAt\", function () {",
-							"    pm.expect(data.createdAt).to.exist",
 							"});",
 							"pm.test(\"Response createdAt is not empty\", function () {",
 							"    pm.expect(data.createdAt).to.not.empty",
@@ -706,47 +2633,714 @@
 							"pm.test(\"Response contains items\", function () {",
 							"    pm.expect(data.items).to.not.empty",
 							"});",
-							"pm.test(\"Response item has correct ID\", function () {",
-							"    pm.expect(data.items[0].orderId).to.eql(pm.variables.get(\"orderWithItems\"));",
+							"/* Customer */",
+							"pm.test(\"Response contains correct customer firstname\", function () {",
+							"    pm.expect(data.customer.firstName).to.eql(pm.variables.get(\"testCustomerFirstName\"));",
+							"});",
+							"pm.test(\"Response contains correct customer lastname\", function () {",
+							"    pm.expect(data.customer.lastName).to.eql(pm.variables.get(\"testCustomerLastName\"));",
+							"});",
+							"pm.test(\"Response contains correct customer email\", function () {",
+							"    pm.expect(data.customer.email).to.eql(pm.variables.get(\"testCustomerEmail\"));",
+							"});",
+							"pm.test(\"Response contains correct customer phone\", function () {",
+							"    pm.expect(data.customer.phone).to.eql(pm.variables.get(\"testCustomerPhone\"));",
+							"});",
+							"/* Items */",
+							"pm.test(\"Response item has order ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].orderId).to.eq(pm.environment.get(\"orderWithItems\"))",
 							"});",
 							"pm.test(\"Response item has correct product ID\", function () {",
 							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
 							"});",
 							"pm.test(\"Response item has correct quantity\", function () {",
-							"    pm.expect(data.items[0].quantity).to.eql(2);",
+							"    pm.expect(data.items[0].quantity).to.eql(pm.variables.get(\"qty\"));",
 							"});",
 							"pm.test(\"Response item has correct unit\", function () {",
 							"    pm.expect(data.items[0].unit).to.eql(\"pcs\");",
 							"});",
-							"pm.test(\"Response item has name\", function () {",
-							"    pm.expect(data.items[0].productName).to.not.empty",
-							"});",
+							"/* Prices */",
 							"pm.test(\"Response item has correct rowPriceNet\", function () {",
-							"    pm.expect(data.items[0].rowPriceNet).to.eql(\"200\");",
+							"    pm.expect(data.items[0].rowPriceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
 							"});",
 							"pm.test(\"Response item has correct rowPriceVat\", function () {",
-							"    pm.expect(data.items[0].rowPriceVat).to.eql(\"48\");",
+							"    pm.expect(data.items[0].rowPriceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
 							"});",
 							"pm.test(\"Response item has correct rowPriceTotal\", function () {",
-							"    pm.expect(data.items[0].rowPriceTotal).to.eql(\"248\");",
+							"    pm.expect(data.items[0].rowPriceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
 							"});",
 							"pm.test(\"Response item has correct priceNet\", function () {",
-							"    pm.expect(data.items[0].priceNet).to.eql(\"100\");",
+							"    pm.expect(data.items[0].priceNet).to.eql(pm.variables.get('priceNet').toString());",
 							"});",
 							"pm.test(\"Response item has correct priceGross\", function () {",
-							"    pm.expect(data.items[0].priceGross).to.eql(\"124\");",
+							"    pm.expect(data.items[0].priceGross).to.eql(pm.variables.get('priceGross').toString());",
 							"});",
 							"pm.test(\"Response item has correct vatPercentage\", function () {",
 							"    pm.expect(data.items[0].vatPercentage).to.eql(\"24\");",
 							"})",
 							"pm.test(\"Response has correct priceNet\", function () {",
-							"    pm.expect(data.priceNet).to.eql(\"200\");",
+							"    pm.expect(data.priceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
 							"});",
 							"pm.test(\"Response has correct priceVat\", function () {",
-							"    pm.expect(data.priceVat).to.eql(\"48\");",
+							"    pm.expect(data.priceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
 							"});",
 							"pm.test(\"Response has correct priceTotal\", function () {",
-							"    pm.expect(data.priceTotal).to.eql(\"248\");",
+							"    pm.expect(data.priceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
+							"});",
+							"",
+							"/* Item meta */",
+							"var firstMeta = data.items[0].meta.find(meta => meta.key === 'licensePlateNumber')",
+							"",
+							"pm.test(\"Response item first meta has correct key\", function () {",
+							"    pm.expect(firstMeta.key).to.eql(\"licensePlateNumber\");",
+							"})",
+							"pm.test(\"Response item first meta has correct value\", function () {",
+							"    pm.expect(firstMeta.value).to.eql(\"KYV-123\");",
+							"})",
+							"pm.test(\"Response item first meta has correct label\", function () {",
+							"    pm.expect(firstMeta.label).to.eql(\"Rekisterinumero\");",
+							"})",
+							"pm.test(\"Response item first meta not visible in checkout\", function () {",
+							"    pm.expect(firstMeta.visibleInCheckout).to.eql(\"false\");",
+							"})",
+							"pm.test(\"Response item first meta has correct ordinal\", function () {",
+							"    pm.expect(firstMeta.ordinal).to.eql(\"1\");",
+							"})",
+							"",
+							"/* Payment */",
+							"pm.test(\"Response payment contains payment ID\", function () {",
+							"    pm.expect(data.payment.paymentId).to.not.empty",
+							"});",
+							"pm.test(\"Response payment contains correct namespace\", function () {",
+							"    pm.expect(data.payment.namespace).to.eql(data.namespace);",
+							"});",
+							"pm.test(\"Response payment contains correct orderId\", function () {",
+							"    pm.expect(data.payment.orderId).to.eql(data.orderId);",
+							"});",
+							"pm.test(\"Response payment contains correct status\", function () {",
+							"    pm.expect(data.payment.status).to.eql('payment_created');",
+							"});",
+							"pm.test(\"Response payment contains correct paymentMethod\", function () {",
+							"    pm.expect(data.payment.paymentMethod).to.eql(requestData.paymentMethod);",
+							"});",
+							"pm.test(\"Response payment contains correct paymentType\", function () {",
+							"    pm.expect(data.payment.paymentType).to.eql('order');",
+							"});",
+							"pm.test(\"Response payment contains correct totalExclTax\", function () {",
+							"    pm.expect(data.payment.totalExclTax.toString()).to.eql(data.priceNet);",
+							"});",
+							"pm.test(\"Response payment contains correct total\", function () {",
+							"    pm.expect(data.payment.total.toString()).to.eql(data.priceTotal);",
+							"});",
+							"pm.test(\"Response payment contains correct taxAmount\", function () {",
+							"    pm.expect(data.payment.taxAmount.toString()).to.eql(data.priceVat);",
+							"});",
+							"pm.test(\"Response payment contains token\", function () {",
+							"    pm.expect(data.payment.token).to.not.empty",
+							"});",
+							"pm.test(\"Response payment contains additionalInfo\", function () {",
+							"    pm.expect(data.payment.additionalInfo).to.not.empty",
+							"});",
+							"pm.test(\"Response payment contains timestamp\", function () {",
+							"    pm.expect(data.payment.timestamp).to.not.empty",
+							"});",
+							"pm.test(\"Response payment contains paymentUrl\", function () {",
+							"    pm.expect(data.payment.paymentUrl).to.not.empty",
+							"});",
+							"pm.test(\"Response payment paymentUrl has valid statusCode\", function() {",
+							"    pm.sendRequest({",
+							"        url: data.payment.paymentUrl,",
+							"        method: 'GET',",
+							"    }, function (err, res) {",
+							"        pm.expect(res.code).to.eql(200)",
+							"    })",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var qty = 2",
+							"var priceNet = pm.environment.get('productFoundPriceNet')",
+							"var priceGross = pm.environment.get('productFoundPriceGross')",
+							"var priceVat = priceGross - priceNet",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', qty*priceNet)",
+							"pm.variables.set('rowPriceTotal', qty*priceGross)",
+							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"paymentMethod\": \"nordea\",\n    \"language\": \"fi\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/:id/confirmAndCreatePayment",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						":id",
+						"confirmAndCreatePayment"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{orderWithItems}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "InstantPurchase 1 product with quantity 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"var requestData = JSON.parse(pm.request.body);",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"pm.test(\"Response contains ID\", function () {",
+							"    pm.expect(data.orderId).to.not.empty",
+							"});",
+							"pm.test(\"Response contains correct order status\", function () {",
+							"    pm.expect(data.status).to.eql(\"draft\");",
+							"});",
+							"pm.test(\"Response does not contain customer\", function () {",
+							"    pm.expect(data.customer).to.not.exist",
+							"});",
+							"pm.test(\"Response contains correct namespace\", function () {",
+							"    pm.expect(data.namespace).to.eq(requestData.namespace)",
+							"});",
+							"pm.test(\"Response user is not empty\", function () {",
+							"    pm.expect(data.user).to.not.empty",
+							"});",
+							"pm.test(\"Response createdAt is not empty\", function () {",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response has checkoutUrl\", function () {",
+							"    pm.expect(data.checkoutUrl).to.not.empty;",
+							"});",
+							"pm.test(\"Response checkoutUrl has valid statusCode\", function() {",
+							"    pm.sendRequest({",
+							"        url: data.checkoutUrl,",
+							"        method: 'GET',",
+							"    }, function (err, res) {",
+							"        pm.expect(res.code).to.eql(200)",
+							"    })",
+							"})",
+							"pm.test(\"Response contains items\", function () {",
+							"    pm.expect(data.items).to.not.empty",
+							"});",
+							"pm.test(\"Response item has order ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].orderId).to.eq(data.orderId)",
+							"});",
+							"pm.test(\"Response item has correct product ID\", function () {",
+							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
+							"});",
+							"pm.test(\"Response item has correct quantity\", function () {",
+							"    pm.expect(data.items[0].quantity).to.eql(pm.variables.get('qty'));",
+							"});",
+							"pm.test(\"Response item has correct unit\", function () {",
+							"    pm.expect(data.items[0].unit).to.eql(\"pcs\");",
+							"});",
+							"/* Prices */",
+							"pm.test(\"Response item has correct rowPriceNet\", function () {",
+							"    pm.expect(data.items[0].rowPriceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
+							"});",
+							"pm.test(\"Response item has correct rowPriceVat\", function () {",
+							"    pm.expect(data.items[0].rowPriceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
+							"});",
+							"pm.test(\"Response item has correct rowPriceTotal\", function () {",
+							"    pm.expect(data.items[0].rowPriceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
+							"});",
+							"pm.test(\"Response item has correct priceNet\", function () {",
+							"    pm.expect(data.items[0].priceNet).to.eql(pm.variables.get('priceNet').toString());",
+							"});",
+							"pm.test(\"Response item has correct priceGross\", function () {",
+							"    pm.expect(data.items[0].priceGross).to.eql(pm.variables.get('priceGross').toString());",
+							"});",
+							"pm.test(\"Response item has correct vatPercentage\", function () {",
+							"    pm.expect(data.items[0].vatPercentage).to.eql(\"24\");",
+							"})",
+							"pm.test(\"Response has correct priceNet\", function () {",
+							"    pm.expect(data.priceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
+							"});",
+							"pm.test(\"Response has correct priceVat\", function () {",
+							"    pm.expect(data.priceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
+							"});",
+							"pm.test(\"Response has correct priceTotal\", function () {",
+							"    pm.expect(data.priceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
+							"});",
+							"/* Merchant details */",
+							"pm.test(\"Response has merchantUrl\", function () {",
+							"    pm.expect(data.merchant.merchantUrl).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantEmail\", function () {",
+							"    pm.expect(data.merchant.merchantEmail).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantName\", function () {",
+							"    pm.expect(data.merchant.merchantName).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantStreet\", function () {",
+							"    pm.expect(data.merchant.merchantStreet).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantPhone\", function () {",
+							"    pm.expect(data.merchant.merchantPhone).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantCity\", function () {",
+							"    pm.expect(data.merchant.merchantCity).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantZip\", function () {",
+							"    pm.expect(data.merchant.merchantZip).to.not.empty;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var qty = 1",
+							"var priceNet = pm.environment.get('productFoundPriceNet')",
+							"var priceGross = pm.environment.get('productFoundPriceGross')",
+							"var priceVat = priceGross - priceNet",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', qty*priceNet)",
+							"pm.variables.set('rowPriceTotal', qty*priceGross)",
+							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"products\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"unit\": \"pcs\",\n            \"quantity\": {{qty}}\n        }\n    ],\n    \"language\": \"fi\",\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{$randomUserName}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/instantPurchase",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						"instantPurchase"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "InstantPurchase 1 product with quantity 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"var requestData = JSON.parse(pm.request.body);",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"pm.test(\"Response contains ID\", function () {",
+							"    pm.expect(data.orderId).to.not.empty",
+							"});",
+							"pm.test(\"Response contains correct order status\", function () {",
+							"    pm.expect(data.status).to.eql(\"draft\");",
+							"});",
+							"pm.test(\"Response does not contain customer\", function () {",
+							"    pm.expect(data.customer).to.not.exist",
+							"});",
+							"pm.test(\"Response contains correct namespace\", function () {",
+							"    pm.expect(data.namespace).to.eq(requestData.namespace)",
+							"});",
+							"pm.test(\"Response user is not empty\", function () {",
+							"    pm.expect(data.user).to.not.empty",
+							"});",
+							"pm.test(\"Response createdAt is not empty\", function () {",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response has checkoutUrl\", function () {",
+							"    pm.expect(data.checkoutUrl).to.not.empty;",
+							"});",
+							"pm.test(\"Response checkoutUrl has valid statusCode\", function() {",
+							"    pm.sendRequest({",
+							"        url: data.checkoutUrl,",
+							"        method: 'GET',",
+							"    }, function (err, res) {",
+							"        pm.expect(res.code).to.eql(200)",
+							"    })",
+							"})",
+							"pm.test(\"Response contains items\", function () {",
+							"    pm.expect(data.items).to.not.empty",
+							"});",
+							"pm.test(\"Response item has order ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].orderId).to.eq(data.orderId)",
+							"});",
+							"pm.test(\"Response item has correct product ID\", function () {",
+							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
+							"});",
+							"pm.test(\"Response item has correct quantity\", function () {",
+							"    pm.expect(data.items[0].quantity).to.eql(pm.variables.get('qty'));",
+							"});",
+							"pm.test(\"Response item has correct unit\", function () {",
+							"    pm.expect(data.items[0].unit).to.eql(\"pcs\");",
+							"});",
+							"/* Prices */",
+							"pm.test(\"Response item has correct rowPriceNet\", function () {",
+							"    pm.expect(data.items[0].rowPriceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
+							"});",
+							"pm.test(\"Response item has correct rowPriceVat\", function () {",
+							"    pm.expect(data.items[0].rowPriceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
+							"});",
+							"pm.test(\"Response item has correct rowPriceTotal\", function () {",
+							"    pm.expect(data.items[0].rowPriceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
+							"});",
+							"pm.test(\"Response item has correct priceNet\", function () {",
+							"    pm.expect(data.items[0].priceNet).to.eql(pm.variables.get('priceNet').toString());",
+							"});",
+							"pm.test(\"Response item has correct priceGross\", function () {",
+							"    pm.expect(data.items[0].priceGross).to.eql(pm.variables.get('priceGross').toString());",
+							"});",
+							"pm.test(\"Response item has correct vatPercentage\", function () {",
+							"    pm.expect(data.items[0].vatPercentage).to.eql(\"24\");",
+							"})",
+							"pm.test(\"Response has correct priceNet\", function () {",
+							"    pm.expect(data.priceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
+							"});",
+							"pm.test(\"Response has correct priceVat\", function () {",
+							"    pm.expect(data.priceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
+							"});",
+							"pm.test(\"Response has correct priceTotal\", function () {",
+							"    pm.expect(data.priceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
+							"});",
+							"/* Merchant details */",
+							"pm.test(\"Response has merchantUrl\", function () {",
+							"    pm.expect(data.merchant.merchantUrl).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantEmail\", function () {",
+							"    pm.expect(data.merchant.merchantEmail).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantName\", function () {",
+							"    pm.expect(data.merchant.merchantName).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantStreet\", function () {",
+							"    pm.expect(data.merchant.merchantStreet).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantPhone\", function () {",
+							"    pm.expect(data.merchant.merchantPhone).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantCity\", function () {",
+							"    pm.expect(data.merchant.merchantCity).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantZip\", function () {",
+							"    pm.expect(data.merchant.merchantZip).to.not.empty;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var qty = 2",
+							"var priceNet = pm.environment.get('productFoundPriceNet')",
+							"var priceGross = pm.environment.get('productFoundPriceGross')",
+							"var priceVat = priceGross - priceNet",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', qty*priceNet)",
+							"pm.variables.set('rowPriceTotal', qty*priceGross)",
+							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"products\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"unit\": \"pcs\",\n            \"quantity\": {{qty}}\n        }\n    ],\n    \"language\": \"fi\",\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{$randomUserName}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/instantPurchase",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						"instantPurchase"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "InstantPurchase 1 product with quantity 1 and item meta",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"var requestData = JSON.parse(pm.request.body);",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"pm.test(\"Response contains ID\", function () {",
+							"    pm.expect(data.orderId).to.not.empty",
+							"});",
+							"pm.test(\"Response contains correct order status\", function () {",
+							"    pm.expect(data.status).to.eql(\"draft\");",
+							"});",
+							"pm.test(\"Response does not contain customer\", function () {",
+							"    pm.expect(data.customer).to.not.exist",
+							"});",
+							"pm.test(\"Response contains correct namespace\", function () {",
+							"    pm.expect(data.namespace).to.eq(requestData.namespace)",
+							"});",
+							"pm.test(\"Response user is not empty\", function () {",
+							"    pm.expect(data.user).to.not.empty",
+							"});",
+							"pm.test(\"Response createdAt is not empty\", function () {",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response has checkoutUrl\", function () {",
+							"    pm.expect(data.checkoutUrl).to.not.empty;",
+							"});",
+							"pm.test(\"Response checkoutUrl has valid statusCode\", function() {",
+							"    pm.sendRequest({",
+							"        url: data.checkoutUrl,",
+							"        method: 'GET',",
+							"    }, function (err, res) {",
+							"        pm.expect(res.code).to.eql(200)",
+							"    })",
+							"})",
+							"pm.test(\"Response contains items\", function () {",
+							"    pm.expect(data.items).to.not.empty",
+							"});",
+							"pm.test(\"Response item has order ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].orderId).to.eq(data.orderId)",
+							"});",
+							"pm.test(\"Response item has correct product ID\", function () {",
+							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
+							"});",
+							"pm.test(\"Response item has correct quantity\", function () {",
+							"    pm.expect(data.items[0].quantity).to.eql(pm.variables.get('qty'));",
+							"});",
+							"pm.test(\"Response item has correct unit\", function () {",
+							"    pm.expect(data.items[0].unit).to.eql(\"pcs\");",
+							"});",
+							"/* Prices */",
+							"pm.test(\"Response item has correct rowPriceNet\", function () {",
+							"    pm.expect(data.items[0].rowPriceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
+							"});",
+							"pm.test(\"Response item has correct rowPriceVat\", function () {",
+							"    pm.expect(data.items[0].rowPriceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
+							"});",
+							"pm.test(\"Response item has correct rowPriceTotal\", function () {",
+							"    pm.expect(data.items[0].rowPriceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
+							"});",
+							"pm.test(\"Response item has correct priceNet\", function () {",
+							"    pm.expect(data.items[0].priceNet).to.eql(pm.variables.get('priceNet').toString());",
+							"});",
+							"pm.test(\"Response item has correct priceGross\", function () {",
+							"    pm.expect(data.items[0].priceGross).to.eql(pm.variables.get('priceGross').toString());",
+							"});",
+							"pm.test(\"Response item has correct vatPercentage\", function () {",
+							"    pm.expect(data.items[0].vatPercentage).to.eql(\"24\");",
+							"})",
+							"pm.test(\"Response has correct priceNet\", function () {",
+							"    pm.expect(data.priceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
+							"});",
+							"pm.test(\"Response has correct priceVat\", function () {",
+							"    pm.expect(data.priceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
+							"});",
+							"pm.test(\"Response has correct priceTotal\", function () {",
+							"    pm.expect(data.priceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
+							"});",
+							"/* Merchant details */",
+							"pm.test(\"Response has merchantUrl\", function () {",
+							"    pm.expect(data.merchant.merchantUrl).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantEmail\", function () {",
+							"    pm.expect(data.merchant.merchantEmail).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantName\", function () {",
+							"    pm.expect(data.merchant.merchantName).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantStreet\", function () {",
+							"    pm.expect(data.merchant.merchantStreet).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantPhone\", function () {",
+							"    pm.expect(data.merchant.merchantPhone).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantCity\", function () {",
+							"    pm.expect(data.merchant.merchantCity).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantZip\", function () {",
+							"    pm.expect(data.merchant.merchantZip).to.not.empty;",
+							"});",
+							"/* Item meta */",
+							"var firstMeta = data.items[0].meta.find(meta => meta.key === 'licensePlateNumber')",
+							"var secondMeta = data.items[0].meta.find(meta => meta.key === 'anotherMeta')",
+							"",
+							"pm.test(\"Response item first meta has correct key\", function () {",
+							"    pm.expect(firstMeta.key).to.eql(\"licensePlateNumber\");",
+							"})",
+							"pm.test(\"Response item first meta has correct value\", function () {",
+							"    pm.expect(firstMeta.value).to.eql(\"KYV-123\");",
+							"})",
+							"pm.test(\"Response item first meta has correct label\", function () {",
+							"    pm.expect(firstMeta.label).to.eql(\"Rekisterinumero\");",
+							"})",
+							"pm.test(\"Response item first meta not visible in checkout\", function () {",
+							"    pm.expect(firstMeta.visibleInCheckout).to.eql(\"false\");",
+							"})",
+							"pm.test(\"Response item first meta has correct ordinal\", function () {",
+							"    pm.expect(firstMeta.ordinal).to.eql(\"1\");",
+							"})",
+							"pm.test(\"Response item second meta has correct key\", function () {",
+							"    pm.expect(secondMeta.key).to.eql(\"anotherMeta\");",
+							"})",
+							"pm.test(\"Response item second meta has correct value\", function () {",
+							"    pm.expect(secondMeta.value).to.eql(\"valueForMeta\");",
+							"})",
+							"pm.test(\"Response item second meta has correct label\", function () {",
+							"    pm.expect(secondMeta.label).to.eql(\"Visible in Checkout\");",
+							"})",
+							"pm.test(\"Response item second meta not visible in checkout\", function () {",
+							"    pm.expect(secondMeta.visibleInCheckout).to.eql(\"true\");",
+							"})",
+							"pm.test(\"Response item second meta has correct ordinal\", function () {",
+							"    pm.expect(secondMeta.ordinal).to.eql(\"2\");",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var qty = 1",
+							"var priceNet = pm.environment.get('productFoundPriceNet')",
+							"var priceGross = pm.environment.get('productFoundPriceGross')",
+							"var priceVat = priceGross - priceNet",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', qty*priceNet)",
+							"pm.variables.set('rowPriceTotal', qty*priceGross)",
+							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"products\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"unit\": \"pcs\",\n            \"quantity\": {{qty}},\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                },\n                {\n                    \"key\": \"anotherMeta\",\n                    \"value\": \"valueForMeta\",\n                    \"label\": \"Visible in Checkout\",\n                    \"visibleInCheckout\": true,\n                    \"ordinal\": \"2\"\n                }\n            ]\n        }\n    ],\n    \"language\": \"fi\",\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{$randomUserName}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/instantPurchase",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						"instantPurchase"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Order 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
+							"});",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"order-not-found\")",
+							"});",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"Order not found\")",
 							"});"
 						],
 						"type": "text/javascript"
@@ -776,7 +3370,7 @@
 					"variable": [
 						{
 							"key": "id",
-							"value": "{{orderWithItems}}"
+							"value": "123"
 						}
 					]
 				}
@@ -784,173 +3378,351 @@
 			"response": []
 		},
 		{
-			"name": "Get Order 404",
+			"name": "Create Order 400 (without body params)",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
-							"/*",
-							"Disable until KYV-144",
-							"pm.test(\"Status code is 404\", function () {",
-							"    pm.response.to.have.status(404);",
-							"});",
-							"pm.test(\"Response contains correct error message\", function () {",
-							"    var data = pm.response.json();",
-							"    var cartId = pm.variables.get(\"notFoundId\")",
-							"    pm.expect(data.message).to.eql(`Order ${cartId} not found`);",
-							"});",
-							"*/"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{orderExperienceUrl}}/:id",
-					"host": [
-						"{{orderExperienceUrl}}"
-					],
-					"path": [
-						":id"
-					],
-					"variable": [
-						{
-							"key": "id",
-							"value": "{{notFoundId}}"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Order 400",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"/*",
-							"Disable until KYV-144",
+							"var data = pm.response.json()",
+							"",
 							"pm.test(\"Status code is 400\", function () {",
 							"    pm.response.to.have.status(400);",
 							"});",
-							"pm.test(\"Response contains correct error message\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.message).to.eql(\"Invalid request\");",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
 							"});",
-							"*/"
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"body.namespace is a required field\\nbody.user is a required field\")",
+							"});"
 						],
 						"type": "text/javascript"
 					}
 				}
 			],
 			"request": {
-				"method": "GET",
+				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
-					"raw": "{{orderExperienceUrl}}/:id",
+					"raw": "{{orderExperienceUrl}}",
 					"host": [
 						"{{orderExperienceUrl}}"
-					],
-					"path": [
-						":id"
-					],
-					"variable": [
-						{
-							"key": "id",
-							"value": "{{invalidId}}"
-						}
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Convert Cart to Order 201",
+			"name": "Create Order with Items 400 (without namespace)",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
-							"var data = pm.response.json();",
+							"var data = pm.response.json()",
 							"",
-							"pm.test(\"Status code is 201\", function () {",
-							"    pm.response.to.have.status(201);",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
 							"});",
-							"pm.test(\"Response contains ID\", function () {",
-							"    pm.expect(data.orderId).to.not.empty",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
 							"});",
-							"pm.test(\"Response contains correct order status\", function () {",
-							"    pm.expect(data.status).to.eql(\"draft\");",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
 							"});",
-							"pm.test(\"Response contains namespace\", function () {",
-							"    pm.expect(data.namespace).to.exist",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"body.namespace is a required field\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user\": \"{{$randomUserName}}\",\n    \"priceNet\": \"200\",\n    \"priceVat\": \"48\",\n    \"priceTotal\": \"248\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": 2,\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"200\",\n            \"rowPriceVat\": \"48\",\n            \"rowPriceTotal\": \"248\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"100\",\n            \"priceVat\": \"24\",\n            \"priceGross\": \"124\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}",
+					"host": [
+						"{{orderExperienceUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Order with Items 400 (with invalid customer phone)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
 							"});",
-							"pm.test(\"Response namespace is not empty\", function () {",
-							"    pm.expect(data.namespace).to.not.empty",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
 							"});",
-							"pm.test(\"Response contains user\", function () {",
-							"    pm.expect(data.user).to.exist",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
 							"});",
-							"pm.test(\"Response user is not empty\", function () {",
-							"    pm.expect(data.user).to.not.empty",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"body.customer.phone must match the following: \\\"/^\\\\+(?:[0-9] ?){6,14}[0-9]$/\\\"\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"namespace\": \"asukaspysakointi\",\n    \"user\": \"{{$randomUserName}}\",\n    \"priceNet\": \"200\",\n    \"priceVat\": \"48\",\n    \"priceTotal\": \"248\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": 2,\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"200\",\n            \"rowPriceVat\": \"48\",\n            \"rowPriceTotal\": \"248\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"100\",\n            \"priceVat\": \"24\",\n            \"priceGross\": \"124\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"123\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}",
+					"host": [
+						"{{orderExperienceUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Order with Items 400 (with invalid customer email)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
 							"});",
-							"pm.test(\"Response contains createdAt\", function () {",
-							"    pm.expect(data.createdAt).to.exist",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
 							"});",
-							"pm.test(\"Response createdAt is not empty\", function () {",
-							"    pm.expect(data.createdAt).to.not.empty",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
 							"});",
-							"pm.test(\"Response contains items\", function () {",
-							"    pm.expect(data.items).to.not.empty",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"body.customer.email must be a valid email\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{$randomUserName}}\",\n    \"priceNet\": \"200\",\n    \"priceVat\": \"48\",\n    \"priceTotal\": \"248\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": 2,\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"200\",\n            \"rowPriceVat\": \"48\",\n            \"rowPriceTotal\": \"248\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"100\",\n            \"priceVat\": \"24\",\n            \"priceGross\": \"124\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"asdasd\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}",
+					"host": [
+						"{{orderExperienceUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Order with Items 400 (with invalid customer firstname)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
 							"});",
-							"pm.test(\"Response item has order ID\", function () {",
-							"    pm.expect(data.items[0].orderId).to.not.empty",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
 							"});",
-							"pm.test(\"Response item has correct product ID\", function () {",
-							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
 							"});",
-							"pm.test(\"Response item has correct quantity\", function () {",
-							"    pm.expect(data.items[0].quantity).to.eql(2);",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"body.customer.firstName is a required field\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{$randomUserName}}\",\n    \"priceNet\": \"200\",\n    \"priceVat\": \"48\",\n    \"priceTotal\": \"248\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": 2,\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"200\",\n            \"rowPriceVat\": \"48\",\n            \"rowPriceTotal\": \"248\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"100\",\n            \"priceVat\": \"24\",\n            \"priceGross\": \"124\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}",
+					"host": [
+						"{{orderExperienceUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Order with Items 400 (with invalid customer lastname)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
 							"});",
-							"pm.test(\"Response item has correct unit\", function () {",
-							"    pm.expect(data.items[0].unit).to.eql(\"pcs\");",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
 							"});",
-							"pm.test(\"Response item has correct rowPriceNet\", function () {",
-							"    pm.expect(data.items[0].rowPriceNet).to.eql(\"200\");",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
 							"});",
-							"pm.test(\"Response item has correct rowPriceVat\", function () {",
-							"    pm.expect(data.items[0].rowPriceVat).to.eql(\"48\");",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"body.customer.lastName is a required field\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{$randomUserName}}\",\n    \"priceNet\": \"200\",\n    \"priceVat\": \"48\",\n    \"priceTotal\": \"248\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": 2,\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"200\",\n            \"rowPriceVat\": \"48\",\n            \"rowPriceTotal\": \"248\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"100\",\n            \"priceVat\": \"24\",\n            \"priceGross\": \"124\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}",
+					"host": [
+						"{{orderExperienceUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Order with Items 400 (without customer)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
 							"});",
-							"pm.test(\"Response item has correct rowPriceTotal\", function () {",
-							"    pm.expect(data.items[0].rowPriceTotal).to.eql(\"248\");",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
 							"});",
-							"pm.test(\"Response item has correct priceNet\", function () {",
-							"    pm.expect(data.items[0].priceNet).to.eql(\"100\");",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
 							"});",
-							"pm.test(\"Response item has correct priceGross\", function () {",
-							"    pm.expect(data.items[0].priceGross).to.eql(\"124\");",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"body.customer is a required field\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{$randomUserName}}\",\n    \"priceNet\": \"200\",\n    \"priceVat\": \"48\",\n    \"priceTotal\": \"248\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": 2,\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"200\",\n            \"rowPriceVat\": \"48\",\n            \"rowPriceTotal\": \"248\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"100\",\n            \"priceVat\": \"24\",\n            \"priceGross\": \"124\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                }\n            ]\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}",
+					"host": [
+						"{{orderExperienceUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Convert Cart to Order 400 (without customer)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
 							"});",
-							"pm.test(\"Response item has correct vatPercentage\", function () {",
-							"    pm.expect(data.items[0].vatPercentage).to.eql(\"24\");",
-							"})",
-							"pm.test(\"Response has correct priceNet\", function () {",
-							"    pm.expect(data.priceNet).to.eql(\"200\");",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
 							"});",
-							"pm.test(\"Response has correct priceVat\", function () {",
-							"    pm.expect(data.priceVat).to.eql(\"48\");",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
 							"});",
-							"pm.test(\"Response has correct priceTotal\", function () {",
-							"    pm.expect(data.priceTotal).to.eql(\"248\");",
-							"});",
-							"pm.test(\"Response contains checkoutUrl\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.checkoutUrl).to.not.empty",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"body.customer.firstName is a required field\\nbody.customer.lastName is a required field\\nbody.customer.email is a required field\\nbody.customer.phone is a required field\")",
 							"});"
 						],
 						"type": "text/javascript"
@@ -1003,7 +3775,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"customer\": {\n        \"firstName\": \"Customer\",\n        \"lastName\": \"Name\",\n        \"email\": \"customerEmail@hel.dev\",\n        \"telephone\": \"+358401231233\"\n    }\n}",
+					"raw": "{}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1030,127 +3802,414 @@
 			"response": []
 		},
 		{
-			"name": "Cancel Order 200",
+			"name": "Convert Cart to Order 400 (with invalid customer email)",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"pm.test(\"Response contains correct order ID\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.order.orderId).to.eql(pm.variables.get(\"orderWithItems\"));",
-							"});",
-							"pm.test(\"Response contains correct order status\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.order.status).to.eql(\"cancelled\");",
-							"});",
-							"pm.test(\"Response contains order namespace\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.order.namespace).to.exist",
-							"});",
-							"pm.test(\"Response order namespace is not empty\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.order.namespace).to.not.empty",
-							"});",
-							"pm.test(\"Response contains order user\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.order.user).to.exist",
-							"});",
-							"pm.test(\"Response order user is not empty\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.order.user).to.not.empty",
-							"});",
-							"pm.test(\"Response contains order createdAt\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.order.createdAt).to.exist",
-							"});",
-							"pm.test(\"Response order createdAt is not empty\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.order.createdAt).to.not.empty",
-							"});",
-							"pm.test(\"Response contains order items\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.order.items).to.not.empty",
-							"});",
-							"pm.test(\"Response order item has correct order ID\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.order.items[0].orderId).to.eql(pm.variables.get(\"orderWithItems\"));",
-							"});",
-							"pm.test(\"Response order item has correct product ID\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.order.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
-							"});",
-							"pm.test(\"Response order item has correct quantity\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.order. items[0].quantity).to.eql(2);",
-							"});",
-							"pm.test(\"Response order item has correct unit\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.order.items[0].unit).to.eql(\"pcs\");",
-							"});",
-							"pm.test(\"Response order item has correct rowPriceNet\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.order.items[0].rowPriceNet).to.eql(\"200\");",
-							"});",
-							"pm.test(\"Response order item has correct rowPriceVat\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.order.items[0].rowPriceVat).to.eql(\"48\");",
-							"});",
-							"pm.test(\"Response order item has correct rowPriceTotal\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.order.items[0].rowPriceTotal).to.eql(\"248\");",
-							"});",
+							"var data = pm.response.json()",
 							"",
-							"pm.test(\"Response contains cart ID\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.cart.cartId).to.not.empty",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
 							"});",
-							"pm.test(\"Response contains cart namespace\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.cart.namespace).to.exist",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
 							"});",
-							"pm.test(\"Response cart namespace is correct\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.cart.namespace).to.eq(data.order.namespace)",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
 							"});",
-							"pm.test(\"Response contains cart user\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.cart.user).to.exist",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"body.customer.email must be a valid email\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const cartUrl = pm.variables.get(\"cartExperienceUrl\")",
+							"pm.sendRequest({",
+							"    url: cartUrl,",
+							"    method: 'POST',",
+							"    header: {",
+							"        'content-type': 'application/json',",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify(",
+							"            {",
+							"                namespace: \"asukaspysakointi\",",
+							"                user: pm.variables.replaceIn('{{$randomUserName}}'),",
+							"                items: [",
+							"                    {",
+							"                        productId: pm.variables.get('productFound'),",
+							"                        quantity: 2",
+							"                    }",
+							"                ]",
+							"}",
+							"        )",
+							"    }",
+							"}, function (error, res) {",
+							"    if (error) {",
+							"    console.log(error);",
+							"  } else {",
+							"      var data = res.json()",
+							"      console.log(data)",
+							"      if (data.cartId) {",
+							"        pm.environment.set(\"cartToOrder\", data.cartId)",
+							"      }",
+							"  }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"asd\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/convert/:cartId",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						"convert",
+						":cartId"
+					],
+					"variable": [
+						{
+							"key": "cartId",
+							"value": "{{cartToOrder}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Convert Cart to Order 400 (with invalid customer phone)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
 							"});",
-							"pm.test(\"Response cart user is correct\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.cart.user).to.eq(data.order.user)",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
 							"});",
-							"pm.test(\"Response contains cart createdAt\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.cart.createdAt).to.exist",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
 							"});",
-							"pm.test(\"Response cart createdAt is not empty\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.cart.createdAt).to.not.empty",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"body.customer.phone must match the following: \\\"/^\\\\+(?:[0-9] ?){6,14}[0-9]$/\\\"\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const cartUrl = pm.variables.get(\"cartExperienceUrl\")",
+							"pm.sendRequest({",
+							"    url: cartUrl,",
+							"    method: 'POST',",
+							"    header: {",
+							"        'content-type': 'application/json',",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify(",
+							"            {",
+							"                namespace: \"asukaspysakointi\",",
+							"                user: pm.variables.replaceIn('{{$randomUserName}}'),",
+							"                items: [",
+							"                    {",
+							"                        productId: pm.variables.get('productFound'),",
+							"                        quantity: 2",
+							"                    }",
+							"                ]",
+							"}",
+							"        )",
+							"    }",
+							"}, function (error, res) {",
+							"    if (error) {",
+							"    console.log(error);",
+							"  } else {",
+							"      var data = res.json()",
+							"      console.log(data)",
+							"      if (data.cartId) {",
+							"        pm.environment.set(\"cartToOrder\", data.cartId)",
+							"      }",
+							"  }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"123\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/convert/:cartId",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						"convert",
+						":cartId"
+					],
+					"variable": [
+						{
+							"key": "cartId",
+							"value": "{{cartToOrder}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Convert Cart to Order 400 (with invalid customer firstname)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
 							"});",
-							"pm.test(\"Response contains cart items\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.cart.items).to.not.empty",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
 							"});",
-							"pm.test(\"Response cart item has cart ID\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.cart.items[0].cartId).to.not.empty",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
 							"});",
-							"pm.test(\"Response cart item has correct product ID\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.cart.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"body.customer.firstName is a required field\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const cartUrl = pm.variables.get(\"cartExperienceUrl\")",
+							"pm.sendRequest({",
+							"    url: cartUrl,",
+							"    method: 'POST',",
+							"    header: {",
+							"        'content-type': 'application/json',",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify(",
+							"            {",
+							"                namespace: \"asukaspysakointi\",",
+							"                user: pm.variables.replaceIn('{{$randomUserName}}'),",
+							"                items: [",
+							"                    {",
+							"                        productId: pm.variables.get('productFound'),",
+							"                        quantity: 2",
+							"                    }",
+							"                ]",
+							"}",
+							"        )",
+							"    }",
+							"}, function (error, res) {",
+							"    if (error) {",
+							"    console.log(error);",
+							"  } else {",
+							"      var data = res.json()",
+							"      console.log(data)",
+							"      if (data.cartId) {",
+							"        pm.environment.set(\"cartToOrder\", data.cartId)",
+							"      }",
+							"  }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"customer\": {\n        \"firstName\": \"\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/convert/:cartId",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						"convert",
+						":cartId"
+					],
+					"variable": [
+						{
+							"key": "cartId",
+							"value": "{{cartToOrder}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Convert Cart to Order 400 (with invalid customer lastname)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
 							"});",
-							"pm.test(\"Response cart item has correct quantity\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.cart.items[0].quantity).to.eql(data.order.items[0].quantity);",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
 							"});",
-							"pm.test(\"Response cart item has correct unit\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.cart.items[0].unit).to.eql(data.order.items[0].unit);",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
+							"});",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"body.customer.lastName is a required field\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const cartUrl = pm.variables.get(\"cartExperienceUrl\")",
+							"pm.sendRequest({",
+							"    url: cartUrl,",
+							"    method: 'POST',",
+							"    header: {",
+							"        'content-type': 'application/json',",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify(",
+							"            {",
+							"                namespace: \"asukaspysakointi\",",
+							"                user: pm.variables.replaceIn('{{$randomUserName}}'),",
+							"                items: [",
+							"                    {",
+							"                        productId: pm.variables.get('productFound'),",
+							"                        quantity: 2",
+							"                    }",
+							"                ]",
+							"}",
+							"        )",
+							"    }",
+							"}, function (error, res) {",
+							"    if (error) {",
+							"    console.log(error);",
+							"  } else {",
+							"      var data = res.json()",
+							"      console.log(data)",
+							"      if (data.cartId) {",
+							"        pm.environment.set(\"cartToOrder\", data.cartId)",
+							"      }",
+							"  }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/convert/:cartId",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						"convert",
+						":cartId"
+					],
+					"variable": [
+						{
+							"key": "cartId",
+							"value": "{{cartToOrder}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cancel Order 400 (not found order)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"",
+							"/*pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});*/",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
+							"});",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"failed-to-cancel-order\")",
 							"});"
 						],
 						"type": "text/javascript"
@@ -1190,7 +4249,7 @@
 					"variable": [
 						{
 							"key": "id",
-							"value": "{{orderWithItems}}"
+							"value": "123"
 						}
 					]
 				}
@@ -1198,65 +4257,23 @@
 			"response": []
 		},
 		{
-			"name": "Add Items to Order 200",
+			"name": "Add Items to Order 400 (not found order)",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
-							"var data = pm.response.json();",
+							"var data = pm.response.json()",
 							"",
-							"pm.test(\"Status code is 200\", function () {",
+							"/*pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
+							"});*/",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
 							"});",
-							"pm.test(\"Response contains correct order ID\", function () {",
-							"    pm.expect(data.orderId).to.eql(pm.variables.get(\"orderFound\"));",
-							"});",
-							"pm.test(\"Response contains order status\", function () {",
-							"    pm.expect(data.status).to.not.empty",
-							"});",
-							"pm.test(\"Response contains order namspace\", function () {",
-							"    pm.expect(data.namespace).to.not.empty",
-							"});",
-							"pm.test(\"Response contains order user\", function () {",
-							"    pm.expect(data.user).to.not.empty",
-							"});",
-							"pm.test(\"Response contains order createdAt\", function () {",
-							"    pm.expect(data.createdAt).to.not.empty",
-							"});",
-							"pm.test(\"Response contains order items\", function () {",
-							"    pm.expect(data.items).to.not.empty",
-							"});",
-							"pm.test(\"Response order item has correct order ID\", function () {",
-							"    pm.expect(data.items[0].orderId).to.eql(pm.variables.get(\"orderFound\"));",
-							"});",
-							"pm.test(\"Response order item has correct product ID\", function () {",
-							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
-							"});",
-							"pm.test(\"Response order item has correct quantity\", function () {",
-							"    pm.expect(data.items[0].quantity).to.eql(1);",
-							"});",
-							"pm.test(\"Response order item has correct unit\", function () {",
-							"    pm.expect(data.items[0].unit).to.eql(\"pcs\");",
-							"});",
-							"pm.test(\"Response order item has correct rowPriceNet\", function () {",
-							"    pm.expect(data.items[0].rowPriceNet).to.eql(\"100\");",
-							"});",
-							"pm.test(\"Response order item has correct rowPriceVat\", function () {",
-							"    pm.expect(data.items[0].rowPriceVat).to.eql(\"24\");",
-							"});",
-							"pm.test(\"Response order item has correct rowPriceTotal\", function () {",
-							"    pm.expect(data.items[0].rowPriceTotal).to.eql(\"124\");",
-							"});",
-							"pm.test(\"Response item has correct priceNet\", function () {",
-							"    pm.expect(data.items[0].priceNet).to.eql(\"100\");",
-							"});",
-							"pm.test(\"Response item has correct priceGross\", function () {",
-							"    pm.expect(data.items[0].priceGross).to.eql(\"124\");",
-							"});",
-							"pm.test(\"Response item has correct vatPercentage\", function () {",
-							"    pm.expect(data.items[0].vatPercentage).to.eql(\"24\");",
-							"})"
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"failed-to-add-items-to-order\")",
+							"});"
 						],
 						"type": "text/javascript"
 					}
@@ -1286,7 +4303,7 @@
 					"variable": [
 						{
 							"key": "id",
-							"value": "{{orderFound}}"
+							"value": "123"
 						}
 					]
 				}
@@ -1294,46 +4311,22 @@
 			"response": []
 		},
 		{
-			"name": "Set Customer to Order 200",
+			"name": "Set Customer to Order 400 (not found order)",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
+							"var data = pm.response.json()",
+							"",
+							"/*pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
+							"});*/",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
 							"});",
-							"pm.test(\"Response contains correct order ID\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.orderId).to.eql(pm.variables.get(\"orderFound\"));",
-							"});",
-							"pm.test(\"Response contains order status\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.status).to.not.empty",
-							"});",
-							"pm.test(\"Response contains order namspace\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.namespace).to.not.empty",
-							"});",
-							"pm.test(\"Response contains order user\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.user).to.not.empty",
-							"});",
-							"pm.test(\"Response contains order createdAt\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.createdAt).to.not.empty",
-							"});",
-							"pm.test(\"Response contains correct customer firstname\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.customer.firstName).to.eq(pm.variables.get(\"testCustomerFirstName\"))",
-							"});",
-							"pm.test(\"Response contains correct customer lastname\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.customer.lastName).to.eq(pm.variables.get(\"testCustomerLastName\"))",
-							"});",
-							"pm.test(\"Response contains correct customer email\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.customer.email).to.eq(pm.variables.get(\"testCustomerEmail\"))",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"failed-to-set-order-customer\")",
 							"});"
 						],
 						"type": "text/javascript"
@@ -1364,7 +4357,7 @@
 					"variable": [
 						{
 							"key": "id",
-							"value": "{{orderFound}}"
+							"value": "123"
 						}
 					]
 				}
@@ -1372,46 +4365,25 @@
 			"response": []
 		},
 		{
-			"name": "Calculate Totals 200",
+			"name": "Calculate Totals 400 (not found order)",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
+							"var data = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
 							"});",
-							"pm.test(\"Response contains correct order ID\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.orderId).to.eql(pm.variables.get(\"orderFound\"));",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
 							"});",
-							"pm.test(\"Response contains order status\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.status).to.not.empty",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"order-not-found\")",
 							"});",
-							"pm.test(\"Response contains order namspace\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.namespace).to.not.empty",
-							"});",
-							"pm.test(\"Response contains order user\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.user).to.not.empty",
-							"});",
-							"pm.test(\"Response contains order createdAt\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.createdAt).to.not.empty",
-							"});",
-							"pm.test(\"Response contains correct priceNet\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.priceNet).to.eq('100')",
-							"});",
-							"pm.test(\"Response contains correct priceVat\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.priceVat).to.eq('24')",
-							"});",
-							"pm.test(\"Response contains correct priceTotal\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.priceTotal).to.eq('124')",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"Order not found\")",
 							"});"
 						],
 						"type": "text/javascript"
@@ -1442,7 +4414,7 @@
 					"variable": [
 						{
 							"key": "id",
-							"value": "{{orderFound}}"
+							"value": "123"
 						}
 					]
 				}
