@@ -80,6 +80,7 @@ export class InstantPurchase extends AbstractController<typeof requestSchema> {
 
     await addItemsToOrder({
       orderId,
+      user: body.user,
       items: orderItems,
     })
 
@@ -89,6 +90,7 @@ export class InstantPurchase extends AbstractController<typeof requestSchema> {
 
     const order = await setOrderTotals({
       orderId,
+      user: body.user,
       ...calculateTotalsFromItems({ items: orderItems }),
     })
 

@@ -16,6 +16,7 @@ import * as yup from 'yup'
 const requestSchema = yup.object().shape({
   params: yup.object().shape({
     orderId: yup.string().required(),
+    user: yup.string().required(),
   }),
 })
 
@@ -29,12 +30,12 @@ export class CalculateTotalsController extends AbstractController<
     res: Response
   ): Promise<any> {
     const {
-      params: { orderId },
+      params: { orderId, user },
     } = req
 
     logger.debug(`Calculate totals for Order ${orderId}`)
 
-    const order = await getOrder({ orderId })
+    const order = await getOrder({ orderId, user })
 
     if (order.items === undefined) {
       throw new OrderValidationError('order must have at least one item')
@@ -43,6 +44,7 @@ export class CalculateTotalsController extends AbstractController<
     const dto = new Data(
       await setOrderTotals({
         orderId,
+        user,
         ...calculateTotalsFromItems(order),
       })
     )

@@ -12,6 +12,7 @@ import { calculateTotalsFromItems } from '../lib/totals'
 const requestSchema = yup.object().shape({
   params: yup.object().shape({
     orderId: yup.string().required(),
+    user: yup.string().required(),
   }),
   body: yup.object().shape({
     paymentMethod: yup.string().required(),
@@ -29,11 +30,11 @@ export class ConfirmAndCreatePayment extends AbstractController<
     res: Response
   ): Promise<any> {
     const {
-      params: { orderId },
+      params: { orderId, user },
       body: { paymentMethod, language },
     } = req
 
-    const order = await confirmOrder({ orderId })
+    const order = await confirmOrder({ orderId, user })
     const orderTotals = calculateTotalsFromItems(order)
     const availablePaymentMethods = await getPaymentMethodList({
       request: {

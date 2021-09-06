@@ -10,7 +10,7 @@ export class OrderValidationError extends ExperienceError {
       code: 'order-validation-failed',
       message,
       logLevel: 'info',
-      responseStatus: StatusCode.BadRequest,
+      responseStatus: StatusCode.Forbidden,
     })
   }
 }

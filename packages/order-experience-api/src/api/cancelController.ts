@@ -18,6 +18,7 @@ import * as yup from 'yup'
 const requestSchema = yup.object().shape({
   params: yup.object().shape({
     orderId: yup.string().required(),
+    user: yup.string().required(),
   }),
 })
 
@@ -29,12 +30,12 @@ export class CancelController extends AbstractController<typeof requestSchema> {
     res: Response
   ): Promise<any> {
     const {
-      params: { orderId },
+      params: { orderId, user },
     } = req
 
     logger.debug(`Cancel Order ${orderId}`)
 
-    const order = await cancelOrder({ orderId })
+    const order = await cancelOrder({ orderId, user })
     await clearCart(order)
     const cart =
       order.items && order.items.length > 0
