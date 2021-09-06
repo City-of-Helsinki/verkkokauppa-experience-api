@@ -2,6 +2,7 @@ import type { Logger } from 'winston'
 
 export enum StatusCode {
   BadRequest = 400,
+  Forbidden = 403,
   NotFound = 404,
   InternalServerError = 500,
 }
