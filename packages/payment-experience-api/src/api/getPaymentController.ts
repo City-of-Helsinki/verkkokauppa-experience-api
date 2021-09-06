@@ -1,6 +1,6 @@
 import { AbstractController, Data, ValidatedRequest } from '@verkkokauppa/core'
 import type { Response } from 'express'
-import { getPaymentAndValidateUserForOrder } from '@verkkokauppa/payment-backend'
+import { getPaymentForOrderAndValidateUser } from '@verkkokauppa/payment-backend'
 import { getOrder } from '@verkkokauppa/order-backend'
 import * as yup from 'yup'
 
@@ -23,9 +23,9 @@ export class GetPaymentController extends AbstractController<
       params: { orderId, user },
     } = request
 
-    const order = await getOrder({ orderId })
+    const order = await getOrder({ orderId, user })
     const dto = new Data(
-      await getPaymentAndValidateUserForOrder({ ...order, user })
+      await getPaymentForOrderAndValidateUser({ ...order, user })
     )
 
     return this.success<any>(result, dto.serialize())
