@@ -109,8 +109,9 @@ export const checkVismaReturnUrl = async (p: {
 export const getPaymentUrl = async (p: {
   namespace: string
   orderId: string
+  user: string
 }): Promise<string> => {
-  const { namespace, orderId } = p
+  const { namespace, orderId, user: userId } = p
   if (!process.env.PAYMENT_BACKEND_URL) {
     throw new Error('No payment API backend URL set')
   }
@@ -119,10 +120,13 @@ export const getPaymentUrl = async (p: {
 
   try {
     const result = await axios.get<string>(url, {
-      params: { namespace, orderId },
+      params: { namespace, orderId, userId },
     })
     return result.data
   } catch (e) {
+    if (e.response?.status === 404) {
+      throw new PaymentNotFound()
+    }
     throw new GetPaymentUrlFailure(e)
   }
 }
@@ -130,8 +134,9 @@ export const getPaymentUrl = async (p: {
 export const getPaymentStatus = async (p: {
   namespace: string
   orderId: string
+  user: string
 }): Promise<string> => {
-  const { namespace, orderId } = p
+  const { namespace, orderId, user: userId } = p
   if (!process.env.PAYMENT_BACKEND_URL) {
     throw new Error('No payment API backend URL set')
   }
@@ -140,39 +145,18 @@ export const getPaymentStatus = async (p: {
 
   try {
     const result = await axios.get<string>(url, {
-      params: { namespace, orderId },
-    })
-    return result.data
-  } catch (e) {
-    throw new GetPaymentStatusFailure(e)
-  }
-}
-
-export const getPaymentForOrder = async (p: {
-  orderId: string
-  namespace: string
-}): Promise<Payment> => {
-  const { orderId, namespace } = p
-  if (!process.env.PAYMENT_BACKEND_URL) {
-    throw new Error('No payment API backend URL set')
-  }
-
-  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/online/get`
-
-  try {
-    const result = await axios.get<Payment>(url, {
-      params: { orderId, namespace },
+      params: { namespace, orderId, userId },
     })
     return result.data
   } catch (e) {
     if (e.response?.status === 404) {
       throw new PaymentNotFound()
     }
-    throw new GetPaymentForOrderFailure(e)
+    throw new GetPaymentStatusFailure(e)
   }
 }
 
-export const getPaymentForOrderAndValidateUser = async (p: {
+export const getPaymentForOrder = async (p: {
   orderId: string
   namespace: string
   user: string
@@ -182,7 +166,7 @@ export const getPaymentForOrderAndValidateUser = async (p: {
     throw new Error('No payment API backend URL set')
   }
 
-  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/online/get-and-validate-user`
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/online/get`
 
   try {
     const result = await axios.get<Payment>(url, {
