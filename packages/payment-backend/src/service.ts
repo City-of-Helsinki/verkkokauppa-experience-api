@@ -17,7 +17,7 @@ import {
   PaymentMethodsNotFound,
   PaymentMethodValidationError,
   PaymentNotFound,
-  RejectCreatePaymentError,
+  PaymentValidationError,
 } from './errors'
 
 const PAYMENT_METHOD_MAP = new Map()
@@ -57,7 +57,7 @@ export const createPaymentFromOrder = async (parameters: {
     return result.data
   } catch (e) {
     if (e.response?.status === 403) {
-      throw new RejectCreatePaymentError('Order status must be confirmed')
+      throw new PaymentValidationError('order status must be confirmed')
     }
     throw new CreatePaymentFromOrderFailure(e)
   }
@@ -172,12 +172,12 @@ export const getPaymentForOrder = async (p: {
   }
 }
 
-export const getPaymentAndValidateUserForOrder = async (p: {
+export const getPaymentForOrderAndValidateUser = async (p: {
   orderId: string
   namespace: string
   user: string
 }): Promise<Payment> => {
-  const { orderId, namespace, user } = p
+  const { orderId, namespace, user: userId } = p
   if (!process.env.PAYMENT_BACKEND_URL) {
     throw new Error('No payment API backend URL set')
   }
@@ -186,7 +186,7 @@ export const getPaymentAndValidateUserForOrder = async (p: {
 
   try {
     const result = await axios.get<Payment>(url, {
-      params: { orderId, namespace, user },
+      params: { orderId, namespace, userId },
     })
     return result.data
   } catch (e) {

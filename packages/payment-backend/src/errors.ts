@@ -16,10 +16,10 @@ export class PaymentMethodValidationError extends ExperienceError {
   }
 }
 
-export class RejectCreatePaymentError extends ExperienceError {
+export class PaymentValidationError extends ExperienceError {
   constructor(message: string) {
     super({
-      code: 'rejected-create-payment',
+      code: 'payment-validation-failed',
       message,
       logLevel: 'info',
       responseStatus: StatusCode.Forbidden,
