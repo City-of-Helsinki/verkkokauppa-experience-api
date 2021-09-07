@@ -22,7 +22,7 @@ export class PaymentValidationError extends ExperienceError {
       code: 'payment-validation-failed',
       message,
       logLevel: 'info',
-      responseStatus: StatusCode.Forbidden,
+      responseStatus: StatusCode.BadRequest,
     })
   }
 }
