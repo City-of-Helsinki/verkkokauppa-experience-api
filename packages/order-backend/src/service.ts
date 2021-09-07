@@ -215,6 +215,25 @@ export const getOrder = async (p: {
   }
 }
 
+export const getOrderAdmin = async (p: { orderId: string }): Promise<Order> => {
+  const { orderId } = p
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+  const url = `${process.env.ORDER_BACKEND_URL}/order-admin/get`
+  try {
+    const result = await axios.get<OrderWithItemsBackendResponse>(url, {
+      params: { orderId },
+    })
+    return transFormBackendOrder(result.data)
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new OrderNotFoundError()
+    }
+    throw new GetOrderFailure(e)
+  }
+}
+
 const transFormBackendOrder = (p: OrderWithItemsBackendResponse): Order => {
   const {
     order: {

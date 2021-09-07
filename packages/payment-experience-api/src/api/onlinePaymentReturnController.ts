@@ -1,37 +1,21 @@
-import {
-  AbstractController,
-  logger,
-  ValidatedRequest,
-} from '@verkkokauppa/core'
-import type { Response } from 'express'
+import { AbstractController, logger } from '@verkkokauppa/core'
+import type { Request, Response } from 'express'
 import {
   createUserRedirectUrl,
   parseOrderIdFromRedirect,
 } from '../lib/vismaPay'
 import { URL } from 'url'
-import { getOrder } from '@verkkokauppa/order-backend'
+import { getOrderAdmin } from '@verkkokauppa/order-backend'
 import { checkVismaReturnUrl } from '@verkkokauppa/payment-backend'
-import * as yup from 'yup'
 
-const requestSchema = yup.object().shape({
-  params: yup.object().shape({
-    user: yup.string().required(),
-  }),
-})
-
-export class OnlinePaymentReturnController extends AbstractController<
-  typeof requestSchema
-> {
-  protected readonly requestSchema = requestSchema
+export class OnlinePaymentReturnController extends AbstractController {
+  protected readonly requestSchema = null
 
   protected async implementation(
-    request: ValidatedRequest<typeof requestSchema>,
+    request: Request,
     result: Response
   ): Promise<any> {
-    const {
-      query,
-      params: { user },
-    } = request
+    const { query } = request
     if (!process.env.REDIRECT_PAYMENT_URL_BASE) {
       throw new Error('No default redirect url specified')
     }
@@ -55,7 +39,7 @@ export class OnlinePaymentReturnController extends AbstractController<
       console.log(
         `VismaStatus for order ${orderId}: ${JSON.stringify(vismaStatus)}`
       )
-      const order = await getOrder({ orderId, user })
+      const order = await getOrderAdmin({ orderId })
       const redirectUrl = await createUserRedirectUrl({
         order,
         vismaStatus,
