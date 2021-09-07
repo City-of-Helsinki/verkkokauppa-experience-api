@@ -18,6 +18,8 @@ import * as yup from 'yup'
 const requestSchema = yup.object().shape({
   params: yup.object().shape({
     orderId: yup.string().required(),
+  }),
+  headers: yup.object().shape({
     user: yup.string().required(),
   }),
 })
@@ -30,7 +32,8 @@ export class CancelController extends AbstractController<typeof requestSchema> {
     res: Response
   ): Promise<any> {
     const {
-      params: { orderId, user },
+      params: { orderId },
+      headers: { user },
     } = req
 
     logger.debug(`Cancel Order ${orderId}`)
