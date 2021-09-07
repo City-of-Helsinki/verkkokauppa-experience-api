@@ -94,6 +94,7 @@ const mockResponse = ({
 } as any) as Response
 
 const requestBody = {}
+const requestHeaders = {}
 
 describe('Test getController', () => {
   it('Should get order with merchant details', async () => {
@@ -103,7 +104,11 @@ describe('Test getController', () => {
     )
     getOrderMock.mockImplementationOnce(() => orderMock)
     const res = await getController.implementation(
-      { params: { orderId: 'test123' }, body: requestBody } as any,
+      {
+        params: { orderId: 'test123' },
+        body: requestBody,
+        headers: requestHeaders,
+      } as any,
       mockResponse
     )
     expect(successSpy).toHaveBeenCalledTimes(1)
@@ -122,7 +127,11 @@ describe('Test getController', () => {
     getMerchantDetailsForOrderMock.mockImplementationOnce(() => [])
     getOrderMock.mockImplementationOnce(() => orderMock)
     const res = await getController.implementation(
-      { params: { orderId: 'test123' }, body: requestBody } as any,
+      {
+        params: { orderId: 'test123' },
+        body: requestBody,
+        headers: requestHeaders,
+      } as any,
       mockResponse
     )
     expect(successSpy).toHaveBeenCalledTimes(1)
