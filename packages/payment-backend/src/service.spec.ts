@@ -102,6 +102,7 @@ describe('Test Get Payment Url', () => {
       getPaymentUrl({
         namespace: '',
         orderId: '',
+        user: '',
       })
     ).rejects.toThrow('No payment API backend URL set')
   })
@@ -112,6 +113,7 @@ describe('Test Get Payment Url', () => {
     const result = await getPaymentUrl({
       namespace: 'test',
       orderId: 'test',
+      user: 'test',
     })
     expect(result).toEqual(paymentUrl)
   })
@@ -123,6 +125,7 @@ describe('Test Get Payment Status', () => {
       getPaymentStatus({
         namespace: '',
         orderId: '',
+        user: '',
       })
     ).rejects.toThrow('No payment API backend URL set')
   })
@@ -133,6 +136,7 @@ describe('Test Get Payment Status', () => {
     const result = await getPaymentStatus({
       namespace: 'test',
       orderId: 'test',
+      user: 'test',
     })
     expect(result).toEqual(status)
   })
@@ -145,6 +149,7 @@ describe('Test Get Payment for order', () => {
       getPaymentForOrder({
         orderId: '',
         namespace: '',
+        user: '',
       })
     ).rejects.toThrow('No payment API backend URL set')
   })
@@ -168,6 +173,7 @@ describe('Test Get Payment for order', () => {
     const result = await getPaymentForOrder({
       orderId: 'test',
       namespace: 'test',
+      user: '',
     })
     expect(result).toEqual(mockData)
   })
