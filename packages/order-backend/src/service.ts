@@ -80,36 +80,48 @@ export const createOrderWithItems = async (p: {
   }
 }
 
-export const cancelOrder = async (p: { orderId: string }): Promise<Order> => {
-  const { orderId } = p
+export const cancelOrder = async (p: {
+  orderId: string
+  user: string
+}): Promise<Order> => {
+  const { orderId, user: userId } = p
   if (!process.env.ORDER_BACKEND_URL) {
     throw new Error('No order backend URL set')
   }
   const url = `${process.env.ORDER_BACKEND_URL}/order/cancel`
   try {
     const result = await axios.get<OrderWithItemsBackendResponse>(url, {
-      params: { orderId },
+      params: { orderId, userId },
     })
     return transFormBackendOrder(result.data)
   } catch (e) {
+    if (e.response?.status === 404) {
+      throw new OrderNotFoundError()
+    }
     throw new CancelOrderFailure(e)
   }
 }
 
-export const confirmOrder = async (p: { orderId: string }): Promise<Order> => {
-  const { orderId } = p
+export const confirmOrder = async (p: {
+  orderId: string
+  user: string
+}): Promise<Order> => {
+  const { orderId, user: userId } = p
   if (!process.env.ORDER_BACKEND_URL) {
     throw new Error('No order backend URL set')
   }
   const url = `${process.env.ORDER_BACKEND_URL}/order/confirm`
   try {
     const result = await axios.get<OrderWithItemsBackendResponse>(url, {
-      params: { orderId },
+      params: { orderId, userId },
     })
     return transFormBackendOrder(result.data)
   } catch (e) {
     if (e.response?.status === 403) {
       throw new OrderValidationError('order must have customer and totals')
+    }
+    if (e.response?.status === 404) {
+      throw new OrderNotFoundError()
     }
     throw new ConfirmOrderFailure(e)
   }
@@ -117,9 +129,10 @@ export const confirmOrder = async (p: { orderId: string }): Promise<Order> => {
 
 export const setCustomerToOrder = async (p: {
   orderId: string
+  user: string
   customer: OrderCustomer
 }): Promise<Order> => {
-  const { orderId, customer } = p
+  const { orderId, customer, user: userId } = p
   if (!process.env.ORDER_BACKEND_URL) {
     throw new Error('No order backend URL set')
   }
@@ -129,6 +142,7 @@ export const setCustomerToOrder = async (p: {
     const result = await axios.post<OrderWithItemsBackendResponse>(url, null, {
       params: {
         orderId,
+        userId,
         customerEmail: customer.email,
         customerFirstName: customer.firstName,
         customerLastName: customer.lastName,
@@ -140,8 +154,11 @@ export const setCustomerToOrder = async (p: {
     })
     return transFormBackendOrder(result.data)
   } catch (e) {
-    if (e.response?.status === 400) {
+    if (e.response?.status === 403) {
       throw new OrderValidationError('order is in an immutable state')
+    }
+    if (e.response?.status === 404) {
+      throw new OrderNotFoundError()
     }
     throw new SetCustomerToOrderFailure(e)
   }
@@ -149,9 +166,10 @@ export const setCustomerToOrder = async (p: {
 
 export const addItemsToOrder = async (p: {
   orderId: string
+  user: string
   items: OrderItemRequest[]
 }): Promise<Order> => {
-  const { orderId, items } = p
+  const { orderId, items, user: userId } = p
   if (!process.env.ORDER_BACKEND_URL) {
     throw new Error('No order backend URL set')
   }
@@ -161,23 +179,48 @@ export const addItemsToOrder = async (p: {
   const url = `${process.env.ORDER_BACKEND_URL}/order/setItems`
   try {
     const result = await axios.post<OrderWithItemsBackendResponse>(url, dto, {
-      params: { orderId },
+      params: { orderId, userId },
     })
     return transFormBackendOrder(result.data)
   } catch (e) {
-    if (e.response?.status === 400) {
+    if (e.response?.status === 403) {
       throw new OrderValidationError('order is in an immutable state')
+    }
+    if (e.response?.status === 404) {
+      throw new OrderNotFoundError()
     }
     throw new AddItemsToOrderFailure(e)
   }
 }
 
-export const getOrder = async (p: { orderId: string }): Promise<Order> => {
-  const { orderId } = p
+export const getOrder = async (p: {
+  orderId: string
+  user: string
+}): Promise<Order> => {
+  const { orderId, user: userId } = p
   if (!process.env.ORDER_BACKEND_URL) {
     throw new Error('No order backend URL set')
   }
   const url = `${process.env.ORDER_BACKEND_URL}/order/get`
+  try {
+    const result = await axios.get<OrderWithItemsBackendResponse>(url, {
+      params: { orderId, userId },
+    })
+    return transFormBackendOrder(result.data)
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new OrderNotFoundError()
+    }
+    throw new GetOrderFailure(e)
+  }
+}
+
+export const getOrderAdmin = async (p: { orderId: string }): Promise<Order> => {
+  const { orderId } = p
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+  const url = `${process.env.ORDER_BACKEND_URL}/order-admin/get`
   try {
     const result = await axios.get<OrderWithItemsBackendResponse>(url, {
       params: { orderId },
@@ -243,11 +286,12 @@ const transFormBackendOrder = (p: OrderWithItemsBackendResponse): Order => {
 
 export const setOrderTotals = async (p: {
   orderId: string
+  user: string
   priceNet: string | number
   priceVat: string | number
   priceTotal: string | number
 }): Promise<Order> => {
-  const { orderId, priceNet, priceVat, priceTotal } = p
+  const { orderId, priceNet, priceVat, priceTotal, user: userId } = p
   if (!process.env.ORDER_BACKEND_URL) {
     throw new Error('No order backend URL set')
   }
@@ -256,6 +300,7 @@ export const setOrderTotals = async (p: {
     const result = await axios.post<OrderWithItemsBackendResponse>(url, null, {
       params: {
         orderId,
+        userId,
         priceNet: priceNet.toString(),
         priceVat: priceVat.toString(),
         priceTotal: priceTotal.toString(),
@@ -263,8 +308,11 @@ export const setOrderTotals = async (p: {
     })
     return transFormBackendOrder(result.data)
   } catch (e) {
-    if (e.response?.status === 400) {
+    if (e.response?.status === 403) {
       throw new OrderValidationError('order is in an immutable state')
+    }
+    if (e.response?.status === 404) {
+      throw new OrderNotFoundError()
     }
     throw new SetOrderTotalsFailure(e)
   }

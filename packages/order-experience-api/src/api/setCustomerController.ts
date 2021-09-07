@@ -16,6 +16,9 @@ const requestSchema = yup.object().shape({
   params: yup.object().shape({
     orderId: yup.string().required(),
   }),
+  headers: yup.object().shape({
+    user: yup.string().required(),
+  }),
 })
 
 export class SetCustomerController extends AbstractController<
@@ -30,6 +33,7 @@ export class SetCustomerController extends AbstractController<
     const {
       params: { orderId },
       body: { customer },
+      headers: { user },
     } = req
 
     logger.debug(
@@ -39,6 +43,7 @@ export class SetCustomerController extends AbstractController<
     const dto = new Data(
       await setCustomerToOrder({
         orderId,
+        user,
         customer,
       })
     )

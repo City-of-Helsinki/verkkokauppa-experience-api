@@ -148,6 +148,7 @@ describe('Test instantPurchase', () => {
     expect(addItemsToOrderMock).toHaveBeenCalledTimes(1)
     expect(addItemsToOrderMock.mock.calls[0][0]).toEqual({
       orderId: 'oid1',
+      user: 'user1',
       items: [
         {
           productId: 'pid1',
@@ -198,6 +199,7 @@ describe('Test instantPurchase', () => {
     expect(setOrderTotalsMock).toHaveBeenCalledTimes(1)
     expect(setOrderTotalsMock.mock.calls[0][0]).toEqual({
       orderId: 'oid1',
+      user: 'user1',
       priceNet: '250',
       priceVat: '60',
       priceTotal: '310',

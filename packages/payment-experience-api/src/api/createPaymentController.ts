@@ -17,6 +17,9 @@ const requestSchema = yup.object().shape({
   params: yup.object().shape({
     orderId: yup.string().required(),
   }),
+  headers: yup.object().shape({
+    user: yup.string().required(),
+  }),
 })
 
 export class CreatePaymentController extends AbstractController<
@@ -31,9 +34,10 @@ export class CreatePaymentController extends AbstractController<
     const {
       body: { paymentMethod, language },
       params: { orderId },
+      headers: { user },
     } = request
 
-    const order = await getOrder({ orderId })
+    const order = await getOrder({ orderId, user })
     const orderTotal = this.calculateOrderTotal(order)
     const availablePaymentMethods = await getPaymentMethodList({
       request: {

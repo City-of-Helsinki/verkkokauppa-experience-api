@@ -129,9 +129,9 @@ describe('Test Create Order', () => {
 describe('Test Cancel Order', () => {
   it('Should throw error with no backend url set', async () => {
     process.env.ORDER_BACKEND_URL = ''
-    await expect(cancelOrder({ orderId: orderMock.orderId })).rejects.toThrow(
-      'No order backend URL set'
-    )
+    await expect(
+      cancelOrder({ orderId: orderMock.orderId, user: orderMock.user })
+    ).rejects.toThrow('No order backend URL set')
   })
   it('Should cancel order correctly with backend url set', async () => {
     process.env.ORDER_BACKEND_URL = 'test.dev.hel'
@@ -158,6 +158,7 @@ describe('Test Cancel Order', () => {
     axiosMock.get.mockResolvedValue({ data: mockData })
     const result = await cancelOrder({
       orderId: mockData.order.orderId,
+      user: mockData.order.user,
     })
     expect(result).toEqual({
       ...orderMock,
@@ -175,6 +176,7 @@ describe('Test Add items to order', () => {
     await expect(
       addItemsToOrder({
         orderId: orderMock.orderId,
+        user: orderMock.user,
         items: [],
       })
     ).rejects.toThrow('No order backend URL set')
@@ -207,6 +209,7 @@ describe('Test Add items to order', () => {
     axiosMock.post.mockResolvedValue({ data: mockData })
     const result = await addItemsToOrder({
       orderId: mockData.order.orderId,
+      user: mockData.order.user,
       items: [
         {
           productId: '30a245ed-5fca-4fcf-8b2a-cdf1ce6fca0d',
@@ -238,6 +241,7 @@ describe('Test Set Customer To Order', () => {
     await expect(
       setCustomerToOrder({
         orderId: orderMock.orderId,
+        user: orderMock.user,
         ...orderCustomerMock,
       })
     ).rejects.toThrow('No order backend URL set')
@@ -254,6 +258,7 @@ describe('Test Set Customer To Order', () => {
     axiosMock.post.mockResolvedValue({ data: mockData })
     const result = await setCustomerToOrder({
       orderId: orderMock.orderId,
+      user: orderMock.user,
       ...orderCustomerMock,
     })
     expect(result).toEqual({
@@ -285,6 +290,7 @@ describe('Test Set Customer To Order', () => {
     axiosMock.post.mockResolvedValue({ data: mockData })
     const result = await setCustomerToOrder({
       orderId: orderMock.orderId,
+      user: orderMock.user,
       ...orderCustomerMock,
     })
     expect(result).toEqual({
@@ -299,9 +305,9 @@ describe('Test Set Customer To Order', () => {
 describe('Test Get Order', () => {
   it('Should throw error with no backend url set', async () => {
     process.env.ORDER_BACKEND_URL = ''
-    await expect(getOrder({ orderId: orderMock.orderId })).rejects.toThrow(
-      'No order backend URL set'
-    )
+    await expect(
+      getOrder({ orderId: orderMock.orderId, user: orderMock.user })
+    ).rejects.toThrow('No order backend URL set')
   })
   it('Should get order correctly without items and with backend url set', async () => {
     process.env.ORDER_BACKEND_URL = 'test.dev.hel'
@@ -315,6 +321,7 @@ describe('Test Get Order', () => {
     axiosMock.get.mockResolvedValue({ data: mockData })
     const result = await getOrder({
       orderId: orderMock.orderId,
+      user: orderMock.user,
     })
     expect(result).toEqual({
       ...orderMock,
@@ -347,6 +354,7 @@ describe('Test Get Order', () => {
     axiosMock.get.mockResolvedValue({ data: mockData })
     const result = await getOrder({
       orderId: orderMock.orderId,
+      user: orderMock.user,
     })
     expect(result).toEqual({
       ...orderMock,
@@ -363,6 +371,7 @@ describe('Test Calculate Totals for Order', () => {
     await expect(
       setOrderTotals({
         orderId: 'test',
+        user: 'u1',
         priceNet: '0',
         priceVat: '0',
         priceTotal: '0',
@@ -384,6 +393,7 @@ describe('Test Calculate Totals for Order', () => {
     axiosMock.post.mockResolvedValue({ data: mockData })
     const result = await setOrderTotals({
       orderId: mockData.order.orderId,
+      user: mockData.order.user,
       priceNet: 0,
       priceVat: 0,
       priceTotal: 0,
@@ -427,6 +437,7 @@ describe('Test Calculate Totals for Order', () => {
     axiosMock.post.mockResolvedValue({ data: mockData })
     const result = await setOrderTotals({
       orderId: orderMock.orderId,
+      user: orderMock.user,
       priceNet: 100,
       priceVat: 24,
       priceTotal: 124,
