@@ -1,8 +1,4 @@
-import type {
-  EmailTemplateDto,
-  HbsTemplateFiles,
-  OrderConfirmationEmailParameters,
-} from './types'
+import type { EmailTemplateDto, HbsTemplateFiles } from './types'
 
 import * as Handlebars from 'handlebars'
 import i18next from '../../i18n/init'
@@ -11,16 +7,14 @@ import type { SUPPORTED_LANGUAGES } from '../../i18n/types'
 const fs = require('fs')
 const path = require('path')
 
-export const createOrderConfirmationEmailTemplate = async <T>(
-  params: T & {
-    fileName: HbsTemplateFiles
-    templateParams: OrderConfirmationEmailParameters[]
-  }
-): Promise<EmailTemplateDto> => {
-  const handleBar = HandleBarTemplate<OrderConfirmationEmailParameters>('fi')
+export const createOrderConfirmationEmailTemplate = async <T>(params: {
+  fileName: HbsTemplateFiles
+  templateParams: T
+}): Promise<EmailTemplateDto> => {
+  const handleBar = HandleBarTemplate<T>('fi')
   const files = fs.readdirSync(path.join(__dirname, `/templates/`))
 
-  if (!files.includes(params.fileName)) {
+  if (!files.includes(`${params.fileName}.hbs`)) {
     return {
       template: '',
       error: 'Email template cant be found',
@@ -28,6 +22,7 @@ export const createOrderConfirmationEmailTemplate = async <T>(
   }
   handleBar.setFileName(params.fileName)
   handleBar.setTemplateParams(params.templateParams)
+  console.log(params.templateParams)
   const template = handleBar.createTemplate()
 
   return {
@@ -51,7 +46,7 @@ export function setFileName(this: any, fileName: HbsTemplateFiles): void {
 
 export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
   let fileName = ''
-  let templateParams: T[] = []
+  let templateParams: T
 
   i18next.changeLanguage(language).then(() => {})
 
@@ -67,6 +62,7 @@ export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
     const dateObj = new Date(date)
 
     return dateObj.toLocaleTimeString('de-DE', {
+      timeZone: 'Europe/Helsinki',
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
@@ -77,6 +73,7 @@ export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
     const dateObj = new Date(date)
 
     return dateObj.toLocaleDateString('de-DE', {
+      timeZone: 'Europe/Helsinki',
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
@@ -100,16 +97,26 @@ export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
     const minutes = date.substring(11, 13)
     const seconds = date.substring(13, 15)
 
-    const dateObj = new Date(year, month, day, hours, minutes, seconds)
+    const dateObj = new Date(
+      Date.UTC(year, month, day, hours, minutes, seconds)
+    )
+
+    if (dateObj.getTimezoneOffset() !== 0) {
+      dateObj.setTime(
+        dateObj.getTime() + dateObj.getTimezoneOffset() * 60 * 1000
+      )
+    }
 
     return (
       dateObj.toLocaleDateString('de-DE', {
+        timeZone: 'Europe/Helsinki',
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
       }) +
       ' ' +
       dateObj.toLocaleTimeString('de-DE', {
+        timeZone: 'Europe/Helsinki',
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
@@ -135,10 +142,10 @@ export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
     createTemplate,
     fileName,
     setFileName,
-    setTemplateParams(params: T[]) {
+    setTemplateParams(params: T) {
       templateParams = params
     },
-    get templateParams(): T[] {
+    get templateParams(): T {
       return templateParams
     },
   }
