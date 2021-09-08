@@ -32,8 +32,8 @@
 							"pm.test(\"Response namespace is not empty\", function () {",
 							"    pm.expect(data.namespace).to.not.empty",
 							"});",
-							"pm.test(\"Response contains user\", function () {",
-							"    pm.expect(data.user).to.exist",
+							"pm.test(\"Response contains correct user\", function () {",
+							"    pm.expect(data.user).to.eql(pm.environment.get(\"orderFoundUser\"))",
 							"});",
 							"pm.test(\"Response user is not empty\", function () {",
 							"    pm.expect(data.user).to.not.empty",
@@ -61,14 +61,30 @@
 						],
 						"type": "text/javascript"
 					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"orderFoundUser\", pm.variables.replaceIn('{{$randomUserName}}'))",
+							""
+						],
+						"type": "text/javascript"
+					}
 				}
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderFoundUser}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{$randomUserName}}\"\n}",
+					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{orderFoundUser}}\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -79,6 +95,84 @@
 					"raw": "{{orderExperienceUrl}}",
 					"host": [
 						"{{orderExperienceUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Confirm order without items and user 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
+							"});",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
+							"});",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"headers.user is a required field\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var qty = 2",
+							"var priceNet = pm.environment.get('productFoundPriceNet')",
+							"var priceGross = pm.environment.get('productFoundPriceGross')",
+							"var priceVat = priceGross - priceNet",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', qty*priceNet)",
+							"pm.variables.set('rowPriceTotal', qty*priceGross)",
+							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"paymentMethod\": \"nordea\",\n    \"language\": \"fi\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/:id/confirmAndCreatePayment",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						":id",
+						"confirmAndCreatePayment"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{orderFound}}"
+						}
 					]
 				}
 			},
@@ -133,7 +227,13 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderFoundUser}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"paymentMethod\": \"nordea\",\n    \"language\": \"fi\"\n}",
@@ -240,6 +340,68 @@
 			],
 			"request": {
 				"method": "GET",
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderFoundUser}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{orderExperienceUrl}}/:id",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{orderFound}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Order Without Items without user 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
+							"});",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
+							"});",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"headers.user is a required field\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
 				"header": [],
 				"url": {
 					"raw": "{{orderExperienceUrl}}/:id",
@@ -267,19 +429,17 @@
 					"script": {
 						"exec": [
 							"var data = pm.response.json()",
-							"if (data.orderId) {",
-							"    pm.environment.set(\"orderWithItems\", data.orderId)",
-							"}",
+							"pm.environment.set(\"orderWithItems\", data.orderId)",
 							"",
 							"pm.test(\"Status code is 201\", function () {",
 							"    pm.response.to.have.status(201);",
 							"});",
 							"/* General data */",
-							"pm.test(\"Response contains ID\", function () {",
+							"pm.test(\"Response contains correct ID\", function () {",
 							"    pm.expect(data.orderId).to.eq(pm.environment.get(\"orderWithItems\"))",
 							"});",
-							"pm.test(\"Response user is not empty\", function () {",
-							"    pm.expect(data.user).to.not.empty",
+							"pm.test(\"Response user is correct\", function () {",
+							"    pm.expect(data.user).to.eql(pm.environment.get(\"orderWithItemsUser\"))",
 							"});",
 							"pm.test(\"Response createdAt is not empty\", function () {",
 							"    pm.expect(data.createdAt).to.not.empty",
@@ -377,6 +537,7 @@
 							"pm.variables.set('rowPriceNet', qty*priceNet)",
 							"pm.variables.set('rowPriceTotal', qty*priceGross)",
 							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							"pm.environment.set(\"orderWithItemsUser\", pm.variables.replaceIn('{{$randomUserName}}'))",
 							""
 						],
 						"type": "text/javascript"
@@ -385,10 +546,16 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderWithItemsUser}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{$randomUserName}}\",\n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{orderWithItemsUser}}\",\n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -551,6 +718,80 @@
 			],
 			"request": {
 				"method": "GET",
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderWithItemsUser}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{orderExperienceUrl}}/:id",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{orderWithItems}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Order With Items without user 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
+							"});",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
+							"});",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"headers.user is a required field\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var qty = 2",
+							"var priceNet = pm.environment.get('productFoundPriceNet')",
+							"var priceGross = pm.environment.get('productFoundPriceGross')",
+							"var priceVat = priceGross - priceNet",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', qty*priceNet)",
+							"pm.variables.set('rowPriceTotal', qty*priceGross)",
+							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
 				"header": [],
 				"url": {
 					"raw": "{{orderExperienceUrl}}/:id",
@@ -589,8 +830,8 @@
 							"pm.test(\"Response contains ID\", function () {",
 							"    pm.expect(data.orderId).to.eq(pm.environment.get(\"orderWithItemsAndMeta\"))",
 							"});",
-							"pm.test(\"Response user is not empty\", function () {",
-							"    pm.expect(data.user).to.not.empty",
+							"pm.test(\"Response user is correct\", function () {",
+							"    pm.expect(data.user).to.eql(pm.environment.get(\"orderWithItemsAndMetaUser\"))",
 							"});",
 							"pm.test(\"Response createdAt is not empty\", function () {",
 							"    pm.expect(data.createdAt).to.not.empty",
@@ -722,6 +963,7 @@
 							"pm.variables.set('rowPriceNet', qty*priceNet)",
 							"pm.variables.set('rowPriceTotal', qty*priceGross)",
 							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							"pm.environment.set(\"orderWithItemsAndMetaUser\", pm.variables.replaceIn('{{$randomUserName}}'))",
 							""
 						],
 						"type": "text/javascript"
@@ -730,10 +972,16 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderWithItemsAndMetaUser}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"namespace\": \"asukaspysakointi\",\n    \"user\": \"{{$randomUserName}}\", \n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                },\n                {\n                    \"key\": \"anotherMeta\",\n                    \"value\": \"valueForMeta\",\n                    \"label\": \"Visible in Checkout\",\n                    \"visibleInCheckout\": true,\n                    \"ordinal\": \"2\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"raw": "{\n    \"namespace\": \"asukaspysakointi\",\n    \"user\": \"{{orderWithItemsAndMetaUser}}\", \n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                },\n                {\n                    \"key\": \"anotherMeta\",\n                    \"value\": \"valueForMeta\",\n                    \"label\": \"Visible in Checkout\",\n                    \"visibleInCheckout\": true,\n                    \"ordinal\": \"2\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -909,14 +1157,100 @@
 			],
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderWithItemsAndMetaUser}}",
+						"type": "text"
+					}
+				],
 				"url": {
-					"raw": "{{orderExperienceUrl}}/:id",
+					"raw": "{{orderExperienceUrl}}/:id?user=",
 					"host": [
 						"{{orderExperienceUrl}}"
 					],
 					"path": [
 						":id"
+					],
+					"query": [
+						{
+							"key": "user",
+							"value": ""
+						}
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{orderWithItemsAndMeta}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Order With Items and meta without user 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
+							"});",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
+							"});",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"headers.user is a required field\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var qty = 2",
+							"var priceNet = pm.environment.get('productFoundPriceNet')",
+							"var priceGross = pm.environment.get('productFoundPriceGross')",
+							"var priceVat = priceGross - priceNet",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', qty*priceNet)",
+							"pm.variables.set('rowPriceTotal', qty*priceGross)",
+							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{orderExperienceUrl}}/:id?user=",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						":id"
+					],
+					"query": [
+						{
+							"key": "user",
+							"value": ""
+						}
 					],
 					"variable": [
 						{
@@ -949,8 +1283,8 @@
 							"pm.test(\"Response contains ID\", function () {",
 							"    pm.expect(data.orderId).to.eq(pm.environment.get(\"orderWithRecurringItem\"))",
 							"});",
-							"pm.test(\"Response user is not empty\", function () {",
-							"    pm.expect(data.user).to.not.empty",
+							"pm.test(\"Response user is correct\", function () {",
+							"    pm.expect(data.user).to.to.eq(pm.environment.get(\"orderWithRecurringItemUser\"))",
 							"});",
 							"pm.test(\"Response createdAt is not empty\", function () {",
 							"    pm.expect(data.createdAt).to.not.empty",
@@ -1059,6 +1393,7 @@
 							"pm.variables.set('rowPriceNet', qty*priceNet)",
 							"pm.variables.set('rowPriceTotal', qty*priceGross)",
 							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							"pm.environment.set(\"orderWithRecurringItemUser\", pm.variables.replaceIn('{{$randomUserName}}'))",
 							""
 						],
 						"type": "text/javascript"
@@ -1067,10 +1402,16 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderWithRecurringItemUser}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"namespace\": \"asukaspysakointi\",\n    \"user\": \"{{$randomUserName}}\", \n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"startDate\": \"2021-07-01\",\n            \"periodFrequency\":\"1\",\n            \"periodUnit\": \"monthly\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\"\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"raw": "{\n    \"namespace\": \"asukaspysakointi\",\n    \"user\": \"{{orderWithRecurringItemUser}}\", \n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"startDate\": \"2021-07-01\",\n            \"periodFrequency\":\"1\",\n            \"periodUnit\": \"monthly\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\"\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1097,7 +1438,7 @@
 							"var requestData = JSON.parse(pm.request.body);",
 							"",
 							"if (data.orderId) {",
-							"    pm.environment.set(\"orderWithRecurringItem\", data.orderId)",
+							"    pm.environment.set(\"orderWithRecurringItemAndMeta\", data.orderId)",
 							"}",
 							"",
 							"pm.test(\"Status code is 201\", function () {",
@@ -1105,10 +1446,10 @@
 							"});",
 							"/* General data */",
 							"pm.test(\"Response contains ID\", function () {",
-							"    pm.expect(data.orderId).to.eq(pm.environment.get(\"orderWithRecurringItem\"))",
+							"    pm.expect(data.orderId).to.eq(pm.environment.get(\"orderWithRecurringItemAndMeta\"))",
 							"});",
-							"pm.test(\"Response user is not empty\", function () {",
-							"    pm.expect(data.user).to.not.empty",
+							"pm.test(\"Response user is correct\", function () {",
+							"    pm.expect(data.user).to.eq(pm.environment.get(\"orderWithRecurringItemAndMetaUser\"))",
 							"});",
 							"pm.test(\"Response createdAt is not empty\", function () {",
 							"    pm.expect(data.createdAt).to.not.empty",
@@ -1146,7 +1487,7 @@
 							"});",
 							"pm.test(\"Response item has order ID\", function () {",
 							"    var data = pm.response.json();",
-							"    pm.expect(data.items[0].orderId).to.eq(pm.environment.get(\"orderWithRecurringItem\"))",
+							"    pm.expect(data.items[0].orderId).to.eq(pm.environment.get(\"orderWithRecurringItemAndMeta\"))",
 							"});",
 							"pm.test(\"Response item has correct product ID\", function () {",
 							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
@@ -1251,6 +1592,7 @@
 							"pm.variables.set('rowPriceNet', qty*priceNet)",
 							"pm.variables.set('rowPriceTotal', qty*priceGross)",
 							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							"pm.environment.set(\"orderWithRecurringItemAndMetaUser\", pm.variables.replaceIn('{{$randomUserName}}'))",
 							""
 						],
 						"type": "text/javascript"
@@ -1259,10 +1601,16 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderWithRecurringItemAndMetaUser}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"namespace\": \"asukaspysakointi\",\n    \"user\": \"{{$randomUserName}}\", \n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"startDate\": \"2021-07-15\",\n            \"periodFrequency\":\"1\",\n            \"periodUnit\": \"monthly\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                },\n                {\n                    \"key\": \"anotherMeta\",\n                    \"value\": \"valueForMeta\",\n                    \"label\": \"Visible in Checkout\",\n                    \"visibleInCheckout\": true,\n                    \"ordinal\": \"2\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"raw": "{\n    \"namespace\": \"asukaspysakointi\",\n    \"user\": \"{{orderWithRecurringItemAndMetaUser}}\", \n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"startDate\": \"2021-07-15\",\n            \"periodFrequency\":\"1\",\n            \"periodUnit\": \"monthly\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                },\n                {\n                    \"key\": \"anotherMeta\",\n                    \"value\": \"valueForMeta\",\n                    \"label\": \"Visible in Checkout\",\n                    \"visibleInCheckout\": true,\n                    \"ordinal\": \"2\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1352,7 +1700,107 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"orderId\": \"3e2bad97-e9ed-38b3-8d71-3ae336afdb64\"\n}",
+					"raw": "{\n    \"orderId\": \"{{orderWithRecurringItem}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/recurringorder/create-from-order",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						"recurringorder",
+						"create-from-order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Recurring Order from Order with meta 201",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"/*var data = pm.response.json()",
+							"if (data.orderId) {",
+							"    pm.environment.set(\"orderWithRecurringItem\", data.orderId)",
+							"}",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"pm.test(\"Response contains ID\", function () {",
+							"    pm.expect(data.orderId).to.eq(pm.environment.get(\"orderWithRecurringItem\"))",
+							"});",
+							"pm.test(\"Response contains correct order status\", function () {",
+							"    pm.expect(data.status).to.eql(\"created\");",
+							"});",
+							"pm.test(\"Response contains correct customer firstname\", function () {",
+							"    pm.expect(data.customer.firstName).to.eql(pm.variables.get(\"testCustomerFirstName\"));",
+							"});",
+							"pm.test(\"Response contains correct customer lastname\", function () {",
+							"    pm.expect(data.customer.lastName).to.eql(pm.variables.get(\"testCustomerLastName\"));",
+							"});",
+							"pm.test(\"Response contains correct customer email\", function () {",
+							"    pm.expect(data.customer.email).to.eql(pm.variables.get(\"testCustomerEmail\"));",
+							"});",
+							"pm.test(\"Response namespace is not empty\", function () {",
+							"    pm.expect(data.namespace).to.not.empty",
+							"});",
+							"pm.test(\"Response user is not empty\", function () {",
+							"    pm.expect(data.user).to.not.empty",
+							"});",
+							"pm.test(\"Response createdAt is not empty\", function () {",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response contains items\", function () {",
+							"    pm.expect(data.items).to.not.empty",
+							"});",
+							"pm.test(\"Response item has order ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].orderId).to.eq(pm.environment.get(\"orderWithItems\"))",
+							"});",
+							"pm.test(\"Response item has correct product ID\", function () {",
+							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
+							"});",
+							"pm.test(\"Response item has correct quantity\", function () {",
+							"    pm.expect(data.items[0].quantity).to.eql(2);",
+							"});",
+							"pm.test(\"Response item has correct unit\", function () {",
+							"    pm.expect(data.items[0].unit).to.eql(\"pcs\");",
+							"});",
+							"pm.test(\"Response item has correct rowPriceNet\", function () {",
+							"    pm.expect(data.items[0].rowPriceNet).to.eql(\"200\");",
+							"});",
+							"pm.test(\"Response item has correct rowPriceVat\", function () {",
+							"    pm.expect(data.items[0].rowPriceVat).to.eql(\"48\");",
+							"});",
+							"pm.test(\"Response item has correct rowPriceTotal\", function () {",
+							"    pm.expect(data.items[0].rowPriceTotal).to.eql(\"248\");",
+							"});*/"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderWithRecurringItemAndMetaUser}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"orderId\": \"{{orderWithRecurringItemAndMeta}}\",\n    \"user\": \"{{orderWithRecurringItemAndMetaUser}}\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1590,8 +2038,8 @@
 							"pm.test(\"Response contains ID\", function () {",
 							"    pm.expect(data.orderId).to.eq(pm.environment.get(\"orderFromCart\"))",
 							"});",
-							"pm.test(\"Response user is not empty\", function () {",
-							"    pm.expect(data.user).to.not.empty",
+							"pm.test(\"Response user is correct\", function () {",
+							"    pm.expect(data.user).to.to.eq(pm.environment.get(\"orderFromCartUser\"))",
 							"});",
 							"pm.test(\"Response createdAt is not empty\", function () {",
 							"    pm.expect(data.createdAt).to.not.empty",
@@ -1681,6 +2129,7 @@
 							"var priceNet = pm.environment.get('productFoundPriceNet')",
 							"var priceGross = pm.environment.get('productFoundPriceGross')",
 							"var priceVat = priceGross - priceNet",
+							"var user = pm.variables.replaceIn('{{$randomUserName}}')",
 							"",
 							"pm.variables.set('qty', qty)",
 							"pm.variables.set('priceNet', priceNet)",
@@ -1689,6 +2138,7 @@
 							"pm.variables.set('rowPriceNet', qty*priceNet)",
 							"pm.variables.set('rowPriceTotal', qty*priceGross)",
 							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							"pm.environment.set(\"orderFromCartUser\", user)",
 							"",
 							"const cartUrl = pm.variables.get(\"cartExperienceUrl\")",
 							"pm.sendRequest({",
@@ -1702,7 +2152,7 @@
 							"        raw: JSON.stringify(",
 							"            {",
 							"                namespace: \"asukaspysakointi\",",
-							"                user: pm.variables.replaceIn('{{$randomUserName}}'),",
+							"                user,",
 							"                items: [",
 							"                    {",
 							"                        productId: pm.variables.get('productFound'),",
@@ -1731,7 +2181,13 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderFromCartUser}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
@@ -1784,8 +2240,8 @@
 							"pm.test(\"Response order namespace is not empty\", function () {",
 							"    pm.expect(data.order.namespace).to.not.empty",
 							"});",
-							"pm.test(\"Response contains order user\", function () {",
-							"    pm.expect(data.order.user).to.exist",
+							"pm.test(\"Response contains correct order user\", function () {",
+							"    pm.expect(data.order.user).to.eql(pm.environment.get(\"orderFromCartUser\"))",
 							"});",
 							"pm.test(\"Response order user is not empty\", function () {",
 							"    pm.expect(data.order.user).to.not.empty",
@@ -1899,6 +2355,90 @@
 			],
 			"request": {
 				"method": "POST",
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderFromCartUser}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/:id/cancel",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						":id",
+						"cancel"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{orderFromCart}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cancel Order without user 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
+							"});",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
+							"});",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"headers.user is a required field\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var qty = 2",
+							"var priceNet = pm.environment.get('productFoundPriceNet')",
+							"var priceGross = pm.environment.get('productFoundPriceGross')",
+							"var priceVat = priceGross - priceNet",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', qty*priceNet)",
+							"pm.variables.set('rowPriceTotal', qty*priceGross)",
+							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
@@ -1949,8 +2489,8 @@
 							"pm.test(\"Response contains order namspace\", function () {",
 							"    pm.expect(data.namespace).to.not.empty",
 							"});",
-							"pm.test(\"Response contains order user\", function () {",
-							"    pm.expect(data.user).to.not.empty",
+							"pm.test(\"Response contains correct order user\", function () {",
+							"    pm.expect(data.user).to.eql(pm.variables.get(\"orderFoundUser\"));",
 							"});",
 							"pm.test(\"Response contains order createdAt\", function () {",
 							"    pm.expect(data.createdAt).to.not.empty",
@@ -2032,7 +2572,13 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderFoundUser}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"productName\": \"Testituote\",\n            \"quantity\": {{qty}},\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"vatPercentage\": \"24\"\n        }\n    ]\n}",
@@ -2062,7 +2608,7 @@
 			"response": []
 		},
 		{
-			"name": "Confirm order without customer 400",
+			"name": "Add Items to Order without user 400",
 			"event": [
 				{
 					"listen": "test",
@@ -2077,10 +2623,10 @@
 							"    pm.expect(data.errors.length).to.eq(1)",
 							"});",
 							"pm.test(\"Response has correct error code for invalid request\", function () {",
-							"    pm.expect(data.errors[0].code).to.eq(\"order-validation-failed\")",
+							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
 							"});",
 							"pm.test(\"Response has correct error message for invalid request\", function () {",
-							"    pm.expect(data.errors[0].message).to.eq(\"order must have customer and totals\")",
+							"    pm.expect(data.errors[0].message).to.eq(\"headers.user is a required field\")",
 							"});"
 						],
 						"type": "text/javascript"
@@ -2090,7 +2636,7 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"var qty = 2",
+							"var qty = 1",
 							"var priceNet = pm.environment.get('productFoundPriceNet')",
 							"var priceGross = pm.environment.get('productFoundPriceGross')",
 							"var priceVat = priceGross - priceNet",
@@ -2113,7 +2659,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"paymentMethod\": \"nordea\",\n    \"language\": \"fi\"\n}",
+					"raw": "{\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"productName\": \"Testituote\",\n            \"quantity\": {{qty}},\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"vatPercentage\": \"24\"\n        }\n    ]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2121,13 +2667,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{orderExperienceUrl}}/:id/confirmAndCreatePayment",
+					"raw": "{{orderExperienceUrl}}/:id/items",
 					"host": [
 						"{{orderExperienceUrl}}"
 					],
 					"path": [
 						":id",
-						"confirmAndCreatePayment"
+						"items"
 					],
 					"variable": [
 						{
@@ -2160,8 +2706,8 @@
 							"pm.test(\"Response contains order namspace\", function () {",
 							"    pm.expect(data.namespace).to.not.empty",
 							"});",
-							"pm.test(\"Response contains order user\", function () {",
-							"    pm.expect(data.user).to.not.empty",
+							"pm.test(\"Response contains correct order user\", function () {",
+							"    pm.expect(data.user).to.eql(pm.environment.get(\"orderFoundUser\"))",
 							"});",
 							"pm.test(\"Response contains order createdAt\", function () {",
 							"    pm.expect(data.createdAt).to.not.empty",
@@ -2275,6 +2821,90 @@
 			],
 			"request": {
 				"method": "POST",
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderFoundUser}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"productName\": \"Testituote\",\n            \"quantity\": \"{{qty}}\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"vatPercentage\": \"24\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                },\n                {\n                    \"key\": \"anotherMeta\",\n                    \"value\": \"valueForMeta\",\n                    \"label\": \"Visible in Checkout\",\n                    \"visibleInCheckout\": true,\n                    \"ordinal\": \"2\"\n                }\n            ]\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/:id/items",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						":id",
+						"items"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{orderFound}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Items with meta to Order without user 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
+							"});",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
+							"});",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"headers.user is a required field\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var qty = 1",
+							"var priceNet = pm.environment.get('productFoundPriceNet')",
+							"var priceGross = pm.environment.get('productFoundPriceGross')",
+							"var priceVat = priceGross - priceNet",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', qty*priceNet)",
+							"pm.variables.set('rowPriceTotal', qty*priceGross)",
+							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
@@ -2293,6 +2923,90 @@
 					"path": [
 						":id",
 						"items"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{orderFound}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Confirm order without customer 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
+							"});",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"order-validation-failed\")",
+							"});",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"order must have customer and totals\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var qty = 2",
+							"var priceNet = pm.environment.get('productFoundPriceNet')",
+							"var priceGross = pm.environment.get('productFoundPriceGross')",
+							"var priceVat = priceGross - priceNet",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', qty*priceNet)",
+							"pm.variables.set('rowPriceTotal', qty*priceGross)",
+							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderFoundUser}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"paymentMethod\": \"nordea\",\n    \"language\": \"fi\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/:id/confirmAndCreatePayment",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						":id",
+						"confirmAndCreatePayment"
 					],
 					"variable": [
 						{
@@ -2325,8 +3039,8 @@
 							"pm.test(\"Response contains order namspace\", function () {",
 							"    pm.expect(data.namespace).to.not.empty",
 							"});",
-							"pm.test(\"Response contains order user\", function () {",
-							"    pm.expect(data.user).to.not.empty",
+							"pm.test(\"Response contains correct order user\", function () {",
+							"    pm.expect(data.user).to.eql(pm.environment.get(\"orderFoundUser\"))",
 							"});",
 							"pm.test(\"Response contains order createdAt\", function () {",
 							"    pm.expect(data.createdAt).to.not.empty",
@@ -2345,6 +3059,69 @@
 							"});",
 							"pm.test(\"Response has checkoutUrl\", function () {",
 							"    pm.expect(data.checkoutUrl).to.not.empty;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderFoundUser}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/:id/customer",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						":id",
+						"customer"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{orderFound}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Set Customer to Order without user 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
+							"});",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
+							"});",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"headers.user is a required field\")",
 							"});"
 						],
 						"type": "text/javascript"
@@ -2403,8 +3180,8 @@
 							"pm.test(\"Response contains order namspace\", function () {",
 							"    pm.expect(data.namespace).to.not.empty",
 							"});",
-							"pm.test(\"Response contains order user\", function () {",
-							"    pm.expect(data.user).to.not.empty",
+							"pm.test(\"Response contains correct order user\", function () {",
+							"    pm.expect(data.user).to.eql(pm.environment.get(\"orderFoundUser\"))",
 							"});",
 							"pm.test(\"Response contains order createdAt\", function () {",
 							"    pm.expect(data.createdAt).to.not.empty",
@@ -2420,6 +3197,90 @@
 							"});",
 							"pm.test(\"Response has checkoutUrl\", function () {",
 							"    pm.expect(data.checkoutUrl).to.not.empty;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var qty = 1",
+							"var priceNet = pm.environment.get('productFoundPriceNet')",
+							"var priceGross = pm.environment.get('productFoundPriceGross')",
+							"var priceVat = priceGross - priceNet",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', qty*priceNet)",
+							"pm.variables.set('rowPriceTotal', qty*priceGross)",
+							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderFoundUser}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/:id/calculateTotals",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						":id",
+						"calculateTotals"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{orderFound}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Calculate Totals without user 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
+							"});",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
+							"});",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"headers.user is a required field\")",
 							"});"
 						],
 						"type": "text/javascript"
@@ -2499,8 +3360,8 @@
 							"pm.test(\"Response contains order namspace\", function () {",
 							"    pm.expect(data.namespace).to.not.empty",
 							"});",
-							"pm.test(\"Response contains order user\", function () {",
-							"    pm.expect(data.user).to.not.empty",
+							"pm.test(\"Response contains correct order user\", function () {",
+							"    pm.expect(data.user).to.eq(pm.environment.get(\"orderWithoutItemsUser\"))",
 							"});",
 							"pm.test(\"Response contains order createdAt\", function () {",
 							"    pm.expect(data.createdAt).to.not.empty",
@@ -2526,6 +3387,9 @@
 					"script": {
 						"exec": [
 							"const cartUrl = pm.variables.get(\"orderExperienceUrl\")",
+							"const user = pm.variables.replaceIn('{{$randomUserName}}')",
+							"pm.environment.set(\"orderWithoutItemsUser\", user)",
+							"",
 							"pm.sendRequest({",
 							"    url: cartUrl,",
 							"    method: 'POST',",
@@ -2537,7 +3401,7 @@
 							"        raw: JSON.stringify(",
 							"            {",
 							"                \"namespace\": pm.variables.get('namespace'),",
-							"                \"user\": pm.variables.replaceIn('{{$randomUserName}}')",
+							"                \"user\": user",
 							"            }",
 							"        )",
 							"    }",
@@ -2558,7 +3422,13 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderWithoutItemsUser}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "",
@@ -2624,8 +3494,8 @@
 							"pm.test(\"Response namespace is not empty\", function () {",
 							"    pm.expect(data.namespace).to.not.empty",
 							"});",
-							"pm.test(\"Response user is not empty\", function () {",
-							"    pm.expect(data.user).to.not.empty",
+							"pm.test(\"Response user is correct\", function () {",
+							"    pm.expect(data.user).to.eq(pm.environment.get(\"orderWithItemsUser\"))",
 							"});",
 							"pm.test(\"Response createdAt is not empty\", function () {",
 							"    pm.expect(data.createdAt).to.not.empty",
@@ -2784,6 +3654,90 @@
 			],
 			"request": {
 				"method": "POST",
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderWithItemsUser}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"paymentMethod\": \"nordea\",\n    \"language\": \"fi\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/:id/confirmAndCreatePayment",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						":id",
+						"confirmAndCreatePayment"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{orderWithItems}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Confirm order with item meta without user 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
+							"});",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
+							"});",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"headers.user is a required field\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var qty = 2",
+							"var priceNet = pm.environment.get('productFoundPriceNet')",
+							"var priceGross = pm.environment.get('productFoundPriceGross')",
+							"var priceVat = priceGross - priceNet",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', qty*priceNet)",
+							"pm.variables.set('rowPriceTotal', qty*priceGross)",
+							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
@@ -2838,8 +3792,8 @@
 							"pm.test(\"Response contains correct namespace\", function () {",
 							"    pm.expect(data.namespace).to.eq(requestData.namespace)",
 							"});",
-							"pm.test(\"Response user is not empty\", function () {",
-							"    pm.expect(data.user).to.not.empty",
+							"pm.test(\"Response user is correct\", function () {",
+							"    pm.expect(data.user).to.eql(pm.environment.get(\"instantPurchaseUser\"))",
 							"});",
 							"pm.test(\"Response createdAt is not empty\", function () {",
 							"    pm.expect(data.createdAt).to.not.empty",
@@ -2941,6 +3895,7 @@
 							"pm.variables.set('rowPriceNet', qty*priceNet)",
 							"pm.variables.set('rowPriceTotal', qty*priceGross)",
 							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							"pm.environment.set(\"instantPurchaseUser\", pm.variables.replaceIn('{{$randomUserName}}'))",
 							""
 						],
 						"type": "text/javascript"
@@ -2952,7 +3907,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"products\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"unit\": \"pcs\",\n            \"quantity\": {{qty}}\n        }\n    ],\n    \"language\": \"fi\",\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{$randomUserName}}\"\n}",
+					"raw": "{\n    \"products\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"unit\": \"pcs\",\n            \"quantity\": {{qty}}\n        }\n    ],\n    \"language\": \"fi\",\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{instantPurchaseUser}}\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2996,8 +3951,8 @@
 							"pm.test(\"Response contains correct namespace\", function () {",
 							"    pm.expect(data.namespace).to.eq(requestData.namespace)",
 							"});",
-							"pm.test(\"Response user is not empty\", function () {",
-							"    pm.expect(data.user).to.not.empty",
+							"pm.test(\"Response user is correct\", function () {",
+							"    pm.expect(data.user).to.eql(pm.environment.get(\"instantPurchaseUser\"))",
 							"});",
 							"pm.test(\"Response createdAt is not empty\", function () {",
 							"    pm.expect(data.createdAt).to.not.empty",
@@ -3107,10 +4062,16 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "user",
+						"value": "{{instantPurchaseUser}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"products\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"unit\": \"pcs\",\n            \"quantity\": {{qty}}\n        }\n    ],\n    \"language\": \"fi\",\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{$randomUserName}}\"\n}",
+					"raw": "{\n    \"products\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"unit\": \"pcs\",\n            \"quantity\": {{qty}}\n        }\n    ],\n    \"language\": \"fi\",\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{instantPurchaseUser}}\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -3302,7 +4263,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"products\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"unit\": \"pcs\",\n            \"quantity\": {{qty}},\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                },\n                {\n                    \"key\": \"anotherMeta\",\n                    \"value\": \"valueForMeta\",\n                    \"label\": \"Visible in Checkout\",\n                    \"visibleInCheckout\": true,\n                    \"ordinal\": \"2\"\n                }\n            ]\n        }\n    ],\n    \"language\": \"fi\",\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{$randomUserName}}\"\n}",
+					"raw": "{\n    \"products\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"unit\": \"pcs\",\n            \"quantity\": {{qty}},\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                },\n                {\n                    \"key\": \"anotherMeta\",\n                    \"value\": \"valueForMeta\",\n                    \"label\": \"Visible in Checkout\",\n                    \"visibleInCheckout\": true,\n                    \"ordinal\": \"2\"\n                }\n            ]\n        }\n    ],\n    \"language\": \"fi\",\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{instantPurchaseUser}}\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -3358,7 +4319,13 @@
 			],
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderFoundUser}}",
+						"type": "text"
+					}
+				],
 				"url": {
 					"raw": "{{orderExperienceUrl}}/:id",
 					"host": [
@@ -3371,6 +4338,68 @@
 						{
 							"key": "id",
 							"value": "123"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Order of another user 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
+							"});",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"order-not-found\")",
+							"});",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"Order not found\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "user",
+						"type": "text",
+						"value": "{{orderFoundUser}}"
+					}
+				],
+				"url": {
+					"raw": "{{orderExperienceUrl}}/:id",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{orderWithItems}}"
 						}
 					]
 				}
@@ -4194,7 +5223,7 @@
 			"response": []
 		},
 		{
-			"name": "Cancel Order 400 (not found order)",
+			"name": "Cancel Order 404 (not found order)",
 			"event": [
 				{
 					"listen": "test",
@@ -4202,14 +5231,14 @@
 						"exec": [
 							"var data = pm.response.json()",
 							"",
-							"/*pm.test(\"Status code is 400\", function () {",
-							"    pm.response.to.have.status(400);",
-							"});*/",
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
 							"pm.test(\"Response has only one error\", function () {",
 							"    pm.expect(data.errors.length).to.eq(1)",
 							"});",
 							"pm.test(\"Response has correct error code for invalid request\", function () {",
-							"    pm.expect(data.errors[0].code).to.eq(\"failed-to-cancel-order\")",
+							"    pm.expect(data.errors[0].code).to.eq(\"order-not-found\")",
 							"});"
 						],
 						"type": "text/javascript"
@@ -4227,7 +5256,13 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderFoundUser}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "",
@@ -4257,7 +5292,7 @@
 			"response": []
 		},
 		{
-			"name": "Add Items to Order 400 (not found order)",
+			"name": "Add Items to Order 404 (not found order)",
 			"event": [
 				{
 					"listen": "test",
@@ -4265,14 +5300,17 @@
 						"exec": [
 							"var data = pm.response.json()",
 							"",
-							"/*pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});*/",
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
 							"pm.test(\"Response has only one error\", function () {",
 							"    pm.expect(data.errors.length).to.eq(1)",
 							"});",
 							"pm.test(\"Response has correct error code for invalid request\", function () {",
-							"    pm.expect(data.errors[0].code).to.eq(\"failed-to-add-items-to-order\")",
+							"    pm.expect(data.errors[0].code).to.eq(\"order-not-found\")",
+							"});",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"Order not found\")",
 							"});"
 						],
 						"type": "text/javascript"
@@ -4281,7 +5319,13 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderFoundUser}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"productName\": \"Testituote\",\n            \"quantity\": 1,\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"100\",\n            \"rowPriceVat\": \"24\",\n            \"rowPriceTotal\": \"124\",\n            \"priceNet\": \"100\",\n            \"priceVat\": \"24\",\n            \"priceGross\": \"124\",\n            \"vatPercentage\": \"24\"\n        }\n    ]\n}",
@@ -4311,7 +5355,7 @@
 			"response": []
 		},
 		{
-			"name": "Set Customer to Order 400 (not found order)",
+			"name": "Set Customer to Order 404 (not found order)",
 			"event": [
 				{
 					"listen": "test",
@@ -4319,14 +5363,17 @@
 						"exec": [
 							"var data = pm.response.json()",
 							"",
-							"/*pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});*/",
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
 							"pm.test(\"Response has only one error\", function () {",
 							"    pm.expect(data.errors.length).to.eq(1)",
 							"});",
 							"pm.test(\"Response has correct error code for invalid request\", function () {",
-							"    pm.expect(data.errors[0].code).to.eq(\"failed-to-set-order-customer\")",
+							"    pm.expect(data.errors[0].code).to.eq(\"order-not-found\")",
+							"});",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"Order not found\")",
 							"});"
 						],
 						"type": "text/javascript"
@@ -4335,7 +5382,13 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderFoundUser}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
@@ -4365,7 +5418,7 @@
 			"response": []
 		},
 		{
-			"name": "Calculate Totals 400 (not found order)",
+			"name": "Calculate Totals 404 (not found order)",
 			"event": [
 				{
 					"listen": "test",
@@ -4392,7 +5445,13 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderFoundUser}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "",
