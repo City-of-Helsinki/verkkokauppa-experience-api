@@ -571,7 +571,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             </td>
                                                             <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback no-wrap\\">
-                                                                                    nordea
+                                                                                    Nordea
                                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -640,13 +640,13 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                                 </span>
                                                             </td>
                                                         </tr>
-                                                        <tr>
-                                                            <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                            <tr>
+                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback\\">
                                                                                     123456 Esimerkkitoimipaikka
                                                                                 </span>
-                                                            </td>
-                                                        </tr>
+                                                                </td>
+                                                            </tr>
                 
                                                     </table>
                                                 </td>
@@ -880,7 +880,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             </td>
                                                             <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback no-wrap\\">
-                                                                                    nordea
+                                                                                    Nordea
                                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -949,13 +949,13 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                                 </span>
                                                             </td>
                                                         </tr>
-                                                        <tr>
-                                                            <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                            <tr>
+                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback\\">
                                                                                     123456 Esimerkkitoimipaikka
                                                                                 </span>
-                                                            </td>
-                                                        </tr>
+                                                                </td>
+                                                            </tr>
                 
                                                     </table>
                                                 </td>
@@ -1189,7 +1189,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             </td>
                                                             <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback no-wrap\\">
-                                                                                    nordea
+                                                                                    Nordea
                                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -1258,13 +1258,13 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                                 </span>
                                                             </td>
                                                         </tr>
-                                                        <tr>
-                                                            <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                            <tr>
+                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback\\">
                                                                                     123456 Esimerkkitoimipaikka
                                                                                 </span>
-                                                            </td>
-                                                        </tr>
+                                                                </td>
+                                                            </tr>
                 
                                                     </table>
                                                 </td>
