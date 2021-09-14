@@ -4,22 +4,10 @@ import {
   StatusCode,
 } from '@verkkokauppa/core'
 
-export class PaymentMethodValidationError extends ExperienceError {
-  constructor() {
-    super({
-      code: 'payment-method-validation-failed',
-      message:
-        'paymentMethod must be one of invoice, visma-pay, nordea, osuuspankki, creditcards',
-      responseStatus: StatusCode.BadRequest,
-      logLevel: 'debug',
-    })
-  }
-}
-
 export class PaymentValidationError extends ExperienceError {
-  constructor(message: string) {
+  constructor(code: string, message: string) {
     super({
-      code: 'payment-validation-failed',
+      code,
       message,
       logLevel: 'info',
       responseStatus: StatusCode.BadRequest,
