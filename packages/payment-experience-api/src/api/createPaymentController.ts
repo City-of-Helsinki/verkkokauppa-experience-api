@@ -2,7 +2,7 @@ import { AbstractController, Data, ValidatedRequest } from '@verkkokauppa/core'
 import type { Response } from 'express'
 import { getOrder, OrderItemRequest } from '@verkkokauppa/order-backend'
 import {
-  createPaymentFromOrder,
+  createPaymentFromUnpaidOrder,
   getPaymentMethodList,
   getPaymentUrl,
 } from '@verkkokauppa/payment-backend'
@@ -48,7 +48,7 @@ export class CreatePaymentController extends AbstractController<
     const currentPaymentMethod = availablePaymentMethods.find(
       (availableMethod) => availableMethod.code === paymentMethod
     )
-    const payment = await createPaymentFromOrder({
+    const payment = await createPaymentFromUnpaidOrder({
       order,
       paymentMethod,
       paymentMethodLabel: currentPaymentMethod?.name || paymentMethod,
