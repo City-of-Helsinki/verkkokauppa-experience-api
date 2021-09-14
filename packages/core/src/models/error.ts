@@ -19,6 +19,9 @@ export class ExperienceError extends Error {
     }
   ) {
     super(definition.code)
+    // Every extending error must explicitly set the prototype to correctly implement error handling through instanceof operator
+    // https://github.com/Microsoft/TypeScript-wiki/blob/main/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
+    Object.setPrototypeOf(this, ExperienceError.prototype)
   }
 
   protected toLoggerMessage() {
@@ -60,6 +63,7 @@ export class ExperienceFailure extends ExperienceError {
       responseStatus: StatusCode.InternalServerError,
       logLevel: 'error',
     })
+    Object.setPrototypeOf(this, ExperienceFailure.prototype)
     this.source = source
   }
 }
