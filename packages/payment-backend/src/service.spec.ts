@@ -4,6 +4,7 @@ import {
   getPaymentForOrder,
   getPaymentStatus,
   getPaymentUrl,
+  paidPaymentExists,
 } from './service'
 
 jest.mock('axios')
@@ -176,5 +177,33 @@ describe('Test Get Payment for order', () => {
       user: '',
     })
     expect(result).toEqual(mockData)
+  })
+})
+
+describe('Test paidPaymentExists', () => {
+  process.env.PAYMENT_BACKEND_URL = 'test.dev.hel'
+  const params = {
+    orderId: 'oid1',
+    namespace: 'ns1',
+    user: 'u1',
+  }
+  it('Should return true for an order with a paid payment', async () => {
+    axiosMock.get.mockResolvedValue({ data: { status: 'payment_paid_online' } })
+    const res = await paidPaymentExists(params)
+    expect(res).toEqual(true)
+  })
+  it('Should return false for an order with a created payment', async () => {
+    axiosMock.get.mockResolvedValue({ data: { status: 'payment_created' } })
+    const res = await paidPaymentExists(params)
+    expect(res).toEqual(false)
+  })
+  it('Should return false for an order without a payment', async () => {
+    axiosMock.get.mockRejectedValueOnce({ response: { status: 404 } })
+    const res = await paidPaymentExists(params)
+    expect(res).toEqual(false)
+  })
+  it('Should propagate failure', async () => {
+    axiosMock.get.mockRejectedValueOnce({ response: { status: 500 } })
+    await expect(paidPaymentExists(params)).rejects.toThrow()
   })
 })

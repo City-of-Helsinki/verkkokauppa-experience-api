@@ -186,7 +186,7 @@ export const getPaymentForOrder = async (p: {
   }
 }
 
-const paidPaymentExists = async (p: {
+export const paidPaymentExists = async (p: {
   orderId: string
   namespace: string
   user: string
