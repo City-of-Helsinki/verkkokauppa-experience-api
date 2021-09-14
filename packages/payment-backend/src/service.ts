@@ -15,7 +15,6 @@ import {
   GetPaymentStatusFailure,
   GetPaymentUrlFailure,
   PaymentMethodsNotFound,
-  PaymentMethodValidationError,
   PaymentNotFound,
   PaymentValidationError,
 } from './errors'
@@ -40,7 +39,10 @@ export const createPaymentFromOrder = async (parameters: {
 
   // TODO: move validation outside, change PAYMENT_METHOD_MAP to be an object, use keyof typeof PAYMENT_METHOD_MAP in function signature
   if (!PAYMENT_METHOD_MAP.has(paymentMethod)) {
-    throw new PaymentMethodValidationError()
+    throw new PaymentValidationError(
+      'payment-method-validation-failed',
+      'paymentMethod must be one of invoice, visma-pay, nordea, osuuspankki, creditcards'
+    )
   }
   const paymentMethodPart = PAYMENT_METHOD_MAP.get(paymentMethod)
 
@@ -57,7 +59,10 @@ export const createPaymentFromOrder = async (parameters: {
     return result.data
   } catch (e) {
     if (e.response?.status === 403) {
-      throw new PaymentValidationError('order status must be confirmed')
+      throw new PaymentValidationError(
+        'payment-validation-failed',
+        'order status must be confirmed'
+      )
     }
     throw new CreatePaymentFromOrderFailure(e)
   }
@@ -179,4 +184,35 @@ export const getPaymentForOrder = async (p: {
     }
     throw new GetPaymentForOrderFailure(e)
   }
+}
+
+const paidPaymentExists = async (p: {
+  orderId: string
+  namespace: string
+  user: string
+}): Promise<boolean> => {
+  try {
+    const payment = await getPaymentForOrder(p)
+    return payment.status === 'payment_paid_online'
+  } catch (e) {
+    if (e instanceof PaymentNotFound) {
+      return false
+    }
+    throw e
+  }
+}
+
+export const createPaymentFromUnpaidOrder = async (p: {
+  order: Order
+  paymentMethod: string
+  paymentMethodLabel?: string
+  language: string
+}): Promise<Payment> => {
+  if (await paidPaymentExists(p.order)) {
+    throw new PaymentValidationError(
+      'payment-already-paid-validation-failed',
+      'payment cannot be created from an already paid order'
+    )
+  }
+  return createPaymentFromOrder(p)
 }
