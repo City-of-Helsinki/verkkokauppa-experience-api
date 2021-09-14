@@ -121,3 +121,22 @@ services:
       - VISMA_PAY_PRIVATE_KEY=MOCKKEY
       - VISMA_PAY_API_KEY=MOCKKEY
       - REDIRECT_PAYMENT_URL_BASE=http://localhost:8080/
+  merchant-experience-api:
+    build:
+      context: ./
+      dockerfile: packages/merchant-experience-api/Dockerfile
+      target: base
+    volumes:
+      - ./packages/merchant-experience-api/:/opt/app-root/src/packages/merchant-experience-api/
+      - ./packages/merchant-experience-api/nodemon.json:/opt/app-root/src/packages/merchant-experience-api/nodemon.json
+      - ./packages/configuration-backend/:/opt/app-root/src/packages/configuration-backend/
+      - ./packages/core/:/opt/app-root/src/packages/core/
+    container_name: merchant-experience-api
+    expose:
+      - '8080'
+    ports:
+      - '8086:8080'
+    command: yarn workspace @verkkokauppa/merchant-experience-api dev
+    environment:
+      - SERVICE_NAME=merchant-experience-api
+      - CONFIGURATION_BACKEND_URL=

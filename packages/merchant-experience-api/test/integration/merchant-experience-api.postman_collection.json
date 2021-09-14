@@ -1,0 +1,70 @@
+{
+	"info": {
+		"_postman_id": "3077dba3-1e0a-4469-9635-78f087c431cc",
+		"name": "merchant-experience-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get merchant details 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"/* Merchant details */",
+							"pm.test(\"Response has merchantUrl\", function () {",
+							"    pm.expect(data.merchantUrl).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantEmail\", function () {",
+							"    pm.expect(data.merchantEmail).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantName\", function () {",
+							"    pm.expect(data.merchantName).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantStreet\", function () {",
+							"    pm.expect(data.merchantStreet).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantPhone\", function () {",
+							"    pm.expect(data.merchantPhone).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantCity\", function () {",
+							"    pm.expect(data.merchantCity).to.not.empty;",
+							"});",
+							"pm.test(\"Response has merchantZip\", function () {",
+							"    pm.expect(data.merchantZip).to.not.empty;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{merchantExperienceUrl}}/:namespace",
+					"host": [
+						"{{merchantExperienceUrl}}"
+					],
+					"path": [
+						":namespace"
+					],
+					"variable": [
+						{
+							"key": "namespace",
+							"value": "{{namespace}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -84,17 +84,20 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"/*",
-							"Disable until KYV-144",
+							"var data = pm.response.json();",
+							"",
 							"pm.test(\"Status code is 404\", function () {",
 							"    pm.response.to.have.status(404);",
 							"});",
-							"pm.test(\"Response contains correct error message\", function () {",
-							"    var data = pm.response.json();",
-							"    var productId = pm.variables.get(\"notFoundId\")",
-							"    pm.expect(data.message).to.eql(`Price data for product ${productId} not found`);",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
 							"});",
-							"*/"
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"price-not-found\")",
+							"});",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"Price not found for product 123\")",
+							"});"
 						],
 						"type": "text/javascript"
 					}
@@ -115,49 +118,6 @@
 						{
 							"key": "id",
 							"value": "{{notFoundId}}"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Price 400",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"/*",
-							"Disable until KYV-144",
-							"pm.test(\"Status code is 400\", function () {",
-							"    pm.response.to.have.status(400);",
-							"});",
-							"pm.test(\"Response contains correct error message\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.message).to.eql(\"Invalid request\");",
-							"});",
-							"*/"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{priceExperienceUrl}}/:id",
-					"host": [
-						"{{priceExperienceUrl}}"
-					],
-					"path": [
-						":id"
-					],
-					"variable": [
-						{
-							"key": "id",
-							"value": "{{invalidId}}"
 						}
 					]
 				}

@@ -14,7 +14,9 @@ import {
   GetPaymentMethodListFailure,
   GetPaymentStatusFailure,
   GetPaymentUrlFailure,
-  PaymentMethodValidationError,
+  PaymentMethodsNotFound,
+  PaymentNotFound,
+  PaymentValidationError,
 } from './errors'
 
 const PAYMENT_METHOD_MAP = new Map()
@@ -27,16 +29,20 @@ const PAYMENT_METHOD_MAP = new Map()
 export const createPaymentFromOrder = async (parameters: {
   order: Order
   paymentMethod: string
+  paymentMethodLabel?: string
   language: string
 }): Promise<Payment> => {
-  const { order, paymentMethod, language } = parameters
+  const { order, paymentMethod, paymentMethodLabel, language } = parameters
   if (!process.env.PAYMENT_BACKEND_URL) {
     throw new Error('No payment API backend URL set')
   }
 
   // TODO: move validation outside, change PAYMENT_METHOD_MAP to be an object, use keyof typeof PAYMENT_METHOD_MAP in function signature
   if (!PAYMENT_METHOD_MAP.has(paymentMethod)) {
-    throw new PaymentMethodValidationError()
+    throw new PaymentValidationError(
+      'payment-method-validation-failed',
+      'paymentMethod must be one of invoice, visma-pay, nordea, osuuspankki, creditcards'
+    )
   }
   const paymentMethodPart = PAYMENT_METHOD_MAP.get(paymentMethod)
 
@@ -45,12 +51,19 @@ export const createPaymentFromOrder = async (parameters: {
   try {
     const result = await axios.post<Payment>(url, {
       paymentMethod,
+      paymentMethodLabel: paymentMethodLabel || paymentMethod,
       language,
       order: { order, items: order.items },
     })
 
     return result.data
   } catch (e) {
+    if (e.response?.status === 403) {
+      throw new PaymentValidationError(
+        'payment-validation-failed',
+        'order status must be confirmed'
+      )
+    }
     throw new CreatePaymentFromOrderFailure(e)
   }
 }
@@ -71,6 +84,9 @@ export const getPaymentMethodList = async (parameters: {
     const result = await axios.post<PaymentMethod[]>(url, request)
     return result.data
   } catch (e) {
+    if (e.response?.status === 404) {
+      throw new PaymentMethodsNotFound()
+    }
     throw new GetPaymentMethodListFailure(e)
   }
 }
@@ -98,8 +114,9 @@ export const checkVismaReturnUrl = async (p: {
 export const getPaymentUrl = async (p: {
   namespace: string
   orderId: string
+  user: string
 }): Promise<string> => {
-  const { namespace, orderId } = p
+  const { namespace, orderId, user: userId } = p
   if (!process.env.PAYMENT_BACKEND_URL) {
     throw new Error('No payment API backend URL set')
   }
@@ -108,10 +125,13 @@ export const getPaymentUrl = async (p: {
 
   try {
     const result = await axios.get<string>(url, {
-      params: { namespace, orderId },
+      params: { namespace, orderId, userId },
     })
     return result.data
   } catch (e) {
+    if (e.response?.status === 404) {
+      throw new PaymentNotFound()
+    }
     throw new GetPaymentUrlFailure(e)
   }
 }
@@ -119,8 +139,9 @@ export const getPaymentUrl = async (p: {
 export const getPaymentStatus = async (p: {
   namespace: string
   orderId: string
+  user: string
 }): Promise<string> => {
-  const { namespace, orderId } = p
+  const { namespace, orderId, user: userId } = p
   if (!process.env.PAYMENT_BACKEND_URL) {
     throw new Error('No payment API backend URL set')
   }
@@ -129,10 +150,13 @@ export const getPaymentStatus = async (p: {
 
   try {
     const result = await axios.get<string>(url, {
-      params: { namespace, orderId },
+      params: { namespace, orderId, userId },
     })
     return result.data
   } catch (e) {
+    if (e.response?.status === 404) {
+      throw new PaymentNotFound()
+    }
     throw new GetPaymentStatusFailure(e)
   }
 }
@@ -140,8 +164,9 @@ export const getPaymentStatus = async (p: {
 export const getPaymentForOrder = async (p: {
   orderId: string
   namespace: string
+  user: string
 }): Promise<Payment> => {
-  const { orderId, namespace } = p
+  const { orderId, namespace, user: userId } = p
   if (!process.env.PAYMENT_BACKEND_URL) {
     throw new Error('No payment API backend URL set')
   }
@@ -150,10 +175,44 @@ export const getPaymentForOrder = async (p: {
 
   try {
     const result = await axios.get<Payment>(url, {
-      params: { orderId, namespace },
+      params: { orderId, namespace, userId },
     })
     return result.data
   } catch (e) {
+    if (e.response?.status === 404) {
+      throw new PaymentNotFound()
+    }
     throw new GetPaymentForOrderFailure(e)
   }
+}
+
+const paidPaymentExists = async (p: {
+  orderId: string
+  namespace: string
+  user: string
+}): Promise<boolean> => {
+  try {
+    const payment = await getPaymentForOrder(p)
+    return payment.status === 'payment_paid_online'
+  } catch (e) {
+    if (e instanceof PaymentNotFound) {
+      return false
+    }
+    throw e
+  }
+}
+
+export const createPaymentFromUnpaidOrder = async (p: {
+  order: Order
+  paymentMethod: string
+  paymentMethodLabel?: string
+  language: string
+}): Promise<Payment> => {
+  if (await paidPaymentExists(p.order)) {
+    throw new PaymentValidationError(
+      'payment-already-paid-validation-failed',
+      'payment cannot be created from an already paid order'
+    )
+  }
+  return createPaymentFromOrder(p)
 }

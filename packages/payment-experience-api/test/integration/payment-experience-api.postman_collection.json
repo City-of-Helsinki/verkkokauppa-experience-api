@@ -59,6 +59,24 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
+							"const qty = 1",
+							"const priceNet = pm.environment.get('productFoundPriceNet')",
+							"const priceGross = pm.environment.get('productFoundPriceGross')",
+							"const priceVat = priceGross - priceNet",
+							"const rowPriceNet = qty * priceNet",
+							"const rowPriceTotal = qty * priceGross",
+							"const rowPriceVat = qty * priceVat",
+							"const user = pm.variables.replaceIn('{{$randomUserName}}')",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', rowPriceNet)",
+							"pm.variables.set('rowPriceTotal', rowPriceTotal)",
+							"pm.variables.set('rowPriceVat', rowPriceVat)",
+							"pm.environment.set(\"orderFoundUser\", user)",
+							"",
 							"const url = pm.variables.get(\"orderExperienceUrl\")",
 							"pm.sendRequest({",
 							"    url: `${url}`,",
@@ -71,22 +89,22 @@
 							"        raw: JSON.stringify(",
 							"            {",
 							"                \"namespace\": \"asukaspysakointi\",",
-							"                \"user\": pm.variables.replaceIn('{{$randomUserName}}'),",
-							"                \"priceNet\": \"200\",",
-							"                \"priceVat\": \"48\",",
-							"                \"priceTotal\": \"248\",",
+							"                \"user\": user,",
+							"                \"priceNet\": rowPriceNet.toString(),",
+							"                \"priceVat\": rowPriceVat.toString(),",
+							"                \"priceTotal\": rowPriceTotal.toString(),",
 							"                \"items\": [",
 							"                    {",
 							"                        \"productId\": pm.variables.get('productFound'),",
-							"                        \"quantity\": 2,",
+							"                        \"quantity\": qty,",
 							"                        \"productName\": \"Product Name\",",
 							"                        \"unit\": \"pcs\",",
-							"                        \"rowPriceNet\": \"200\",",
-							"                        \"rowPriceVat\": \"48\",",
-							"                        \"rowPriceTotal\": \"248\",",
-							"                        \"priceNet\": \"100\",",
-							"                        \"priceGross\": \"124\",",
-							"                        \"priceVat\": \"24\",",
+							"                        \"rowPriceNet\": rowPriceNet.toString(),",
+							"                        \"rowPriceVat\": rowPriceVat.toString(),",
+							"                        \"rowPriceTotal\": rowPriceTotal.toString(),",
+							"                        \"priceNet\": priceNet.toString(),",
+							"                        \"priceGross\": priceGross.toString(),",
+							"                        \"priceVat\": priceVat.toString(),",
 							"                        \"vatPercentage\": \"24\"",
 							"                    }",
 							"                ],",
@@ -94,7 +112,7 @@
 							"                    \"firstName\": pm.variables.get('testCustomerFirstName'),",
 							"                    \"lastName\": pm.variables.get('testCustomerLastName'),",
 							"                    \"email\": pm.variables.get('testCustomerEmail'),",
-							"                    \"telephone\": \"0401231233\"",
+							"                    \"phone\": pm.variables.get('testCustomerPhone')",
 							"                }",
 							"            })",
 							"    }",
@@ -112,7 +130,13 @@
 			],
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderFoundUser}}",
+						"type": "text"
+					}
+				],
 				"url": {
 					"raw": "{{paymentExperienceUrl}}/:orderId/paymentMethods",
 					"host": [
@@ -160,23 +184,191 @@
 							"pm.test(\"Response contains correct paymentMethod\", function () {",
 							"    pm.expect(data.paymentMethod).to.eql(requestData.paymentMethod);",
 							"});",
+							"pm.test(\"Response contains correct paymentMethod\", function () {",
+							"    pm.expect(data.paymentMethodLabel).to.eql(\"Nordea\");",
+							"});",
 							"pm.test(\"Response contains correct paymentType\", function () {",
 							"    pm.expect(data.paymentType).to.eql('order');",
 							"});",
 							"pm.test(\"Response contains correct totalExclTax\", function () {",
-							"    pm.expect(data.totalExclTax).to.eql(100);",
+							"    pm.expect(data.totalExclTax).to.eql(pm.variables.get(\"rowPriceNet\"));",
 							"});",
 							"pm.test(\"Response contains correct total\", function () {",
-							"    pm.expect(data.total).to.eql(124);",
+							"    pm.expect(data.total).to.eql(pm.variables.get(\"rowPriceTotal\"));",
 							"});",
 							"pm.test(\"Response contains correct taxAmount\", function () {",
-							"    pm.expect(data.taxAmount).to.eql(24);",
+							"    pm.expect(data.taxAmount).to.eql(pm.variables.get(\"rowPriceVat\"));",
 							"});",
 							"pm.test(\"Response contains token\", function () {",
 							"    pm.expect(data.token).to.not.empty",
 							"});",
 							"pm.test(\"Response contains additionalInfo\", function () {",
 							"    pm.expect(data.additionalInfo).to.not.empty",
+							"});",
+							"pm.test(\"Response contains paymentUrl\", function () {",
+							"    pm.expect(data.paymentUrl).to.not.empty",
+							"});",
+							"pm.test(\"Response paymentUrl has valid statusCode\", function() {",
+							"    pm.sendRequest({",
+							"        url: data.paymentUrl,",
+							"        method: 'GET',",
+							"    }, function (err, res) {",
+							"        pm.expect(res.code).to.eql(200)",
+							"    })",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const qty = 1",
+							"const priceNet = pm.environment.get('productFoundPriceNet')",
+							"const priceGross = pm.environment.get('productFoundPriceGross')",
+							"const priceVat = priceGross - priceNet",
+							"const rowPriceNet = qty * priceNet",
+							"const rowPriceTotal = qty * priceGross",
+							"const rowPriceVat = qty * priceVat",
+							"const user = pm.variables.replaceIn('{{$randomUserName}}')",
+							"pm.environment.set(\"orderWithItemsUser\", user)",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', rowPriceNet)",
+							"pm.variables.set('rowPriceTotal', rowPriceTotal)",
+							"pm.variables.set('rowPriceVat', rowPriceVat)",
+							"",
+							"const url = pm.variables.get(\"orderExperienceUrl\")",
+							"pm.sendRequest({",
+							"  url: `${url}`,",
+							"  method: 'POST',",
+							"  header: {",
+							"    'content-type': 'application/json',",
+							"    'user': user",
+							"  },",
+							"  body: {",
+							"    mode: 'raw',",
+							"    raw: JSON.stringify(",
+							"      {",
+							"        \"namespace\": \"asukaspysakointi\",",
+							"        \"user\": user,",
+							"        \"priceNet\": rowPriceNet.toString(),",
+							"        \"priceVat\": rowPriceVat.toString(),",
+							"        \"priceTotal\": rowPriceTotal.toString(),",
+							"        \"items\": [",
+							"          {",
+							"            \"productId\": pm.variables.get('productFound'),",
+							"            \"quantity\": qty,",
+							"            \"productName\": \"Product Name\",",
+							"            \"unit\": \"pcs\",",
+							"            \"rowPriceNet\": rowPriceNet.toString(),",
+							"            \"rowPriceVat\": rowPriceVat.toString(),",
+							"            \"rowPriceTotal\": rowPriceTotal.toString(),",
+							"            \"vatPercentage\": \"24\",",
+							"            \"priceNet\": priceNet.toString(),",
+							"            \"priceVat\": priceVat.toString(),",
+							"            \"priceGross\": priceGross.toString(),",
+							"          }",
+							"        ],",
+							"        \"customer\": {",
+							"          \"firstName\": pm.variables.get('testCustomerFirstName'),",
+							"          \"lastName\": pm.variables.get('testCustomerLastName'),",
+							"          \"email\": pm.variables.get('testCustomerEmail'),",
+							"          \"phone\": pm.variables.get('testCustomerPhone'),",
+							"        }",
+							"      }",
+							"    )",
+							"  }",
+							"}, function (err, res) {",
+							"  const orderId = res.json().orderId",
+							"  if (orderId) {",
+							"    pm.environment.set('orderWithItems', orderId)",
+							"  }",
+							"",
+							"  pm.sendRequest({",
+							"    url: `${url}/${orderId}/confirmAndCreatePayment`,",
+							"    method: 'POST',",
+							"    header: {",
+							"      'content-type': 'application/json',",
+							"      'user': user",
+							"    },",
+							"    body: {",
+							"      mode: 'raw',",
+							"      raw: JSON.stringify(",
+							"        {",
+							"          \"paymentMethod\": \"nordea\",",
+							"          \"language\": \"fi\"",
+							"        }",
+							"      )",
+							"    }",
+							"  }, function (err, res) {",
+							"  })",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderWithItemsUser}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"paymentMethod\": \"nordea\",\n    \"language\": \"fi\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{paymentExperienceUrl}}/:orderId",
+					"host": [
+						"{{paymentExperienceUrl}}"
+					],
+					"path": [
+						":orderId"
+					],
+					"variable": [
+						{
+							"key": "orderId",
+							"value": "{{orderWithItems}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Payment with wrong user 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
+							"});",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"order-not-found\")",
+							"});",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"Order not found\")",
 							"});"
 						],
 						"type": "text/javascript"
@@ -186,53 +378,90 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
+							"const qty = 1",
+							"const priceNet = pm.environment.get('productFoundPriceNet')",
+							"const priceGross = pm.environment.get('productFoundPriceGross')",
+							"const priceVat = priceGross - priceNet",
+							"const rowPriceNet = qty * priceNet",
+							"const rowPriceTotal = qty * priceGross",
+							"const rowPriceVat = qty * priceVat",
+							"const user = pm.variables.replaceIn('{{$randomUserName}}')",
+							"pm.environment.set(\"orderWithItemsUser\", user)",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', rowPriceNet)",
+							"pm.variables.set('rowPriceTotal', rowPriceTotal)",
+							"pm.variables.set('rowPriceVat', rowPriceVat)",
+							"",
 							"const url = pm.variables.get(\"orderExperienceUrl\")",
 							"pm.sendRequest({",
-							"    url: `${url}`,",
+							"  url: `${url}`,",
+							"  method: 'POST',",
+							"  header: {",
+							"    'content-type': 'application/json',",
+							"    'user': user",
+							"  },",
+							"  body: {",
+							"    mode: 'raw',",
+							"    raw: JSON.stringify(",
+							"      {",
+							"        \"namespace\": \"asukaspysakointi\",",
+							"        \"user\": user,",
+							"        \"priceNet\": rowPriceNet.toString(),",
+							"        \"priceVat\": rowPriceVat.toString(),",
+							"        \"priceTotal\": rowPriceTotal.toString(),",
+							"        \"items\": [",
+							"          {",
+							"            \"productId\": pm.variables.get('productFound'),",
+							"            \"quantity\": qty,",
+							"            \"productName\": \"Product Name\",",
+							"            \"unit\": \"pcs\",",
+							"            \"rowPriceNet\": rowPriceNet.toString(),",
+							"            \"rowPriceVat\": rowPriceVat.toString(),",
+							"            \"rowPriceTotal\": rowPriceTotal.toString(),",
+							"            \"vatPercentage\": \"24\",",
+							"            \"priceNet\": priceNet.toString(),",
+							"            \"priceVat\": priceVat.toString(),",
+							"            \"priceGross\": priceGross.toString(),",
+							"          }",
+							"        ],",
+							"        \"customer\": {",
+							"          \"firstName\": pm.variables.get('testCustomerFirstName'),",
+							"          \"lastName\": pm.variables.get('testCustomerLastName'),",
+							"          \"email\": pm.variables.get('testCustomerEmail'),",
+							"          \"phone\": pm.variables.get('testCustomerPhone'),",
+							"        }",
+							"      }",
+							"    )",
+							"  }",
+							"}, function (err, res) {",
+							"  const orderId = res.json().orderId",
+							"  if (orderId) {",
+							"    pm.environment.set('orderWithItems', orderId)",
+							"  }",
+							"",
+							"  pm.sendRequest({",
+							"    url: `${url}/${orderId}/confirmAndCreatePayment`,",
 							"    method: 'POST',",
 							"    header: {",
-							"        'content-type': 'application/json',",
+							"      'content-type': 'application/json',",
+							"      'user': user",
 							"    },",
 							"    body: {",
-							"        mode: 'raw',",
-							"        raw: JSON.stringify(",
-							"            {",
-							"                \"namespace\": \"asukaspysakointi\",",
-							"                \"user\": pm.variables.replaceIn('{{$randomUserName}}'),",
-							"                \"priceNet\": \"100\",",
-							"                \"priceVat\": \"24\",",
-							"                \"priceTotal\": \"124\",",
-							"                \"items\": [",
-							"                    {",
-							"                        \"productId\": pm.variables.get('productFound'),",
-							"                        \"quantity\": 1,",
-							"                        \"productName\": \"Product Name\",",
-							"                        \"unit\": \"pcs\",",
-							"                        \"rowPriceNet\": \"100\",",
-							"                        \"rowPriceVat\": \"24\",",
-							"                        \"rowPriceTotal\": \"124\",",
-							"                        \"vatPercentage\": \"24\",",
-							"                        \"priceNet\": \"100\",",
-							"                        \"priceVat\": \"24\",",
-							"                        \"priceGross\": \"124\"",
-							"                    }",
-							"                ],",
-							"                \"customer\": {",
-							"                    \"firstName\": pm.variables.get('testCustomerFirstName'),",
-							"                    \"lastName\": pm.variables.get('testCustomerLastName'),",
-							"                    \"email\": pm.variables.get('testCustomerEmail'),",
-							"                    \"phone\": \"0401231233\"",
-							"                }",
-							"            }",
-							"        )",
+							"      mode: 'raw',",
+							"      raw: JSON.stringify(",
+							"        {",
+							"          \"paymentMethod\": \"nordea\",",
+							"          \"language\": \"fi\"",
+							"        }",
+							"      )",
 							"    }",
-							"}, function (err, res) {",
-							"    const orderId = res.json().orderId",
-							"    if (orderId) {",
-							"        console.log('Set orderFound variable to '+orderId)",
-							"        pm.environment.set('orderWithItems', orderId)",
-							"    }",
-							"});"
+							"  }, function (err, res) {",
+							"  })",
+							"})"
 						],
 						"type": "text/javascript"
 					}
@@ -240,7 +469,13 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderFoundUser}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"paymentMethod\": \"nordea\",\n    \"language\": \"fi\"\n}",
@@ -296,23 +531,582 @@
 							"pm.test(\"Response contains correct paymentMethod\", function () {",
 							"    pm.expect(data.paymentMethod).to.eql(requestData.paymentMethod);",
 							"});",
+							"pm.test(\"Response contains correct paymentMethod\", function () {",
+							"    pm.expect(data.paymentMethodLabel).to.eql(\"Nordea\");",
+							"});",
 							"pm.test(\"Response contains correct paymentType\", function () {",
 							"    pm.expect(data.paymentType).to.eql('order');",
 							"});",
 							"pm.test(\"Response contains correct totalExclTax\", function () {",
-							"    pm.expect(data.totalExclTax).to.eql(200);",
+							"    pm.expect(data.totalExclTax).to.eql(pm.variables.get(\"rowPriceNet\"));",
 							"});",
 							"pm.test(\"Response contains correct total\", function () {",
-							"    pm.expect(data.total).to.eql(248);",
+							"    pm.expect(data.total).to.eql(pm.variables.get(\"rowPriceTotal\"));",
 							"});",
 							"pm.test(\"Response contains correct taxAmount\", function () {",
-							"    pm.expect(data.taxAmount).to.eql(48);",
+							"    pm.expect(data.taxAmount).to.eql(pm.variables.get(\"rowPriceVat\"));",
 							"});",
 							"pm.test(\"Response contains token\", function () {",
 							"    pm.expect(data.token).to.not.empty",
 							"});",
 							"pm.test(\"Response contains additionalInfo\", function () {",
 							"    pm.expect(data.additionalInfo).to.not.empty",
+							"});",
+							"pm.test(\"Response contains paymentUrl\", function () {",
+							"    pm.expect(data.paymentUrl).to.not.empty",
+							"});",
+							"pm.test(\"Response paymentUrl has valid statusCode\", function() {",
+							"    pm.sendRequest({",
+							"        url: data.paymentUrl,",
+							"        method: 'GET',",
+							"    }, function (err, res) {",
+							"        pm.expect(res.code).to.eql(200)",
+							"    })",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const qty = 2",
+							"const priceNet = pm.environment.get('productFoundPriceNet')",
+							"const priceGross = pm.environment.get('productFoundPriceGross')",
+							"const priceVat = priceGross - priceNet",
+							"const rowPriceNet = qty * priceNet",
+							"const rowPriceTotal = qty * priceGross",
+							"const rowPriceVat = qty * priceVat",
+							"const user = pm.variables.replaceIn('{{$randomUserName}}')",
+							"pm.environment.set(\"orderWithItemsUser\", user)",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', rowPriceNet)",
+							"pm.variables.set('rowPriceTotal', rowPriceTotal)",
+							"pm.variables.set('rowPriceVat', rowPriceVat)",
+							"",
+							"const url = pm.variables.get(\"orderExperienceUrl\")",
+							"pm.sendRequest({",
+							"  url: `${url}`,",
+							"  method: 'POST',",
+							"  header: {",
+							"    'content-type': 'application/json',",
+							"    'user': user",
+							"  },",
+							"  body: {",
+							"    mode: 'raw',",
+							"    raw: JSON.stringify(",
+							"      {",
+							"        \"namespace\": \"asukaspysakointi\",",
+							"        \"user\": user,",
+							"        \"priceNet\": rowPriceNet.toString(),",
+							"        \"priceVat\": rowPriceVat.toString(),",
+							"        \"priceTotal\": rowPriceTotal.toString(),",
+							"        \"items\": [",
+							"          {",
+							"            \"productId\": pm.variables.get('productFound'),",
+							"            \"quantity\": qty,",
+							"            \"productName\": \"Product Name\",",
+							"            \"unit\": \"pcs\",",
+							"            \"rowPriceNet\": rowPriceNet.toString(),",
+							"            \"rowPriceVat\": rowPriceVat.toString(),",
+							"            \"rowPriceTotal\": rowPriceTotal.toString(),",
+							"            \"vatPercentage\": \"24\",",
+							"            \"priceNet\": priceNet.toString(),",
+							"            \"priceVat\": priceVat.toString(),",
+							"            \"priceGross\": priceGross.toString(),",
+							"          }",
+							"        ],",
+							"        \"customer\": {",
+							"          \"firstName\": pm.variables.get('testCustomerFirstName'),",
+							"          \"lastName\": pm.variables.get('testCustomerLastName'),",
+							"          \"email\": pm.variables.get('testCustomerEmail'),",
+							"          \"phone\": pm.variables.get('testCustomerPhone'),",
+							"        }",
+							"      }",
+							"    )",
+							"  }",
+							"}, function (err, res) {",
+							"  const orderId = res.json().orderId",
+							"  if (orderId) {",
+							"    console.log('Set orderFound variable to ' + orderId)",
+							"    pm.environment.set('orderWithItems', orderId)",
+							"  }",
+							"",
+							"  pm.sendRequest({",
+							"    url: `${url}/${orderId}/confirmAndCreatePayment`,",
+							"    method: 'POST',",
+							"    header: {",
+							"      'content-type': 'application/json',",
+							"      'user': user",
+							"    },",
+							"    body: {",
+							"      mode: 'raw',",
+							"      raw: JSON.stringify(",
+							"        {",
+							"          \"paymentMethod\": \"nordea\",",
+							"          \"language\": \"fi\"",
+							"        }",
+							"      )",
+							"    }",
+							"  }, function (err, res) {",
+							"  })",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderWithItemsUser}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"paymentMethod\": \"nordea\",\n    \"language\": \"fi\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{paymentExperienceUrl}}/:orderId",
+					"host": [
+						"{{paymentExperienceUrl}}"
+					],
+					"path": [
+						":orderId"
+					],
+					"variable": [
+						{
+							"key": "orderId",
+							"value": "{{orderWithItems}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Payment return controller success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var orderId = pm.request.url.query.get('ORDER_NUMBER').split('_')[0]",
+							"var redirectUrl = pm.request.headers.get(\"Referer\")",
+							"",
+							"pm.test(\"Status code is 302\", function () {",
+							"    pm.response.to.have.status(302);",
+							"});",
+							"pm.test(\"Redirect url is correct\", function () {",
+							"    pm.expect",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true,
+				"followRedirects": false
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{paymentExperienceUrl}}/onlinePayment/return?AUTHCODE=B933177CFA65A354A4F29F24D6FD028F687608F8C69C5FDF6AF113FDD26A57E8&RETURN_CODE=0&ORDER_NUMBER=362a5453-2c92-38d2-8ad6-4ad33494a3c7_at_20210826-072758&SETTLED=1",
+					"host": [
+						"{{paymentExperienceUrl}}"
+					],
+					"path": [
+						"onlinePayment",
+						"return"
+					],
+					"query": [
+						{
+							"key": "AUTHCODE",
+							"value": "B933177CFA65A354A4F29F24D6FD028F687608F8C69C5FDF6AF113FDD26A57E8"
+						},
+						{
+							"key": "RETURN_CODE",
+							"value": "0"
+						},
+						{
+							"key": "ORDER_NUMBER",
+							"value": "362a5453-2c92-38d2-8ad6-4ad33494a3c7_at_20210826-072758"
+						},
+						{
+							"key": "SETTLED",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Payment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response contains payment id\", function () {",
+							"    pm.expect(data.paymentId).to.not.empty",
+							"});",
+							"pm.test(\"Response contains namespace\", function () {",
+							"    pm.expect(data.namespace).to.not.empty",
+							"});",
+							"pm.test(\"Response orderId is correct\", function () {",
+							"    pm.expect(data.orderId).to.eql(pm.environment.get('orderWithItems'))",
+							"});",
+							"pm.test(\"Response contains status\", function () {",
+							"    pm.expect(data.status).to.not.empty",
+							"});",
+							"pm.test(\"Response contains paymentMethod\", function () {",
+							"    pm.expect(data.paymentMethod).to.not.empty",
+							"});",
+							"pm.test(\"Response contains paymentType\", function () {",
+							"    pm.expect(data.paymentType).to.not.empty",
+							"});",
+							"pm.test(\"Response contains totalExclTax\", function () {",
+							"    pm.expect(data.totalExclTax).to.greaterThan(0)",
+							"});",
+							"pm.test(\"Response contains total\", function () {",
+							"    pm.expect(data.total).to.greaterThan(0)",
+							"});",
+							"pm.test(\"Response contains taxAmount\", function () {",
+							"    pm.expect(data.taxAmount).to.greaterThan(0)",
+							"});",
+							"pm.test(\"Response contains token\", function () {",
+							"    pm.expect(data.token).to.not.empty",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const qty = 1",
+							"const priceNet = pm.environment.get('productFoundPriceNet')",
+							"const priceGross = pm.environment.get('productFoundPriceGross')",
+							"const priceVat = priceGross - priceNet",
+							"const rowPriceNet = qty * priceNet",
+							"const rowPriceTotal = qty * priceGross",
+							"const rowPriceVat = qty * priceVat",
+							"const user = pm.variables.replaceIn('{{$randomUserName}}')",
+							"pm.environment.set(\"orderWithItemsUser\", user)",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', rowPriceNet)",
+							"pm.variables.set('rowPriceTotal', rowPriceTotal)",
+							"pm.variables.set('rowPriceVat', rowPriceVat)",
+							"",
+							"const url = pm.variables.get(\"orderExperienceUrl\")",
+							"pm.sendRequest({",
+							"  url: `${url}`,",
+							"  method: 'POST',",
+							"  header: {",
+							"    'content-type': 'application/json',",
+							"    'user': user",
+							"  },",
+							"  body: {",
+							"    mode: 'raw',",
+							"    raw: JSON.stringify(",
+							"      {",
+							"        \"namespace\": \"asukaspysakointi\",",
+							"        \"user\": user,",
+							"        \"priceNet\": rowPriceNet.toString(),",
+							"        \"priceVat\": rowPriceVat.toString(),",
+							"        \"priceTotal\": rowPriceTotal.toString(),",
+							"        \"items\": [",
+							"          {",
+							"            \"productId\": pm.variables.get('productFound'),",
+							"            \"quantity\": qty,",
+							"            \"productName\": \"Product Name\",",
+							"            \"unit\": \"pcs\",",
+							"            \"rowPriceNet\": rowPriceNet.toString(),",
+							"            \"rowPriceVat\": rowPriceVat.toString(),",
+							"            \"rowPriceTotal\": rowPriceTotal.toString(),",
+							"            \"vatPercentage\": \"24\",",
+							"            \"priceNet\": priceNet.toString(),",
+							"            \"priceVat\": priceVat.toString(),",
+							"            \"priceGross\": priceGross.toString(),",
+							"          }",
+							"        ],",
+							"        \"customer\": {",
+							"          \"firstName\": pm.variables.get('testCustomerFirstName'),",
+							"          \"lastName\": pm.variables.get('testCustomerLastName'),",
+							"          \"email\": pm.variables.get('testCustomerEmail'),",
+							"          \"phone\": pm.variables.get('testCustomerPhone'),",
+							"        }",
+							"      }",
+							"    )",
+							"  }",
+							"}, function (err, res) {",
+							"  const orderId = res.json().orderId",
+							"  if (orderId) {",
+							"    pm.environment.set('orderWithItems', orderId)",
+							"  }",
+							"",
+							"  pm.sendRequest({",
+							"    url: `${url}/${orderId}/confirmAndCreatePayment`,",
+							"    method: 'POST',",
+							"    header: {",
+							"      'content-type': 'application/json',",
+							"      'user': user",
+							"    },",
+							"    body: {",
+							"      mode: 'raw',",
+							"      raw: JSON.stringify(",
+							"        {",
+							"          \"paymentMethod\": \"nordea\",",
+							"          \"language\": \"fi\"",
+							"        }",
+							"      )",
+							"    }",
+							"  }, function (err, res) {",
+							"  })",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderWithItemsUser}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{paymentExperienceUrl}}/:orderId/",
+					"host": [
+						"{{paymentExperienceUrl}}"
+					],
+					"path": [
+						":orderId",
+						""
+					],
+					"variable": [
+						{
+							"key": "orderId",
+							"value": "{{orderWithItems}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Payment for wrong user 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
+							"});",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"order-not-found\")",
+							"});",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"Order not found\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const qty = 1",
+							"const priceNet = pm.environment.get('productFoundPriceNet')",
+							"const priceGross = pm.environment.get('productFoundPriceGross')",
+							"const priceVat = priceGross - priceNet",
+							"const rowPriceNet = qty * priceNet",
+							"const rowPriceTotal = qty * priceGross",
+							"const rowPriceVat = qty * priceVat",
+							"const user = pm.variables.replaceIn('{{$randomUserName}}')",
+							"pm.environment.set(\"orderWithItemsUser\", user)",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', rowPriceNet)",
+							"pm.variables.set('rowPriceTotal', rowPriceTotal)",
+							"pm.variables.set('rowPriceVat', rowPriceVat)",
+							"",
+							"const url = pm.variables.get(\"orderExperienceUrl\")",
+							"pm.sendRequest({",
+							"  url: `${url}`,",
+							"  method: 'POST',",
+							"  header: {",
+							"    'content-type': 'application/json',",
+							"    'user': user",
+							"  },",
+							"  body: {",
+							"    mode: 'raw',",
+							"    raw: JSON.stringify(",
+							"      {",
+							"        \"namespace\": \"asukaspysakointi\",",
+							"        \"user\": user,",
+							"        \"priceNet\": rowPriceNet.toString(),",
+							"        \"priceVat\": rowPriceVat.toString(),",
+							"        \"priceTotal\": rowPriceTotal.toString(),",
+							"        \"items\": [",
+							"          {",
+							"            \"productId\": pm.variables.get('productFound'),",
+							"            \"quantity\": qty,",
+							"            \"productName\": \"Product Name\",",
+							"            \"unit\": \"pcs\",",
+							"            \"rowPriceNet\": rowPriceNet.toString(),",
+							"            \"rowPriceVat\": rowPriceVat.toString(),",
+							"            \"rowPriceTotal\": rowPriceTotal.toString(),",
+							"            \"vatPercentage\": \"24\",",
+							"            \"priceNet\": priceNet.toString(),",
+							"            \"priceVat\": priceVat.toString(),",
+							"            \"priceGross\": priceGross.toString(),",
+							"          }",
+							"        ],",
+							"        \"customer\": {",
+							"          \"firstName\": pm.variables.get('testCustomerFirstName'),",
+							"          \"lastName\": pm.variables.get('testCustomerLastName'),",
+							"          \"email\": pm.variables.get('testCustomerEmail'),",
+							"          \"phone\": pm.variables.get('testCustomerPhone'),",
+							"        }",
+							"      }",
+							"    )",
+							"  }",
+							"}, function (err, res) {",
+							"  const orderId = res.json().orderId",
+							"  if (orderId) {",
+							"    pm.environment.set('orderWithItems', orderId)",
+							"  }",
+							"",
+							"  pm.sendRequest({",
+							"    url: `${url}/${orderId}/confirmAndCreatePayment`,",
+							"    method: 'POST',",
+							"    header: {",
+							"      'content-type': 'application/json',",
+							"      'user': user",
+							"    },",
+							"    body: {",
+							"      mode: 'raw',",
+							"      raw: JSON.stringify(",
+							"        {",
+							"          \"paymentMethod\": \"nordea\",",
+							"          \"language\": \"fi\"",
+							"        }",
+							"      )",
+							"    }",
+							"  }, function (err, res) {",
+							"  })",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderFoundUser}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{paymentExperienceUrl}}/:orderId/",
+					"host": [
+						"{{paymentExperienceUrl}}"
+					],
+					"path": [
+						":orderId",
+						""
+					],
+					"variable": [
+						{
+							"key": "orderId",
+							"value": "{{orderWithItems}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Payment Methods 404 (not found order)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
+							"});",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"order-not-found\")",
+							"});",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"Order not found\")",
 							"});"
 						],
 						"type": "text/javascript"
@@ -347,26 +1141,25 @@
 							"                        \"rowPriceNet\": \"200\",",
 							"                        \"rowPriceVat\": \"48\",",
 							"                        \"rowPriceTotal\": \"248\",",
-							"                        \"vatPercentage\": \"24\",",
 							"                        \"priceNet\": \"100\",",
+							"                        \"priceGross\": \"124\",",
 							"                        \"priceVat\": \"24\",",
-							"                        \"priceGross\": \"124\"",
+							"                        \"vatPercentage\": \"24\"",
 							"                    }",
 							"                ],",
 							"                \"customer\": {",
 							"                    \"firstName\": pm.variables.get('testCustomerFirstName'),",
 							"                    \"lastName\": pm.variables.get('testCustomerLastName'),",
 							"                    \"email\": pm.variables.get('testCustomerEmail'),",
-							"                    \"phone\": \"0401231233\"",
+							"                    \"telephone\": \"0401231233\"",
 							"                }",
-							"            }",
-							"        )",
+							"            })",
 							"    }",
 							"}, function (err, res) {",
 							"    const orderId = res.json().orderId",
 							"    if (orderId) {",
 							"        console.log('Set orderFound variable to '+orderId)",
-							"        pm.environment.set('orderWithItems', orderId)",
+							"        pm.environment.set('orderFound', orderId)",
 							"    }",
 							"});"
 						],
@@ -375,29 +1168,27 @@
 				}
 			],
 			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"paymentMethod\": \"nordea\",\n    \"language\": \"fi\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
+				"method": "GET",
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderFoundUser}}",
+						"type": "text"
 					}
-				},
+				],
 				"url": {
-					"raw": "{{paymentExperienceUrl}}/:orderId",
+					"raw": "{{paymentExperienceUrl}}/:orderId/paymentMethods",
 					"host": [
 						"{{paymentExperienceUrl}}"
 					],
 					"path": [
-						":orderId"
+						":orderId",
+						"paymentMethods"
 					],
 					"variable": [
 						{
 							"key": "orderId",
-							"value": "{{orderWithItems}}"
+							"value": "123"
 						}
 					]
 				}
