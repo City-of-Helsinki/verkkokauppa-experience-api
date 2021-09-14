@@ -81,7 +81,7 @@ describe('sendEmailToCustomer.spec.ts', () => {
           'https://www.vismapay.com/pbwapi/token/427a38b2607b105de58c7dbda2d8ce2f6fcb31d6cc52f77b8818c0b5dcd503f5',
       },
     } as Order
-    process.env.MESSSAGE_BACKEND_URL = 'http://localhost:8080/'
+    process.env.MESSAGE_BACKEND_URL = 'http://localhost:8080/'
 
     //Mocked post response!
     const resp = {
