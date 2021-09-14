@@ -1,7 +1,7 @@
 import type { EmailTemplateDto, HbsTemplateFiles } from './types'
 
 import * as Handlebars from 'handlebars'
-import i18next from '../../i18n/init'
+import i18next from './../../i18n/init'
 import type { SUPPORTED_LANGUAGES } from '../../i18n/types'
 
 const fs = require('fs')
@@ -22,7 +22,6 @@ export const createOrderConfirmationEmailTemplate = async <T>(params: {
   }
   handleBar.setFileName(params.fileName)
   handleBar.setTemplateParams(params.templateParams)
-  console.log(params.templateParams)
   const template = handleBar.createTemplate()
 
   return {
@@ -30,7 +29,7 @@ export const createOrderConfirmationEmailTemplate = async <T>(params: {
   }
 }
 
-export function createTemplate(this: any) {
+export function createTemplate(this: any): any {
   // Open template file
   const source = fs.readFileSync(
     path.join(__dirname, `/templates/${this.fileName}.hbs`),
@@ -70,8 +69,18 @@ export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
   })
 
   Handlebars.registerHelper('Date', function (date) {
-    const dateObj = new Date(date)
+    if (typeof date === 'undefined') {
+      const dateObj = new Date()
 
+      return dateObj.toLocaleDateString('de-DE', {
+        timeZone: 'Europe/Helsinki',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
+    }
+
+    const dateObj = new Date(date)
     return dateObj.toLocaleDateString('de-DE', {
       timeZone: 'Europe/Helsinki',
       day: '2-digit',
@@ -88,6 +97,25 @@ export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
   )
 
   Handlebars.registerHelper('ParseDateTime', function (date) {
+    if (typeof date === 'undefined') {
+      const dateObj = new Date()
+      return (
+        dateObj.toLocaleDateString('de-DE', {
+          timeZone: 'Europe/Helsinki',
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        }) +
+        ' ' +
+        dateObj.toLocaleTimeString('de-DE', {
+          timeZone: 'Europe/Helsinki',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        })
+      )
+    }
+
     // Example date string 20210901-05184
     const year = date.substring(0, 4)
     // Minus one because js month starts at 0 not 01.
