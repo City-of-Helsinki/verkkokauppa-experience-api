@@ -84,6 +84,7 @@ export class PaymentNotFound extends ExperienceError {
       logLevel: 'info',
       responseStatus: StatusCode.NotFound,
     })
+    Object.setPrototypeOf(this, PaymentNotFound.prototype)
   }
 }
 
