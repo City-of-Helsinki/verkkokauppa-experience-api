@@ -3,14 +3,14 @@
 trigger:
   paths:
     include:
-      - packages/payment-experience-api
-      - packages/payment-backend
+      - packages/merchant-experience-api
+      - packages/configuration-backend
       - packages/core
     exclude:
-      - packages/payment-experience-api/test/integration/payment-experience-api.postman_collection.json
+      - packages/merchant-experience-api/test/integration/merchant-experience-api.postman_collection.json
   tags:
     include:
-      - payment-experience-api/*
+      - merchant-experience-api/*
   branches:
     include:
       - master
@@ -31,4 +31,4 @@ resources:
       name: talpa-verkkokauppa/talpa-verkkokauppa-pipelines
 
 extends:
-  template: azure-pipelines-talpa-verkkokauppa-payment-experience-api.yml@talpa-verkkokauppa-pipelines
+  template: azure-pipelines-talpa-verkkokauppa-merchant-experience-api.yml@talpa-verkkokauppa-pipelines

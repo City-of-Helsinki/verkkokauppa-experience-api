@@ -4,14 +4,13 @@ import {
   StatusCode,
 } from '@verkkokauppa/core'
 
-export class PaymentMethodValidationError extends ExperienceError {
-  constructor() {
+export class PaymentValidationError extends ExperienceError {
+  constructor(code: string, message: string) {
     super({
-      code: 'payment-method-validation-failed',
-      message:
-        'paymentMethod must be one of invoice, visma-pay, nordea, osuuspankki, creditcards',
+      code,
+      message,
+      logLevel: 'info',
       responseStatus: StatusCode.BadRequest,
-      logLevel: 'debug',
     })
   }
 }
@@ -22,6 +21,17 @@ export class CreatePaymentFromOrderFailure extends ExperienceFailure {
       code: 'failed-to-create-payment-from-order',
       message: 'Failed to create payment from order',
       source,
+    })
+  }
+}
+
+export class PaymentMethodsNotFound extends ExperienceError {
+  constructor() {
+    super({
+      code: 'payment-methods-not-found',
+      message: 'Payment methods not found',
+      logLevel: 'info',
+      responseStatus: StatusCode.NotFound,
     })
   }
 }
@@ -62,6 +72,17 @@ export class GetPaymentStatusFailure extends ExperienceFailure {
       code: 'failed-to-get-payment-status',
       message: 'Failed to get payment status',
       source,
+    })
+  }
+}
+
+export class PaymentNotFound extends ExperienceError {
+  constructor() {
+    super({
+      code: 'payment-not-found',
+      message: 'Payment not found',
+      logLevel: 'info',
+      responseStatus: StatusCode.NotFound,
     })
   }
 }

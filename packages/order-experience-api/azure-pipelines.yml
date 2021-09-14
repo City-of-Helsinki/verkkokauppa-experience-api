@@ -3,10 +3,12 @@
 trigger:
   paths:
     include:
-    - packages/order-experience-api
-    - packages/order-backend
-    - packages/core
-    - packages/cart-backend
+      - packages/order-experience-api
+      - packages/order-backend
+      - packages/core
+      - packages/cart-backend
+    exclude:
+      - packages/order-experience-api/test/integration/order-experience-api.postman_collection.json
   tags:
     include:
       - order-experience-api/*

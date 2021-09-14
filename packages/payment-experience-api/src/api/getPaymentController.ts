@@ -8,6 +8,9 @@ const requestSchema = yup.object().shape({
   params: yup.object().shape({
     orderId: yup.string().required(),
   }),
+  headers: yup.object().shape({
+    user: yup.string().required(),
+  }),
 })
 
 export class GetPaymentController extends AbstractController<
@@ -20,9 +23,10 @@ export class GetPaymentController extends AbstractController<
   ): Promise<any> {
     const {
       params: { orderId },
+      headers: { user },
     } = request
 
-    const order = await getOrder({ orderId })
+    const order = await getOrder({ orderId, user })
     const dto = new Data(await getPaymentForOrder(order))
 
     return this.success<any>(result, dto.serialize())

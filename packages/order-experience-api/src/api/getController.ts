@@ -14,6 +14,9 @@ const requestSchema = yup.object().shape({
   params: yup.object().shape({
     orderId: yup.string().required(),
   }),
+  headers: yup.object().shape({
+    user: yup.string().required(),
+  }),
 })
 
 export class GetController extends AbstractController<typeof requestSchema> {
@@ -23,10 +26,13 @@ export class GetController extends AbstractController<typeof requestSchema> {
     req: ValidatedRequest<typeof requestSchema>,
     res: Response
   ): Promise<any> {
-    const { orderId } = req.params
+    const {
+      params: { orderId },
+      headers: { user },
+    } = req
 
     logger.debug(`Fetch order ${orderId}`)
-    const order = await getOrder({ orderId })
+    const order = await getOrder({ orderId, user })
     const merchantConfiguration = await getMerchantDetailsForOrder(order)
 
     const dto = new Data({

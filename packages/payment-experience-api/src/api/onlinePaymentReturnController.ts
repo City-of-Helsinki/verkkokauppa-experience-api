@@ -5,7 +5,7 @@ import {
   parseOrderIdFromRedirect,
 } from '../lib/vismaPay'
 import { URL } from 'url'
-import { getOrder } from '@verkkokauppa/order-backend'
+import { getOrderAdmin } from '@verkkokauppa/order-backend'
 import { checkVismaReturnUrl } from '@verkkokauppa/payment-backend'
 
 export class OnlinePaymentReturnController extends AbstractController {
@@ -39,7 +39,7 @@ export class OnlinePaymentReturnController extends AbstractController {
       console.log(
         `VismaStatus for order ${orderId}: ${JSON.stringify(vismaStatus)}`
       )
-      const order = await getOrder({ orderId })
+      const order = await getOrderAdmin({ orderId })
       const redirectUrl = await createUserRedirectUrl({
         order,
         vismaStatus,
