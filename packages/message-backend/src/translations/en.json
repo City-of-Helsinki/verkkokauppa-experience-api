@@ -1,27 +1,27 @@
 {
   "orderConfirmation": {
-    "clock": "Kello",
+    "clock": "Order time",
     "order": {
-      "mainHeader": "Tilausvahvistus ja kuitti EN",
-      "header": "Kiitos tilauksestasi",
-      "headerTwo": "Tilauksen tiedot:"
+      "mainHeader": "Order confirmation and receipt",
+      "header": "Thank you for your order",
+      "headerTwo": "Order information:"
     },
     "merchant": {
-      "header": "Palvelu: ",
-      "textOne": "Mikäli sinulla on tilaukseen liittyen kysymyksiä kohdistathan ne suoraan palveluntarjoajalle:",
-      "textTwo": "Palveluntarjoaja toimittaa aina erikseen tarvittavat lisäohjeet palvelun/tuotteen käyttöön tai toimitukseen liittyen.\nKäyttöehtoihin voit tutustua täällä:",
-      "headerTwo": "Myyjän tiedot",
-      "businessId": "Y-tunnus"
+      "header": "Service:",
+      "textOne": "If you have any questions regarding your order, please contact the seller directly",
+      "textTwo": "If necessary, the seller will provide further instructions regarding the use or delivery of the service/product.\nYou can read the terms of service here:",
+      "headerTwo": "Seller’s information",
+      "businessId": "Business ID"
     },
     "customer": {
-      "header": "Tilaajan tiedot"
+      "header": "Customer information"
     },
     "receipt": {
-      "header": "Maksutiedot",
-      "alv": "Sis. alv",
-      "paidTotal": "Maksettu yhteensä",
-      "paymentMethod": "Maksutapa",
-      "date": "Päivämäärä"
+      "header": "Payment information",
+      "alv": "Incl. VAT",
+      "paidTotal": "Paid in total",
+      "paymentMethod": "Payment method",
+      "date": "Date"
     }
   }
 }
