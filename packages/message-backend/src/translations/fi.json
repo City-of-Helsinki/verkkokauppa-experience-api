@@ -1,15 +1,15 @@
 {
   "orderConfirmation": {
-    "clock": "Kello",
+    "clock": "Tilausaika",
     "order": {
       "mainHeader": "Tilausvahvistus ja kuitti",
       "header": "Kiitos tilauksestasi",
       "headerTwo": "Tilauksen tiedot:"
     },
     "merchant": {
-      "header": "Palvelu: ",
-      "textOne": "Mikäli sinulla on tilaukseen liittyen kysymyksiä kohdistathan ne suoraan palveluntarjoajalle:",
-      "textTwo": "Palveluntarjoaja toimittaa aina erikseen tarvittavat lisäohjeet palvelun/tuotteen käyttöön tai toimitukseen liittyen.\nKäyttöehtoihin voit tutustua täällä:",
+      "header": "Palvelu:",
+      "textOne": "Mikäli sinulla on tilaukseen liittyen kysymyksiä kohdistathan ne suoraan myyjälle",
+      "textTwo": "Myyjä toimittaa tarvittaessa erikseen lisäohjeet palvelun/tuotteen käyttöön tai toimitukseen liittyen.\nSopimusehtoihin voit tutustua täällä:",
       "headerTwo": "Myyjän tiedot",
       "businessId": "Y-tunnus"
     },

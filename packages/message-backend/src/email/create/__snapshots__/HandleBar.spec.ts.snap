@@ -473,7 +473,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback\\">
-                                                                                    Kiitos tilauksestasi dummy-order-KYV-136 16.08.2021 Kello 07:56:57
+                                                                                    Kiitos tilauksestasi dummy-order-KYV-136 16.08.2021 Tilausaika 07:56:57
                                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -717,7 +717,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                 <span class=\\"f-fallback\\">
-                                                                    Mikäli sinulla on tilaukseen liittyen kysymyksiä kohdistathan ne suoraan palveluntarjoajalle: merchantName
+                                                                    Mikäli sinulla on tilaukseen liittyen kysymyksiä kohdistathan ne suoraan myyjälle merchantName
                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -725,8 +725,8 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                 <span class=\\"f-fallback\\">
-                                                                    Palveluntarjoaja toimittaa aina erikseen tarvittavat lisäohjeet palvelun/tuotteen käyttöön tai toimitukseen liittyen.
-                Käyttöehtoihin voit tutustua täällä:
+                                                                    Myyjä toimittaa tarvittaessa erikseen lisäohjeet palvelun/tuotteen käyttöön tai toimitukseen liittyen.
+                Sopimusehtoihin voit tutustua täällä:
                                                                     <a href=\\"merchantUrl\\" target=\\"_blank\\">merchantUrl</a>
                                                                 </span>
                                                             </td>
@@ -773,7 +773,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                             <tr>
                                 <td class=\\"content-cell\\">
                                     <div class=\\"f-fallback\\">
-                                        <h1 style=\\"margin-bottom: 0\\">Tilausvahvistus ja kuitti EN</h1>
+                                        <h1 style=\\"margin-bottom: 0\\">Order confirmation and receipt</h1>
                 
                                         <table class=\\"purchase\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\" role=\\"presentation\\">
                                             <tr>
@@ -782,7 +782,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback\\">
-                                                                                    Kiitos tilauksestasi dummy-order-KYV-136 16.08.2021 Kello 07:56:57
+                                                                                    Thank you for your order dummy-order-KYV-136 16.08.2021 Order time 07:56:57
                                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -803,7 +803,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                             <tr>
                                 <td class=\\"content-cell\\">
                                     <div class=\\"f-fallback\\">
-                                        <h1 style=\\"margin-bottom: 0; border-top: 1rem solid #ffffff\\">Maksutiedot</h1>
+                                        <h1 style=\\"margin-bottom: 0; border-top: 1rem solid #ffffff\\">Payment information</h1>
                 
                                         <table class=\\"purchase\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\" role=\\"presentation\\">
                                             <tr>
@@ -825,7 +825,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback\\">
-                                                                                    Sis. alv (24%)
+                                                                                    Incl. VAT (24%)
                                                                                 </span>
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item pb-1\\">
@@ -850,7 +850,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback\\">
-                                                                                    Sis. alv (24%)
+                                                                                    Incl. VAT (24%)
                                                                                 </span>
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item pb-1\\">
@@ -862,7 +862,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                         <tr>
                                                             <td width=\\"80%\\" class=\\"purchase_item\\" style=\\"border-top: 1rem solid #ffffff\\">
                                                                                 <span class=\\"f-fallback\\">
-                                                                                    Maksettu yhteensä
+                                                                                    Paid in total
                                                                                 </span>
                                                             </td>
                                                             <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\" style=\\"border-top: 1rem solid #ffffff\\">
@@ -875,7 +875,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                         <tr>
                                                             <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback\\">
-                                                                                    Maksutapa
+                                                                                    Payment method
                                                                                 </span>
                                                             </td>
                                                             <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
@@ -887,7 +887,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                         <tr>
                                                             <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback\\">
-                                                                                    Päivämäärä
+                                                                                    Date
                                                                                 </span>
                                                             </td>
                                                             <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
@@ -914,7 +914,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                 <td class=\\"content-cell\\">
                                     <div class=\\"f-fallback\\">
                                         <hr>
-                                        <h1 style=\\"margin-bottom: 0;border-top: 1rem solid #ffffff\\">Tilaajan tiedot</h1>
+                                        <h1 style=\\"margin-bottom: 0;border-top: 1rem solid #ffffff\\">Customer information</h1>
                 
                                         <table class=\\"purchase\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\" role=\\"presentation\\">
                                             <tr>
@@ -975,7 +975,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                 <td class=\\"content-cell\\">
                                     <div class=\\"f-fallback\\">
                                         <hr>
-                                        <h1 style=\\"margin-bottom: 0; border-top: 1rem solid #ffffff\\">Myyjän tiedot</h1>
+                                        <h1 style=\\"margin-bottom: 0; border-top: 1rem solid #ffffff\\">Seller’s information</h1>
                 
                                         <table class=\\"purchase\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\" role=\\"presentation\\">
                                             <tr>
@@ -1019,14 +1019,14 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             <tr>
                                                                 <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                 <span class=\\"f-fallback\\">
-                                                                    Y-tunnus merchantBusinessId
+                                                                    Business ID merchantBusinessId
                                                                 </span>
                                                                 </td>
                                                             </tr>
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                 <span class=\\"f-fallback\\">
-                                                                    Mikäli sinulla on tilaukseen liittyen kysymyksiä kohdistathan ne suoraan palveluntarjoajalle: merchantName
+                                                                    If you have any questions regarding your order, please contact the seller directly merchantName
                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -1034,8 +1034,8 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                 <span class=\\"f-fallback\\">
-                                                                    Palveluntarjoaja toimittaa aina erikseen tarvittavat lisäohjeet palvelun/tuotteen käyttöön tai toimitukseen liittyen.
-                Käyttöehtoihin voit tutustua täällä:
+                                                                    If necessary, the seller will provide further instructions regarding the use or delivery of the service/product.
+                You can read the terms of service here:
                                                                     <a href=\\"merchantUrl\\" target=\\"_blank\\">merchantUrl</a>
                                                                 </span>
                                                             </td>
@@ -1082,7 +1082,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                             <tr>
                                 <td class=\\"content-cell\\">
                                     <div class=\\"f-fallback\\">
-                                        <h1 style=\\"margin-bottom: 0\\">Tilausvahvistus ja kuitti SV</h1>
+                                        <h1 style=\\"margin-bottom: 0\\">Beställningsbekräftelse och kvitto</h1>
                 
                                         <table class=\\"purchase\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\" role=\\"presentation\\">
                                             <tr>
@@ -1091,7 +1091,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback\\">
-                                                                                    Kiitos tilauksestasi dummy-order-KYV-136 16.08.2021 Kello 07:56:57
+                                                                                    Tack för din beställning dummy-order-KYV-136 16.08.2021 Beställningstid 07:56:57
                                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -1112,7 +1112,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                             <tr>
                                 <td class=\\"content-cell\\">
                                     <div class=\\"f-fallback\\">
-                                        <h1 style=\\"margin-bottom: 0; border-top: 1rem solid #ffffff\\">Maksutiedot</h1>
+                                        <h1 style=\\"margin-bottom: 0; border-top: 1rem solid #ffffff\\">Betalningsuppgifter</h1>
                 
                                         <table class=\\"purchase\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\" role=\\"presentation\\">
                                             <tr>
@@ -1134,7 +1134,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback\\">
-                                                                                    Sis. alv (24%)
+                                                                                    Inkl. moms (24%)
                                                                                 </span>
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item pb-1\\">
@@ -1159,7 +1159,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback\\">
-                                                                                    Sis. alv (24%)
+                                                                                    Inkl. moms (24%)
                                                                                 </span>
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item pb-1\\">
@@ -1171,7 +1171,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                         <tr>
                                                             <td width=\\"80%\\" class=\\"purchase_item\\" style=\\"border-top: 1rem solid #ffffff\\">
                                                                                 <span class=\\"f-fallback\\">
-                                                                                    Maksettu yhteensä
+                                                                                    Betalat totalt
                                                                                 </span>
                                                             </td>
                                                             <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\" style=\\"border-top: 1rem solid #ffffff\\">
@@ -1184,7 +1184,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                         <tr>
                                                             <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback\\">
-                                                                                    Maksutapa
+                                                                                    Betalningssätt
                                                                                 </span>
                                                             </td>
                                                             <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
@@ -1196,7 +1196,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                         <tr>
                                                             <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback\\">
-                                                                                    Päivämäärä
+                                                                                    Datum
                                                                                 </span>
                                                             </td>
                                                             <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
@@ -1223,7 +1223,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                 <td class=\\"content-cell\\">
                                     <div class=\\"f-fallback\\">
                                         <hr>
-                                        <h1 style=\\"margin-bottom: 0;border-top: 1rem solid #ffffff\\">Tilaajan tiedot</h1>
+                                        <h1 style=\\"margin-bottom: 0;border-top: 1rem solid #ffffff\\">Beställarens uppgifter</h1>
                 
                                         <table class=\\"purchase\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\" role=\\"presentation\\">
                                             <tr>
@@ -1284,7 +1284,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                 <td class=\\"content-cell\\">
                                     <div class=\\"f-fallback\\">
                                         <hr>
-                                        <h1 style=\\"margin-bottom: 0; border-top: 1rem solid #ffffff\\">Myyjän tiedot</h1>
+                                        <h1 style=\\"margin-bottom: 0; border-top: 1rem solid #ffffff\\">Försäljarens uppgifter</h1>
                 
                                         <table class=\\"purchase\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\" role=\\"presentation\\">
                                             <tr>
@@ -1328,14 +1328,14 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             <tr>
                                                                 <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                 <span class=\\"f-fallback\\">
-                                                                    Y-tunnus merchantBusinessId
+                                                                    FO-nummer merchantBusinessId
                                                                 </span>
                                                                 </td>
                                                             </tr>
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                 <span class=\\"f-fallback\\">
-                                                                    Mikäli sinulla on tilaukseen liittyen kysymyksiä kohdistathan ne suoraan palveluntarjoajalle: merchantName
+                                                                    Om du har frågor gällande din beställning ber vi dig rikta dem direkt till försäljaren merchantName
                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -1343,8 +1343,8 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                 <span class=\\"f-fallback\\">
-                                                                    Palveluntarjoaja toimittaa aina erikseen tarvittavat lisäohjeet palvelun/tuotteen käyttöön tai toimitukseen liittyen.
-                Käyttöehtoihin voit tutustua täällä:
+                                                                    Försäljaren ger vid behov skilt ytterligare anvisningar för användningen av tjänsten/produkten eller beträffande leveransen.
+                Du kan bekanta dig med användningsvillkoren här:
                                                                     <a href=\\"merchantUrl\\" target=\\"_blank\\">merchantUrl</a>
                                                                 </span>
                                                             </td>
