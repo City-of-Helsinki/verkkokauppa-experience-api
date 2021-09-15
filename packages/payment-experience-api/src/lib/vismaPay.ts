@@ -2,9 +2,6 @@ import { URL } from 'url'
 import { getPublicServiceConfiguration } from '@verkkokauppa/configuration-backend'
 import type { Order, VismaStatus } from '@verkkokauppa/payment-backend'
 
-import { getPaymentForOrder } from '@verkkokauppa/payment-backend'
-import { sendEmailToCustomer } from '@verkkokauppa/message-backend'
-
 export const createUserRedirectUrl = async ({
   order,
   vismaStatus,
@@ -34,29 +31,6 @@ export const createUserRedirectUrl = async ({
       redirectUrl = new URL(paymentReturnUrlConfiguration.configurationValue)
       redirectUrl.pathname = 'success'
       redirectUrl.searchParams.append('orderId', order.orderId)
-
-      try {
-        let payments = await getPaymentForOrder(order)
-
-        let orderWithPayments = { ...order, payment: payments }
-        const email = await sendEmailToCustomer({
-          order: orderWithPayments,
-          fileName: 'orderConfirmation',
-          emailHeader: 'emailHeader',
-          sendTo: orderWithPayments?.customer?.email || '',
-        })
-        if (email.error !== '') {
-          throw new Error(email.error)
-        }
-      } catch (e) {
-        // Do not stop redirecting if email sending fails.
-        console.log(
-          `orderConfirmation email was not sent for order ${
-            order.orderId
-          } error: ${e.toString()}`
-        )
-        console.error(e)
-      }
       return redirectUrl
     }
   } catch (e) {
