@@ -13,6 +13,7 @@ import { CreateRecurringOrdersFromOrderController } from './api/createRecurringO
 import { CalculateTotalsController } from './api/calculateTotals'
 import { InstantPurchase } from './api/instantPurchase'
 import { ConfirmAndCreatePayment } from './api/confirmAndCreatePayment'
+import { Health } from './api/health'
 
 const createController = new CreateController()
 const cartToOrderController = new CartToOrder()
@@ -27,9 +28,11 @@ const createRecurringOrderCtrl = new CreateRecurringOrderController()
 const createRecurringOrdersFromOrderCtrl = new CreateRecurringOrdersFromOrderController()
 const calculateTotalsController = new CalculateTotalsController()
 const instantPurchaseController = new InstantPurchase()
+const healthController = new Health()
 
 const router = Router()
 router.post('/', (req, res) => createController.execute(req, res))
+router.get('/health', (req, res) => healthController.execute(req, res))
 router.get('/:orderId', (req, res) => getController.execute(req, res))
 router.get('/recurringorder/:id', (req, res) =>
   getRecurringOrderCtrl.execute(req, res)
