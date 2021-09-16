@@ -7,6 +7,7 @@ import { EditItemController } from './api/editItemController'
 import { RemoveItemController } from './api/removeItemController'
 import { TotalsController } from './api/totalsController'
 import { ClearController } from './api/clearController'
+import { Health } from './api/health'
 const createController = new CreateController()
 const getController = new GetController()
 const addItemController = new AddItemController()
@@ -14,8 +15,10 @@ const removeItemController = new RemoveItemController()
 const totalsController = new TotalsController()
 const editItemController = new EditItemController()
 const clearController = new ClearController()
+const healthController = new Health()
 
 const router = Router()
+router.get('/health', (req, res) => healthController.execute(req, res))
 router.put('/:cartId/items/:productId', (req, res) =>
   editItemController.execute(req, res)
 )
