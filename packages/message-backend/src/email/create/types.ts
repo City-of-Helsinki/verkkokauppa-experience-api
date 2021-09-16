@@ -16,10 +16,10 @@ export type OrderCustomer = {
   firstName: string
   lastName: string
   email: string
-  phone: string
+  phone?: string
 } & {
-  address: string
-  district: string
+  address?: string
+  district?: string
 }
 
 export type OrderMerchant = {
@@ -67,24 +67,24 @@ export interface Order {
   priceTotal?: string
   customer?: OrderCustomer
   status?: string
-  type: OrderType
+  type?: OrderType
   merchant?: OrderMerchant
 }
 
 export interface Payment {
   paymentId: string
-  timestamp: string
   namespace: string
   orderId: string
   status: string
   paymentMethod: string
   paymentType: string
-  paymentMethodLabel: string
   totalExclTax: number
   total: number
   taxAmount: number
   description: string | null
   additionalInfo: string
+  timestamp?: string
+  paymentMethodLabel?: string
   token: string
 }
 

@@ -11,6 +11,7 @@
     "lint": "eslint \"./src/**/*.{ts,tsx}\" --max-warnings=0"
   },
   "dependencies": {
+    "@verkkokauppa/core": "^1.0.0",
     "axios": "^0.21.1",
     "handlebars": "^4.7.7",
     "i18next": "^20.4.0",
