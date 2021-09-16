@@ -2,6 +2,8 @@ import axios from 'axios'
 import { stringify } from 'qs'
 import type {
   Order,
+  OrderAccounting,
+  OrderAccountingRequest,
   OrderCustomer,
   OrderItemRequest,
   OrderWithItemsBackendResponse,
@@ -307,6 +309,33 @@ export const setOrderTotals = async (p: {
       },
     })
     return transFormBackendOrder(result.data)
+  } catch (e) {
+    if (e.response?.status === 403) {
+      throw new OrderValidationError('order is in an immutable state')
+    }
+    if (e.response?.status === 404) {
+      throw new OrderNotFoundError()
+    }
+    throw new SetOrderTotalsFailure(e)
+  }
+}
+
+export const createAccountingEntryForOrder = async (
+  p: OrderAccountingRequest
+): Promise<any> => {
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+  const { orderId, dtos } = p
+  const url = `${process.env.ORDER_BACKEND_URL}/order/accounting/create`
+  try {
+    const result = await axios.post<OrderAccounting>(url, null, {
+      params: {
+        orderId,
+        dtos,
+      },
+    })
+    return result.data
   } catch (e) {
     if (e.response?.status === 403) {
       throw new OrderValidationError('order is in an immutable state')

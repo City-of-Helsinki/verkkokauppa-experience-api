@@ -5,6 +5,8 @@ import {
   ProductNotFoundError,
   GetProductFailure,
   CreateProductAccountingFailure,
+  GetProductAccountingFailure,
+  ProductAccountingNotFoundError,
 } from './errors'
 
 type ProductBackendResponse = {
@@ -36,18 +38,9 @@ export const getProduct = async (p: {
   }
 }
 
-type ProductAccountingBackendResponse = {
-  productId: string
-  vatCode: string
-  internalOrder: string
-  profitCenter: string
-  project: string
-  operationArea: string
-}
-
 export const createProductAccounting = async (p: {
   productAccounting: ProductAccounting
-}): Promise<ProductAccountingBackendResponse> => {
+}): Promise<ProductAccounting> => {
   const { productAccounting } = p
   if (!process.env.PRODUCT_BACKEND_URL) {
     throw new Error('No product backend URL set')
@@ -58,12 +51,31 @@ export const createProductAccounting = async (p: {
     productAccounting.productId +
     '/accounting'
   try {
-    const result = await axios.post<ProductAccountingBackendResponse>(
-      url,
-      productAccounting
-    )
+    const result = await axios.post<ProductAccounting>(url, productAccounting)
     return result.data
   } catch (e) {
     throw new CreateProductAccountingFailure(e)
+  }
+}
+
+export const getProductAccountingBatch = async (p: {
+  productIds: string[]
+}): Promise<ProductAccounting[]> => {
+  const { productIds } = p
+  if (!process.env.PRODUCT_BACKEND_URL) {
+    throw new Error('No product backend URL set')
+  }
+
+  const url = `${process.env.PRODUCT_BACKEND_URL}/product/accounting/list`
+  try {
+    const result = await axios.get<ProductAccounting[]>(url, {
+      data: { productIds },
+    })
+    return result.data
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new ProductAccountingNotFoundError(productIds.join(','))
+    }
+    throw new GetProductAccountingFailure(productIds.join(','), e)
   }
 }
