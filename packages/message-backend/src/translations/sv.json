@@ -1,27 +1,27 @@
 {
   "orderConfirmation": {
-    "clock": "Kello",
+    "clock": "Beställningstid",
     "order": {
-      "mainHeader": "Tilausvahvistus ja kuitti SV",
-      "header": "Kiitos tilauksestasi",
-      "headerTwo": "Tilauksen tiedot:"
+      "mainHeader": "Beställningsbekräftelse och kvitto",
+      "header": "Tack för din beställning",
+      "headerTwo": "Information om beställningen:"
     },
     "merchant": {
-      "header": "Palvelu: ",
-      "textOne": "Mikäli sinulla on tilaukseen liittyen kysymyksiä kohdistathan ne suoraan palveluntarjoajalle:",
-      "textTwo": "Palveluntarjoaja toimittaa aina erikseen tarvittavat lisäohjeet palvelun/tuotteen käyttöön tai toimitukseen liittyen.\nKäyttöehtoihin voit tutustua täällä:",
-      "headerTwo": "Myyjän tiedot",
-      "businessId": "Y-tunnus"
+      "header": "Tjänst:",
+      "textOne": "Om du har frågor gällande din beställning ber vi dig rikta dem direkt till försäljaren",
+      "textTwo": "Försäljaren ger vid behov skilt ytterligare anvisningar för användningen av tjänsten/produkten eller beträffande leveransen.\nDu kan bekanta dig med användningsvillkoren här:",
+      "headerTwo": "Försäljarens uppgifter",
+      "businessId": "FO-nummer"
     },
     "customer": {
-      "header": "Tilaajan tiedot"
+      "header": "Beställarens uppgifter"
     },
     "receipt": {
-      "header": "Maksutiedot",
-      "alv": "Sis. alv",
-      "paidTotal": "Maksettu yhteensä",
-      "paymentMethod": "Maksutapa",
-      "date": "Päivämäärä"
+      "header": "Betalningsuppgifter",
+      "alv": "Inkl. moms",
+      "paidTotal": "Betalat totalt",
+      "paymentMethod": "Betalningssätt",
+      "date": "Datum"
     }
   }
 }
