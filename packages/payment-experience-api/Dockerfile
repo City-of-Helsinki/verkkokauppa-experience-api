@@ -14,6 +14,7 @@ COPY ./jest.config.js ./jest.config.js
 COPY ./packages/core ./packages/core
 COPY ./packages/order-backend ./packages/order-backend
 COPY ./packages/payment-backend ./packages/payment-backend
+COPY ./packages/message-backend ./packages/message-backend
 COPY ./packages/configuration-backend ./packages/configuration-backend
 COPY ./packages/payment-experience-api ./packages/payment-experience-api
 
@@ -28,6 +29,7 @@ USER 1001
 RUN yarn workspace @verkkokauppa/core install
 RUN yarn workspace @verkkokauppa/order-backend install
 RUN yarn workspace @verkkokauppa/payment-backend install
+RUN yarn workspace @verkkokauppa/message-backend install
 RUN yarn workspace @verkkokauppa/configuration-backend install
 RUN yarn workspace @verkkokauppa/payment-experience-api install
 
@@ -36,6 +38,7 @@ FROM base as production
 RUN yarn workspace @verkkokauppa/core build
 RUN yarn workspace @verkkokauppa/order-backend build
 RUN yarn workspace @verkkokauppa/payment-backend build
+RUN yarn workspace @verkkokauppa/message-backend build
 RUN yarn workspace @verkkokauppa/configuration-backend build
 RUN yarn workspace @verkkokauppa/payment-experience-api build
 EXPOSE 8080

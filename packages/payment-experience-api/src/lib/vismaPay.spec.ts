@@ -27,6 +27,24 @@ const orderMock = {
       vatPercentage: '24',
     },
   ],
+  merchant: {
+    merchantName: 'merchantName',
+    merchantStreet: 'merchantStreet',
+    merchantZip: 'merchantZip',
+    merchantCity: 'merchantCity',
+    merchantEmail: 'merchantEmail',
+    merchantPhone: 'merchantPhone',
+    merchantUrl: 'merchantUrl',
+    merchantBusinessId: 'merchantBusinessId',
+  },
+  customer: {
+    firstName: 'Essi',
+    lastName: 'esimerkki',
+    email: 'essi.esimerkki@gmail.com',
+    phone: '+358123456789',
+    address: 'Esimerkkiosoite 1',
+    district: '123456 Esimerkkitoimipaikka',
+  },
 }
 
 describe('Test User redirection creation', () => {
@@ -131,9 +149,13 @@ describe('Test User redirection creation', () => {
       `${process.env.REDIRECT_PAYMENT_URL_BASE}/145d8829-07b7-4b03-ab0e-24063958ab9b/success`
     )
   })
+
   it('Should return service success if order is paid and with service specific configuration set', async () => {
     process.env.REDIRECT_PAYMENT_URL_BASE = 'https://test.dev.hel'
     process.env.CONFIGURATION_BACKEND_URL = 'https://test.dev.hel'
+    process.env.MESSAGE_BACKEND_URL = 'https://test.dev.hel'
+    process.env.PAYMENT_BACKEND_URL = 'https://test.dev.hel'
+
     const configMock = {
       configurationId: '2f815a93-4c5c-442f-ba09-f294ecc12679',
       namespace: 'test',
@@ -141,7 +163,45 @@ describe('Test User redirection creation', () => {
       configurationValue: 'https://service.dev.hel',
       restricted: false,
     }
-    axiosMock.get.mockResolvedValue({ data: configMock })
+
+    const paymentMock = {
+      paymentId: 'dummy-payment',
+      namespace: 'asukaspysakointi',
+      orderId: 'dummy-order',
+      status: 'payment_created',
+      paymentMethod: 'nordea',
+      paymentType: 'order',
+      totalExclTax: 200,
+      total: 248,
+      taxAmount: 48,
+      description: null,
+      additionalInfo: '{"payment_method": nordea}',
+      token: '427a38b2607b105de58c7dbda2d8ce2f6fcb31d6cc52f77b8818c0b5dcd503f5',
+      paymentMethodLabel: 'paymentMethodLabel',
+    }
+
+    const messageMock = {
+      template: 'template',
+      error: '',
+    }
+
+    axiosMock.get.mockImplementation((url) => {
+      if (url.includes(`/public/get`)) {
+        return Promise.resolve({ data: configMock })
+      }
+      if (url.includes(`/payment/online/get`)) {
+        return Promise.resolve({ data: paymentMock })
+      }
+      return Promise.resolve({})
+    })
+
+    axiosMock.post.mockImplementation((url) => {
+      if (url.includes(`message/send/email`)) {
+        return Promise.resolve({ data: messageMock })
+      }
+      return Promise.resolve({})
+    })
+
     const result = await createUserRedirectUrl({
       order: orderMock,
       vismaStatus: { canRetry: false, paymentPaid: true, valid: true },
@@ -150,6 +210,7 @@ describe('Test User redirection creation', () => {
       `${configMock.configurationValue}/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b`
     )
   })
+
   it('Should return general error url if return url is not valid', async () => {
     process.env.REDIRECT_PAYMENT_URL_BASE = 'https://test.dev.hel'
     process.env.CONFIGURATION_BACKEND_URL = 'https://test.dev.hel'
