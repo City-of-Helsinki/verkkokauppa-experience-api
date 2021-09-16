@@ -1,4 +1,9 @@
-import { AbstractController, logger } from '@verkkokauppa/core'
+import {
+  AbstractController,
+  ExperienceError,
+  logger,
+  StatusCode,
+} from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
 import { parseOrderIdFromRedirect } from '../lib/vismaPay'
 import {
@@ -52,7 +57,12 @@ export class OnlinePaymentNotifyController extends AbstractController {
             (accountingData) => accountingData.productId === item.productId
           )
           if (!productAccounting) {
-            throw new Error('No accounting entry found for product')
+            throw new ExperienceError({
+              code: 'failed-to-create-order-accounting-entry',
+              message: `No accounting entry found for product ${item.productId}`,
+              responseStatus: StatusCode.BadRequest,
+              logLevel: 'error',
+            })
           }
           return {
             ...item,
