@@ -12,6 +12,7 @@ import {
   AddItemsToOrderFailure,
   CancelOrderFailure,
   ConfirmOrderFailure,
+  CreateOrderAccountingFailure,
   CreateOrderFailure,
   CreateOrderWithItemsFailure,
   GetOrderFailure,
@@ -337,12 +338,6 @@ export const createAccountingEntryForOrder = async (
     })
     return result.data
   } catch (e) {
-    if (e.response?.status === 403) {
-      throw new OrderValidationError('order is in an immutable state')
-    }
-    if (e.response?.status === 404) {
-      throw new OrderNotFoundError()
-    }
-    throw new SetOrderTotalsFailure(e)
+    throw new CreateOrderAccountingFailure(e)
   }
 }
