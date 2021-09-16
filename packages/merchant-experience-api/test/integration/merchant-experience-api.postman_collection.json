@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "3077dba3-1e0a-4469-9635-78f087c431cc",
+		"_postman_id": "16adc64c-68a0-4cd0-a55b-8eace3ebc482",
 		"name": "merchant-experience-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -61,6 +61,42 @@
 							"key": "namespace",
 							"value": "{{namespace}}"
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get health 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response health equals true\", function () {\r",
+							"    pm.expect(data.health).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{merchantExperienceUrl}}/health",
+					"host": [
+						"{{merchantExperienceUrl}}"
+					],
+					"path": [
+						"health"
 					]
 				}
 			},
