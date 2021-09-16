@@ -28,6 +28,8 @@ describe('Test Create Accounting info', () => {
     profitCenter: 'profitCenter',
     project: 'project',
     operationArea: 'operationArea',
+    companyCode: 'companyCode',
+    mainLedgerAccount: 'mainLedgerAccount',
   }
   it('Should throw error with no backend url set', async () => {
     process.env.PRODUCT_BACKEND_URL = ''
