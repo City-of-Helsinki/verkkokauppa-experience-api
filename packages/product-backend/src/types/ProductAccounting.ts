@@ -5,4 +5,6 @@ export type ProductAccounting = {
   profitCenter: string
   project: string
   operationArea: string
+  companyCode: string
+  mainLedgerAccount: string
 }

@@ -105,3 +105,13 @@ export class SetOrderTotalsFailure extends ExperienceFailure {
     })
   }
 }
+
+export class CreateOrderAccountingFailure extends ExperienceFailure {
+  constructor(source: Error) {
+    super({
+      code: 'failed-to-create-order-accounting',
+      message: 'Failed to create order accounting',
+      source,
+    })
+  }
+}

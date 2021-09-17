@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi8/nodejs-14 as base
+FROM registry.access.redhat.com/ubi8/nodejs-14:1-35.1626836507 as base
 
 # Install yarn
 RUN npm install -g yarn
@@ -15,6 +15,7 @@ COPY ./packages/core ./packages/core
 COPY ./packages/order-backend ./packages/order-backend
 COPY ./packages/payment-backend ./packages/payment-backend
 COPY ./packages/message-backend ./packages/message-backend
+COPY ./packages/product-backend ./packages/product-backend
 COPY ./packages/configuration-backend ./packages/configuration-backend
 COPY ./packages/payment-experience-api ./packages/payment-experience-api
 
@@ -26,20 +27,23 @@ USER 1001
 
 
 # Run install for all required packages
-RUN yarn workspace @verkkokauppa/core install
-RUN yarn workspace @verkkokauppa/order-backend install
-RUN yarn workspace @verkkokauppa/payment-backend install
-RUN yarn workspace @verkkokauppa/message-backend install
-RUN yarn workspace @verkkokauppa/configuration-backend install
-RUN yarn workspace @verkkokauppa/payment-experience-api install
+RUN yarn workspace @verkkokauppa/core install && \
+yarn workspace @verkkokauppa/order-backend install && \
+yarn workspace @verkkokauppa/payment-backend install && \
+yarn workspace @verkkokauppa/message-backend install  && \
+yarn workspace @verkkokauppa/product-backend install && \
+yarn workspace @verkkokauppa/configuration-backend install && \
+yarn workspace @verkkokauppa/payment-experience-api install
 
 # Create production build
 FROM base as production
-RUN yarn workspace @verkkokauppa/core build
-RUN yarn workspace @verkkokauppa/order-backend build
-RUN yarn workspace @verkkokauppa/payment-backend build
-RUN yarn workspace @verkkokauppa/message-backend build
-RUN yarn workspace @verkkokauppa/configuration-backend build
-RUN yarn workspace @verkkokauppa/payment-experience-api build
+RUN yarn workspace @verkkokauppa/core build && \
+yarn workspace @verkkokauppa/order-backend build && \
+yarn workspace @verkkokauppa/payment-backend build && \
+yarn workspace @verkkokauppa/message-backend build && \
+yarn workspace @verkkokauppa/product-backend build && \
+yarn workspace @verkkokauppa/configuration-backend build && \
+yarn workspace @verkkokauppa/payment-experience-api build
+RUN yarn test
 EXPOSE 8080
 CMD yarn workspace @verkkokauppa/payment-experience-api start -d

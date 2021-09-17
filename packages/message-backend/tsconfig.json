@@ -5,10 +5,19 @@
         "outDir": "./dist",
         "composite": true,
         "baseUrl": "./",
-        "paths": {}
+        "paths": {
+            "@verkkokauppa/core": [
+                "../core"
+            ]
+        }
     },
     "include": [
-        "src/**/*"
+        "src/**/*",
+        "src/**/*.json"
     ],
-    "references": []
+    "references": [
+        {
+            "path": "../core"
+        }
+    ]
 }

@@ -26,6 +26,7 @@ export interface OrderCustomer {
   email: string
   phone: string
 }
+
 export type OrderType = 'subscription' | 'order'
 
 export interface Order {
@@ -63,4 +64,36 @@ export type OrderWithItemsBackendResponse = {
     priceTotal?: string
   }
   items: OrderItem[]
+}
+
+export interface ProductAccounting {
+  priceGross: string
+  priceNet: string
+  companyCode: string
+  mainLedgerAccount: string
+  vatCode: string
+  internalOrder: string
+  profitCenter: string
+  project?: string | null
+  operationArea?: string | null
+}
+
+export type OrderAccountingItem = ProductAccounting & {
+  orderItemId: string
+  orderId: string
+}
+
+export interface OrderAccounting {
+  orderId: string
+  createdAt: string
+  items: OrderAccountingItem[]
+}
+
+export type OrderAccountingItemRequest = ProductAccounting & {
+  productId: string
+}
+
+export interface OrderAccountingRequest {
+  orderId: string
+  dtos: OrderAccountingItemRequest[]
 }
