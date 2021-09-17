@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "b381f581-f2c2-48d8-a358-0a9d9c1af6f1",
-		"name": "Talpa Product Experience API",
+		"name": "product-experience-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
