@@ -34,7 +34,6 @@ yarn workspace @verkkokauppa/message-backend install  && \
 yarn workspace @verkkokauppa/product-backend install && \
 yarn workspace @verkkokauppa/configuration-backend install && \
 yarn workspace @verkkokauppa/payment-experience-api install
-RUN yarn test
 
 # Create production build
 FROM base as production
@@ -45,5 +44,6 @@ yarn workspace @verkkokauppa/message-backend build && \
 yarn workspace @verkkokauppa/product-backend build && \
 yarn workspace @verkkokauppa/configuration-backend build && \
 yarn workspace @verkkokauppa/payment-experience-api build
+RUN yarn test
 EXPOSE 8080
 CMD yarn workspace @verkkokauppa/payment-experience-api start -d
