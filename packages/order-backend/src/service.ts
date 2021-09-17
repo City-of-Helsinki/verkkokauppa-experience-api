@@ -330,12 +330,11 @@ export const createAccountingEntryForOrder = async (
   const { orderId, dtos } = p
   const url = `${process.env.ORDER_BACKEND_URL}/order/accounting/create`
   try {
-    const result = await axios.post<OrderAccounting>(url, null, {
-      params: {
-        orderId,
-        dtos,
-      },
-    })
+    const dto = {
+      orderId,
+      dtos,
+    }
+    const result = await axios.post<OrderAccounting>(url, dto)
     return result.data
   } catch (e) {
     throw new CreateOrderAccountingFailure(e)

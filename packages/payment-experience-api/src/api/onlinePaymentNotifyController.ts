@@ -43,13 +43,18 @@ export class OnlinePaymentNotifyController extends AbstractController {
     )
     logger.info(`Load order ${orderId} from payment callback`)
     const order = await getOrderAdmin({ orderId })
+    logger.info(`Load product accountings for order`)
     const productAccountings = await getProductAccountingBatch({
       productIds: order.items.map((item) => item.productId),
     })
     if (vismaStatus.paymentPaid) {
       logger.info(`Send receipt for order ${orderId}`)
       await OnlinePaymentNotifyController.sendReceipt(order)
-      logger.info(`Create accounting entry for order ${orderId}`)
+      logger.info(
+        `Create accounting entry for order ${orderId} with accountings ${JSON.stringify(
+          productAccountings
+        )}`
+      )
       await createAccountingEntryForOrder({
         orderId,
         dtos: order.items.map((item) => {
