@@ -1,8 +1,8 @@
 import type i18default from 'i18next'
 const i18next: typeof i18default = require('i18next')
-const en = require('../translations/en.json')
-const fi = require('../translations/fi.json')
-const sv = require('../translations/sv.json')
+import * as fi from '../translations/fi.json'
+import * as en from '../translations/en.json'
+import * as sv from '../translations/sv.json'
 
 i18next
   .init({
