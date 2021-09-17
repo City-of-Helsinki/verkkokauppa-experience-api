@@ -29,7 +29,7 @@ export const sendEmailToCustomer = async (p: {
     }
   )
 
-  const url = `${process.env.MESSAGE_BACKEND_URL}message/send/email`
+  const url = `${process.env.MESSAGE_BACKEND_URL}/message/send/email`
 
   try {
     const result = await axios.post<any>(url, {
