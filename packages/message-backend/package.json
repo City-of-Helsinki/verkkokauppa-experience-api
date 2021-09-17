@@ -6,9 +6,10 @@
   "scripts": {
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
     "prepack": "yarn build",
-    "build": "yarn clean && yarn compile",
+    "build": "yarn clean && yarn compile && yarn copy:email-templates",
     "compile": "tsc --build && cp \"./package.json\" ./dist/",
-    "lint": "eslint \"./src/**/*.{ts,tsx}\" --max-warnings=0"
+    "lint": "eslint \"./src/**/*.{ts,tsx}\" --max-warnings=0",
+    "copy:email-templates": "cp -R ./src/email/create/templates ./dist/email/create/"
   },
   "dependencies": {
     "@verkkokauppa/core": "^1.0.0",
