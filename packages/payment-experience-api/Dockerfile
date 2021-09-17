@@ -1,5 +1,4 @@
 FROM registry.access.redhat.com/ubi8/nodejs-14:1-35.1626836507 as base
-ARG TZ
 
 # Install yarn
 RUN npm install -g yarn
@@ -35,7 +34,7 @@ yarn workspace @verkkokauppa/message-backend install  && \
 yarn workspace @verkkokauppa/product-backend install && \
 yarn workspace @verkkokauppa/configuration-backend install && \
 yarn workspace @verkkokauppa/payment-experience-api install
-RUN NODE_ICU_DATA=node_modules/full-icu TZ=$TZ yarn test
+RUN yarn test
 
 # Create production build
 FROM base as production
