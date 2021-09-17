@@ -15,6 +15,17 @@ export class ProductNotFoundError extends ExperienceError {
   }
 }
 
+export class ProductAccountingNotFoundError extends ExperienceError {
+  constructor(productId: string) {
+    super({
+      code: 'product-accounting-not-found',
+      message: `Product accounting ${productId} not found`,
+      responseStatus: StatusCode.NotFound,
+      logLevel: 'info',
+    })
+  }
+}
+
 export class GetProductFailure extends ExperienceFailure {
   constructor(productId: string, source: Error) {
     super({
@@ -30,6 +41,16 @@ export class CreateProductAccountingFailure extends ExperienceFailure {
     super({
       code: 'failed-to-create-product-accounting',
       message: 'Failed to create product accounting',
+      source,
+    })
+  }
+}
+
+export class GetProductAccountingFailure extends ExperienceFailure {
+  constructor(productId: string, source: Error) {
+    super({
+      code: 'failed-to-get-product-accounting',
+      message: `Failed to get product ${productId} accounting`,
       source,
     })
   }

@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "e2187439-a9f0-43a2-b841-0a6d45f0ff77",
-		"name": "Talpa Payment Experience API",
+		"name": "payment-experience-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [

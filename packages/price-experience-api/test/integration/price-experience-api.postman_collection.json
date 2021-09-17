@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "ebc65ced-11d9-4eb2-b38c-10c039a2ceac",
-		"name": "Talpa Price Experience API",
+		"name": "price-experience-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [

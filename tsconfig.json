@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "baseUrl": "./packages",
+        "resolveJsonModule": true,
         "paths": {
             "@verkkokauppa/product-experience-api/*": [
                 "product-experience-api/src/*"
@@ -55,6 +56,12 @@
             "path": "packages/core"
         },
         {
+            "path": "packages/merchant-experience-api"
+        },
+        {
+            "path": "packages/message-backend"
+        },
+        {
             "path": "packages/order-backend"
         },
         {
@@ -71,9 +78,6 @@
         },
         {
             "path": "packages/price-experience-api"
-        },
-        {
-            "path": "packages/message-backend"
         },
         {
             "path": "packages/product-backend"

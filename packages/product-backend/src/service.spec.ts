@@ -1,4 +1,8 @@
-import { createProductAccounting, getProduct } from './index'
+import {
+  createProductAccounting,
+  getProduct,
+  getProductAccountingBatch,
+} from './index'
 import axios from 'axios'
 
 jest.mock('axios')
@@ -28,6 +32,8 @@ describe('Test Create Accounting info', () => {
     profitCenter: 'profitCenter',
     project: 'project',
     operationArea: 'operationArea',
+    companyCode: 'companyCode',
+    mainLedgerAccount: 'mainLedgerAccount',
   }
   it('Should throw error with no backend url set', async () => {
     process.env.PRODUCT_BACKEND_URL = ''
@@ -43,5 +49,30 @@ describe('Test Create Accounting info', () => {
     axiosMock.post.mockResolvedValue({ data: productAccounting })
     const result = await createProductAccounting({ productAccounting })
     await expect(result).toStrictEqual(mockData)
+  })
+})
+
+describe('Test Get Product accounting batch from backend', () => {
+  it('Should throw error with no backend url set', async () => {
+    process.env.PRODUCT_BACKEND_URL = ''
+    await expect(
+      getProductAccountingBatch({ productIds: ['test'] })
+    ).rejects.toThrow('No product backend URL set')
+  })
+  it('Should fetch correctly with backend url set', async () => {
+    process.env.PRODUCT_BACKEND_URL = 'test.dev.hel'
+    const mockData = {
+      productId: 'productId',
+      vatCode: 'vatCode',
+      internalOrder: 'internalOrder',
+      profitCenter: 'profitCenter',
+      project: 'project',
+      operationArea: 'operationArea',
+      companyCode: 'companyCode',
+      mainLedgerAccount: 'mainLedgerAccount',
+    }
+    axiosMock.get.mockResolvedValue({ data: [mockData] })
+    const result = await getProductAccountingBatch({ productIds: ['test'] })
+    await expect(result).toStrictEqual([mockData])
   })
 })

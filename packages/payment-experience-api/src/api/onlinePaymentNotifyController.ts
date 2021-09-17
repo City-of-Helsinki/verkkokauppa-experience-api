@@ -1,12 +1,22 @@
-import { AbstractController, logger } from '@verkkokauppa/core'
+import {
+  AbstractController,
+  ExperienceError,
+  logger,
+  StatusCode,
+} from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
 import { parseOrderIdFromRedirect } from '../lib/vismaPay'
+import {
+  createAccountingEntryForOrder,
+  getOrderAdmin,
+  OrderNotFoundError,
+} from '@verkkokauppa/order-backend'
+import { getProductAccountingBatch } from '@verkkokauppa/product-backend'
 import {
   checkVismaReturnUrl,
   getPaymentForOrder,
   Order,
 } from '@verkkokauppa/payment-backend'
-import { getOrderAdmin, OrderNotFoundError } from '@verkkokauppa/order-backend'
 import { sendEmailToCustomer } from '@verkkokauppa/message-backend'
 
 export class OnlinePaymentNotifyController extends AbstractController {
@@ -20,19 +30,52 @@ export class OnlinePaymentNotifyController extends AbstractController {
     const vismaStatus = await checkVismaReturnUrl({ params: query })
     const orderId = parseOrderIdFromRedirect({ query })
 
+    logger.info('Online payment notify controller called')
+
     if (!orderId) {
       logger.error('No orderId specified')
       throw new OrderNotFoundError()
-    }
-    const order = await getOrderAdmin({ orderId })
-    if (vismaStatus.paymentPaid) {
-      await OnlinePaymentNotifyController.sendReceipt(order)
     }
     logger.debug(
       `VismaStatus callback for order ${orderId}: ${JSON.stringify(
         vismaStatus
       )}`
     )
+    logger.info(`Load order ${orderId} from payment callback`)
+    const order = await getOrderAdmin({ orderId })
+    logger.info(`Load product accountings for order`)
+    const productAccountings = await getProductAccountingBatch({
+      productIds: order.items.map((item) => item.productId),
+    })
+    if (vismaStatus.paymentPaid) {
+      logger.info(`Send receipt for order ${orderId}`)
+      await OnlinePaymentNotifyController.sendReceipt(order)
+      logger.info(
+        `Create accounting entry for order ${orderId} with accountings ${JSON.stringify(
+          productAccountings
+        )}`
+      )
+      await createAccountingEntryForOrder({
+        orderId,
+        dtos: order.items.map((item) => {
+          const productAccounting = productAccountings.find(
+            (accountingData) => accountingData.productId === item.productId
+          )
+          if (!productAccounting) {
+            throw new ExperienceError({
+              code: 'failed-to-create-order-accounting-entry',
+              message: `No accounting entry found for product ${item.productId}`,
+              responseStatus: StatusCode.BadRequest,
+              logLevel: 'error',
+            })
+          }
+          return {
+            ...item,
+            ...productAccounting,
+          }
+        }),
+      })
+    }
     return this.success<any>(response, vismaStatus)
   }
 

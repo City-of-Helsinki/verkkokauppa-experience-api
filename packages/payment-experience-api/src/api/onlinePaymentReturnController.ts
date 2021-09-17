@@ -36,7 +36,7 @@ export class OnlinePaymentReturnController extends AbstractController {
           OnlinePaymentReturnController.getFailureRedirectUrl().toString()
         )
       }
-      console.log(
+      logger.debug(
         `VismaStatus for order ${orderId}: ${JSON.stringify(vismaStatus)}`
       )
       const order = await getOrderAdmin({ orderId })

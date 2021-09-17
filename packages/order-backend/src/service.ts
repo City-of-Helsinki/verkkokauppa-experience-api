@@ -2,6 +2,8 @@ import axios from 'axios'
 import { stringify } from 'qs'
 import type {
   Order,
+  OrderAccounting,
+  OrderAccountingRequest,
   OrderCustomer,
   OrderItemRequest,
   OrderWithItemsBackendResponse,
@@ -10,6 +12,7 @@ import {
   AddItemsToOrderFailure,
   CancelOrderFailure,
   ConfirmOrderFailure,
+  CreateOrderAccountingFailure,
   CreateOrderFailure,
   CreateOrderWithItemsFailure,
   GetOrderFailure,
@@ -315,5 +318,25 @@ export const setOrderTotals = async (p: {
       throw new OrderNotFoundError()
     }
     throw new SetOrderTotalsFailure(e)
+  }
+}
+
+export const createAccountingEntryForOrder = async (
+  p: OrderAccountingRequest
+): Promise<any> => {
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+  const { orderId, dtos } = p
+  const url = `${process.env.ORDER_BACKEND_URL}/order/accounting/create`
+  try {
+    const dto = {
+      orderId,
+      dtos,
+    }
+    const result = await axios.post<OrderAccounting>(url, dto)
+    return result.data
+  } catch (e) {
+    throw new CreateOrderAccountingFailure(e)
   }
 }
