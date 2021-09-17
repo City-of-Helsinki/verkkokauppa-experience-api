@@ -78,15 +78,18 @@ describe('Test Customer Validations', () => {
     const result = await validateCustomer(customer)
     expect(result).toBeFalsy()
   })
-  it('Should validate faulty customer with faulty phone', async () => {
+  it('Should validate customer phone', async () => {
     const customer = {
       firstName: 'Test',
       lastName: 'Tester',
       email: 'test@tester.com',
-      phone: '+1s4gas5das5',
     }
-    // @ts-ignore
-    const result = await validateCustomer(customer)
-    expect(result).toBeFalsy()
+    expect(await validateCustomer(customer)).toEqual(true)
+    expect(
+      await validateCustomer({
+        ...customer,
+        phone: '+1s4gas5das5',
+      })
+    ).toEqual(false)
   })
 })
