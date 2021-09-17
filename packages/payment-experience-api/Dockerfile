@@ -1,4 +1,5 @@
-FROM registry.access.redhat.com/ubi8/nodejs-14 as base
+FROM registry.access.redhat.com/ubi8/nodejs-14:1-35.1626836507 as base
+ARG TZ
 
 # Install yarn
 RUN npm install -g yarn
@@ -27,22 +28,23 @@ USER 1001
 
 
 # Run install for all required packages
-RUN yarn workspace @verkkokauppa/core install
-RUN yarn workspace @verkkokauppa/order-backend install
-RUN yarn workspace @verkkokauppa/payment-backend install
-RUN yarn workspace @verkkokauppa/message-backend install
-RUN yarn workspace @verkkokauppa/product-backend install
-RUN yarn workspace @verkkokauppa/configuration-backend install
-RUN yarn workspace @verkkokauppa/payment-experience-api install
+RUN yarn workspace @verkkokauppa/core install && \
+yarn workspace @verkkokauppa/order-backend install && \
+yarn workspace @verkkokauppa/payment-backend install && \
+yarn workspace @verkkokauppa/message-backend install  && \
+yarn workspace @verkkokauppa/product-backend install && \
+yarn workspace @verkkokauppa/configuration-backend install && \
+yarn workspace @verkkokauppa/payment-experience-api install
+RUN NODE_ICU_DATA=node_modules/full-icu TZ=$TZ yarn test
 
 # Create production build
 FROM base as production
-RUN yarn workspace @verkkokauppa/core build
-RUN yarn workspace @verkkokauppa/order-backend build
-RUN yarn workspace @verkkokauppa/payment-backend build
-RUN yarn workspace @verkkokauppa/message-backend build
-RUN yarn workspace @verkkokauppa/product-backend build
-RUN yarn workspace @verkkokauppa/configuration-backend build
-RUN yarn workspace @verkkokauppa/payment-experience-api build
+RUN yarn workspace @verkkokauppa/core build && \
+yarn workspace @verkkokauppa/order-backend build && \
+yarn workspace @verkkokauppa/payment-backend build && \
+yarn workspace @verkkokauppa/message-backend build && \
+yarn workspace @verkkokauppa/product-backend build && \
+yarn workspace @verkkokauppa/configuration-backend build && \
+yarn workspace @verkkokauppa/payment-experience-api build
 EXPOSE 8080
 CMD yarn workspace @verkkokauppa/payment-experience-api start -d

@@ -97,6 +97,8 @@ services:
       context: ./
       dockerfile: packages/payment-experience-api/Dockerfile
       target: base
+      args:
+        - TZ=Europe/Helsinki
     volumes:
       - ./packages/payment-experience-api/:/opt/app-root/src/packages/payment-experience-api/
       - ./packages/order-backend/:/opt/app-root/src/packages/order-backend/
