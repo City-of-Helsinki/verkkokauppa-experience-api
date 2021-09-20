@@ -48,8 +48,6 @@ export class OnlinePaymentNotifyController extends AbstractController {
       productIds: order.items.map((item) => item.productId),
     })
     if (vismaStatus.paymentPaid) {
-      logger.info(`Send receipt for order ${orderId}`)
-      await OnlinePaymentNotifyController.sendReceipt(order)
       logger.info(
         `Create accounting entry for order ${orderId} with accountings ${JSON.stringify(
           productAccountings
@@ -75,6 +73,8 @@ export class OnlinePaymentNotifyController extends AbstractController {
           }
         }),
       })
+      logger.info(`Send receipt for order ${orderId}`)
+      await OnlinePaymentNotifyController.sendReceipt(order)
     }
     return this.success<any>(response, vismaStatus)
   }
