@@ -14,6 +14,8 @@ export type PublicServiceConfigurationKeys = {
   MERCHANT_EMAIL: string
   MERCHANT_PHONE: string
   MERCHANT_URL: string
+  MERCHANT_TERMS_OF_SERVICE_URL: string
+  MERCHANT_BUSINESS_ID: string
 }
 
 export type RestrictedServiceConfigurationKeys = {
