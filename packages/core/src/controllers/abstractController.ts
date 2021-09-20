@@ -29,6 +29,7 @@ export abstract class AbstractController<
   ): Promise<void | any>
 
   public async execute(req: UnknownRequest, res: Response): Promise<void> {
+    const start = process.hrtime.bigint()
     try {
       const validatedReq = await this.validateRequest(req)
       try {
@@ -43,6 +44,14 @@ export abstract class AbstractController<
     } catch (err) {
       this.error(res, new RequestValidationError(err.errors.join('\n')))
     }
+    const end = process.hrtime.bigint()
+    logger.info(
+      `${req.ip} - ${req.get('user')} '${req.method} ${req.originalUrl} HTTP/:${
+        req.httpVersion
+      }' ${res.statusCode} ${res.get('content-length')} - ${(
+        Number(end - start) * 1e-6
+      ).toFixed(2)} ms`
+    )
   }
 
   public success<T>(res: Response, dto?: T) {
