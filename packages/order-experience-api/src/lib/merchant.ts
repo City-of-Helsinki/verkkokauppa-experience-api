@@ -9,6 +9,8 @@ enum MerchantConfigurationKeys {
   MERCHANT_EMAIL = 'merchantEmail',
   MERCHANT_PHONE = 'merchantPhone',
   MERCHANT_URL = 'merchantUrl',
+  MERCHANT_TERMS_OF_SERVICE_URL = 'merchantTermsOfServiceUrl',
+  MERCHANT_BUSINESS_ID = 'merchantBusinessId',
 }
 
 type MerchantDetails = {
