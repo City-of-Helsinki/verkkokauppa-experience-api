@@ -1,10 +1,60 @@
 {
 	"info": {
-		"_postman_id": "a3f75b6f-4d8c-4a0a-892d-e1560aa907d6",
+		"_postman_id": "b45aa8b8-f04d-4815-a1b1-f2df908f319d",
 		"name": "order-experience-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
+		{
+			"name": "Health 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response has health true\", function () {",
+							"    pm.expect(data.health).to.eq(true)",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderFoundUser}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{orderExperienceUrl}}/health",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
 		{
 			"name": "Create Order 201",
 			"event": [
@@ -4498,7 +4548,7 @@
 			"response": []
 		},
 		{
-			"name": "Create Order with Items 400 (with invalid customer phone)",
+			"name": "Create Order with Items 400 (with invalid customer)",
 			"event": [
 				{
 					"listen": "test",
@@ -4516,7 +4566,7 @@
 							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
 							"});",
 							"pm.test(\"Response has correct error message for invalid request\", function () {",
-							"    pm.expect(data.errors[0].message).to.eq(\"body.customer.phone must match the following: \\\"/^\\\\+(?:[0-9] ?){6,14}[0-9]$/\\\"\")",
+							"    pm.expect(data.errors[0].message).to.eq(\"body.customer.firstName is a required field\\nbody.customer.lastName is a required field\\nbody.customer.email must be a valid email\\nbody.customer.phone must match the following: \\\"/^\\\\+(?:[0-9] ?){6,14}[0-9]$/\\\"\")",
 							"});"
 						],
 						"type": "text/javascript"
@@ -4528,148 +4578,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"namespace\": \"asukaspysakointi\",\n    \"user\": \"{{$randomUserName}}\",\n    \"priceNet\": \"200\",\n    \"priceVat\": \"48\",\n    \"priceTotal\": \"248\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": 2,\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"200\",\n            \"rowPriceVat\": \"48\",\n            \"rowPriceTotal\": \"248\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"100\",\n            \"priceVat\": \"24\",\n            \"priceGross\": \"124\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"123\"\n    }\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{orderExperienceUrl}}",
-					"host": [
-						"{{orderExperienceUrl}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Order with Items 400 (with invalid customer email)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"var data = pm.response.json()",
-							"",
-							"pm.test(\"Status code is 400\", function () {",
-							"    pm.response.to.have.status(400);",
-							"});",
-							"pm.test(\"Response has only one error\", function () {",
-							"    pm.expect(data.errors.length).to.eq(1)",
-							"});",
-							"pm.test(\"Response has correct error code for invalid request\", function () {",
-							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
-							"});",
-							"pm.test(\"Response has correct error message for invalid request\", function () {",
-							"    pm.expect(data.errors[0].message).to.eq(\"body.customer.email must be a valid email\")",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{$randomUserName}}\",\n    \"priceNet\": \"200\",\n    \"priceVat\": \"48\",\n    \"priceTotal\": \"248\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": 2,\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"200\",\n            \"rowPriceVat\": \"48\",\n            \"rowPriceTotal\": \"248\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"100\",\n            \"priceVat\": \"24\",\n            \"priceGross\": \"124\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"asdasd\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{orderExperienceUrl}}",
-					"host": [
-						"{{orderExperienceUrl}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Order with Items 400 (with invalid customer firstname)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"var data = pm.response.json()",
-							"",
-							"pm.test(\"Status code is 400\", function () {",
-							"    pm.response.to.have.status(400);",
-							"});",
-							"pm.test(\"Response has only one error\", function () {",
-							"    pm.expect(data.errors.length).to.eq(1)",
-							"});",
-							"pm.test(\"Response has correct error code for invalid request\", function () {",
-							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
-							"});",
-							"pm.test(\"Response has correct error message for invalid request\", function () {",
-							"    pm.expect(data.errors[0].message).to.eq(\"body.customer.firstName is a required field\")",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{$randomUserName}}\",\n    \"priceNet\": \"200\",\n    \"priceVat\": \"48\",\n    \"priceTotal\": \"248\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": 2,\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"200\",\n            \"rowPriceVat\": \"48\",\n            \"rowPriceTotal\": \"248\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"100\",\n            \"priceVat\": \"24\",\n            \"priceGross\": \"124\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{orderExperienceUrl}}",
-					"host": [
-						"{{orderExperienceUrl}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Order with Items 400 (with invalid customer lastname)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"var data = pm.response.json()",
-							"",
-							"pm.test(\"Status code is 400\", function () {",
-							"    pm.response.to.have.status(400);",
-							"});",
-							"pm.test(\"Response has only one error\", function () {",
-							"    pm.expect(data.errors.length).to.eq(1)",
-							"});",
-							"pm.test(\"Response has correct error code for invalid request\", function () {",
-							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
-							"});",
-							"pm.test(\"Response has correct error message for invalid request\", function () {",
-							"    pm.expect(data.errors[0].message).to.eq(\"body.customer.lastName is a required field\")",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{$randomUserName}}\",\n    \"priceNet\": \"200\",\n    \"priceVat\": \"48\",\n    \"priceTotal\": \"248\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": 2,\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"200\",\n            \"rowPriceVat\": \"48\",\n            \"rowPriceTotal\": \"248\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"100\",\n            \"priceVat\": \"24\",\n            \"priceGross\": \"124\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{$randomUserName}}\",\n    \"priceNet\": \"200\",\n    \"priceVat\": \"48\",\n    \"priceTotal\": \"248\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": 2,\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"200\",\n            \"rowPriceVat\": \"48\",\n            \"rowPriceTotal\": \"248\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"100\",\n            \"priceVat\": \"24\",\n            \"priceGross\": \"124\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"\",\n        \"lastName\": \"\",\n        \"email\": \"123\",\n        \"phone\": \"123\"\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -4772,7 +4681,7 @@
 							"        mode: 'raw',",
 							"        raw: JSON.stringify(",
 							"            {",
-							"                namespace: \"asukaspysakointi\",",
+							"                namespace: pm.variables.replaceIn('{{namespace}}'),",
 							"                user: pm.variables.replaceIn('{{$randomUserName}}'),",
 							"                items: [",
 							"                    {",
@@ -4831,7 +4740,7 @@
 			"response": []
 		},
 		{
-			"name": "Convert Cart to Order 400 (with invalid customer email)",
+			"name": "Convert Cart to Order 400 (with invalid customer)",
 			"event": [
 				{
 					"listen": "test",
@@ -4849,7 +4758,7 @@
 							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
 							"});",
 							"pm.test(\"Response has correct error message for invalid request\", function () {",
-							"    pm.expect(data.errors[0].message).to.eq(\"body.customer.email must be a valid email\")",
+							"    pm.expect(data.errors[0].message).to.eq(\"body.customer.firstName is a required field\\nbody.customer.lastName is a required field\\nbody.customer.email must be a valid email\\nbody.customer.phone must match the following: \\\"/^\\\\+(?:[0-9] ?){6,14}[0-9]$/\\\"\")",
 							"});"
 						],
 						"type": "text/javascript"
@@ -4870,7 +4779,7 @@
 							"        mode: 'raw',",
 							"        raw: JSON.stringify(",
 							"            {",
-							"                namespace: \"asukaspysakointi\",",
+							"                namespace: pm.variables.replaceIn('{{namespace}}'),",
 							"                user: pm.variables.replaceIn('{{$randomUserName}}'),",
 							"                items: [",
 							"                    {",
@@ -4902,301 +4811,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"asd\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{orderExperienceUrl}}/convert/:cartId",
-					"host": [
-						"{{orderExperienceUrl}}"
-					],
-					"path": [
-						"convert",
-						":cartId"
-					],
-					"variable": [
-						{
-							"key": "cartId",
-							"value": "{{cartToOrder}}"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Convert Cart to Order 400 (with invalid customer phone)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"var data = pm.response.json()",
-							"",
-							"pm.test(\"Status code is 400\", function () {",
-							"    pm.response.to.have.status(400);",
-							"});",
-							"pm.test(\"Response has only one error\", function () {",
-							"    pm.expect(data.errors.length).to.eq(1)",
-							"});",
-							"pm.test(\"Response has correct error code for invalid request\", function () {",
-							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
-							"});",
-							"pm.test(\"Response has correct error message for invalid request\", function () {",
-							"    pm.expect(data.errors[0].message).to.eq(\"body.customer.phone must match the following: \\\"/^\\\\+(?:[0-9] ?){6,14}[0-9]$/\\\"\")",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const cartUrl = pm.variables.get(\"cartExperienceUrl\")",
-							"pm.sendRequest({",
-							"    url: cartUrl,",
-							"    method: 'POST',",
-							"    header: {",
-							"        'content-type': 'application/json',",
-							"    },",
-							"    body: {",
-							"        mode: 'raw',",
-							"        raw: JSON.stringify(",
-							"            {",
-							"                namespace: \"asukaspysakointi\",",
-							"                user: pm.variables.replaceIn('{{$randomUserName}}'),",
-							"                items: [",
-							"                    {",
-							"                        productId: pm.variables.get('productFound'),",
-							"                        quantity: 2",
-							"                    }",
-							"                ]",
-							"}",
-							"        )",
-							"    }",
-							"}, function (error, res) {",
-							"    if (error) {",
-							"    console.log(error);",
-							"  } else {",
-							"      var data = res.json()",
-							"      console.log(data)",
-							"      if (data.cartId) {",
-							"        pm.environment.set(\"cartToOrder\", data.cartId)",
-							"      }",
-							"  }",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"123\"\n    }\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{orderExperienceUrl}}/convert/:cartId",
-					"host": [
-						"{{orderExperienceUrl}}"
-					],
-					"path": [
-						"convert",
-						":cartId"
-					],
-					"variable": [
-						{
-							"key": "cartId",
-							"value": "{{cartToOrder}}"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Convert Cart to Order 400 (with invalid customer firstname)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"var data = pm.response.json()",
-							"",
-							"pm.test(\"Status code is 400\", function () {",
-							"    pm.response.to.have.status(400);",
-							"});",
-							"pm.test(\"Response has only one error\", function () {",
-							"    pm.expect(data.errors.length).to.eq(1)",
-							"});",
-							"pm.test(\"Response has correct error code for invalid request\", function () {",
-							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
-							"});",
-							"pm.test(\"Response has correct error message for invalid request\", function () {",
-							"    pm.expect(data.errors[0].message).to.eq(\"body.customer.firstName is a required field\")",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const cartUrl = pm.variables.get(\"cartExperienceUrl\")",
-							"pm.sendRequest({",
-							"    url: cartUrl,",
-							"    method: 'POST',",
-							"    header: {",
-							"        'content-type': 'application/json',",
-							"    },",
-							"    body: {",
-							"        mode: 'raw',",
-							"        raw: JSON.stringify(",
-							"            {",
-							"                namespace: \"asukaspysakointi\",",
-							"                user: pm.variables.replaceIn('{{$randomUserName}}'),",
-							"                items: [",
-							"                    {",
-							"                        productId: pm.variables.get('productFound'),",
-							"                        quantity: 2",
-							"                    }",
-							"                ]",
-							"}",
-							"        )",
-							"    }",
-							"}, function (error, res) {",
-							"    if (error) {",
-							"    console.log(error);",
-							"  } else {",
-							"      var data = res.json()",
-							"      console.log(data)",
-							"      if (data.cartId) {",
-							"        pm.environment.set(\"cartToOrder\", data.cartId)",
-							"      }",
-							"  }",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"customer\": {\n        \"firstName\": \"\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{orderExperienceUrl}}/convert/:cartId",
-					"host": [
-						"{{orderExperienceUrl}}"
-					],
-					"path": [
-						"convert",
-						":cartId"
-					],
-					"variable": [
-						{
-							"key": "cartId",
-							"value": "{{cartToOrder}}"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Convert Cart to Order 400 (with invalid customer lastname)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"var data = pm.response.json()",
-							"",
-							"pm.test(\"Status code is 400\", function () {",
-							"    pm.response.to.have.status(400);",
-							"});",
-							"pm.test(\"Response has only one error\", function () {",
-							"    pm.expect(data.errors.length).to.eq(1)",
-							"});",
-							"pm.test(\"Response has correct error code for invalid request\", function () {",
-							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
-							"});",
-							"pm.test(\"Response has correct error message for invalid request\", function () {",
-							"    pm.expect(data.errors[0].message).to.eq(\"body.customer.lastName is a required field\")",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const cartUrl = pm.variables.get(\"cartExperienceUrl\")",
-							"pm.sendRequest({",
-							"    url: cartUrl,",
-							"    method: 'POST',",
-							"    header: {",
-							"        'content-type': 'application/json',",
-							"    },",
-							"    body: {",
-							"        mode: 'raw',",
-							"        raw: JSON.stringify(",
-							"            {",
-							"                namespace: \"asukaspysakointi\",",
-							"                user: pm.variables.replaceIn('{{$randomUserName}}'),",
-							"                items: [",
-							"                    {",
-							"                        productId: pm.variables.get('productFound'),",
-							"                        quantity: 2",
-							"                    }",
-							"                ]",
-							"}",
-							"        )",
-							"    }",
-							"}, function (error, res) {",
-							"    if (error) {",
-							"    console.log(error);",
-							"  } else {",
-							"      var data = res.json()",
-							"      console.log(data)",
-							"      if (data.cartId) {",
-							"        pm.environment.set(\"cartToOrder\", data.cartId)",
-							"      }",
-							"  }",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"raw": "{\n    \"customer\": {\n        \"firstName\": \"\",\n        \"lastName\": \"\",\n        \"email\": \"asd\",\n        \"phone\": \"123\"\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -5475,42 +5090,6 @@
 							"key": "id",
 							"value": "123"
 						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get health 200",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"var data = pm.response.json()\r",
-							"\r",
-							"pm.test(\"Status code is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Response health equals true\", function () {\r",
-							"    pm.expect(data.health).to.be.true;\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{orderExperienceUrl}}/health",
-					"host": [
-						"{{orderExperienceUrl}}"
-					],
-					"path": [
-						"health"
 					]
 				}
 			},
