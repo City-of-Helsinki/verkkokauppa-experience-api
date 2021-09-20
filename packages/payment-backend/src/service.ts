@@ -23,7 +23,22 @@ const PAYMENT_METHOD_MAP = new Map()
   .set('invoice', 'billing')
   .set('visma-pay', 'online')
   .set('nordea', 'online')
+  .set('handelsbanken', 'online')
   .set('osuuspankki', 'online')
+  .set('danskebank', 'online')
+  .set('spankki', 'online')
+  .set('saastopankki', 'online')
+  .set('paikallisosuuspankki', 'online')
+  .set('aktia', 'online')
+  .set('alandsbanken', 'online')
+  .set('omasaastopankki', 'online')
+  .set('masterpass', 'online')
+  .set('mobilepay', 'online')
+  .set('pivo', 'online')
+  .set('siirto', 'online')
+  .set('fellowfinance', 'online')
+  .set('joustoraha', 'online')
+  .set('laskuyritykselle', 'online')
   .set('creditcards', 'online')
 
 export const createPaymentFromOrder = async (parameters: {
@@ -41,7 +56,7 @@ export const createPaymentFromOrder = async (parameters: {
   if (!PAYMENT_METHOD_MAP.has(paymentMethod)) {
     throw new PaymentValidationError(
       'payment-method-validation-failed',
-      'paymentMethod must be one of invoice, visma-pay, nordea, osuuspankki, creditcards'
+      'paymentMethod must be one of allowed payment methods'
     )
   }
   const paymentMethodPart = PAYMENT_METHOD_MAP.get(paymentMethod)
