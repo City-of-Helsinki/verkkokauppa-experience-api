@@ -33,8 +33,9 @@ export const customerSchema = yup.object().shape({
   email: yup.string().email().required(),
   phone: yup
     .string()
-    .matches(/^\+(?:[0-9] ?){6,14}[0-9]$/)
-    .required(),
+    .matches(/^\+(?:[0-9] ?){6,14}[0-9]$/, { excludeEmptyString: true })
+    .trim()
+    .ensure(),
 })
 
 export const validateCustomer = (p: OrderCustomer): Promise<boolean> => {
