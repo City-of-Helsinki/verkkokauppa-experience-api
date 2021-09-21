@@ -3153,6 +3153,90 @@
 			"response": []
 		},
 		{
+			"name": "Set Customer to Order without phone 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response contains correct order ID\", function () {",
+							"    pm.expect(data.orderId).to.eql(pm.variables.get(\"orderFound\"));",
+							"});",
+							"pm.test(\"Response contains order status\", function () {",
+							"    pm.expect(data.status).to.not.empty",
+							"});",
+							"pm.test(\"Response contains order namspace\", function () {",
+							"    pm.expect(data.namespace).to.not.empty",
+							"});",
+							"pm.test(\"Response contains correct order user\", function () {",
+							"    pm.expect(data.user).to.eql(pm.environment.get(\"orderFoundUser\"))",
+							"});",
+							"pm.test(\"Response contains order createdAt\", function () {",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response contains correct customer firstname\", function () {",
+							"    pm.expect(data.customer.firstName).to.eq(pm.variables.get(\"testCustomerFirstName\"))",
+							"});",
+							"pm.test(\"Response contains correct customer lastname\", function () {",
+							"    pm.expect(data.customer.lastName).to.eq(pm.variables.get(\"testCustomerLastName\"))",
+							"});",
+							"pm.test(\"Response contains correct customer email\", function () {",
+							"    pm.expect(data.customer.email).to.eq(pm.variables.get(\"testCustomerEmail\"))",
+							"});",
+							"pm.test(\"Response contains no customer phone\", function () {",
+							"    pm.expect(data.customer.phone).to.empty",
+							"});",
+							"pm.test(\"Response has checkoutUrl\", function () {",
+							"    pm.expect(data.checkoutUrl).to.not.empty;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderFoundUser}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/:id/customer",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						":id",
+						"customer"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{orderFound}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Set Customer to Order without user 400",
 			"event": [
 				{
