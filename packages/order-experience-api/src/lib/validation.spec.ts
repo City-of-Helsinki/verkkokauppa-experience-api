@@ -1,4 +1,9 @@
-import { itemsSchema, validateCustomer, validateItems } from './validation'
+import {
+  customerSchema,
+  itemsSchema,
+  validateCustomer,
+  validateItems,
+} from './validation'
 
 describe('Test Order Validations', () => {
   it('validateItems should call isValid of itemsSchema', async () => {
@@ -78,15 +83,24 @@ describe('Test Customer Validations', () => {
     const result = await validateCustomer(customer)
     expect(result).toBeFalsy()
   })
-  it('Should validate faulty customer with faulty phone', async () => {
+  it('Should validate customer phone', async () => {
     const customer = {
       firstName: 'Test',
       lastName: 'Tester',
       email: 'test@tester.com',
-      phone: '+1s4gas5das5',
     }
-    // @ts-ignore
-    const result = await validateCustomer(customer)
-    expect(result).toBeFalsy()
+    expect(customerSchema.validateSync(customer)).toMatchObject({ phone: '' })
+    expect(
+      customerSchema.validateSync({ ...customer, phone: '' })
+    ).toMatchObject({ phone: '' })
+    expect(
+      customerSchema.validateSync({ ...customer, phone: ' ' })
+    ).toMatchObject({ phone: '' })
+    expect(
+      customerSchema.validateSync({ ...customer, phone: '+35840123123' })
+    ).toMatchObject({ phone: '+35840123123' })
+    await expect(
+      customerSchema.validate({ ...customer, phone: '+1s4gas5das5' })
+    ).rejects.toThrow()
   })
 })
