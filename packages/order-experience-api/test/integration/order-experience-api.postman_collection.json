@@ -4744,7 +4744,7 @@
 							"    pm.expect(data.errors[0].code).to.eq(\"request-validation-failed\")",
 							"});",
 							"pm.test(\"Response has correct error message for invalid request\", function () {",
-							"    pm.expect(data.errors[0].message).to.eq(\"body.customer.firstName is a required field\\nbody.customer.lastName is a required field\\nbody.customer.email is a required field\\nbody.customer.phone is a required field\")",
+							"    pm.expect(data.errors[0].message).to.eq(\"body.customer.firstName is a required field\\nbody.customer.lastName is a required field\\nbody.customer.email is a required field\")",
 							"});"
 						],
 						"type": "text/javascript"
