@@ -62,6 +62,14 @@ describe('Test receipt send', () => {
       restricted: false,
     }
 
+    const merchantConfigMock = {
+      configurationId: '431eec7a-3b67-4c0f-8f6f-93522def1d74',
+      namespace: 'test',
+      configurationKey: 'MERCHANT_NAME',
+      configurationValue: 'nimi',
+      restricted: false,
+    }
+
     const paymentMock = {
       paymentId: 'dummy-payment',
       namespace: 'asukaspysakointi',
@@ -84,6 +92,9 @@ describe('Test receipt send', () => {
     }
 
     axiosMock.get.mockImplementation((url) => {
+      if (url.includes(`/public/getAll`)) {
+        return Promise.resolve({ data: [configMock, merchantConfigMock] })
+      }
       if (url.includes(`/public/get`)) {
         return Promise.resolve({ data: configMock })
       }
@@ -102,8 +113,8 @@ describe('Test receipt send', () => {
       }
       return Promise.resolve({})
     })
-
-    const result = await OnlinePaymentNotifyController.sendReceipt(orderMock)
+    const controller = new OnlinePaymentNotifyController()
+    const result = await controller.sendReceipt(orderMock)
     expect(result.error).toBe(``)
     expect(result.template).toBe('template')
   })
