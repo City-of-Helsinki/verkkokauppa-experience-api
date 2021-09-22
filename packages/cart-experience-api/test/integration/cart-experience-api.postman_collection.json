@@ -561,7 +561,7 @@
 						"exec": [
 							"var data = pm.response.json();",
 							"var requestData = JSON.parse(pm.request.body);",
-							"var cartId = pm.request.url.path[0];",
+							"var cartId = pm.environment.get('cartFound');",
 							"",
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
@@ -647,7 +647,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"var cartId = pm.request.url.path[0];",
+							"var cartId = pm.environment.get('cartFound');",
 							"",
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
@@ -735,8 +735,8 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"var cartId = pm.request.url.path[0];",
-							"var removedProductId = pm.request.url.path[2];",
+							"var cartId = pm.environment.get('cartFound');",
+							"var removedProductId = pm.environment.get('productFound');",
 							"",
 							"",
 							"pm.test(\"Status code is 200\", function () {",

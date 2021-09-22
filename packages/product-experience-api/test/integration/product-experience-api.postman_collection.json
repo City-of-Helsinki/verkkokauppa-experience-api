@@ -164,7 +164,7 @@
 					"script": {
 						"exec": [
 							"var data = pm.response.json();",
-							"var productId = pm.request.url.path[0];",
+							"var productId = pm.environment.get('productFound');",
 							"",
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
