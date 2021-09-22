@@ -10,6 +10,6 @@ app.use(compression())
 app.use(cors())
 app.use(json())
 app.use(urlencoded({ extended: true }))
-app.use(routes)
+app.use('/v1/order', routes)
 
 export default app
