@@ -127,7 +127,7 @@ export class OnlinePaymentNotifyController extends AbstractController {
     const email = await sendEmailToCustomer({
       order: orderWithPayments,
       fileName: 'orderConfirmation',
-      emailHeader: 'emailHeader',
+      emailHeader: 'Tilausvahvistus ja kuitti / Order confirmation and receipt / Beställningsbekräftelse och kvitto',
       sendTo: orderWithPayments?.customer?.email || '',
     })
     if (email.error !== '') {
