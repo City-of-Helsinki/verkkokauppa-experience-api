@@ -47,6 +47,7 @@ describe('Create templates from parameters', () => {
         merchantEmail: 'merchantEmail',
         merchantPhone: 'merchantPhone',
         merchantUrl: 'merchantUrl',
+        merchantTermsOfServiceUrl: 'merchantTermsOfServiceUrl',
         merchantBusinessId: 'merchantBusinessId',
       },
       customer: {
