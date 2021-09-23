@@ -76,7 +76,12 @@ export class OnlinePaymentReturnController extends AbstractController {
       })
       if (vismaStatus.paymentPaid) {
         logger.info(`Send receipt for order ${orderId}`)
-        await this.sendReceipt(order)
+        try {
+          await this.sendReceipt(order)
+        } catch (e) {
+          // Skip errors for receipt sending
+          logger.error(e)
+        }
       }
       return result.redirect(302, redirectUrl.toString())
     } catch (error) {
