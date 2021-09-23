@@ -1,4 +1,9 @@
-import { AbstractController, logger } from '@verkkokauppa/core'
+import {
+  AbstractController,
+  caseUtils,
+  ExperienceFailure,
+  logger,
+} from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
 import {
   createUserRedirectUrl,
@@ -6,7 +11,32 @@ import {
 } from '../lib/vismaPay'
 import { URL } from 'url'
 import { getOrderAdmin } from '@verkkokauppa/order-backend'
-import { checkVismaReturnUrl } from '@verkkokauppa/payment-backend'
+import {
+  checkVismaReturnUrl,
+  getPaymentForOrder,
+  Order,
+} from '@verkkokauppa/payment-backend'
+import {
+  getMerchantDetailsForOrder,
+  ServiceConfiguration,
+} from '@verkkokauppa/configuration-backend'
+import { sendEmailToCustomer } from '@verkkokauppa/message-backend'
+
+enum MerchantConfigurationKeys {
+  MERCHANT_NAME = 'merchantName',
+  MERCHANT_STREET = 'merchantStreet',
+  MERCHANT_ZIP = 'merchantZip',
+  MERCHANT_CITY = 'merchantCity',
+  MERCHANT_EMAIL = 'merchantEmail',
+  MERCHANT_PHONE = 'merchantPhone',
+  MERCHANT_URL = 'merchantUrl',
+  MERCHANT_TERMS_OF_SERVICE_URL = 'merchantTermsOfServiceUrl',
+  MERCHANT_BUSINESS_ID = 'merchantBusinessId',
+}
+
+type MerchantDetails = {
+  [key in MerchantConfigurationKeys]: string
+}
 
 export class OnlinePaymentReturnController extends AbstractController {
   protected readonly requestSchema = null
@@ -44,6 +74,10 @@ export class OnlinePaymentReturnController extends AbstractController {
         order,
         vismaStatus,
       })
+      if (vismaStatus.paymentPaid) {
+        logger.info(`Send receipt for order ${orderId}`)
+        await this.sendReceipt(order)
+      }
       return result.redirect(302, redirectUrl.toString())
     } catch (error) {
       logger.error(error)
@@ -62,5 +96,45 @@ export class OnlinePaymentReturnController extends AbstractController {
     redirectUrl.pathname = 'failure'
 
     return redirectUrl.toString()
+  }
+
+  // TODO: Abstract merchant transformation and fix keys to use same casing!
+  protected transformConfigurationToMerchant(p: ServiceConfiguration[]) {
+    if (!p || p.length === 0 || !Array.isArray(p)) {
+      return undefined
+    }
+    return p.reduce<MerchantDetails>((acc, current) => {
+      acc[
+        caseUtils.toCamelCase(
+          current.configurationKey
+        ) as MerchantConfigurationKeys
+      ] = current.configurationValue
+      return acc
+    }, {} as MerchantDetails)
+  }
+
+  public async sendReceipt(order: Order) {
+    const payments = await getPaymentForOrder(order)
+    const merchantConfiguration = await getMerchantDetailsForOrder(order)
+    const orderWithPayments = {
+      ...order,
+      payment: payments,
+      merchant: this.transformConfigurationToMerchant(merchantConfiguration),
+    }
+    const email = await sendEmailToCustomer({
+      order: orderWithPayments,
+      fileName: 'orderConfirmation',
+      emailHeader:
+        'Tilausvahvistus ja kuitti / Order confirmation and receipt / Beställningsbekräftelse och kvitto',
+      sendTo: orderWithPayments?.customer?.email || '',
+    })
+    if (email.error !== '') {
+      throw new ExperienceFailure({
+        code: 'failed-to-send-order-confirmation-email',
+        message: `Cannot send order confirmation email to customer`,
+        source: email.error,
+      })
+    }
+    return email
   }
 }

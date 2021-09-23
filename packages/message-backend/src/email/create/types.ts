@@ -31,6 +31,7 @@ export type OrderMerchant = {
   merchantEmail: string
   merchantPhone: string
   merchantUrl: string
+  merchantTermsOfServiceUrl: string
 }
 
 export interface OrderItemRequest {
