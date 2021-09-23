@@ -68,7 +68,7 @@ export const createPaymentFromOrder = async (parameters: {
       paymentMethod,
       paymentMethodLabel: paymentMethodLabel || paymentMethod,
       language,
-      order: { order, items: order.items },
+      order: { order, items: order.items, ...order.customer },
     })
 
     return result.data
