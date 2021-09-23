@@ -62,14 +62,22 @@ export const createPaymentFromOrder = async (parameters: {
   const paymentMethodPart = PAYMENT_METHOD_MAP.get(paymentMethod)
 
   const url = `${process.env.PAYMENT_BACKEND_URL}/payment/${paymentMethodPart}/createFromOrder`
-
+  const dto = {
+    paymentMethod,
+    paymentMethodLabel: paymentMethodLabel || paymentMethod,
+    language,
+    order: {
+      order: {
+        ...order,
+        customerFirstName: order.customer?.firstName,
+        customerLastName: order.customer?.lastName,
+        customerEmail: order.customer?.email,
+      },
+      items: order.items,
+    },
+  }
   try {
-    const result = await axios.post<Payment>(url, {
-      paymentMethod,
-      paymentMethodLabel: paymentMethodLabel || paymentMethod,
-      language,
-      order: { order: { ...order, ...order.customer }, items: order.items },
-    })
+    const result = await axios.post<Payment>(url, dto)
 
     return result.data
   } catch (e) {
