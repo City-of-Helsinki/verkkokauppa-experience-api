@@ -727,7 +727,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                 <span class=\\"f-fallback\\">
                                                                     Myyjä toimittaa tarvittaessa erikseen lisäohjeet palvelun/tuotteen käyttöön tai toimitukseen liittyen.
                 Sopimusehtoihin voit tutustua täällä:
-                                                                    <a href=\\"merchantUrl\\" target=\\"_blank\\">merchantUrl</a>
+                                                                    <a href=\\"merchantTermsOfServiceUrl\\" target=\\"_blank\\">merchantTermsOfServiceUrl</a>
                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -1036,7 +1036,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                 <span class=\\"f-fallback\\">
                                                                     If necessary, the seller will provide further instructions regarding the use or delivery of the service/product.
                 You can read the terms of service here:
-                                                                    <a href=\\"merchantUrl\\" target=\\"_blank\\">merchantUrl</a>
+                                                                    <a href=\\"merchantTermsOfServiceUrl\\" target=\\"_blank\\">merchantTermsOfServiceUrl</a>
                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -1345,7 +1345,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                 <span class=\\"f-fallback\\">
                                                                     Försäljaren ger vid behov skilt ytterligare anvisningar för användningen av tjänsten/produkten eller beträffande leveransen.
                 Du kan bekanta dig med användningsvillkoren här:
-                                                                    <a href=\\"merchantUrl\\" target=\\"_blank\\">merchantUrl</a>
+                                                                    <a href=\\"merchantTermsOfServiceUrl\\" target=\\"_blank\\">merchantTermsOfServiceUrl</a>
                                                                 </span>
                                                             </td>
                                                         </tr>
