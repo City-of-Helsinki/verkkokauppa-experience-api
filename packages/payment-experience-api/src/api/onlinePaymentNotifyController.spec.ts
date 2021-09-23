@@ -105,7 +105,9 @@ describe('Test receipt send', () => {
     })
 
     axiosMock.post.mockImplementation((url, data?: any) => {
-      expect(data.header).toEqual('emailHeader')
+      expect(data.header).toEqual(
+        'Tilausvahvistus ja kuitti / Order confirmation and receipt / Beställningsbekräftelse och kvitto'
+      )
       expect(data.orderId).toEqual('145d8829-07b7-4b03-ab0e-24063958ab9b')
       expect(data.receiver).toEqual('essi.esimerkki@gmail.com')
       if (url.includes(`message/send/email`)) {
