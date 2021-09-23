@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { OnlinePaymentNotifyController } from './onlinePaymentNotifyController'
+import { OnlinePaymentReturnController } from './onlinePaymentReturnController'
 
 jest.mock('axios')
 const axiosMock = axios as jest.Mocked<typeof axios>
@@ -115,7 +115,7 @@ describe('Test receipt send', () => {
       }
       return Promise.resolve({})
     })
-    const controller = new OnlinePaymentNotifyController()
+    const controller = new OnlinePaymentReturnController()
     const result = await controller.sendReceipt(orderMock)
     expect(result.error).toBe(``)
     expect(result.template).toBe('template')
