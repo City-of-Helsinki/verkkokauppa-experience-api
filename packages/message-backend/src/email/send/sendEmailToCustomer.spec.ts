@@ -50,6 +50,7 @@ describe('sendEmailToCustomer.spec.ts', () => {
         merchantPhone: 'merchantPhone',
         merchantUrl: 'merchantUrl',
         merchantBusinessId: 'merchantBusinessId',
+        merchantTermsOfServiceUrl: 'merchantTermsOfServiceUrl',
       },
       customer: {
         firstName: 'Essi',
