@@ -129,12 +129,6 @@ export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
       Date.UTC(year, month, day, hours, minutes, seconds)
     )
 
-    if (dateObj.getTimezoneOffset() !== 0) {
-      dateObj.setTime(
-        dateObj.getTime() + dateObj.getTimezoneOffset() * 60 * 1000
-      )
-    }
-
     return (
       dateObj.toLocaleDateString('de-DE', {
         timeZone: 'Europe/Helsinki',
