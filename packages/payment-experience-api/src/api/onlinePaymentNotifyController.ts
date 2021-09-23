@@ -1,6 +1,8 @@
 import {
   AbstractController,
+  caseUtils,
   ExperienceError,
+  ExperienceFailure,
   logger,
   StatusCode,
 } from '@verkkokauppa/core'
@@ -18,6 +20,26 @@ import {
   Order,
 } from '@verkkokauppa/payment-backend'
 import { sendEmailToCustomer } from '@verkkokauppa/message-backend'
+import {
+  getMerchantDetailsForOrder,
+  ServiceConfiguration,
+} from '@verkkokauppa/configuration-backend'
+
+enum MerchantConfigurationKeys {
+  MERCHANT_NAME = 'merchantName',
+  MERCHANT_STREET = 'merchantStreet',
+  MERCHANT_ZIP = 'merchantZip',
+  MERCHANT_CITY = 'merchantCity',
+  MERCHANT_EMAIL = 'merchantEmail',
+  MERCHANT_PHONE = 'merchantPhone',
+  MERCHANT_URL = 'merchantUrl',
+  MERCHANT_TERMS_OF_SERVICE_URL = 'merchantTermsOfServiceUrl',
+  MERCHANT_BUSINESS_ID = 'merchantBusinessId',
+}
+
+type MerchantDetails = {
+  [key in MerchantConfigurationKeys]: string
+}
 
 export class OnlinePaymentNotifyController extends AbstractController {
   protected readonly requestSchema = null
@@ -74,35 +96,47 @@ export class OnlinePaymentNotifyController extends AbstractController {
         }),
       })
       logger.info(`Send receipt for order ${orderId}`)
-      await OnlinePaymentNotifyController.sendReceipt(order)
+      await this.sendReceipt(order)
     }
     return this.success<any>(response, vismaStatus)
   }
 
-  static async sendReceipt(order: Order) {
-    try {
-      let payments = await getPaymentForOrder(order)
-
-      let orderWithPayments = { ...order, payment: payments }
-      const email = await sendEmailToCustomer({
-        order: orderWithPayments,
-        fileName: 'orderConfirmation',
-        emailHeader:
-          'Tilausvahvistus ja kuitti / Order confirmation and receipt / Beställningsbekräftelse och kvitto',
-        sendTo: orderWithPayments?.customer?.email || '',
-      })
-      if (email.error !== '') {
-        throw new Error(email.error)
-      }
-      return email
-    } catch (e) {
-      // Do not stop redirecting if email sending fails.
-      console.log(
-        `orderConfirmation email was not sent for order ${
-          order.orderId
-        } error: ${e.toString()}`
-      )
-      console.error(e)
+  // TODO: Abstract merchant transformation and fix keys to use same casing!
+  protected transformConfigurationToMerchant(p: ServiceConfiguration[]) {
+    if (!p || p.length === 0 || !Array.isArray(p)) {
+      return undefined
     }
+    return p.reduce<MerchantDetails>((acc, current) => {
+      acc[
+        caseUtils.toCamelCase(
+          current.configurationKey
+        ) as MerchantConfigurationKeys
+      ] = current.configurationValue
+      return acc
+    }, {} as MerchantDetails)
+  }
+
+  public async sendReceipt(order: Order) {
+    const payments = await getPaymentForOrder(order)
+    const merchantConfiguration = await getMerchantDetailsForOrder(order)
+    const orderWithPayments = {
+      ...order,
+      payment: payments,
+      merchant: this.transformConfigurationToMerchant(merchantConfiguration),
+    }
+    const email = await sendEmailToCustomer({
+      order: orderWithPayments,
+      fileName: 'orderConfirmation',
+      emailHeader: 'Tilausvahvistus ja kuitti / Order confirmation and receipt / Beställningsbekräftelse och kvitto',
+      sendTo: orderWithPayments?.customer?.email || '',
+    })
+    if (email.error !== '') {
+      throw new ExperienceFailure({
+        code: 'failed-to-send-order-confirmation-email',
+        message: `Cannot send order confirmation email to customer`,
+        source: email.error,
+      })
+    }
+    return email
   }
 }

@@ -5,6 +5,9 @@ trigger:
     include:
       - packages/payment-experience-api
       - packages/payment-backend
+      - packages/message-backend
+      - packages/product-backend
+      - packages/order-backend
       - packages/core
     exclude:
       - packages/payment-experience-api/test/integration/payment-experience-api.postman_collection.json
