@@ -10,6 +10,7 @@ import {
   GetPublicServiceConfigurationFailure,
   GetRestrictedServiceConfigurationFailure,
 } from './errors'
+import { ExperienceFailure } from '@verkkokauppa/core'
 
 export const getAllPublicServiceConfiguration = async (p: {
   namespace: string
@@ -104,4 +105,24 @@ export const getMerchantDetailsForOrder = async (p: {
   return allConfiguration.filter((configuration) =>
     merchantFields.includes(configuration.configurationKey)
   )
+}
+
+export const createPublicServiceConfigurations = async (p: {
+  namespace: string
+  configurations: { [key: string]: string }
+}): Promise<ServiceConfiguration[]> => {
+  if (!process.env.CONFIGURATION_BACKEND_URL) {
+    throw new Error('No configuration backend URL set')
+  }
+  const url = `${process.env.CONFIGURATION_BACKEND_URL}/public/create-batch`
+  try {
+    const res = await axios.post(url, p)
+    return res.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-create-public-service-configurations',
+      message: 'Failed to create public service configurations',
+      source: e,
+    })
+  }
 }
