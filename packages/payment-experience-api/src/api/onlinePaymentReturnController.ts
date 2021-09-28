@@ -49,26 +49,30 @@ export class OnlinePaymentReturnController extends AbstractController {
     if (!process.env.REDIRECT_PAYMENT_URL_BASE) {
       throw new Error('No default redirect url specified')
     }
+    const orderId = parseOrderIdFromRedirect({ query })
+
+    if (!orderId) {
+      logger.error('No orderId specified redirect to general failure url')
+      return result.redirect(
+        302,
+        OnlinePaymentReturnController.getFailureRedirectUrl().toString()
+      )
+    }
+
     try {
       const vismaStatus = await checkVismaReturnUrl({ params: query })
-      if (!vismaStatus.valid) {
-        console.log('VismaStatus is not valid, redirect to failure url')
-        return result.redirect(
-          302,
-          OnlinePaymentReturnController.getFailureRedirectUrl().toString()
-        )
-      }
-      const orderId = parseOrderIdFromRedirect({ query })
-      if (!orderId) {
-        console.error('No orderId specified')
-        return result.redirect(
-          302,
-          OnlinePaymentReturnController.getFailureRedirectUrl().toString()
-        )
-      }
       logger.debug(
         `VismaStatus for order ${orderId}: ${JSON.stringify(vismaStatus)}`
       )
+      if (!vismaStatus.valid) {
+        logger.debug(
+          `VismaStatus is not valid for ${orderId}, redirect to failure url`
+        )
+        return result.redirect(
+          302,
+          OnlinePaymentReturnController.getFailureRedirectUrl().toString()
+        )
+      }
       const order = await getOrderAdmin({ orderId })
       const redirectUrl = await createUserRedirectUrl({
         order,
@@ -86,6 +90,9 @@ export class OnlinePaymentReturnController extends AbstractController {
       return result.redirect(302, redirectUrl.toString())
     } catch (error) {
       logger.error(error)
+      logger.debug(
+        `Error occurred, redirect user to failure url for order ${orderId}`
+      )
       return result.redirect(
         302,
         OnlinePaymentReturnController.getFailureRedirectUrl().toString()
