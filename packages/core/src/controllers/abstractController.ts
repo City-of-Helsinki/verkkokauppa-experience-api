@@ -3,6 +3,7 @@ import { logger } from '../logger'
 import type { AnyObjectSchema, Asserts, ObjectSchema } from 'yup'
 import { RequestValidationError, UnexpectedError } from '../errors'
 import { ExperienceError } from '../models'
+import axios, { AxiosRequestConfig } from 'axios'
 
 type UnknownRequest = Request<unknown, unknown, unknown>
 export type ValidatedRequest<
@@ -80,3 +81,41 @@ export abstract class AbstractController<
       .json({ errors: errors.map((e) => e.toResponseOutput()) })
   }
 }
+
+axios.interceptors.request.use((config: any) => {
+  // store original data because in the response it has been stringified
+  config._data = config.data
+  config._start = process.hrtime.bigint()
+  return config
+})
+
+const logResponse = (res: any) => {
+  const config: AxiosRequestConfig & { _data: any; _start: bigint } = res.config
+  if (config) {
+    const { _data, _start, params, method, url } = config
+    const end = process.hrtime.bigint()
+    logger.info({
+      origin: 'local',
+      method: method?.toUpperCase(),
+      url: url,
+      requestParams: params,
+      requestBody: _data,
+      responseStatus: res.status,
+      responseBody: res.data,
+      duration: _start && `${(Number(end - _start) * 1e-6).toFixed(2)} ms`,
+    })
+  }
+}
+
+axios.interceptors.response.use(
+  (res) => {
+    logResponse(res)
+    return res
+  },
+  (err) => {
+    // delete stringified request body which might contain sensitive data when logging errors
+    delete err.config?.data
+    logResponse(err)
+    return Promise.reject(err)
+  }
+)
