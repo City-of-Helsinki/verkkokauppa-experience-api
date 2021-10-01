@@ -91,20 +91,21 @@ axios.interceptors.request.use((config: any) => {
 
 const logResponse = (res: any) => {
   const config: AxiosRequestConfig & { _data: any; _start: bigint } = res.config
-  if (config) {
-    const { _data, _start, params, method, url } = config
-    const end = process.hrtime.bigint()
-    logger.info({
-      origin: 'local',
-      method: method?.toUpperCase(),
-      url: url,
-      requestParams: params,
-      requestBody: _data,
-      responseStatus: res.status,
-      responseBody: res.data,
-      duration: _start && `${(Number(end - _start) * 1e-6).toFixed(2)} ms`,
-    })
+  if (!config) {
+    return
   }
+  const { _data, _start, params, method, url } = config
+  const end = process.hrtime.bigint()
+  logger.info({
+    origin: 'local',
+    method: method?.toUpperCase(),
+    url: url,
+    requestParams: params,
+    requestBody: _data,
+    responseStatus: res.status ?? res.response?.status,
+    responseBody: res.data ?? res.response?.data,
+    duration: _start && `${(Number(end - _start) * 1e-6).toFixed(2)} ms`,
+  })
 }
 
 axios.interceptors.response.use(
@@ -115,6 +116,7 @@ axios.interceptors.response.use(
   (err) => {
     // delete stringified request body which might contain sensitive data when logging errors
     delete err.config?.data
+    delete err.response?.config?.data
     logResponse(err)
     return Promise.reject(err)
   }
