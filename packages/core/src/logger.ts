@@ -6,9 +6,18 @@ export const logger = createLogger({
     format.timestamp(),
     format.errors({ stack: true }),
     format.json({
-      replacer: (_key, value) => {
+      replacer: (key, value) => {
         if (value instanceof Error) {
           return inspect(value)
+        }
+        if (typeof value === 'bigint') {
+          return value.toString()
+        }
+        //TODO: Move sanitization of sensitive (user) data elsewhere. Should not be under all log formatting
+        if (typeof value === 'string') {
+          if (key.match(/firstname|lastname|phone|email/i)) {
+            return value && `${value[0]}...`
+          }
         }
         return value
       },
