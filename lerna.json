@@ -4,7 +4,8 @@
   "version": "independent",
   "command": {
     "version": {
-      "allowBranch": "master"
+      "allowBranch": "master",
+      "private": false
     }
   },
   "ignoreChanges": [
