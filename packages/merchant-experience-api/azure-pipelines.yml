@@ -10,7 +10,7 @@ trigger:
       - packages/merchant-experience-api/test/integration/merchant-experience-api.postman_collection.json
   tags:
     include:
-      - @verkkokauppa/merchant-experience-api@*
+      - '@verkkokauppa/merchant-experience-api@*'
   branches:
     include:
       - master
