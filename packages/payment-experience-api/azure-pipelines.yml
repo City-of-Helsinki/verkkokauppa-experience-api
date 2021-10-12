@@ -13,7 +13,7 @@ trigger:
       - packages/payment-experience-api/test/integration/payment-experience-api.postman_collection.json
   tags:
     include:
-      - payment-experience-api/*
+      - @verkkokauppa/payment-experience-api@*
   branches:
     include:
       - master
