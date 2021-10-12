@@ -5,7 +5,8 @@
   "command": {
     "version": {
       "allowBranch": "master",
-      "private": false
+      "private": false,
+      "message": "[skip ci] Publish"
     }
   },
   "ignoreChanges": [
