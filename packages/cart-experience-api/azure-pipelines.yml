@@ -10,7 +10,7 @@ trigger:
       - packages/cart-experience-api/test/integration/cart-experience-api.postman_collection.json
   tags:
     include:
-      - @verkkokauppa/cart-experience-api@*
+      - '@verkkokauppa/cart-experience-api@*'
   branches:
     include:
       - master
