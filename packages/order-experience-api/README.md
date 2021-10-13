@@ -8,10 +8,18 @@ Service offers methods to fetch and update order information
 
 ### Utilizes packages:
 - Cart backend
+- Order backend
+- Payment backend
+- Price backend
+- Product Backend
 
 ## External Services
 Connects to:
 - Order Backend API
+- Payment Backend API
+- Cart Backend API
+- Price Backend API
+- Product Backend API
 
 ## Required Environment configuration
 | Config  | Default value | Example | Description |

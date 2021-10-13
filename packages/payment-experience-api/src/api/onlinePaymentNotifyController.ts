@@ -38,7 +38,7 @@ export class OnlinePaymentNotifyController extends AbstractController {
     )
     logger.info(`Load order ${orderId} from payment callback`)
     const order = await getOrderAdmin({ orderId })
-    logger.info(`Load product accountings for order`)
+    logger.info(`Load product accountings for order ${orderId}`)
     const productAccountings = await getProductAccountingBatch({
       productIds: order.items.map((item) => item.productId),
     })

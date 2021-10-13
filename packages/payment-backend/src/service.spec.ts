@@ -16,6 +16,11 @@ const orderMock = {
   user: 'test@test.dev.hel',
   createdAt: '1619157868',
   type: 'order',
+  customer: {
+    firstName: 'Firstname',
+    lastName: 'Lastname',
+    email: 'test@dev.hel',
+  },
   items: [
     {
       orderId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
@@ -91,6 +96,62 @@ describe('Test Create Payment for Order', () => {
       order: orderMock,
       paymentMethod: 'nordea',
       paymentMethodLabel: 'Nordea',
+    })
+    expect(axiosMock.post).toHaveBeenCalledTimes(1)
+    expect(axiosMock.post?.mock?.calls[0]![0]).toEqual(
+      'test.dev.hel/payment/online/createFromOrder'
+    )
+    expect(axiosMock.post?.mock?.calls[0]![1]).toEqual({
+      paymentMethod: 'nordea',
+      paymentMethodLabel: 'Nordea',
+      language: 'fi',
+      order: {
+        order: {
+          orderId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
+          namespace: 'testNameSpace',
+          user: 'test@test.dev.hel',
+          createdAt: '1619157868',
+          type: 'order',
+          customer: orderMock.customer,
+          customerFirstName: 'Firstname',
+          customerLastName: 'Lastname',
+          customerEmail: 'test@dev.hel',
+          items: [
+            {
+              orderId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
+              orderItemId: '19699acf-b0a3-440f-818f-e582825fa3a7',
+              productId: '30a245ed-5fca-4fcf-8b2a-cdf1ce6fca0d',
+              quantity: 2,
+              productName: 'Product Name',
+              unit: 'pcs',
+              rowPriceNet: '100',
+              rowPriceVat: '24',
+              rowPriceTotal: '124',
+              priceNet: '50',
+              priceGross: '62',
+              priceVat: '12',
+              vatPercentage: '24',
+            },
+          ],
+        },
+        items: [
+          {
+            orderId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
+            orderItemId: '19699acf-b0a3-440f-818f-e582825fa3a7',
+            productId: '30a245ed-5fca-4fcf-8b2a-cdf1ce6fca0d',
+            quantity: 2,
+            productName: 'Product Name',
+            unit: 'pcs',
+            rowPriceNet: '100',
+            rowPriceVat: '24',
+            rowPriceTotal: '124',
+            priceNet: '50',
+            priceGross: '62',
+            priceVat: '12',
+            vatPercentage: '24',
+          },
+        ],
+      },
     })
     expect(result).toEqual(mockData)
   })
