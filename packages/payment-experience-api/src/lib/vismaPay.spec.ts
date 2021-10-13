@@ -48,7 +48,7 @@ const orderMock = {
 }
 
 describe('Test User redirection creation', () => {
-  it('Should return failure if no default redirect url specified', async () => {
+  it('Should throw exception if no default redirect url specified', async () => {
     process.env.PAYMENT_BACKEND_URL = 'test.dev.hel'
     await expect(
       createUserRedirectUrl({
@@ -75,7 +75,7 @@ describe('Test User redirection creation', () => {
       `${process.env.REDIRECT_PAYMENT_URL_BASE}/145d8829-07b7-4b03-ab0e-24063958ab9b/failure`
     )
   })
-  it('Should return service failure if order is not paid and with service specific configuration set', async () => {
+  it('Should return service failure if order is not paid and cannot be retried and with service specific configuration set', async () => {
     process.env.REDIRECT_PAYMENT_URL_BASE = 'https://test.dev.hel'
     process.env.CONFIGURATION_BACKEND_URL = 'https://test.dev.hel'
     const configMock = {
@@ -91,7 +91,7 @@ describe('Test User redirection creation', () => {
       vismaStatus: { canRetry: false, paymentPaid: false, valid: true },
     })
     expect(result.toString()).toBe(
-      `${process.env.REDIRECT_PAYMENT_URL_BASE}/145d8829-07b7-4b03-ab0e-24063958ab9b/failure`
+      `https://service.dev.hel/failure?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b`
     )
   })
   it('Should return checkout failure with retry if order is not paid and no service specific configuration set', async () => {
@@ -112,7 +112,7 @@ describe('Test User redirection creation', () => {
       `${process.env.REDIRECT_PAYMENT_URL_BASE}/145d8829-07b7-4b03-ab0e-24063958ab9b/summary?paymentPaid=false`
     )
   })
-  it('Should return service failure with retry if order is not paid and with service specific configuration set', async () => {
+  it('Should return checkout failure with retry if order is not paid and with service specific configuration set', async () => {
     process.env.REDIRECT_PAYMENT_URL_BASE = 'https://test.dev.hel'
     process.env.CONFIGURATION_BACKEND_URL = 'https://test.dev.hel'
     const configMock = {

@@ -1,0 +1,17 @@
+{
+  "npmClient": "yarn",
+  "useWorkspaces": true,
+  "version": "independent",
+  "command": {
+    "version": {
+      "allowBranch": "master",
+      "private": false,
+      "message": "[skip ci] Publish"
+    }
+  },
+  "ignoreChanges": [
+    "**/*.md",
+    "**/*.spec.ts",
+    "**/test/**"
+  ]
+}

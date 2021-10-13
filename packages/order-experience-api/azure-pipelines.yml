@@ -11,7 +11,7 @@ trigger:
       - packages/order-experience-api/test/integration/order-experience-api.postman_collection.json
   tags:
     include:
-      - order-experience-api/*
+      - '@verkkokauppa/order-experience-api@*'
   branches:
     include:
       - master

@@ -1,6 +1,6 @@
 {
   "name": "@verkkokauppa/merchant-experience-api",
-  "version": "1.0.0",
+  "version": "0.7.5",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -13,8 +13,8 @@
     "dev": "NODE_ENV=development nodemon src/index.ts"
   },
   "dependencies": {
-    "@verkkokauppa/core": "^1.0.0",
     "@verkkokauppa/configuration-backend": "^1.0.0",
+    "@verkkokauppa/core": "^1.0.0",
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "compression": "^1.7.4",

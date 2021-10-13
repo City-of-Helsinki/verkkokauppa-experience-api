@@ -10,7 +10,7 @@ trigger:
       - packages/price-experience-api/test/integration/price-experience-api.postman_collection.json
   tags:
     include:
-      - price-experience-api/*
+      - '@verkkokauppa/price-experience-api@*'
   branches:
     include:
       - master
