@@ -1,6 +1,5 @@
 import {
   AbstractController,
-  caseUtils,
   ExperienceFailure,
   logger,
 } from '@verkkokauppa/core'
@@ -16,27 +15,8 @@ import {
   getPaymentForOrder,
   Order,
 } from '@verkkokauppa/payment-backend'
-import {
-  getMerchantDetailsForOrder,
-  ServiceConfiguration,
-} from '@verkkokauppa/configuration-backend'
+import { getMerchantDetailsForOrder } from '@verkkokauppa/configuration-backend'
 import { sendEmailToCustomer } from '@verkkokauppa/message-backend'
-
-enum MerchantConfigurationKeys {
-  MERCHANT_NAME = 'merchantName',
-  MERCHANT_STREET = 'merchantStreet',
-  MERCHANT_ZIP = 'merchantZip',
-  MERCHANT_CITY = 'merchantCity',
-  MERCHANT_EMAIL = 'merchantEmail',
-  MERCHANT_PHONE = 'merchantPhone',
-  MERCHANT_URL = 'merchantUrl',
-  MERCHANT_TERMS_OF_SERVICE_URL = 'merchantTermsOfServiceUrl',
-  MERCHANT_BUSINESS_ID = 'merchantBusinessId',
-}
-
-type MerchantDetails = {
-  [key in MerchantConfigurationKeys]: string
-}
 
 export class OnlinePaymentReturnController extends AbstractController {
   protected readonly requestSchema = null
@@ -110,28 +90,13 @@ export class OnlinePaymentReturnController extends AbstractController {
     return redirectUrl.toString()
   }
 
-  // TODO: Abstract merchant transformation and fix keys to use same casing!
-  protected transformConfigurationToMerchant(p: ServiceConfiguration[]) {
-    if (!p || p.length === 0 || !Array.isArray(p)) {
-      return undefined
-    }
-    return p.reduce<MerchantDetails>((acc, current) => {
-      acc[
-        caseUtils.toCamelCase(
-          current.configurationKey
-        ) as MerchantConfigurationKeys
-      ] = current.configurationValue
-      return acc
-    }, {} as MerchantDetails)
-  }
-
   public async sendReceipt(order: Order) {
     const payments = await getPaymentForOrder(order)
-    const merchantConfiguration = await getMerchantDetailsForOrder(order)
+    const merchant = await getMerchantDetailsForOrder(order)
     const orderWithPayments = {
       ...order,
       payment: payments,
-      merchant: this.transformConfigurationToMerchant(merchantConfiguration),
+      merchant,
     }
     const email = await sendEmailToCustomer({
       order: orderWithPayments,

@@ -1,3 +1,15 @@
+export type MerchantConfigurationKeys = {
+  merchantName: string
+  merchantStreet: string
+  merchantZip: string
+  merchantCity: string
+  merchantEmail: string
+  merchantPhone: string
+  merchantUrl: string
+  merchantTermsOfServiceUrl: string
+  merchantBusinessId: string
+}
+
 export type PublicServiceConfigurationKeys = {
   TERMS_OF_USE_URL: string
   TERMS_OF_USE_EMBEDDABLE_CONTENT: string
@@ -7,16 +19,7 @@ export type PublicServiceConfigurationKeys = {
   PAYMENT_API_VERSION: string
   PAYMENT_RETURN_URL: string
   PAYMENT_NOTIFICATION_URL: string
-  MERCHANT_NAME: string
-  MERCHANT_STREET: string
-  MERCHANT_ZIP: string
-  MERCHANT_CITY: string
-  MERCHANT_EMAIL: string
-  MERCHANT_PHONE: string
-  MERCHANT_URL: string
-  MERCHANT_TERMS_OF_SERVICE_URL: string
-  MERCHANT_BUSINESS_ID: string
-}
+} & MerchantConfigurationKeys
 
 export type RestrictedServiceConfigurationKeys = {
   PAYMENT_API_VERSION: string

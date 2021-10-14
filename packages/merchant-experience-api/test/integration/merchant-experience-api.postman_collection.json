@@ -67,6 +67,61 @@
 			"response": []
 		},
 		{
+			"name": "Create merchant details 201",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"/* Merchant details */",
+							"pm.test(\"Response has merchant details\", function () {",
+							"    pm.expect(data).to.deep.equal({",
+							"        merchantName: 'test_1',",
+							"        merchantZip: '00000'",
+							"    })",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"merchantName\": \"test_1\",\r\n    \"merchantZip\": \"00000\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{merchantExperienceUrl}}/:namespace",
+					"host": [
+						"{{merchantExperienceUrl}}"
+					],
+					"path": [
+						":namespace"
+					],
+					"variable": [
+						{
+							"key": "namespace",
+							"value": "test_1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get health 200",
 			"event": [
 				{
