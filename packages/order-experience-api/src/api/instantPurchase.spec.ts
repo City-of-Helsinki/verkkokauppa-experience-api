@@ -31,20 +31,10 @@ const getMerchantDetailsForOrderMock = require('@verkkokauppa/configuration-back
   () => ({})
 )
 
-const merchantConfigurationMock = [
-  {
-    configurationId: 'i1',
-    namespace: 'n1',
-    configurationKey: 'MERCHANT_NAME',
-    configurationValue: 'name',
-  },
-  {
-    configurationId: 'i2',
-    namespace: 'n2',
-    configurationKey: 'MERCHANT_STREET',
-    configurationValue: 'street',
-  },
-]
+const merchantConfigurationMock = {
+  merchantName: 'name',
+  merchantStreet: 'street',
+}
 
 beforeEach(() => {
   jest.clearAllMocks()

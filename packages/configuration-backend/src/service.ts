@@ -1,5 +1,6 @@
 import axios from 'axios'
 import type {
+  MerchantConfigurationKeys,
   PublicServiceConfigurationKeys,
   RestrictedServiceConfigurationKeys,
   ServiceConfiguration,
@@ -86,25 +87,27 @@ export const getRestrictedServiceConfiguration = async (p: {
   }
 }
 
-export const getMerchantDetailsForOrder = async (p: {
-  namespace: string
-}): Promise<ServiceConfiguration[]> => {
+export const getMerchantDetailsForOrder = async (p: { namespace: string }) => {
   const { namespace } = p
   const allConfiguration = await getAllPublicServiceConfiguration({ namespace })
-  const merchantFields = [
-    'MERCHANT_NAME',
-    'MERCHANT_STREET',
-    'MERCHANT_ZIP',
-    'MERCHANT_CITY',
-    'MERCHANT_EMAIL',
-    'MERCHANT_PHONE',
-    'MERCHANT_URL',
-    'MERCHANT_BUSINESS_ID',
-    'MERCHANT_TERMS_OF_SERVICE_URL',
-  ]
-  return allConfiguration.filter((configuration) =>
-    merchantFields.includes(configuration.configurationKey)
-  )
+
+  return allConfiguration.reduce((acc, cur) => {
+    const { configurationKey: k, configurationValue } = cur
+    if (
+      k === 'merchantName' ||
+      k === 'merchantStreet' ||
+      k === 'merchantZip' ||
+      k === 'merchantCity' ||
+      k === 'merchantEmail' ||
+      k === 'merchantPhone' ||
+      k === 'merchantUrl' ||
+      k === 'merchantTermsOfServiceUrl' ||
+      k === 'merchantBusinessId'
+    ) {
+      acc[k] = configurationValue
+    }
+    return acc
+  }, {} as { [Key in keyof MerchantConfigurationKeys]: string })
 }
 
 export const createPublicServiceConfigurations = async (p: {
