@@ -14,6 +14,7 @@ const merchantSchema = yup
     merchantPhone: yup.string(),
     merchantUrl: yup.string(),
     merchantTermsOfServiceUrl: yup.string(),
+    merchantBusinessId: yup.string(),
   })
   .noUnknown()
 
