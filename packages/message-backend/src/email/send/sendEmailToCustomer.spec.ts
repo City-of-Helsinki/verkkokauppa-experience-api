@@ -60,6 +60,19 @@ describe('sendEmailToCustomer.spec.ts', () => {
         address: 'Esimerkkiosoite 1',
         district: '123456 Esimerkkitoimipaikka',
       },
+      meta: [
+        [
+          {
+            orderId: 'orderIdMeta',
+            orderItemId: 'orderItemId',
+            key: 'meta key',
+            value: 'meta value',
+            label: 'meta label',
+            visibleInCheckout: 'true',
+            ordinal: '0',
+          },
+        ],
+      ],
       status: 'draft',
       type: 'order',
       payment: {
