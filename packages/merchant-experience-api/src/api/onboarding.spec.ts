@@ -37,6 +37,7 @@ describe('Test onboarding', () => {
         'merchantPhone',
         'merchantUrl',
         'merchantTermsOfServiceUrl',
+        'merchantBusinessId',
       ]
       await Promise.all(
         merchantKeys.map(async (k) => {
