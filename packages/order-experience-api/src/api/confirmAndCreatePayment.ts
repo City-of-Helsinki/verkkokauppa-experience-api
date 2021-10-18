@@ -40,10 +40,9 @@ export class ConfirmAndCreatePayment extends AbstractController<
     const order = await confirmOrder({ orderId, user })
     const orderTotals = calculateTotalsFromItems(order)
     const availablePaymentMethods = await getPaymentMethodList({
-      request: {
-        namespace: order.namespace,
-        totalPrice: parseFloat(orderTotals.priceTotal),
-      },
+      order,
+      namespace: order.namespace,
+      totalPrice: parseFloat(orderTotals.priceTotal),
     })
     const currentPaymentMethod = availablePaymentMethods.find(
       (availableMethod) => availableMethod.code === paymentMethod
