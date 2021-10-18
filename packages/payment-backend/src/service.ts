@@ -1,11 +1,5 @@
 import axios from 'axios'
-import type {
-  Order,
-  Payment,
-  PaymentMethod,
-  PaymentMethodListRequest,
-  VismaStatus,
-} from './types'
+import type { Order, Payment, PaymentMethod, VismaStatus } from './types'
 import type { ParsedQs } from 'qs'
 import {
   CheckVismaReturnUrlFailure,
@@ -92,9 +86,15 @@ export const createPaymentFromOrder = async (parameters: {
 }
 
 export const getPaymentMethodList = async (parameters: {
-  request: PaymentMethodListRequest
+  namespace: string
+  totalPrice: number
+  currency?: string
+  order: Order
 }): Promise<PaymentMethod[]> => {
-  const { request } = parameters
+  const {
+    order: { items, ...orderDto },
+    ...params
+  } = parameters
   if (!process.env.PAYMENT_BACKEND_URL) {
     throw new Error('No payment API backend URL set')
   }
@@ -104,7 +104,10 @@ export const getPaymentMethodList = async (parameters: {
   try {
     // We use POST instead of GET since we need to send complex parameters,
     // although using GET would be semantically more correct.
-    const result = await axios.post<PaymentMethod[]>(url, request)
+    const result = await axios.post<PaymentMethod[]>(url, {
+      ...params,
+      orderDto,
+    })
     return result.data
   } catch (e) {
     if (e.response?.status === 404) {
