@@ -15,7 +15,9 @@ const merchantSchema = yup
     merchantUrl: yup.string(),
     merchantTermsOfServiceUrl: yup.string(),
     merchantBusinessId: yup.string(),
+    ORDER_CREATED_REDIRECT_URL: yup.string(),
   })
+  .from('orderCreatedRedirectUrl', 'ORDER_CREATED_REDIRECT_URL')
   .noUnknown()
 
 const merchantKeys = Object.keys(merchantSchema.describe().fields)
@@ -41,7 +43,7 @@ export class Onboarding extends AbstractController<typeof requestSchema> {
 
     const configurations = await createPublicServiceConfigurations({
       namespace,
-      configurations: body,
+      configurations: merchantSchema.cast(body),
     })
 
     const configurationMap = configurations.reduce((acc, cur) => {
@@ -51,6 +53,9 @@ export class Onboarding extends AbstractController<typeof requestSchema> {
       return acc
     }, {} as { [key: string]: string })
 
-    return this.created(res, new Data(configurationMap).serialize())
+    return this.created(
+      res,
+      new Data(merchantSchema.cast(configurationMap)).serialize()
+    )
   }
 }
