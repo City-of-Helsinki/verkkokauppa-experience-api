@@ -5,7 +5,7 @@ import {
   ValidatedRequest,
 } from '@verkkokauppa/core'
 import type { Response } from 'express'
-import { getRecurringOrder } from '@verkkokauppa/order-backend'
+import { getSubscription } from '@verkkokauppa/order-backend'
 import * as yup from 'yup'
 
 const requestSchema = yup.object().shape({
@@ -14,7 +14,7 @@ const requestSchema = yup.object().shape({
   }),
 })
 
-export class GetRecurringOrderController extends AbstractController<
+export class getSubscriptionController extends AbstractController<
   typeof requestSchema
 > {
   protected readonly requestSchema = requestSchema
@@ -27,7 +27,7 @@ export class GetRecurringOrderController extends AbstractController<
 
     logger.debug(`Fetch recurring order ${id}`)
 
-    const dto = new Data(await getRecurringOrder({ id }))
+    const dto = new Data(await getSubscription({ id }))
 
     return this.success<any>(res, dto.serialize())
   }
