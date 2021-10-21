@@ -80,7 +80,7 @@ export interface Order {
   orderId: string
   createdAt: string
   items: OrderItem[]
-  meta: OrderItemMeta[]
+  meta?: OrderItemMeta[]
   priceNet?: string
   priceVat?: string
   priceTotal?: string
