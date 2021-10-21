@@ -29,12 +29,11 @@ export class GetPaymentMethodListController extends AbstractController<
     const order = await getOrder({ orderId, user })
     const dto = new Data(
       await getPaymentMethodList({
-        request: {
-          namespace: order.namespace,
-          totalPrice: order.priceTotal
-            ? parseFloat(order.priceTotal)
-            : calculateTotalPrice(order.items),
-        },
+        order,
+        namespace: order.namespace,
+        totalPrice: order.priceTotal
+          ? parseFloat(order.priceTotal)
+          : calculateTotalPrice(order.items),
       })
     )
 
