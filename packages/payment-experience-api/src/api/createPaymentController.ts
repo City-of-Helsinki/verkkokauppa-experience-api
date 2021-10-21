@@ -40,10 +40,9 @@ export class CreatePaymentController extends AbstractController<
     const order = await getOrder({ orderId, user })
     const orderTotal = this.calculateOrderTotal(order)
     const availablePaymentMethods = await getPaymentMethodList({
-      request: {
-        namespace: order.namespace,
-        totalPrice: orderTotal,
-      },
+      order,
+      namespace: order.namespace,
+      totalPrice: orderTotal,
     })
     const currentPaymentMethod = availablePaymentMethods.find(
       (availableMethod) => availableMethod.code === paymentMethod
