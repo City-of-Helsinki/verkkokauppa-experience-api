@@ -7,7 +7,6 @@ import type {
   OrderConfirmationEmailParameters,
   OrderItemMeta,
 } from '../create/types'
-const fs = require('fs')
 
 function isMessageBackendUrlSet() {
   if (!process.env.MESSAGE_BACKEND_URL) {
@@ -58,19 +57,6 @@ export const sendEmailToCustomer = async (p: {
       templateParams: { order: order },
     }
   )
-
-  const writeToFile = true //TODO REMOVE!
-  if (writeToFile) {
-    try {
-      fs.writeFileSync(
-        'packages/message-backend/src/email/create/__snapshots__/orderConfirmation.html',
-        created.template
-      )
-      //file written successfully
-    } catch (err) {
-      console.error(err)
-    }
-  }
 
   const url = `${process.env.MESSAGE_BACKEND_URL}/message/send/email`
 
