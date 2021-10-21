@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "16adc64c-68a0-4cd0-a55b-8eace3ebc482",
+		"_postman_id": "c5daeda9-dc68-4f1b-a34e-e731efa81deb",
 		"name": "merchant-experience-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -82,8 +82,15 @@
 							"/* Merchant details */",
 							"pm.test(\"Response has merchant details\", function () {",
 							"    pm.expect(data).to.deep.equal({",
-							"        merchantName: 'test_1',",
-							"        merchantZip: '00000'",
+							"    merchantTermsOfServiceUrl: \"https://hel.fi/terms\",",
+							"    merchantPhone: \"01001231233\",",
+							"    merchantUrl: \"https://hel.fi/\",",
+							"    merchantEmail: \"merchantTest@hel.fi\",",
+							"    merchantCity: \"Helsinki\",",
+							"    merchantZip: \"00100\",",
+							"    merchantStreet: \"Street Address 1\",",
+							"    merchantName: \"Merchant Name\",",
+							"    orderCreatedRedirectUrl: \"https://hel.fi/created\"",
 							"    })",
 							"});"
 						],
@@ -96,7 +103,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"merchantName\": \"test_1\",\r\n    \"merchantZip\": \"00000\"\r\n}",
+					"raw": "{\r\n    \"merchantName\": \"Merchant Name\",\r\n    \"merchantStreet\": \"Street Address 1\",\r\n    \"merchantZip\": \"00100\",\r\n    \"merchantCity\": \"Helsinki\",\r\n    \"merchantEmail\": \"merchantTest@hel.fi\",\r\n    \"merchantPhone\": \"01001231233\",\r\n    \"merchantUrl\": \"https://hel.fi/\",\r\n    \"merchantTermsOfServiceUrl\": \"https://hel.fi/terms\",\r\n    \"merchantBusinessId\": \"123456-7\",\r\n    \"orderCreatedRedirectUrl\": \"https://hel.fi/created\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
