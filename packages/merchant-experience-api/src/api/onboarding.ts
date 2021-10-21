@@ -3,28 +3,39 @@ import type { Response } from 'express'
 import * as yup from 'yup'
 import { createPublicServiceConfigurations } from '@verkkokauppa/configuration-backend'
 
-const merchantSchema = yup
-  .object()
+const merchantCommonSchema = yup.object({
+  merchantName: yup.string(),
+  merchantStreet: yup.string(),
+  merchantZip: yup.string(),
+  merchantCity: yup.string(),
+  merchantEmail: yup.string(),
+  merchantPhone: yup.string(),
+  merchantUrl: yup.string(),
+  merchantTermsOfServiceUrl: yup.string(),
+  merchantBusinessId: yup.string(),
+})
+
+const merchantBackendSchema = merchantCommonSchema
   .shape({
-    merchantName: yup.string(),
-    merchantStreet: yup.string(),
-    merchantZip: yup.string(),
-    merchantCity: yup.string(),
-    merchantEmail: yup.string(),
-    merchantPhone: yup.string(),
-    merchantUrl: yup.string(),
-    merchantTermsOfServiceUrl: yup.string(),
-    merchantBusinessId: yup.string(),
+    ORDER_CREATED_REDIRECT_URL: yup.string(),
   })
+  .from('orderCreatedRedirectUrl', 'ORDER_CREATED_REDIRECT_URL')
   .noUnknown()
 
-const merchantKeys = Object.keys(merchantSchema.describe().fields)
+const merchantFrontendSchema = merchantCommonSchema
+  .shape({
+    orderCreatedRedirectUrl: yup.string(),
+  })
+  .from('ORDER_CREATED_REDIRECT_URL', 'orderCreatedRedirectUrl')
+  .noUnknown()
+
+const merchantKeys = Object.keys(merchantBackendSchema.describe().fields)
 
 const requestSchema = yup.object().shape({
   params: yup.object().shape({
     namespace: yup.string().required(),
   }),
-  body: merchantSchema,
+  body: merchantFrontendSchema,
 })
 
 export class Onboarding extends AbstractController<typeof requestSchema> {
@@ -41,7 +52,7 @@ export class Onboarding extends AbstractController<typeof requestSchema> {
 
     const configurations = await createPublicServiceConfigurations({
       namespace,
-      configurations: body,
+      configurations: merchantBackendSchema.cast(body),
     })
 
     const configurationMap = configurations.reduce((acc, cur) => {
@@ -51,6 +62,9 @@ export class Onboarding extends AbstractController<typeof requestSchema> {
       return acc
     }, {} as { [key: string]: string })
 
-    return this.created(res, new Data(configurationMap).serialize())
+    return this.created(
+      res,
+      new Data(merchantFrontendSchema.cast(configurationMap)).serialize()
+    )
   }
 }

@@ -38,6 +38,7 @@ describe('Test onboarding', () => {
         'merchantUrl',
         'merchantTermsOfServiceUrl',
         'merchantBusinessId',
+        'orderCreatedRedirectUrl',
       ]
       await Promise.all(
         merchantKeys.map(async (k) => {
@@ -67,14 +68,22 @@ describe('Test onboarding', () => {
     await onboarding.implementation(
       {
         params: { namespace: 'ns1' },
-        body: { merchantName: 'mn1', merchantStreet: 'ms1' },
+        body: {
+          merchantName: 'mn1',
+          merchantStreet: 'ms1',
+          orderCreatedRedirectUrl: 'ocr.url',
+        },
       },
       mockResponse
     )
     expect(createPublicServiceConfigurationsMock).toHaveBeenCalledTimes(1)
     expect(createPublicServiceConfigurationsMock.mock.calls[0][0]).toEqual({
       namespace: 'ns1',
-      configurations: { merchantName: 'mn1', merchantStreet: 'ms1' },
+      configurations: {
+        merchantName: 'mn1',
+        merchantStreet: 'ms1',
+        ORDER_CREATED_REDIRECT_URL: 'ocr.url',
+      },
     })
   })
   it('Should return configuration map with known keys', async () => {
@@ -82,6 +91,10 @@ describe('Test onboarding', () => {
     createPublicServiceConfigurationsMock.mockImplementationOnce(() => [
       { configurationKey: 'merchantName', configurationValue: 'mn1' },
       { configurationKey: 'merchantStreet', configurationValue: 'ms1' },
+      {
+        configurationKey: 'ORDER_CREATED_REDIRECT_URL',
+        configurationValue: 'ocr.url',
+      },
       { configurationKey: 'unknown', configurationValue: 'unknown' },
     ])
     await onboarding.implementation(
@@ -93,6 +106,7 @@ describe('Test onboarding', () => {
     expect(createdSpy.mock.calls[0]![1]).toEqual({
       merchantName: 'mn1',
       merchantStreet: 'ms1',
+      orderCreatedRedirectUrl: 'ocr.url',
     })
   })
 })
