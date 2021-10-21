@@ -119,10 +119,9 @@ describe('Test confirmAndCreatePayment', () => {
       user: 'testUser',
     })
     expect(getPaymentMethodListMock.mock.calls[0][0]).toEqual({
-      request: {
-        namespace: orderMock.namespace,
-        totalPrice: 310,
-      },
+      order: orderMock,
+      namespace: orderMock.namespace,
+      totalPrice: 310,
     })
     expect(createPaymentFromUnpaidOrderMock.mock.calls[0][0]).toEqual({
       order: orderMock,

@@ -37,12 +37,6 @@ export interface Order {
   priceTotal?: string
 }
 
-export interface PaymentMethodListRequest {
-  namespace: string
-  totalPrice: number
-  currency?: string
-}
-
 export interface PaymentMethod {
   name: string
   code: string
