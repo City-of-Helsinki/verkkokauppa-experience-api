@@ -112,7 +112,7 @@ export const getMerchantDetailsForOrder = async (p: { namespace: string }) => {
 
 export const createPublicServiceConfigurations = async (p: {
   namespace: string
-  configurations: { [key: string]: string }
+  configurations: { [key: string]: string | undefined }
 }): Promise<ServiceConfiguration[]> => {
   if (!process.env.CONFIGURATION_BACKEND_URL) {
     throw new Error('No configuration backend URL set')
