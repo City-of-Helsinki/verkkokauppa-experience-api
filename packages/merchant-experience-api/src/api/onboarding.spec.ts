@@ -38,7 +38,7 @@ describe('Test onboarding', () => {
         'merchantUrl',
         'merchantTermsOfServiceUrl',
         'merchantBusinessId',
-        'ORDER_CREATED_REDIRECT_URL',
+        'orderCreatedRedirectUrl',
       ]
       await Promise.all(
         merchantKeys.map(async (k) => {
@@ -106,7 +106,7 @@ describe('Test onboarding', () => {
     expect(createdSpy.mock.calls[0]![1]).toEqual({
       merchantName: 'mn1',
       merchantStreet: 'ms1',
-      ORDER_CREATED_REDIRECT_URL: 'ocr.url',
+      orderCreatedRedirectUrl: 'ocr.url',
     })
   })
 })
