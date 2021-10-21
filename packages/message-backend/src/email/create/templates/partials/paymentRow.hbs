@@ -14,29 +14,71 @@
                                         {{#each order.items}}
                                             <tr>
                                                 <td width="80%" class="purchase_item">
-                                                                    <span class="f-fallback" style="font-size:14px; font-weight:bold;">
-                                                                        {{productName}}
-                                                                    </span>
+                                                    <span class="f-fallback" style="font-weight:bolder;">
+                                                        {{productName}}
+                                                    </span>
                                                 </td>
                                                 <td class="align-right" width="20%" class="purchase_item">
-                                                                    <span class="f-fallback no-wrap">
-                                                                        {{rowPriceTotal}} €
-                                                                    </span>
+                                                    <span class="f-fallback no-wrap">
+                                                        {{rowPriceTotal}} €
+                                                    </span>
                                                 </td>
                                             </tr>
 
                                             <tr>
                                                 <td width="80%" class="purchase_item">
-                                                                <span class="f-fallback">
-                                                                    {{I18n 'orderConfirmation.receipt.alv'}} ({{vatPercentage}}%)
-                                                                </span>
+                                                    <span class="f-fallback">
+                                                        {{I18n 'orderConfirmation.receipt.alv'}} ({{vatPercentage}}%)
+                                                    </span>
                                                 </td>
                                                 <td class="align-right" width="20%" class="purchase_item pb-1">
-                                                                <span class="f-fallback no-wrap">
-                                                                    {{priceVat}} €
-                                                                </span>
+                                                    <span class="f-fallback no-wrap">
+                                                        {{priceVat}} €
+                                                    </span>
                                                 </td>
                                             </tr>
+                                            {{#each ../order.meta}}
+                                                {{#if (eq ../this.orderItemId orderItemId) }}
+                                                        {{#if label}}
+                                                            <tr>
+                                                                <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback no-wrap pb-1" style="font-size:14px; font-weight:bold;">
+                                                                    {{label}}
+                                                                </span>
+                                                                </td>
+                                                            </tr>
+                                                        {{/if}}
+
+                                                        {{#if key}}
+                                                            <tr>
+                                                                <td width="100%" class="purchase_item">
+                                                                    <span class="f-fallback no-wrap pb-1" style="font-size:14px; font-weight:bold;">
+                                                                        {{key}}
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                        {{/if}}
+
+                                                        {{#if value}}
+                                                            <tr>
+                                                                <td width="100%" class="purchase_item">
+                                                                    <span class="f-fallback no-wrap pb-1" style="font-size:14px;">
+                                                                        {{value}}
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                        {{/if}}
+                                                        {{#if @last}}
+                                                            <tr>
+                                                                <td>
+                                                                    <span>&emsp;</span>
+                                                                </td>
+                                                            </tr>
+                                                        {{/if}}
+                                                {{/if}}
+
+                                            {{/each}}
+
                                         {{/each}}
                                         <tr>
                                             <td width="80%" class="purchase_item" style="border-top: 1rem solid #ffffff">

@@ -200,6 +200,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
             -premailer-width: 100%;
             -premailer-cellpadding: 0;
             -premailer-cellspacing: 0;
+            -premailer-cellspacing: 0;
             border: 2px dashed #CBCCCF;
         }
 
@@ -502,54 +503,122 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                     <table class=\\"purchase_content\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\">
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
-                                                                                    <span class=\\"f-fallback\\" style=\\"font-size:14px; font-weight:bold;\\">
-                                                                                        Kiinteähintainen tuote
-                                                                                    </span>
+                                                                    <span class=\\"f-fallback\\" style=\\"font-weight:bolder;\\">
+                                                                        Kiinteähintainen tuote
+                                                                    </span>
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
-                                                                                    <span class=\\"f-fallback no-wrap\\">
-                                                                                        744 €
-                                                                                    </span>
+                                                                    <span class=\\"f-fallback no-wrap\\">
+                                                                        744 €
+                                                                    </span>
                                                                 </td>
                                                             </tr>
                 
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Sis. alv (24%)
-                                                                                </span>
+                                                                    <span class=\\"f-fallback\\">
+                                                                        Sis. alv (24%)
+                                                                    </span>
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item pb-1\\">
-                                                                                <span class=\\"f-fallback no-wrap\\">
-                                                                                    72 €
-                                                                                </span>
+                                                                    <span class=\\"f-fallback no-wrap\\">
+                                                                        72 €
+                                                                    </span>
                                                                 </td>
                                                             </tr>
+                                                                            <tr>
+                                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                                                <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px; font-weight:bold;\\">
+                                                                                    meta label ordinal 0 show all
+                                                                                </span>
+                                                                                </td>
+                                                                            </tr>
+                
+                                                                            <tr>
+                                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                                                    <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px; font-weight:bold;\\">
+                                                                                        meta key ordinal 0 show all
+                                                                                    </span>
+                                                                                </td>
+                                                                            </tr>
+                
+                                                                            <tr>
+                                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                                                    <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px;\\">
+                                                                                        meta value ordinal 0 show all
+                                                                                    </span>
+                                                                                </td>
+                                                                            </tr>
+                
+                
+                
+                
+                                                                            <tr>
+                                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                                                    <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px;\\">
+                                                                                        when label is empty shows only value row
+                                                                                    </span>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <span>&emsp;</span>
+                                                                                </td>
+                                                                            </tr>
+                
+                
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
-                                                                                    <span class=\\"f-fallback\\" style=\\"font-size:14px; font-weight:bold;\\">
-                                                                                        Kiinteähintainen tuote
-                                                                                    </span>
+                                                                    <span class=\\"f-fallback\\" style=\\"font-weight:bolder;\\">
+                                                                        Kiinteähintainen tuote 1
+                                                                    </span>
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
-                                                                                    <span class=\\"f-fallback no-wrap\\">
-                                                                                        744 €
-                                                                                    </span>
+                                                                    <span class=\\"f-fallback no-wrap\\">
+                                                                        744 €
+                                                                    </span>
                                                                 </td>
                                                             </tr>
                 
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Sis. alv (24%)
-                                                                                </span>
+                                                                    <span class=\\"f-fallback\\">
+                                                                        Sis. alv (24%)
+                                                                    </span>
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item pb-1\\">
-                                                                                <span class=\\"f-fallback no-wrap\\">
-                                                                                    72 €
-                                                                                </span>
+                                                                    <span class=\\"f-fallback no-wrap\\">
+                                                                        72 €
+                                                                    </span>
                                                                 </td>
                                                             </tr>
+                
+                                                                            <tr>
+                                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                                                <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px; font-weight:bold;\\">
+                                                                                    meta label ordinal 1
+                                                                                </span>
+                                                                                </td>
+                                                                            </tr>
+                
+                                                                            <tr>
+                                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                                                    <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px; font-weight:bold;\\">
+                                                                                        meta key ordinal 1
+                                                                                    </span>
+                                                                                </td>
+                                                                            </tr>
+                
+                                                                            <tr>
+                                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                                                    <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px;\\">
+                                                                                        meta value ordinal 1
+                                                                                    </span>
+                                                                                </td>
+                                                                            </tr>
+                
+                
+                
                                                         <tr>
                                                             <td width=\\"80%\\" class=\\"purchase_item\\" style=\\"border-top: 1rem solid #ffffff\\">
                                                                                 <span class=\\"f-fallback\\">
@@ -811,54 +880,122 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                     <table class=\\"purchase_content\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\">
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
-                                                                                    <span class=\\"f-fallback\\" style=\\"font-size:14px; font-weight:bold;\\">
-                                                                                        Kiinteähintainen tuote
-                                                                                    </span>
+                                                                    <span class=\\"f-fallback\\" style=\\"font-weight:bolder;\\">
+                                                                        Kiinteähintainen tuote
+                                                                    </span>
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
-                                                                                    <span class=\\"f-fallback no-wrap\\">
-                                                                                        744 €
-                                                                                    </span>
+                                                                    <span class=\\"f-fallback no-wrap\\">
+                                                                        744 €
+                                                                    </span>
                                                                 </td>
                                                             </tr>
                 
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Incl. VAT (24%)
-                                                                                </span>
+                                                                    <span class=\\"f-fallback\\">
+                                                                        Incl. VAT (24%)
+                                                                    </span>
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item pb-1\\">
-                                                                                <span class=\\"f-fallback no-wrap\\">
-                                                                                    72 €
-                                                                                </span>
+                                                                    <span class=\\"f-fallback no-wrap\\">
+                                                                        72 €
+                                                                    </span>
                                                                 </td>
                                                             </tr>
+                                                                            <tr>
+                                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                                                <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px; font-weight:bold;\\">
+                                                                                    meta label ordinal 0 show all
+                                                                                </span>
+                                                                                </td>
+                                                                            </tr>
+                
+                                                                            <tr>
+                                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                                                    <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px; font-weight:bold;\\">
+                                                                                        meta key ordinal 0 show all
+                                                                                    </span>
+                                                                                </td>
+                                                                            </tr>
+                
+                                                                            <tr>
+                                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                                                    <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px;\\">
+                                                                                        meta value ordinal 0 show all
+                                                                                    </span>
+                                                                                </td>
+                                                                            </tr>
+                
+                
+                
+                
+                                                                            <tr>
+                                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                                                    <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px;\\">
+                                                                                        when label is empty shows only value row
+                                                                                    </span>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <span>&emsp;</span>
+                                                                                </td>
+                                                                            </tr>
+                
+                
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
-                                                                                    <span class=\\"f-fallback\\" style=\\"font-size:14px; font-weight:bold;\\">
-                                                                                        Kiinteähintainen tuote
-                                                                                    </span>
+                                                                    <span class=\\"f-fallback\\" style=\\"font-weight:bolder;\\">
+                                                                        Kiinteähintainen tuote 1
+                                                                    </span>
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
-                                                                                    <span class=\\"f-fallback no-wrap\\">
-                                                                                        744 €
-                                                                                    </span>
+                                                                    <span class=\\"f-fallback no-wrap\\">
+                                                                        744 €
+                                                                    </span>
                                                                 </td>
                                                             </tr>
                 
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Incl. VAT (24%)
-                                                                                </span>
+                                                                    <span class=\\"f-fallback\\">
+                                                                        Incl. VAT (24%)
+                                                                    </span>
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item pb-1\\">
-                                                                                <span class=\\"f-fallback no-wrap\\">
-                                                                                    72 €
-                                                                                </span>
+                                                                    <span class=\\"f-fallback no-wrap\\">
+                                                                        72 €
+                                                                    </span>
                                                                 </td>
                                                             </tr>
+                
+                                                                            <tr>
+                                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                                                <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px; font-weight:bold;\\">
+                                                                                    meta label ordinal 1
+                                                                                </span>
+                                                                                </td>
+                                                                            </tr>
+                
+                                                                            <tr>
+                                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                                                    <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px; font-weight:bold;\\">
+                                                                                        meta key ordinal 1
+                                                                                    </span>
+                                                                                </td>
+                                                                            </tr>
+                
+                                                                            <tr>
+                                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                                                    <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px;\\">
+                                                                                        meta value ordinal 1
+                                                                                    </span>
+                                                                                </td>
+                                                                            </tr>
+                
+                
+                
                                                         <tr>
                                                             <td width=\\"80%\\" class=\\"purchase_item\\" style=\\"border-top: 1rem solid #ffffff\\">
                                                                                 <span class=\\"f-fallback\\">
@@ -1120,54 +1257,122 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                     <table class=\\"purchase_content\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\">
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
-                                                                                    <span class=\\"f-fallback\\" style=\\"font-size:14px; font-weight:bold;\\">
-                                                                                        Kiinteähintainen tuote
-                                                                                    </span>
+                                                                    <span class=\\"f-fallback\\" style=\\"font-weight:bolder;\\">
+                                                                        Kiinteähintainen tuote
+                                                                    </span>
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
-                                                                                    <span class=\\"f-fallback no-wrap\\">
-                                                                                        744 €
-                                                                                    </span>
+                                                                    <span class=\\"f-fallback no-wrap\\">
+                                                                        744 €
+                                                                    </span>
                                                                 </td>
                                                             </tr>
                 
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Inkl. moms (24%)
-                                                                                </span>
+                                                                    <span class=\\"f-fallback\\">
+                                                                        Inkl. moms (24%)
+                                                                    </span>
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item pb-1\\">
-                                                                                <span class=\\"f-fallback no-wrap\\">
-                                                                                    72 €
-                                                                                </span>
+                                                                    <span class=\\"f-fallback no-wrap\\">
+                                                                        72 €
+                                                                    </span>
                                                                 </td>
                                                             </tr>
+                                                                            <tr>
+                                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                                                <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px; font-weight:bold;\\">
+                                                                                    meta label ordinal 0 show all
+                                                                                </span>
+                                                                                </td>
+                                                                            </tr>
+                
+                                                                            <tr>
+                                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                                                    <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px; font-weight:bold;\\">
+                                                                                        meta key ordinal 0 show all
+                                                                                    </span>
+                                                                                </td>
+                                                                            </tr>
+                
+                                                                            <tr>
+                                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                                                    <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px;\\">
+                                                                                        meta value ordinal 0 show all
+                                                                                    </span>
+                                                                                </td>
+                                                                            </tr>
+                
+                
+                
+                
+                                                                            <tr>
+                                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                                                    <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px;\\">
+                                                                                        when label is empty shows only value row
+                                                                                    </span>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <span>&emsp;</span>
+                                                                                </td>
+                                                                            </tr>
+                
+                
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
-                                                                                    <span class=\\"f-fallback\\" style=\\"font-size:14px; font-weight:bold;\\">
-                                                                                        Kiinteähintainen tuote
-                                                                                    </span>
+                                                                    <span class=\\"f-fallback\\" style=\\"font-weight:bolder;\\">
+                                                                        Kiinteähintainen tuote 1
+                                                                    </span>
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
-                                                                                    <span class=\\"f-fallback no-wrap\\">
-                                                                                        744 €
-                                                                                    </span>
+                                                                    <span class=\\"f-fallback no-wrap\\">
+                                                                        744 €
+                                                                    </span>
                                                                 </td>
                                                             </tr>
                 
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Inkl. moms (24%)
-                                                                                </span>
+                                                                    <span class=\\"f-fallback\\">
+                                                                        Inkl. moms (24%)
+                                                                    </span>
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item pb-1\\">
-                                                                                <span class=\\"f-fallback no-wrap\\">
-                                                                                    72 €
-                                                                                </span>
+                                                                    <span class=\\"f-fallback no-wrap\\">
+                                                                        72 €
+                                                                    </span>
                                                                 </td>
                                                             </tr>
+                
+                                                                            <tr>
+                                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                                                <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px; font-weight:bold;\\">
+                                                                                    meta label ordinal 1
+                                                                                </span>
+                                                                                </td>
+                                                                            </tr>
+                
+                                                                            <tr>
+                                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                                                    <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px; font-weight:bold;\\">
+                                                                                        meta key ordinal 1
+                                                                                    </span>
+                                                                                </td>
+                                                                            </tr>
+                
+                                                                            <tr>
+                                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                                                    <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px;\\">
+                                                                                        meta value ordinal 1
+                                                                                    </span>
+                                                                                </td>
+                                                                            </tr>
+                
+                
+                
                                                         <tr>
                                                             <td width=\\"80%\\" class=\\"purchase_item\\" style=\\"border-top: 1rem solid #ffffff\\">
                                                                                 <span class=\\"f-fallback\\">
