@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "16adc64c-68a0-4cd0-a55b-8eace3ebc482",
+		"_postman_id": "c5daeda9-dc68-4f1b-a34e-e731efa81deb",
 		"name": "merchant-experience-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -60,6 +60,67 @@
 						{
 							"key": "namespace",
 							"value": "{{namespace}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create merchant details 201",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"/* Merchant details */",
+							"pm.test(\"Response has merchant details\", function () {",
+							"    pm.expect(data.merchantPhone).to.equal(\"01001231233\")",
+							"    pm.expect(data.merchantUrl).to.equal(\"https://hel.fi/\")",
+							"    pm.expect(data.merchantEmail).to.equal(\"merchantTest@hel.fi\")",
+							"    pm.expect(data.merchantCity).to.equal(\"Helsinki\")",
+							"    pm.expect(data.merchantZip).to.equal(\"00100\")",
+							"    pm.expect(data.merchantStreet).to.equal(\"Street Address 1\")",
+							"    pm.expect(data.merchantName).to.equal(\"Merchant Name\")",
+							"    pm.expect(data.merchantBusinessId).to.equal(\"123456-7\")",
+							"    pm.expect(data.merchantTermsOfServiceUrl).to.equal(\"https://hel.fi/terms\")",
+							"    pm.expect(data.orderCreatedRedirectUrl).to.equal(\"https://hel.fi/created\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"merchantName\": \"Merchant Name\",\r\n    \"merchantStreet\": \"Street Address 1\",\r\n    \"merchantZip\": \"00100\",\r\n    \"merchantCity\": \"Helsinki\",\r\n    \"merchantEmail\": \"merchantTest@hel.fi\",\r\n    \"merchantPhone\": \"01001231233\",\r\n    \"merchantUrl\": \"https://hel.fi/\",\r\n    \"merchantBusinessId\": \"123456-7\",\r\n    \"merchantTermsOfServiceUrl\": \"https://hel.fi/terms\",\r\n    \"orderCreatedRedirectUrl\": \"https://hel.fi/created\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{merchantExperienceUrl}}/:namespace",
+					"host": [
+						"{{merchantExperienceUrl}}"
+					],
+					"path": [
+						":namespace"
+					],
+					"variable": [
+						{
+							"key": "namespace",
+							"value": "test_1"
 						}
 					]
 				}

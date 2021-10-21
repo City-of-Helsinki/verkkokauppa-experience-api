@@ -37,6 +37,10 @@ describe('Test getController', () => {
       { configurationKey: 'unknown', configurationValue: '' },
       { configurationKey: 'MERCHANT_URL', configurationValue: 'murl1' },
       { configurationKey: 'merchantUrl', configurationValue: 'murl2' },
+      {
+        configurationKey: 'ORDER_CREATED_REDIRECT_URL',
+        configurationValue: 'https://test.url',
+      },
     ])
     await getController.implementation(
       { params: { namespace: 'ns1' } } as any,
@@ -48,6 +52,7 @@ describe('Test getController', () => {
       merchantName: 'mn1',
       merchantZip: 'mz1',
       merchantUrl: 'murl2',
+      orderCreatedRedirectUrl: 'https://test.url',
     })
   })
 })
