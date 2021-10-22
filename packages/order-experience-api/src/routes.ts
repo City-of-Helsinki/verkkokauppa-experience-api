@@ -34,7 +34,7 @@ const router = Router()
 router.post('/', (req, res) => createController.execute(req, res))
 router.get('/health', (req, res) => healthController.execute(req, res))
 router.get('/:orderId', (req, res) => getController.execute(req, res))
-router.get('/recurringorder/:id', (req, res) =>
+router.get('/subscription/:id', (req, res) =>
   getSubscriptionCtrl.execute(req, res)
 )
 router.post('/:orderId/customer', (req, res) =>
@@ -55,13 +55,13 @@ router.post('/:orderId/calculateTotals', (req, res) =>
 router.post('/convert/:cartId', (req, res) =>
   cartToOrderController.execute(req, res)
 )
-router.post('/recurringorder/create', (req, res) =>
+router.post('/subscription/create', (req, res) =>
   createSubscriptionCtrl.execute(req, res)
 )
-router.post('/recurringorder/create-from-order', (req, res) =>
+router.post('/subscription/create-from-order', (req, res) =>
   createSubscriptionsFromOrderCtrl.execute(req, res)
 )
-router.post('/recurringorder/search/active', (req, res) =>
+router.post('/subscription/search/active', (req, res) =>
   searchActiveSubscriptionsCtrl.execute(req, res)
 )
 
