@@ -18,15 +18,19 @@ const merchantCommonSchema = yup.object({
 const merchantBackendSchema = merchantCommonSchema
   .shape({
     ORDER_CREATED_REDIRECT_URL: yup.string(),
+    ORDER_CANCEL_REDIRECT_URL: yup.string(),
   })
   .from('orderCreatedRedirectUrl', 'ORDER_CREATED_REDIRECT_URL')
+  .from('orderCancelRedirectUrl', 'ORDER_CANCEL_REDIRECT_URL')
   .noUnknown()
 
 const merchantFrontendSchema = merchantCommonSchema
   .shape({
     orderCreatedRedirectUrl: yup.string(),
+    orderCancelRedirectUrl: yup.string(),
   })
   .from('ORDER_CREATED_REDIRECT_URL', 'orderCreatedRedirectUrl')
+  .from('ORDER_CANCEL_REDIRECT_URL', 'orderCancelRedirectUrl')
   .noUnknown()
 
 const merchantKeys = Object.keys(merchantBackendSchema.describe().fields)
