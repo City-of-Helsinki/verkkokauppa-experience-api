@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "b45aa8b8-f04d-4815-a1b1-f2df908f319d",
+		"_postman_id": "0f5ea16d-4945-40e0-be8c-5156ee4c55ba",
 		"name": "order-experience-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -1313,171 +1313,6 @@
 			"response": []
 		},
 		{
-			"name": "Create Order with Recurring Item 201",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"var data = pm.response.json()",
-							"var requestData = JSON.parse(pm.request.body);",
-							"",
-							"if (data.orderId) {",
-							"    pm.environment.set(\"orderWithRecurringItem\", data.orderId)",
-							"}",
-							"",
-							"pm.test(\"Status code is 201\", function () {",
-							"    pm.response.to.have.status(201);",
-							"});",
-							"/* General data */",
-							"pm.test(\"Response contains ID\", function () {",
-							"    pm.expect(data.orderId).to.eq(pm.environment.get(\"orderWithRecurringItem\"))",
-							"});",
-							"pm.test(\"Response user is correct\", function () {",
-							"    pm.expect(data.user).to.to.eq(pm.environment.get(\"orderWithRecurringItemUser\"))",
-							"});",
-							"pm.test(\"Response createdAt is not empty\", function () {",
-							"    pm.expect(data.createdAt).to.not.empty",
-							"});",
-							"pm.test(\"Response contains checkoutUrl\", function () {",
-							"    pm.expect(data.checkoutUrl).to.exist",
-							"});",
-							"pm.test(\"Response checkoutUrl has valid statusCode\", function() {",
-							"    pm.sendRequest({",
-							"        url: data.checkoutUrl,",
-							"        method: 'GET',",
-							"    }, function (err, res) {",
-							"        pm.expect(res.code).to.eql(200)",
-							"    })",
-							"})",
-							"/* Customer data */",
-							"pm.test(\"Response contains correct order status\", function () {",
-							"    pm.expect(data.status).to.eql(\"draft\");",
-							"});",
-							"pm.test(\"Response contains correct customer firstname\", function () {",
-							"    pm.expect(data.customer.firstName).to.eql(pm.variables.get(\"testCustomerFirstName\"));",
-							"});",
-							"pm.test(\"Response contains correct customer lastname\", function () {",
-							"    pm.expect(data.customer.lastName).to.eql(pm.variables.get(\"testCustomerLastName\"));",
-							"});",
-							"pm.test(\"Response contains correct customer email\", function () {",
-							"    pm.expect(data.customer.email).to.eql(pm.variables.get(\"testCustomerEmail\"));",
-							"});",
-							"pm.test(\"Response namespace is not empty\", function () {",
-							"    pm.expect(data.namespace).to.not.empty",
-							"});",
-							"/* Item data */",
-							"pm.test(\"Response contains items\", function () {",
-							"    pm.expect(data.items).to.not.empty",
-							"});",
-							"pm.test(\"Response item has order ID\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.items[0].orderId).to.eq(pm.environment.get(\"orderWithRecurringItem\"))",
-							"});",
-							"pm.test(\"Response item has correct product ID\", function () {",
-							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
-							"});",
-							"pm.test(\"Response item has correct quantity\", function () {",
-							"    pm.expect(data.items[0].quantity).to.eql(pm.variables.get('qty'));",
-							"});",
-							"pm.test(\"Response item has correct unit\", function () {",
-							"    pm.expect(data.items[0].unit).to.eql(\"pcs\");",
-							"});",
-							"/* Recurring item (activate once recurring item support is added)",
-							"pm.test(\"Response item has correct periodUnit\", function () {",
-							"    pm.expect(data.items[0].periodUnit).to.eql(requestData.items[0].periodUnit);",
-							"});",
-							"pm.test(\"Response item has correct startDate\", function () {",
-							"    pm.expect(data.items[0].startDate).to.eql(requestData.items[0].startDate);",
-							"});",
-							"pm.test(\"Response item has correct periodFrequency\", function () {",
-							"    pm.expect(data.items[0].periodFrequency).to.eql(requestData.items[0].periodFrequency);",
-							"});",
-							" */",
-							"/* Prices */",
-							"pm.test(\"Response item has correct rowPriceNet\", function () {",
-							"    pm.expect(data.items[0].rowPriceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
-							"});",
-							"pm.test(\"Response item has correct rowPriceVat\", function () {",
-							"    pm.expect(data.items[0].rowPriceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
-							"});",
-							"pm.test(\"Response item has correct rowPriceTotal\", function () {",
-							"    pm.expect(data.items[0].rowPriceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
-							"});",
-							"pm.test(\"Response item has correct priceNet\", function () {",
-							"    pm.expect(data.items[0].priceNet).to.eql(pm.variables.get('priceNet').toString());",
-							"});",
-							"pm.test(\"Response item has correct priceGross\", function () {",
-							"    pm.expect(data.items[0].priceGross).to.eql(pm.variables.get('priceGross').toString());",
-							"});",
-							"pm.test(\"Response item has correct vatPercentage\", function () {",
-							"    pm.expect(data.items[0].vatPercentage).to.eql(\"24\");",
-							"})",
-							"pm.test(\"Response has correct priceNet\", function () {",
-							"    pm.expect(data.priceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
-							"});",
-							"pm.test(\"Response has correct priceVat\", function () {",
-							"    pm.expect(data.priceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
-							"});",
-							"pm.test(\"Response has correct priceTotal\", function () {",
-							"    pm.expect(data.priceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
-							"});",
-							""
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"var qty = 2",
-							"var priceNet = pm.environment.get('productFoundPriceNet')",
-							"var priceGross = pm.environment.get('productFoundPriceGross')",
-							"var priceVat = pm.environment.get('productFoundPriceVat')",
-							"",
-							"pm.variables.set('qty', qty)",
-							"pm.variables.set('priceNet', priceNet)",
-							"pm.variables.set('priceGross', priceGross)",
-							"pm.variables.set('priceVat', priceVat)",
-							"pm.variables.set('rowPriceNet', qty*priceNet)",
-							"pm.variables.set('rowPriceTotal', qty*priceGross)",
-							"pm.variables.set('rowPriceVat', qty*priceVat)",
-							"pm.environment.set(\"orderWithRecurringItemUser\", pm.variables.replaceIn('{{$randomUserName}}'))",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "user",
-						"value": "{{orderWithRecurringItemUser}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"namespace\": \"asukaspysakointi\",\n    \"user\": \"{{orderWithRecurringItemUser}}\", \n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"startDate\": \"2021-07-01\",\n            \"periodFrequency\":\"1\",\n            \"periodUnit\": \"monthly\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\"\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{orderExperienceUrl}}",
-					"host": [
-						"{{orderExperienceUrl}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "Create Order with Recurring Item with meta 201",
 			"event": [
 				{
@@ -1548,17 +1383,20 @@
 							"pm.test(\"Response item has correct unit\", function () {",
 							"    pm.expect(data.items[0].unit).to.eql(\"pcs\");",
 							"});",
-							"/* Recurring item (activate once recurring item support is added)",
+							"/* Recurring item */",
 							"pm.test(\"Response item has correct periodUnit\", function () {",
 							"    pm.expect(data.items[0].periodUnit).to.eql(requestData.items[0].periodUnit);",
 							"});",
 							"pm.test(\"Response item has correct startDate\", function () {",
 							"    pm.expect(data.items[0].startDate).to.eql(requestData.items[0].startDate);",
 							"});",
-							"pm.test(\"Response item has correct periodFrequency\", function () {",
-							"    pm.expect(data.items[0].periodFrequency).to.eql(requestData.items[0].periodFrequency);",
+							"pm.test(\"Response item has correct billingStartDate\", function () {",
+							"    pm.expect(data.items[0].billingStartDate).to.eql(requestData.items[0].billingStartDate);",
 							"});",
-							" */",
+							"pm.test(\"Response item has correct periodFrequency\", function () {",
+							"    pm.expect(data.items[0].periodFrequency).to.eql(parseInt(requestData.items[0].periodFrequency));",
+							"});",
+							" ",
 							"/* Prices */",
 							"pm.test(\"Response item has correct rowPriceNet\", function () {",
 							"    pm.expect(data.items[0].rowPriceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
@@ -1660,7 +1498,212 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"namespace\": \"asukaspysakointi\",\n    \"user\": \"{{orderWithRecurringItemAndMetaUser}}\", \n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"startDate\": \"2021-07-15\",\n            \"periodFrequency\":\"1\",\n            \"periodUnit\": \"monthly\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                },\n                {\n                    \"key\": \"anotherMeta\",\n                    \"value\": \"valueForMeta\",\n                    \"label\": \"Visible in Checkout\",\n                    \"visibleInCheckout\": true,\n                    \"ordinal\": \"2\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"raw": "{\n    \"namespace\": \"asukaspysakointi\",\n    \"user\": \"{{orderWithRecurringItemAndMetaUser}}\", \n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"startDate\": \"2021-10-19T10:00:00\",\n            \"billingStartDate\":\"2021-11-19T10:00:00\",\n            \"periodFrequency\":\"1\",\n            \"periodUnit\": \"monthly\",\n            \"periodCount\": null,\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                },\n                {\n                    \"key\": \"anotherMeta\",\n                    \"value\": \"valueForMeta\",\n                    \"label\": \"Visible in Checkout\",\n                    \"visibleInCheckout\": true,\n                    \"ordinal\": \"2\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}",
+					"host": [
+						"{{orderExperienceUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Order with Recurring Item with meta and periodCount 201",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json()",
+							"var requestData = JSON.parse(pm.request.body);",
+							"",
+							"if (data.orderId) {",
+							"    pm.environment.set(\"orderWithRecurringItemAndMeta\", data.orderId)",
+							"}",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"/* General data */",
+							"pm.test(\"Response contains ID\", function () {",
+							"    pm.expect(data.orderId).to.eq(pm.environment.get(\"orderWithRecurringItemAndMeta\"))",
+							"});",
+							"pm.test(\"Response user is correct\", function () {",
+							"    pm.expect(data.user).to.eq(pm.environment.get(\"orderWithRecurringItemAndMetaUser\"))",
+							"});",
+							"pm.test(\"Response createdAt is not empty\", function () {",
+							"    pm.expect(data.createdAt).to.not.empty",
+							"});",
+							"pm.test(\"Response contains checkoutUrl\", function () {",
+							"    pm.expect(data.checkoutUrl).to.exist",
+							"});",
+							"pm.test(\"Response checkoutUrl has valid statusCode\", function() {",
+							"    pm.sendRequest({",
+							"        url: data.checkoutUrl,",
+							"        method: 'GET',",
+							"    }, function (err, res) {",
+							"        pm.expect(res.code).to.eql(200)",
+							"    })",
+							"})",
+							"/* Customer data */",
+							"pm.test(\"Response contains correct order status\", function () {",
+							"    pm.expect(data.status).to.eql(\"draft\");",
+							"});",
+							"pm.test(\"Response contains correct customer firstname\", function () {",
+							"    pm.expect(data.customer.firstName).to.eql(pm.variables.get(\"testCustomerFirstName\"));",
+							"});",
+							"pm.test(\"Response contains correct customer lastname\", function () {",
+							"    pm.expect(data.customer.lastName).to.eql(pm.variables.get(\"testCustomerLastName\"));",
+							"});",
+							"pm.test(\"Response contains correct customer email\", function () {",
+							"    pm.expect(data.customer.email).to.eql(pm.variables.get(\"testCustomerEmail\"));",
+							"});",
+							"pm.test(\"Response namespace is not empty\", function () {",
+							"    pm.expect(data.namespace).to.not.empty",
+							"});",
+							"/* Item data */",
+							"pm.test(\"Response contains items\", function () {",
+							"    pm.expect(data.items).to.not.empty",
+							"});",
+							"pm.test(\"Response item has order ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.items[0].orderId).to.eq(pm.environment.get(\"orderWithRecurringItemAndMeta\"))",
+							"});",
+							"pm.test(\"Response item has correct product ID\", function () {",
+							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
+							"});",
+							"pm.test(\"Response item has correct quantity\", function () {",
+							"    pm.expect(data.items[0].quantity).to.eql(pm.variables.get('qty'));",
+							"});",
+							"pm.test(\"Response item has correct unit\", function () {",
+							"    pm.expect(data.items[0].unit).to.eql(\"pcs\");",
+							"});",
+							"/* Recurring item */",
+							"pm.test(\"Response item has correct periodUnit\", function () {",
+							"    pm.expect(data.items[0].periodUnit).to.eql(requestData.items[0].periodUnit);",
+							"});",
+							"pm.test(\"Response item has correct startDate\", function () {",
+							"    pm.expect(data.items[0].startDate).to.eql(requestData.items[0].startDate);",
+							"});",
+							"pm.test(\"Response item has correct billingStartDate\", function () {",
+							"    pm.expect(data.items[0].billingStartDate).to.eql(requestData.items[0].billingStartDate);",
+							"});",
+							"pm.test(\"Response item has correct periodFrequency\", function () {",
+							"    pm.expect(data.items[0].periodFrequency).to.eql(parseInt(requestData.items[0].periodFrequency));",
+							"});",
+							"pm.test(\"Response item has correct periodCount\", function () {",
+							"    pm.expect(data.items[0].periodCount).to.eql(parseInt(requestData.items[0].periodCount));",
+							"});",
+							" ",
+							"/* Prices */",
+							"pm.test(\"Response item has correct rowPriceNet\", function () {",
+							"    pm.expect(data.items[0].rowPriceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
+							"});",
+							"pm.test(\"Response item has correct rowPriceVat\", function () {",
+							"    pm.expect(data.items[0].rowPriceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
+							"});",
+							"pm.test(\"Response item has correct rowPriceTotal\", function () {",
+							"    pm.expect(data.items[0].rowPriceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
+							"});",
+							"pm.test(\"Response item has correct priceNet\", function () {",
+							"    pm.expect(data.items[0].priceNet).to.eql(pm.variables.get('priceNet').toString());",
+							"});",
+							"pm.test(\"Response item has correct priceGross\", function () {",
+							"    pm.expect(data.items[0].priceGross).to.eql(pm.variables.get('priceGross').toString());",
+							"});",
+							"pm.test(\"Response item has correct vatPercentage\", function () {",
+							"    pm.expect(data.items[0].vatPercentage).to.eql(\"24\");",
+							"})",
+							"pm.test(\"Response has correct priceNet\", function () {",
+							"    pm.expect(data.priceNet).to.eql(pm.variables.get('rowPriceNet').toString());",
+							"});",
+							"pm.test(\"Response has correct priceVat\", function () {",
+							"    pm.expect(data.priceVat).to.eql(pm.variables.get('rowPriceVat').toString());",
+							"});",
+							"pm.test(\"Response has correct priceTotal\", function () {",
+							"    pm.expect(data.priceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
+							"});",
+							"/* Item meta */",
+							"var firstMeta = data.items[0].meta.find(meta => meta.key === 'licensePlateNumber')",
+							"var secondMeta = data.items[0].meta.find(meta => meta.key === 'anotherMeta')",
+							"",
+							"pm.test(\"Response item first meta has correct key\", function () {",
+							"    pm.expect(firstMeta.key).to.eql(\"licensePlateNumber\");",
+							"})",
+							"pm.test(\"Response item first meta has correct value\", function () {",
+							"    pm.expect(firstMeta.value).to.eql(\"KYV-123\");",
+							"})",
+							"pm.test(\"Response item first meta has correct label\", function () {",
+							"    pm.expect(firstMeta.label).to.eql(\"Rekisterinumero\");",
+							"})",
+							"pm.test(\"Response item first meta not visible in checkout\", function () {",
+							"    pm.expect(firstMeta.visibleInCheckout).to.eql(\"false\");",
+							"})",
+							"pm.test(\"Response item first meta has correct ordinal\", function () {",
+							"    pm.expect(firstMeta.ordinal).to.eql(\"1\");",
+							"})",
+							"pm.test(\"Response item second meta has correct key\", function () {",
+							"    pm.expect(secondMeta.key).to.eql(\"anotherMeta\");",
+							"})",
+							"pm.test(\"Response item second meta has correct value\", function () {",
+							"    pm.expect(secondMeta.value).to.eql(\"valueForMeta\");",
+							"})",
+							"pm.test(\"Response item second meta has correct label\", function () {",
+							"    pm.expect(secondMeta.label).to.eql(\"Visible in Checkout\");",
+							"})",
+							"pm.test(\"Response item second meta not visible in checkout\", function () {",
+							"    pm.expect(secondMeta.visibleInCheckout).to.eql(\"true\");",
+							"})",
+							"pm.test(\"Response item second meta has correct ordinal\", function () {",
+							"    pm.expect(secondMeta.ordinal).to.eql(\"2\");",
+							"})",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var qty = 2",
+							"var priceNet = pm.environment.get('productFoundPriceNet')",
+							"var priceGross = pm.environment.get('productFoundPriceGross')",
+							"var priceVat = pm.environment.get('productFoundPriceVat')",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', qty*priceNet)",
+							"pm.variables.set('rowPriceTotal', qty*priceGross)",
+							"pm.variables.set('rowPriceVat', qty*priceVat)",
+							"pm.environment.set(\"orderWithRecurringItemAndMetaUser\", pm.variables.replaceIn('{{$randomUserName}}'))",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderWithRecurringItemAndMetaUser}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"namespace\": \"asukaspysakointi\",\n    \"user\": \"{{orderWithRecurringItemAndMetaUser}}\", \n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"startDate\": \"2021-10-19T10:00:00\",\n            \"billingStartDate\":\"2021-11-19T10:00:00\",\n            \"periodFrequency\":\"1\",\n            \"periodUnit\": \"monthly\",\n            \"periodCount\": 1,\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                },\n                {\n                    \"key\": \"anotherMeta\",\n                    \"value\": \"valueForMeta\",\n                    \"label\": \"Visible in Checkout\",\n                    \"visibleInCheckout\": true,\n                    \"ordinal\": \"2\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1758,12 +1801,12 @@
 					}
 				},
 				"url": {
-					"raw": "{{orderExperienceUrl}}/recurringorder/create-from-order",
+					"raw": "{{orderExperienceUrl}}/subscription/create-from-order",
 					"host": [
 						"{{orderExperienceUrl}}"
 					],
 					"path": [
-						"recurringorder",
+						"subscription",
 						"create-from-order"
 					]
 				}
@@ -1858,12 +1901,12 @@
 					}
 				},
 				"url": {
-					"raw": "{{orderExperienceUrl}}/recurringorder/create-from-order",
+					"raw": "{{orderExperienceUrl}}/subscription/create-from-order",
 					"host": [
 						"{{orderExperienceUrl}}"
 					],
 					"path": [
-						"recurringorder",
+						"subscription",
 						"create-from-order"
 					]
 				}
