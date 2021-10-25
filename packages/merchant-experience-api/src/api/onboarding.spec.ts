@@ -39,6 +39,7 @@ describe('Test onboarding', () => {
         'merchantTermsOfServiceUrl',
         'merchantBusinessId',
         'orderCreatedRedirectUrl',
+        'orderCancelRedirectUrl',
       ]
       await Promise.all(
         merchantKeys.map(async (k) => {
@@ -72,6 +73,7 @@ describe('Test onboarding', () => {
           merchantName: 'mn1',
           merchantStreet: 'ms1',
           orderCreatedRedirectUrl: 'ocr.url',
+          orderCancelRedirectUrl: 'occ.url',
         },
       },
       mockResponse
@@ -83,6 +85,7 @@ describe('Test onboarding', () => {
         merchantName: 'mn1',
         merchantStreet: 'ms1',
         ORDER_CREATED_REDIRECT_URL: 'ocr.url',
+        ORDER_CANCEL_REDIRECT_URL: 'occ.url',
       },
     })
   })
@@ -94,6 +97,10 @@ describe('Test onboarding', () => {
       {
         configurationKey: 'ORDER_CREATED_REDIRECT_URL',
         configurationValue: 'ocr.url',
+      },
+      {
+        configurationKey: 'ORDER_CANCEL_REDIRECT_URL',
+        configurationValue: 'occ.url',
       },
       { configurationKey: 'unknown', configurationValue: 'unknown' },
     ])
@@ -107,6 +114,7 @@ describe('Test onboarding', () => {
       merchantName: 'mn1',
       merchantStreet: 'ms1',
       orderCreatedRedirectUrl: 'ocr.url',
+      orderCancelRedirectUrl: 'occ.url',
     })
   })
 })
