@@ -157,6 +157,135 @@
 			"response": []
 		},
 		{
+			"name": "Get Filtered Payment Methods 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response contains payment methods\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data).to.not.empty",
+							"});",
+							"pm.test(\"Response contains only creditcard methods\", function () {",
+							"    Object.keys(pm.response.json()).forEach(function (key) {",
+							"    pm.expect(pm.response.json()[key].group).to.equal('creditcards')",
+							"})",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const qty = 1",
+							"const priceNet = pm.environment.get('productFoundPriceNet')",
+							"const priceGross = pm.environment.get('productFoundPriceGross')",
+							"const priceVat = priceGross - priceNet",
+							"const rowPriceNet = qty * priceNet",
+							"const rowPriceTotal = qty * priceGross",
+							"const rowPriceVat = qty * priceVat",
+							"const user = pm.variables.replaceIn('{{$randomUserName}}')",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', rowPriceNet)",
+							"pm.variables.set('rowPriceTotal', rowPriceTotal)",
+							"pm.variables.set('rowPriceVat', rowPriceVat)",
+							"pm.environment.set(\"orderFoundUser\", user)",
+							"",
+							"const url = pm.variables.get(\"orderExperienceUrl\")",
+							"pm.sendRequest({",
+							"    url: `${url}`,",
+							"    method: 'POST',",
+							"    header: {",
+							"        'content-type': 'application/json',",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify(",
+							"            {",
+							"                \"namespace\": \"asukaspysakointi\",",
+							"                \"user\": user,",
+							"                \"priceNet\": rowPriceNet.toString(),",
+							"                \"priceVat\": rowPriceVat.toString(),",
+							"                \"priceTotal\": rowPriceTotal.toString(),",
+							"                \"items\": [",
+							"                    {",
+							"                        \"productId\": pm.variables.get('productFound'),",
+							"                        \"quantity\": qty,",
+							"                        \"productName\": \"Product Name\",",
+							"                        \"unit\": \"pcs\",",
+							"                        \"rowPriceNet\": rowPriceNet.toString(),",
+							"                        \"rowPriceVat\": rowPriceVat.toString(),",
+							"                        \"rowPriceTotal\": rowPriceTotal.toString(),",
+							"                        \"priceNet\": priceNet.toString(),",
+							"                        \"priceGross\": priceGross.toString(),",
+							"                        \"priceVat\": priceVat.toString(),",
+							"                        \"vatPercentage\": \"24\",",
+							"                        \"startDate\": \"2021-10-19T10:00:00\",",
+							"                        \"billingStartDate\":\"2021-11-19T10:00:00\",",
+							"                        \"periodFrequency\":\"1\",",
+							"                        \"periodUnit\": \"monthly\",",
+							"                        \"periodCount\": 1,",
+							"                    }",
+							"                ],",
+							"                \"customer\": {",
+							"                    \"firstName\": pm.variables.get('testCustomerFirstName'),",
+							"                    \"lastName\": pm.variables.get('testCustomerLastName'),",
+							"                    \"email\": pm.variables.get('testCustomerEmail'),",
+							"                    \"phone\": pm.variables.get('testCustomerPhone')",
+							"                }",
+							"            })",
+							"    }",
+							"}, function (err, res) {",
+							"    const orderId = res.json().orderId",
+							"    if (orderId) {",
+							"        console.log('Set orderFound variable to '+orderId)",
+							"        pm.environment.set('orderFound', orderId)",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderFoundUser}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{paymentExperienceUrl}}/:orderId/paymentMethods",
+					"host": [
+						"{{paymentExperienceUrl}}"
+					],
+					"path": [
+						":orderId",
+						"paymentMethods"
+					],
+					"variable": [
+						{
+							"key": "orderId",
+							"value": "{{orderFound}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Create Payment 201 with single item",
 			"event": [
 				{
