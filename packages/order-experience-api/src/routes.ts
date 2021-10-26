@@ -6,10 +6,10 @@ import { CancelController } from './api/cancelController'
 import { SetCustomerController } from './api/setCustomerController'
 import { AddItemController } from './api/addItemController'
 import { GetController } from './api/getController'
-import { GetRecurringOrderController } from './api/getRecurringOrder'
-import { SearchActiveRecurringOrderController } from './api/searchActiveRecurringOrder'
-import { CreateRecurringOrderController } from './api/createRecurringOrder'
-import { CreateRecurringOrdersFromOrderController } from './api/createRecurringOrdersFromOrder'
+import { getSubscriptionController } from './api/getSubscription'
+import { searchActiveSubscriptionsController } from './api/searchActiveSubscriptions'
+import { createSubscriptionController } from './api/createSubscription'
+import { createSubscriptionsFromOrderController } from './api/createSubscriptionsFromOrder'
 import { CalculateTotalsController } from './api/calculateTotals'
 import { InstantPurchase } from './api/instantPurchase'
 import { ConfirmAndCreatePayment } from './api/confirmAndCreatePayment'
@@ -22,10 +22,10 @@ const confirmAndCreatePaymentController = new ConfirmAndCreatePayment()
 const setCustomerController = new SetCustomerController()
 const addItemController = new AddItemController()
 const getController = new GetController()
-const getRecurringOrderCtrl = new GetRecurringOrderController()
-const searchActiveRecurringOrderCtrl = new SearchActiveRecurringOrderController()
-const createRecurringOrderCtrl = new CreateRecurringOrderController()
-const createRecurringOrdersFromOrderCtrl = new CreateRecurringOrdersFromOrderController()
+const getSubscriptionCtrl = new getSubscriptionController()
+const searchActiveSubscriptionsCtrl = new searchActiveSubscriptionsController()
+const createSubscriptionCtrl = new createSubscriptionController()
+const createSubscriptionsFromOrderCtrl = new createSubscriptionsFromOrderController()
 const calculateTotalsController = new CalculateTotalsController()
 const instantPurchaseController = new InstantPurchase()
 const healthController = new Health()
@@ -34,8 +34,8 @@ const router = Router()
 router.post('/', (req, res) => createController.execute(req, res))
 router.get('/health', (req, res) => healthController.execute(req, res))
 router.get('/:orderId', (req, res) => getController.execute(req, res))
-router.get('/recurringorder/:id', (req, res) =>
-  getRecurringOrderCtrl.execute(req, res)
+router.get('/subscription/:id', (req, res) =>
+  getSubscriptionCtrl.execute(req, res)
 )
 router.post('/:orderId/customer', (req, res) =>
   setCustomerController.execute(req, res)
@@ -55,14 +55,14 @@ router.post('/:orderId/calculateTotals', (req, res) =>
 router.post('/convert/:cartId', (req, res) =>
   cartToOrderController.execute(req, res)
 )
-router.post('/recurringorder/create', (req, res) =>
-  createRecurringOrderCtrl.execute(req, res)
+router.post('/subscription/create', (req, res) =>
+  createSubscriptionCtrl.execute(req, res)
 )
-router.post('/recurringorder/create-from-order', (req, res) =>
-  createRecurringOrdersFromOrderCtrl.execute(req, res)
+router.post('/subscription/create-from-order', (req, res) =>
+  createSubscriptionsFromOrderCtrl.execute(req, res)
 )
-router.post('/recurringorder/search/active', (req, res) =>
-  searchActiveRecurringOrderCtrl.execute(req, res)
+router.post('/subscription/search/active', (req, res) =>
+  searchActiveSubscriptionsCtrl.execute(req, res)
 )
 
 router.post('/instantPurchase', (req, res) =>

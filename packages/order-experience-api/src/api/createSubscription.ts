@@ -1,8 +1,8 @@
 import { AbstractController, Data } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
-import { createRecurringOrder } from '@verkkokauppa/order-backend'
+import { createSubscription } from '@verkkokauppa/order-backend'
 
-export class CreateRecurringOrderController extends AbstractController {
+export class createSubscriptionController extends AbstractController {
   protected readonly requestSchema = null
 
   protected async implementation(req: Request, res: Response): Promise<any> {
@@ -10,7 +10,7 @@ export class CreateRecurringOrderController extends AbstractController {
   }
 
   protected async create(req: Request, res: Response): Promise<any> {
-    const dto = new Data(await createRecurringOrder(req.body))
+    const dto = new Data(await createSubscription(req.body))
 
     return this.created<any>(res, dto.serialize())
   }
