@@ -4,6 +4,7 @@ import { GetController } from './getController'
 
 jest.mock('@verkkokauppa/configuration-backend')
 jest.mock('@verkkokauppa/order-backend')
+jest.mock('@verkkokauppa/payment-backend')
 
 const getOrderMock = require('@verkkokauppa/order-backend').getOrder.mockImplementation(
   () => ({})
@@ -64,6 +65,10 @@ const getMerchantDetailsForOrderMock = require('@verkkokauppa/configuration-back
   () => ({})
 )
 
+const paidPaymentExistsMock = require('@verkkokauppa/payment-backend').paidPaymentExists.mockImplementation(
+  () => false
+)
+
 const merchantConfigurationMock = {
   merchantName: 'name',
   merchantStreet: 'street',
@@ -86,6 +91,12 @@ const mockResponse = ({
 const requestBody = {}
 const requestHeaders = {}
 
+const mockRequest = {
+  params: { orderId: 'test123' },
+  body: requestBody,
+  headers: requestHeaders,
+} as any
+
 describe('Test getController', () => {
   it('Should get order with merchant details', async () => {
     const successSpy = jest.spyOn(AbstractController.prototype, 'success')
@@ -93,17 +104,10 @@ describe('Test getController', () => {
       () => merchantConfigurationMock
     )
     getOrderMock.mockImplementationOnce(() => orderMock)
-    const res = await getController.implementation(
-      {
-        params: { orderId: 'test123' },
-        body: requestBody,
-        headers: requestHeaders,
-      } as any,
-      mockResponse
-    )
+    const res = await getController.implementation(mockRequest, mockResponse)
     expect(successSpy).toHaveBeenCalledTimes(1)
     expect(successSpy.mock.calls[0]?.[0]).toBe(mockResponse)
-    expect(successSpy.mock.calls[0]?.[1]).toEqual({
+    expect(successSpy.mock.calls[0]?.[1]).toMatchObject({
       ...orderMock,
       merchant: {
         merchantName: 'name',
@@ -116,20 +120,27 @@ describe('Test getController', () => {
     const successSpy = jest.spyOn(AbstractController.prototype, 'success')
     getMerchantDetailsForOrderMock.mockImplementationOnce(() => ({}))
     getOrderMock.mockImplementationOnce(() => orderMock)
-    const res = await getController.implementation(
-      {
-        params: { orderId: 'test123' },
-        body: requestBody,
-        headers: requestHeaders,
-      } as any,
-      mockResponse
-    )
+    const res = await getController.implementation(mockRequest, mockResponse)
     expect(successSpy).toHaveBeenCalledTimes(1)
     expect(successSpy.mock.calls[0]?.[0]).toBe(mockResponse)
-    expect(successSpy.mock.calls[0]?.[1]).toEqual({
+    expect(successSpy.mock.calls[0]?.[1]).toMatchObject({
       ...orderMock,
       merchant: {},
     })
     expect(res).toBe(successSpy.mock.results[0]?.value)
+  })
+  it('Should add isValidForCheckout flag to convey if order has already been paid', async () => {
+    const successSpy = jest.spyOn(AbstractController.prototype, 'success')
+    paidPaymentExistsMock.mockResolvedValueOnce(true)
+    await getController.implementation(mockRequest, mockResponse)
+    expect(successSpy.mock.calls[0]?.[1]).toMatchObject({
+      isValidForCheckout: false,
+    })
+    paidPaymentExistsMock.mockResolvedValueOnce(false)
+    await getController.implementation(mockRequest, mockResponse)
+    expect(successSpy.mock.calls[1]?.[1]).toMatchObject({
+      isValidForCheckout: true,
+    })
+    expect(successSpy).toHaveBeenCalledTimes(2)
   })
 })

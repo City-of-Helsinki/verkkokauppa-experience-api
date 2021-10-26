@@ -8,6 +8,7 @@ import type { Response } from 'express'
 import { getOrder } from '@verkkokauppa/order-backend'
 import * as yup from 'yup'
 import { getMerchantDetailsForOrder } from '@verkkokauppa/configuration-backend'
+import { paidPaymentExists } from '@verkkokauppa/payment-backend'
 
 const requestSchema = yup.object().shape({
   params: yup.object().shape({
@@ -32,10 +33,14 @@ export class GetController extends AbstractController<typeof requestSchema> {
 
     logger.debug(`Fetch order ${orderId}`)
     const order = await getOrder({ orderId, user })
-    const merchant = await getMerchantDetailsForOrder(order)
+    const [merchant, orderIsPaid] = await Promise.all([
+      getMerchantDetailsForOrder(order),
+      paidPaymentExists(order),
+    ])
 
     const dto = new Data({
       ...order,
+      isValidForCheckout: !orderIsPaid,
       merchant,
     })
 
