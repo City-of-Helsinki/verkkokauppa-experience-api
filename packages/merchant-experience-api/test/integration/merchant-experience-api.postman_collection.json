@@ -91,6 +91,8 @@
 							"    pm.expect(data.merchantBusinessId).to.equal(\"123456-7\")",
 							"    pm.expect(data.merchantTermsOfServiceUrl).to.equal(\"https://hel.fi/terms\")",
 							"    pm.expect(data.orderCreatedRedirectUrl).to.equal(\"https://hel.fi/created\")",
+							"    pm.expect(data.orderCancelRedirectUrl).to.equal(\"https://hel.fi/cancel\")",
+							"",
 							"});"
 						],
 						"type": "text/javascript"
@@ -102,7 +104,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"merchantName\": \"Merchant Name\",\r\n    \"merchantStreet\": \"Street Address 1\",\r\n    \"merchantZip\": \"00100\",\r\n    \"merchantCity\": \"Helsinki\",\r\n    \"merchantEmail\": \"merchantTest@hel.fi\",\r\n    \"merchantPhone\": \"01001231233\",\r\n    \"merchantUrl\": \"https://hel.fi/\",\r\n    \"merchantBusinessId\": \"123456-7\",\r\n    \"merchantTermsOfServiceUrl\": \"https://hel.fi/terms\",\r\n    \"orderCreatedRedirectUrl\": \"https://hel.fi/created\"\r\n}",
+					"raw": "{\r\n    \"merchantName\": \"Merchant Name\",\r\n    \"merchantStreet\": \"Street Address 1\",\r\n    \"merchantZip\": \"00100\",\r\n    \"merchantCity\": \"Helsinki\",\r\n    \"merchantEmail\": \"merchantTest@hel.fi\",\r\n    \"merchantPhone\": \"01001231233\",\r\n    \"merchantUrl\": \"https://hel.fi/\",\r\n    \"merchantBusinessId\": \"123456-7\",\r\n    \"merchantTermsOfServiceUrl\": \"https://hel.fi/terms\",\r\n    \"orderCreatedRedirectUrl\": \"https://hel.fi/created\",\r\n    \"orderCancelRedirectUrl\": \"https://hel.fi/cancel\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
