@@ -1313,7 +1313,7 @@
 			"response": []
 		},
 		{
-			"name": "Create Order with Recurring Item with meta 201",
+			"name": "Create Order with Subscription Item with meta 201",
 			"event": [
 				{
 					"listen": "test",
@@ -1498,7 +1498,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"namespace\": \"asukaspysakointi\",\n    \"user\": \"{{orderWithRecurringItemAndMetaUser}}\", \n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"startDate\": \"2021-10-19T10:00:00\",\n            \"billingStartDate\":\"2021-11-19T10:00:00\",\n            \"periodFrequency\":\"1\",\n            \"periodUnit\": \"monthly\",\n            \"periodCount\": null,\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                },\n                {\n                    \"key\": \"anotherMeta\",\n                    \"value\": \"valueForMeta\",\n                    \"label\": \"Visible in Checkout\",\n                    \"visibleInCheckout\": true,\n                    \"ordinal\": \"2\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{orderWithRecurringItemAndMetaUser}}\", \n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"startDate\": \"2021-10-19T10:00:00\",\n            \"billingStartDate\":\"2021-11-19T10:00:00\",\n            \"periodFrequency\":\"1\",\n            \"periodUnit\": \"monthly\",\n            \"periodCount\": null,\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                },\n                {\n                    \"key\": \"anotherMeta\",\n                    \"value\": \"valueForMeta\",\n                    \"label\": \"Visible in Checkout\",\n                    \"visibleInCheckout\": true,\n                    \"ordinal\": \"2\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1515,7 +1515,7 @@
 			"response": []
 		},
 		{
-			"name": "Create Order with Recurring Item with meta and periodCount 201",
+			"name": "Create Order with Subscription Item with meta and periodCount 201",
 			"event": [
 				{
 					"listen": "test",
@@ -1703,7 +1703,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"namespace\": \"asukaspysakointi\",\n    \"user\": \"{{orderWithRecurringItemAndMetaUser}}\", \n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"startDate\": \"2021-10-19T10:00:00\",\n            \"billingStartDate\":\"2021-11-19T10:00:00\",\n            \"periodFrequency\":\"1\",\n            \"periodUnit\": \"monthly\",\n            \"periodCount\": 1,\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                },\n                {\n                    \"key\": \"anotherMeta\",\n                    \"value\": \"valueForMeta\",\n                    \"label\": \"Visible in Checkout\",\n                    \"visibleInCheckout\": true,\n                    \"ordinal\": \"2\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{orderWithRecurringItemAndMetaUser}}\", \n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"startDate\": \"2021-10-19T10:00:00\",\n            \"billingStartDate\":\"2021-11-19T10:00:00\",\n            \"periodFrequency\":\"1\",\n            \"periodUnit\": \"monthly\",\n            \"periodCount\": 1,\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                },\n                {\n                    \"key\": \"anotherMeta\",\n                    \"value\": \"valueForMeta\",\n                    \"label\": \"Visible in Checkout\",\n                    \"visibleInCheckout\": true,\n                    \"ordinal\": \"2\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1726,63 +1726,17 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"/*var data = pm.response.json()",
-							"if (data.orderId) {",
-							"    pm.environment.set(\"orderWithRecurringItem\", data.orderId)",
+							"var data = pm.response.json()",
+							"if (data[0]) {",
+							"    pm.environment.set(\"subscriptionFromOrder\", data[0])",
 							"}",
 							"",
 							"pm.test(\"Status code is 201\", function () {",
 							"    pm.response.to.have.status(201);",
 							"});",
 							"pm.test(\"Response contains ID\", function () {",
-							"    pm.expect(data.orderId).to.eq(pm.environment.get(\"orderWithRecurringItem\"))",
-							"});",
-							"pm.test(\"Response contains correct order status\", function () {",
-							"    pm.expect(data.status).to.eql(\"created\");",
-							"});",
-							"pm.test(\"Response contains correct customer firstname\", function () {",
-							"    pm.expect(data.customer.firstName).to.eql(pm.variables.get(\"testCustomerFirstName\"));",
-							"});",
-							"pm.test(\"Response contains correct customer lastname\", function () {",
-							"    pm.expect(data.customer.lastName).to.eql(pm.variables.get(\"testCustomerLastName\"));",
-							"});",
-							"pm.test(\"Response contains correct customer email\", function () {",
-							"    pm.expect(data.customer.email).to.eql(pm.variables.get(\"testCustomerEmail\"));",
-							"});",
-							"pm.test(\"Response namespace is not empty\", function () {",
-							"    pm.expect(data.namespace).to.not.empty",
-							"});",
-							"pm.test(\"Response user is not empty\", function () {",
-							"    pm.expect(data.user).to.not.empty",
-							"});",
-							"pm.test(\"Response createdAt is not empty\", function () {",
-							"    pm.expect(data.createdAt).to.not.empty",
-							"});",
-							"pm.test(\"Response contains items\", function () {",
-							"    pm.expect(data.items).to.not.empty",
-							"});",
-							"pm.test(\"Response item has order ID\", function () {",
-							"    var data = pm.response.json();",
-							"    pm.expect(data.items[0].orderId).to.eq(pm.environment.get(\"orderWithItems\"))",
-							"});",
-							"pm.test(\"Response item has correct product ID\", function () {",
-							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
-							"});",
-							"pm.test(\"Response item has correct quantity\", function () {",
-							"    pm.expect(data.items[0].quantity).to.eql(2);",
-							"});",
-							"pm.test(\"Response item has correct unit\", function () {",
-							"    pm.expect(data.items[0].unit).to.eql(\"pcs\");",
-							"});",
-							"pm.test(\"Response item has correct rowPriceNet\", function () {",
-							"    pm.expect(data.items[0].rowPriceNet).to.eql(\"200\");",
-							"});",
-							"pm.test(\"Response item has correct rowPriceVat\", function () {",
-							"    pm.expect(data.items[0].rowPriceVat).to.eql(\"48\");",
-							"});",
-							"pm.test(\"Response item has correct rowPriceTotal\", function () {",
-							"    pm.expect(data.items[0].rowPriceTotal).to.eql(\"248\");",
-							"});*/"
+							"    pm.expect(data[0]).to.eq(pm.environment.get(\"subscriptionFromOrder\"))",
+							"});"
 						],
 						"type": "text/javascript"
 					}
@@ -1915,6 +1869,132 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response contains correct ID\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.id).to.eql(pm.variables.get(\"subscriptionFromOrder\"));",
+							"});",
+							"pm.test(\"Response contains correct status\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.status).to.eql(\"active\");",
+							"});",
+							"pm.test(\"Response contains correct namespace\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.namespace).to.eql(pm.variables.get(\"namespace\"))",
+							"});",
+							"pm.test(\"Response contains user\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.user).to.exist",
+							"});",
+							"pm.test(\"Response user is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.user).to.not.empty",
+							"});",
+							"pm.test(\"Response startDate is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.startDate).to.not.empty",
+							"});",
+							"pm.test(\"Response billingStartDate is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.billingStartDate).to.not.empty",
+							"});",
+							"pm.test(\"Response customerPhone is correct\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.customerPhone).to.eql(pm.variables.get(\"testCustomerPhone\"))",
+							"});",
+							"pm.test(\"Response customerFirstName is correct\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.customerFirstName).to.eql(pm.variables.get(\"testCustomerFirstName\"))",
+							"});",
+							"pm.test(\"Response customerLastName is correct\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.customerLastName).to.eql(pm.variables.get(\"testCustomerLastName\"))",
+							"});",
+							"pm.test(\"Response customerEmail is correct\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.customerEmail).to.eql(pm.variables.get(\"testCustomerEmail\"))",
+							"});",
+							"pm.test(\"Response productName is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.productName).to.not.empty",
+							"});",
+							"pm.test(\"Response productId is correct\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.productId).to.eql(pm.variables.get(\"productFound\"))",
+							"});",
+							"pm.test(\"Response quantity least 1\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.quantity).to.least(1)",
+							"});",
+							"pm.test(\"Response orderItemId is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.orderItemId).to.not.empty",
+							"});",
+							"pm.test(\"Response periodUnit is monthly\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.periodUnit).to.eql(\"monthly\")",
+							"});",
+							"pm.test(\"Response priceNet is correct\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.priceNet).to.eql(pm.variables.get(\"productFoundPriceNet\"))",
+							"});",
+							"pm.test(\"Response priceVat is correct\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.priceVat).to.eql(pm.variables.get(\"productFoundPriceVat\"))",
+							"});",
+							"pm.test(\"Response priceGross is correct\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.priceGross).to.eql(pm.variables.get(\"productFoundPriceGross\"))",
+							"});",
+							"pm.test(\"Response relatedOrderIds is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data.relatedOrderIds).to.not.empty",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{orderExperienceUrl}}/subscription/:id",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						"subscription",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{subscriptionFromOrder}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Subscription Search Active 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
 							"/*pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
@@ -1997,22 +2077,17 @@
 				}
 			],
 			"request": {
-				"method": "GET",
+				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{orderExperienceUrl}}/subscription/:id",
+					"raw": "{{orderExperienceUrl}}/subscription/search/active",
 					"host": [
 						"{{orderExperienceUrl}}"
 					],
 					"path": [
 						"subscription",
-						":id"
-					],
-					"variable": [
-						{
-							"key": "id",
-							"value": ""
-						}
+						"search",
+						"active"
 					]
 				}
 			},
