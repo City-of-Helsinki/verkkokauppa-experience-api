@@ -37,44 +37,43 @@
                                                     </span>
                                                 </td>
                                             </tr>
-                                            {{#each ../order.meta}}
-                                                {{#if (eq ../this.orderItemId orderItemId) }}
-                                                        {{#if label}}
-                                                            <tr>
-                                                                <td width="100%" class="purchase_item">
-                                                                <span class="f-fallback no-wrap pb-1" style="font-size:14px; font-weight:bold;">
-                                                                    {{label}}
-                                                                </span>
-                                                                </td>
-                                                            </tr>
-                                                        {{/if}}
+                                            {{#each meta}}
 
-                                                        {{#if key}}
-                                                            <tr>
-                                                                <td width="100%" class="purchase_item">
-                                                                    <span class="f-fallback no-wrap pb-1" style="font-size:14px; font-weight:bold;">
-                                                                        {{key}}
-                                                                    </span>
-                                                                </td>
-                                                            </tr>
-                                                        {{/if}}
+                                                {{#if label}}
+                                                    <tr>
+                                                        <td width="100%" class="purchase_item">
+                                                        <span class="f-fallback no-wrap pb-1" style="font-size:14px; font-weight:bold;">
+                                                            {{label}}
+                                                        </span>
+                                                        </td>
+                                                    </tr>
+                                                {{/if}}
 
-                                                        {{#if value}}
-                                                            <tr>
-                                                                <td width="100%" class="purchase_item">
-                                                                    <span class="f-fallback no-wrap pb-1" style="font-size:14px;">
-                                                                        {{value}}
-                                                                    </span>
-                                                                </td>
-                                                            </tr>
-                                                        {{/if}}
-                                                        {{#if @last}}
-                                                            <tr>
-                                                                <td>
-                                                                    <span>&emsp;</span>
-                                                                </td>
-                                                            </tr>
-                                                        {{/if}}
+                                                {{#if key}}
+                                                    <tr>
+                                                        <td width="100%" class="purchase_item">
+                                                            <span class="f-fallback no-wrap pb-1" style="font-size:14px;">
+                                                                {{key}}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                {{/if}}
+
+                                                {{#if value}}
+                                                    <tr>
+                                                        <td width="100%" class="purchase_item">
+                                                            <span class="f-fallback no-wrap pb-1" style="font-size:14px;">
+                                                                {{value}}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                {{/if}}
+                                                {{#if @last}}
+                                                    <tr>
+                                                        <td>
+                                                            <span>&emsp;</span>
+                                                        </td>
+                                                    </tr>
                                                 {{/if}}
 
                                             {{/each}}
