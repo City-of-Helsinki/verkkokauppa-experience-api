@@ -1,4 +1,4 @@
-import { parseOrderItemMetaVisibilityAndOrdinal } from '../send/service'
+import { parseOrderMetas } from '../send/service'
 import { HandleBarTemplate } from './service'
 import type { Order, OrderConfirmationEmailParameters } from './types'
 
@@ -11,7 +11,7 @@ describe('Create templates from parameters', () => {
       items: [
         {
           productId: 'productId2',
-          productName: 'Kiinteähintainen tuote',
+          productName: 'Pysäköintivyöhyke K',
           quantity: 1,
           unit: '1',
           rowPriceNet: '600',
@@ -23,6 +23,36 @@ describe('Create templates from parameters', () => {
           priceGross: '372',
           orderId: 'orderId1',
           orderItemId: 'orderItemId1',
+          meta: [
+            {
+              orderItemMetaId: 'ec627fb7-d557-4b7b-9c1c-61434322c109',
+              orderItemId: 'orderItemId1',
+              orderId: '76a9121f-3bb7-33b2-8ca8-bc6a23db24c1',
+              key: 'meta key ordinal 0',
+              value: 'when label is empty shows only value row',
+              visibleInCheckout: 'true',
+            },
+            {
+              orderItemMetaId: 'ec627fb7-d557-4b7b-9c1c-61434322c109',
+              orderItemId: 'orderItemId2',
+              orderId: '76a9121f-3bb7-33b2-8ca8-bc6a23db24c1',
+              key: 'meta key ordinal 1',
+              value: 'meta value ordinal 1',
+              label: 'meta label ordinal 1',
+              visibleInCheckout: 'true',
+              ordinal: '1',
+            },
+            {
+              orderItemMetaId: 'ec627fb7-d557-4b7b-9c1c-61434322c109',
+              orderItemId: 'orderItemId1',
+              orderId: '76a9121f-3bb7-33b2-8ca8-bc6a23db24c1',
+              label: 'Ajoneuvo',
+              key: 'XZY-123',
+              value: 'Scoda Octavia',
+              visibleInCheckout: 'true',
+              ordinal: '0',
+            },
+          ],
         },
         {
           productId: 'productId1',
@@ -38,6 +68,26 @@ describe('Create templates from parameters', () => {
           priceGross: '372',
           orderId: 'orderId2',
           orderItemId: 'orderItemId2',
+          meta: [
+            {
+              orderItemMetaId: 'ec627fb7-d557-4b7b-9c1c-61434322c109',
+              orderItemId: 'orderItemId1',
+              orderId: '76a9121f-3bb7-33b2-8ca8-bc6a23db24c1',
+              key: 'meta key ordinal 0 show all',
+              value: 'meta value ordinal 0 show all',
+              label: '',
+              visibleInCheckout: 'true',
+              ordinal: '0',
+            },
+            {
+              orderItemMetaId: 'ec627fb7-d557-4b7b-9c1c-61434322c109',
+              orderItemId: 'orderItemId1',
+              orderId: '76a9121f-3bb7-33b2-8ca8-bc6a23db24c1',
+              key: 'meta key ordinal 0',
+              value: 'when label is empty shows only value row',
+              visibleInCheckout: 'true',
+            },
+          ],
         },
       ],
       merchant: {
@@ -80,39 +130,9 @@ describe('Create templates from parameters', () => {
         paymentUrl:
           'https://www.vismapay.com/pbwapi/token/427a38b2607b105de58c7dbda2d8ce2f6fcb31d6cc52f77b8818c0b5dcd503f5',
       },
-      meta: [
-        {
-          orderItemMetaId: 'ec627fb7-d557-4b7b-9c1c-61434322c109',
-          orderItemId: 'orderItemId1',
-          orderId: '76a9121f-3bb7-33b2-8ca8-bc6a23db24c1',
-          key: 'meta key ordinal 0 show all',
-          value: 'meta value ordinal 0 show all',
-          label: 'meta label ordinal 0 show all',
-          visibleInCheckout: 'true',
-          ordinal: '0',
-        },
-        {
-          orderItemMetaId: 'ec627fb7-d557-4b7b-9c1c-61434322c109',
-          orderItemId: 'orderItemId1',
-          orderId: '76a9121f-3bb7-33b2-8ca8-bc6a23db24c1',
-          key: 'meta key ordinal 0',
-          value: 'when label is empty shows only value row',
-          visibleInCheckout: 'true',
-        },
-        {
-          orderItemMetaId: 'ec627fb7-d557-4b7b-9c1c-61434322c109',
-          orderItemId: 'orderItemId2',
-          orderId: '76a9121f-3bb7-33b2-8ca8-bc6a23db24c1',
-          key: 'meta key ordinal 1',
-          value: 'meta value ordinal 1',
-          label: 'meta label ordinal 1',
-          visibleInCheckout: 'true',
-          ordinal: '1',
-        },
-      ],
     } as Order
 
-    order.meta = parseOrderItemMetaVisibilityAndOrdinal(order.meta || [])
+    parseOrderMetas(order)
 
     const templateParams: OrderConfirmationEmailParameters = {
       order: order,

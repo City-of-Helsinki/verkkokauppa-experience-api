@@ -14,9 +14,21 @@ function isMessageBackendUrlSet() {
   }
 }
 
+export function parseOrderMetas(order: Order) {
+  order.items.forEach((orderItem) => {
+    orderItem.meta = parseOrderItemMetaVisibilityAndOrdinal(
+      orderItem.meta || undefined
+    )
+  })
+}
+
 export function parseOrderItemMetaVisibilityAndOrdinal(
-  metaItem: OrderItemMeta[]
+  metaItem: OrderItemMeta[] | undefined
 ) {
+  if (!Array.isArray(metaItem)) {
+    return
+  }
+
   let metaItemsOrdinal: OrderItemMeta[] = []
   let metaItemsNoOrdinal: OrderItemMeta[] = []
   metaItem.forEach((orderItem) => {
@@ -50,7 +62,7 @@ export const sendEmailToCustomer = async (p: {
   isMessageBackendUrlSet()
   const { order, fileName } = p
   // Reorder metas to show in correct order using ordinal etc.
-  order.meta = parseOrderItemMetaVisibilityAndOrdinal(order.meta || [])
+  parseOrderMetas(order)
   const created = await createOrderConfirmationEmailTemplate<OrderConfirmationEmailParameters>(
     {
       fileName: fileName,
