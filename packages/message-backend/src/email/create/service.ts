@@ -57,6 +57,8 @@ export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
     return str.toUpperCase()
   })
 
+  Handlebars.registerHelper('eq', (a, b) => a == b)
+
   Handlebars.registerHelper('Time', function (date) {
     const dateObj = new Date(date)
 
