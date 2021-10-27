@@ -19,6 +19,16 @@ export type OrderItem = OrderItemRequest & {
   orderItemId: string
   orderId: string
 }
+export type OrderItemMeta = {
+  orderItemMetaId: string
+  orderItemId: string
+  orderId: string
+  key: string
+  value: string
+  label?: string
+  visibleInCheckout?: string
+  ordinal?: string
+}
 
 export interface OrderCustomer {
   firstName: string
@@ -35,6 +45,7 @@ export interface Order {
   user: string
   createdAt: string
   items: OrderItem[]
+  meta: OrderItemMeta[]
   priceNet?: string
   priceVat?: string
   priceTotal?: string
