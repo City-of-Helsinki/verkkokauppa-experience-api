@@ -26,7 +26,7 @@ export function parseOrderItemMetaVisibilityAndOrdinal(
   metaItem: OrderItemMeta[] | undefined
 ) {
   if (!Array.isArray(metaItem)) {
-    return
+    return []
   }
 
   let metaItemsOrdinal: OrderItemMeta[] = []
