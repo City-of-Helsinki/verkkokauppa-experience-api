@@ -10,13 +10,14 @@
     "prepare": "node ./tsconfig-references.js && husky install",
     "build": "yarn workspaces run build",
     "lint": "eslint \"./packages/*/src/**/*.{ts,tsx}\" --max-warnings=0 --fix",
-    "test": "TZ=Europe/Helsinki NODE_ICU_DATA=node_modules/full-icu yarn jest --coverage"
+    "test": "cross-env TZ=Europe/Helsinki NODE_ICU_DATA=node_modules/full-icu yarn jest --coverage"
   },
   "devDependencies": {
     "@types/jest": "^26.0.22",
     "@types/node": "^14.14.37",
     "@typescript-eslint/eslint-plugin": "^4.21.0",
     "@typescript-eslint/parser": "^4.23.0",
+    "cross-env": "^7.0.3",
     "eslint": "^7.23.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-import": "^2.22.1",
