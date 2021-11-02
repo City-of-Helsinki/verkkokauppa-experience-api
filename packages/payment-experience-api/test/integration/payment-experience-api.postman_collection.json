@@ -1,12 +1,213 @@
 {
 	"info": {
-		"_postman_id": "e2187439-a9f0-43a2-b841-0a6d45f0ff77",
+		"_postman_id": "82664331-c8c7-4267-b396-4b76bd8fb473",
 		"name": "payment-experience-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
+			"name": "Health 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response has health true\", function () {",
+							"    pm.expect(data.health).to.eq(true)",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderFoundUser}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{paymentExperienceUrl}}/health",
+					"host": [
+						"{{paymentExperienceUrl}}"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get Payment Methods 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response contains payment methods\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data).to.not.empty",
+							"});",
+							"pm.test(\"Response first item contains name\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data[0].name).to.exist",
+							"});",
+							"pm.test(\"Response first item name is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data[0].name).to.not.empty",
+							"});",
+							"pm.test(\"Response first item contains code\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data[0].code).to.exist",
+							"});",
+							"pm.test(\"Response first item code is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data[0].code).to.not.empty",
+							"});",
+							"pm.test(\"Response first item contains group\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data[0].group).to.exist",
+							"});",
+							"pm.test(\"Response first item group is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data[0].group).to.not.empty",
+							"});",
+							"pm.test(\"Response first item contains image\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data[0].img).to.exist",
+							"});",
+							"pm.test(\"Response first item image is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data[0].img).to.not.empty",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const qty = 1",
+							"const priceNet = pm.environment.get('productFoundPriceNet')",
+							"const priceGross = pm.environment.get('productFoundPriceGross')",
+							"const priceVat = priceGross - priceNet",
+							"const rowPriceNet = qty * priceNet",
+							"const rowPriceTotal = qty * priceGross",
+							"const rowPriceVat = qty * priceVat",
+							"const user = pm.variables.replaceIn('{{$randomUserName}}')",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', rowPriceNet)",
+							"pm.variables.set('rowPriceTotal', rowPriceTotal)",
+							"pm.variables.set('rowPriceVat', rowPriceVat)",
+							"pm.environment.set(\"orderFoundUser\", user)",
+							"",
+							"const url = pm.variables.get(\"orderExperienceUrl\")",
+							"pm.sendRequest({",
+							"    url: `${url}`,",
+							"    method: 'POST',",
+							"    header: {",
+							"        'content-type': 'application/json',",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify(",
+							"            {",
+							"                \"namespace\": pm.environment.get('namespace'),",
+							"                \"user\": user,",
+							"                \"priceNet\": rowPriceNet.toString(),",
+							"                \"priceVat\": rowPriceVat.toString(),",
+							"                \"priceTotal\": rowPriceTotal.toString(),",
+							"                \"items\": [",
+							"                    {",
+							"                        \"productId\": pm.environment.get('productFound'),",
+							"                        \"quantity\": qty,",
+							"                        \"productName\": \"Product Name\",",
+							"                        \"unit\": \"pcs\",",
+							"                        \"rowPriceNet\": rowPriceNet.toString(),",
+							"                        \"rowPriceVat\": rowPriceVat.toString(),",
+							"                        \"rowPriceTotal\": rowPriceTotal.toString(),",
+							"                        \"priceNet\": priceNet.toString(),",
+							"                        \"priceGross\": priceGross.toString(),",
+							"                        \"priceVat\": priceVat.toString(),",
+							"                        \"vatPercentage\": \"24\"",
+							"                    }",
+							"                ],",
+							"                \"customer\": {",
+							"                    \"firstName\": pm.environment.get('testCustomerFirstName'),",
+							"                    \"lastName\": pm.environment.get('testCustomerLastName'),",
+							"                    \"email\": pm.environment.get('testCustomerEmail'),",
+							"                    \"phone\": pm.environment.get('testCustomerPhone')",
+							"                }",
+							"            })",
+							"    }",
+							"}, function (err, res) {",
+							"    const orderId = res.json().orderId",
+							"    if (orderId) {",
+							"        console.log('Set orderFound variable to '+orderId)",
+							"        pm.environment.set('orderFound', orderId)",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderFoundUser}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{paymentExperienceUrl}}/:orderId/paymentMethods",
+					"host": [
+						"{{paymentExperienceUrl}}"
+					],
+					"path": [
+						":orderId",
+						"paymentMethods"
+					],
+					"variable": [
+						{
+							"key": "orderId",
+							"value": "{{orderFound}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Payment Methods with filter namespace 200",
 			"event": [
 				{
 					"listen": "test",
@@ -95,7 +296,7 @@
 							"                \"priceTotal\": rowPriceTotal.toString(),",
 							"                \"items\": [",
 							"                    {",
-							"                        \"productId\": pm.variables.get('productFound'),",
+							"                        \"productId\": pm.environment.get('productFound'),",
 							"                        \"quantity\": qty,",
 							"                        \"productName\": \"Product Name\",",
 							"                        \"unit\": \"pcs\",",
@@ -109,10 +310,169 @@
 							"                    }",
 							"                ],",
 							"                \"customer\": {",
-							"                    \"firstName\": pm.variables.get('testCustomerFirstName'),",
-							"                    \"lastName\": pm.variables.get('testCustomerLastName'),",
-							"                    \"email\": pm.variables.get('testCustomerEmail'),",
-							"                    \"phone\": pm.variables.get('testCustomerPhone')",
+							"                    \"firstName\": pm.environment.get('testCustomerFirstName'),",
+							"                    \"lastName\": pm.environment.get('testCustomerLastName'),",
+							"                    \"email\": pm.environment.get('testCustomerEmail'),",
+							"                    \"phone\": pm.environment.get('testCustomerPhone')",
+							"                }",
+							"            })",
+							"    }",
+							"}, function (err, res) {",
+							"    const orderId = res.json().orderId",
+							"    if (orderId) {",
+							"        console.log('Set orderFound variable to '+orderId)",
+							"        pm.environment.set('orderFound', orderId)",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "user",
+						"value": "{{orderFoundUser}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{paymentExperienceUrl}}/:orderId/paymentMethods",
+					"host": [
+						"{{paymentExperienceUrl}}"
+					],
+					"path": [
+						":orderId",
+						"paymentMethods"
+					],
+					"variable": [
+						{
+							"key": "orderId",
+							"value": "{{orderFound}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Payment Methods for subscription with filter namespace 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response contains payment methods\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data).to.not.empty",
+							"});",
+							"pm.test(\"Response first item contains name\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data[0].name).to.exist",
+							"});",
+							"pm.test(\"Response first item name is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data[0].name).to.not.empty",
+							"});",
+							"pm.test(\"Response first item contains code\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data[0].code).to.exist",
+							"});",
+							"pm.test(\"Response first item code is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data[0].code).to.not.empty",
+							"});",
+							"pm.test(\"Response first item contains group\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data[0].group).to.exist",
+							"});",
+							"pm.test(\"Response first item group is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data[0].group).to.not.empty",
+							"});",
+							"pm.test(\"Response first item contains image\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data[0].img).to.exist",
+							"});",
+							"pm.test(\"Response first item image is not empty\", function () {",
+							"    var data = pm.response.json();",
+							"    pm.expect(data[0].img).to.not.empty",
+							"});",
+							"pm.test(\"Response contains only creditcards\", function () {",
+							"    var data = pm.response.json();",
+							"    for (const [key, method] of Object.entries(data)) {",
+							"        pm.expect(method.code).to.eq(\"creditcards\")",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const qty = 1",
+							"const priceNet = pm.environment.get('productFoundPriceNet')",
+							"const priceGross = pm.environment.get('productFoundPriceGross')",
+							"const priceVat = priceGross - priceNet",
+							"const rowPriceNet = qty * priceNet",
+							"const rowPriceTotal = qty * priceGross",
+							"const rowPriceVat = qty * priceVat",
+							"const user = pm.variables.replaceIn('{{$randomUserName}}')",
+							"",
+							"pm.variables.set('qty', qty)",
+							"pm.variables.set('priceNet', priceNet)",
+							"pm.variables.set('priceGross', priceGross)",
+							"pm.variables.set('priceVat', priceVat)",
+							"pm.variables.set('rowPriceNet', rowPriceNet)",
+							"pm.variables.set('rowPriceTotal', rowPriceTotal)",
+							"pm.variables.set('rowPriceVat', rowPriceVat)",
+							"pm.environment.set(\"orderFoundUser\", user)",
+							"",
+							"const url = pm.variables.get(\"orderExperienceUrl\")",
+							"pm.sendRequest({",
+							"    url: `${url}`,",
+							"    method: 'POST',",
+							"    header: {",
+							"        'content-type': 'application/json',",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify(",
+							"            {",
+							"                \"namespace\": \"asukaspysakointi\",",
+							"                \"user\": user,",
+							"                \"priceNet\": rowPriceNet.toString(),",
+							"                \"priceVat\": rowPriceVat.toString(),",
+							"                \"priceTotal\": rowPriceTotal.toString(),",
+							"                \"items\": [",
+							"                    {",
+							"                        \"productId\": pm.environment.get('productFound'),",
+							"                        \"quantity\": qty,",
+							"                        \"productName\": \"Product Name\",",
+							"                        \"unit\": \"pcs\",",
+							"                        \"rowPriceNet\": rowPriceNet.toString(),",
+							"                        \"rowPriceVat\": rowPriceVat.toString(),",
+							"                        \"rowPriceTotal\": rowPriceTotal.toString(),",
+							"                        \"priceNet\": priceNet.toString(),",
+							"                        \"priceGross\": priceGross.toString(),",
+							"                        \"priceVat\": priceVat.toString(),",
+							"                        \"vatPercentage\": \"24\",",
+							"                        \"periodFrequency\":\"1\",",
+							"                        \"periodUnit\": \"monthly\",",
+							"                    }",
+							"                ],",
+							"                \"customer\": {",
+							"                    \"firstName\": pm.environment.get('testCustomerFirstName'),",
+							"                    \"lastName\": pm.environment.get('testCustomerLastName'),",
+							"                    \"email\": pm.environment.get('testCustomerEmail'),",
+							"                    \"phone\": pm.environment.get('testCustomerPhone')",
 							"                }",
 							"            })",
 							"    }",
@@ -1600,42 +1960,6 @@
 							"key": "orderId",
 							"value": "{{orderWithItems}}"
 						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get health 200",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"var data = pm.response.json()\r",
-							"\r",
-							"pm.test(\"Status code is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Response health equals true\", function () {\r",
-							"    pm.expect(data.health).to.be.true;\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{paymentExperienceUrl}}/health",
-					"host": [
-						"{{paymentExperienceUrl}}"
-					],
-					"path": [
-						"health"
 					]
 				}
 			},

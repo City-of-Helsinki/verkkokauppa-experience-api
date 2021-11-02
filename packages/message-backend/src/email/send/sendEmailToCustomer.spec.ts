@@ -60,6 +60,38 @@ describe('sendEmailToCustomer.spec.ts', () => {
         address: 'Esimerkkiosoite 1',
         district: '123456 Esimerkkitoimipaikka',
       },
+      meta: [
+        {
+          orderItemMetaId: 'ec627fb7-d557-4b7b-9c1c-61434322c109',
+          orderItemId: 'b513887b-db37-4249-a042-bf1425c340ac',
+          orderId: '76a9121f-3bb7-33b2-8ca8-bc6a23db24c1',
+          key: 'meta key ordinal 1',
+          value: 'meta value ordinal 1',
+          label: 'meta label ordinal 1',
+          visibleInCheckout: 'true',
+          ordinal: '1',
+        },
+        {
+          orderItemMetaId: 'ec627fb7-d557-4b7b-9c1c-61434322c109',
+          orderItemId: 'b513887b-db37-4249-a042-bf1425c340ac',
+          orderId: '76a9121f-3bb7-33b2-8ca8-bc6a23db24c1',
+          key: 'meta key ordinal 0',
+          value: 'meta value ordinal 0',
+          label: 'meta label ordinal 0',
+          visibleInCheckout: 'true',
+          ordinal: '0',
+        },
+        {
+          orderItemMetaId: 'ec627fb7-d557-4b7b-9c1c-61434322c112',
+          orderItemId: 'b513887b-db37-4249-a042-bf1425c340ac',
+          orderId: '76a9121f-3bb7-33b2-8ca8-bc6a23db24c1',
+          key: 'meta key ordinal 0',
+          value: 'meta value ordinal 0', // This should not show on email
+          label: '',
+          visibleInCheckout: 'true',
+          ordinal: '2',
+        },
+      ],
       status: 'draft',
       type: 'order',
       payment: {

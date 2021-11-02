@@ -56,6 +56,19 @@ export type OrderType = 'subscription' | 'order'
 export type OrderItem = OrderItemRequest & {
   orderItemId: string
   orderId: string
+} & {
+  meta?: OrderItemMeta[]
+}
+
+export type OrderItemMeta = {
+  orderItemMetaId: string
+  orderItemId: string
+  orderId: string
+  key: string
+  value: string
+  label?: string
+  visibleInCheckout?: string
+  ordinal?: string
 }
 
 export interface Order {
