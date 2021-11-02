@@ -6,6 +6,7 @@ import {
   ExperienceFailure,
   StatusCode,
 } from '@verkkokauppa/core'
+import { OrderNotFoundError } from '../errors'
 
 const SUBSCRIPTION_API_ROOT = '/subscription'
 
@@ -51,6 +52,9 @@ export const createSubscriptionsFromOrder = async (
 
     return result.data
   } catch (e) {
+    if (e.response?.status === 404) {
+      throw new OrderNotFoundError()
+    }
     throw new ExperienceFailure({
       code: 'failed-to-create-subscriptions-from-order',
       message: `Failed to create subscriptions from order ${orderId}`,
@@ -61,14 +65,15 @@ export const createSubscriptionsFromOrder = async (
 
 export const getSubscription = async (p: {
   id: string
+  user: string
 }): Promise<Subscription> => {
-  const { id } = p
+  const { id, user: userId } = p
   checkBackendUrlExists()
 
   const url = `${process.env.ORDER_BACKEND_URL + SUBSCRIPTION_API_ROOT}`
   try {
     const result = await axios.get<Subscription>(url, {
-      params: { id },
+      params: { id, userId },
     })
     return result.data
   } catch (e) {

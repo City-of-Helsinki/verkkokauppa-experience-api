@@ -12,6 +12,9 @@ const requestSchema = yup.object().shape({
   params: yup.object().shape({
     id: yup.string().required(),
   }),
+  headers: yup.object().shape({
+    user: yup.string().required(),
+  }),
 })
 
 export class getSubscriptionController extends AbstractController<
@@ -23,11 +26,14 @@ export class getSubscriptionController extends AbstractController<
     req: ValidatedRequest<typeof requestSchema>,
     res: Response
   ): Promise<any> {
-    const { id } = req.params
+    const {
+      params: { id },
+      headers: { user },
+    } = req
 
-    logger.debug(`Fetch recurring order ${id}`)
+    logger.debug(`Fetch subscription ${id}`)
 
-    const dto = new Data(await getSubscription({ id }))
+    const dto = new Data(await getSubscription({ id, user }))
 
     return this.success<any>(res, dto.serialize())
   }
