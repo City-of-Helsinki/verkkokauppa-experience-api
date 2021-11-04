@@ -39,7 +39,7 @@ export function parseOrderItemMetaVisibilityAndOrdinal(
       // If the metadata is marked for display on the receipt (visibleInCheckout = true)
       // and no metadata value is specified for the label field
       // at the checkout, only the value is displayed
-      if (orderItem.visibleInCheckout === 'true' && !orderItem.label) {
+      if (orderItem.visibleInCheckout === 'true' && orderItem.label) {
         orderItem.key = ''
       }
       // Metadata is arranged at the receipt based on the ordinal number if a value is given
