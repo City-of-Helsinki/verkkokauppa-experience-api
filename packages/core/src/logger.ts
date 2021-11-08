@@ -15,7 +15,7 @@ export const logger = createLogger({
         }
         //TODO: Move sanitization of sensitive (user) data elsewhere. Should not be under all log formatting
         if (typeof value === 'string') {
-          if (key.match(/firstname|lastname|phone|email/i)) {
+          if (key.match(/firstname|lastname|phone|email|token/i)) {
             return value && `${value[0]}...`
           }
         }
