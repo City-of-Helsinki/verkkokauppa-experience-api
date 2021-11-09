@@ -22,9 +22,14 @@ const mockResponse = ({
 
 describe('Test onboarding', () => {
   describe('Schema', () => {
-    it('Should require params.namespace', async () => {
-      await expect(onboarding.schema.validate({})).rejects.toMatchObject({
-        errors: ['params.namespace is a required field'],
+    it('Should require params.namespace and headers.api-key', async () => {
+      await expect(
+        onboarding.schema.validate({}, { abortEarly: false })
+      ).rejects.toMatchObject({
+        errors: [
+          'params.namespace is a required field',
+          'headers.api-key is a required field',
+        ],
       })
     })
     it('Should validate merchant keys to be of type string', async () => {
@@ -46,6 +51,7 @@ describe('Test onboarding', () => {
           await expect(
             onboarding.schema.validate({
               params: { namespace: 'ns1' },
+              headers: { 'api-key': 'ak1' },
               body: { [k]: [] },
             })
           ).rejects.toMatchObject({
@@ -60,15 +66,21 @@ describe('Test onboarding', () => {
       await expect(
         onboarding.schema.validate({
           params: { namespace: 'ns1' },
+          headers: { 'api-key': 'ak1' },
           body: { k: 'v' },
         })
-      ).resolves.toEqual({ params: { namespace: 'ns1' }, body: {} })
+      ).resolves.toEqual({
+        params: { namespace: 'ns1' },
+        headers: { 'api-key': 'ak1' },
+        body: {},
+      })
     })
   })
   it('Should call createPublicServiceConfigurations', async () => {
     await onboarding.implementation(
       {
         params: { namespace: 'ns1' },
+        headers: { 'api-key': 'ak1' },
         body: {
           merchantName: 'mn1',
           merchantStreet: 'ms1',
@@ -105,7 +117,7 @@ describe('Test onboarding', () => {
       { configurationKey: 'unknown', configurationValue: 'unknown' },
     ])
     await onboarding.implementation(
-      { params: { namespace: 'ns1' } } as any,
+      { params: { namespace: 'ns1' }, headers: { 'api-key': 'ak1' } } as any,
       mockResponse
     )
     expect(createdSpy).toHaveBeenCalledTimes(1)
