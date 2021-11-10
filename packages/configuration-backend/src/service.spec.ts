@@ -10,6 +10,10 @@ import axios from 'axios'
 jest.mock('axios')
 const axiosMock = axios as jest.Mocked<typeof axios>
 
+beforeEach(() => {
+  jest.clearAllMocks()
+})
+
 describe('Test Configurations from backend', () => {
   it('Should throw error with no backend url set', async () => {
     process.env.CONFIGURATION_BACKEND_URL = ''
