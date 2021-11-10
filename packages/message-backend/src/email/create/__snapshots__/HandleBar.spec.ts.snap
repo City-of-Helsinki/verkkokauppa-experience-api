@@ -527,6 +527,9 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                 </td>
                                                             </tr>
                 
+                
+                
+                
                                                                     <tr>
                                                                         <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                         <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px; font-weight:bold;\\">
@@ -543,46 +546,12 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                         </td>
                                                                     </tr>
                 
-                                                                    <tr>
-                                                                        <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                            <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px;\\">
-                                                                                Scoda Octavia
-                                                                            </span>
-                                                                        </td>
-                                                                    </tr>
-                
-                
-                                                                    <tr>
-                                                                        <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                        <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px; font-weight:bold;\\">
-                                                                            meta label ordinal 1
-                                                                        </span>
-                                                                        </td>
-                                                                    </tr>
-                
-                                                                    <tr>
-                                                                        <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                            <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px;\\">
-                                                                                meta key ordinal 1
-                                                                            </span>
-                                                                        </td>
-                                                                    </tr>
-                
-                                                                    <tr>
-                                                                        <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                            <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px;\\">
-                                                                                meta value ordinal 1
-                                                                            </span>
-                                                                        </td>
-                                                                    </tr>
-                
-                
                 
                 
                                                                     <tr>
                                                                         <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                             <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px;\\">
-                                                                                when label is empty shows only value row
+                                                                                Skoda Octavia
                                                                             </span>
                                                                         </td>
                                                                     </tr>
@@ -620,7 +589,6 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             </tr>
                 
                 
-                
                                                                     <tr>
                                                                         <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                             <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px;\\">
@@ -628,7 +596,6 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                             </span>
                                                                         </td>
                                                                     </tr>
-                
                 
                 
                 
@@ -931,6 +898,9 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                 </td>
                                                             </tr>
                 
+                
+                
+                
                                                                     <tr>
                                                                         <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                         <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px; font-weight:bold;\\">
@@ -947,46 +917,12 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                         </td>
                                                                     </tr>
                 
-                                                                    <tr>
-                                                                        <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                            <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px;\\">
-                                                                                Scoda Octavia
-                                                                            </span>
-                                                                        </td>
-                                                                    </tr>
-                
-                
-                                                                    <tr>
-                                                                        <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                        <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px; font-weight:bold;\\">
-                                                                            meta label ordinal 1
-                                                                        </span>
-                                                                        </td>
-                                                                    </tr>
-                
-                                                                    <tr>
-                                                                        <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                            <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px;\\">
-                                                                                meta key ordinal 1
-                                                                            </span>
-                                                                        </td>
-                                                                    </tr>
-                
-                                                                    <tr>
-                                                                        <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                            <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px;\\">
-                                                                                meta value ordinal 1
-                                                                            </span>
-                                                                        </td>
-                                                                    </tr>
-                
-                
                 
                 
                                                                     <tr>
                                                                         <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                             <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px;\\">
-                                                                                when label is empty shows only value row
+                                                                                Skoda Octavia
                                                                             </span>
                                                                         </td>
                                                                     </tr>
@@ -1024,7 +960,6 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             </tr>
                 
                 
-                
                                                                     <tr>
                                                                         <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                             <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px;\\">
@@ -1032,7 +967,6 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                             </span>
                                                                         </td>
                                                                     </tr>
-                
                 
                 
                 
@@ -1335,6 +1269,9 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                 </td>
                                                             </tr>
                 
+                
+                
+                
                                                                     <tr>
                                                                         <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                         <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px; font-weight:bold;\\">
@@ -1351,46 +1288,12 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                         </td>
                                                                     </tr>
                 
-                                                                    <tr>
-                                                                        <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                            <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px;\\">
-                                                                                Scoda Octavia
-                                                                            </span>
-                                                                        </td>
-                                                                    </tr>
-                
-                
-                                                                    <tr>
-                                                                        <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                        <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px; font-weight:bold;\\">
-                                                                            meta label ordinal 1
-                                                                        </span>
-                                                                        </td>
-                                                                    </tr>
-                
-                                                                    <tr>
-                                                                        <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                            <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px;\\">
-                                                                                meta key ordinal 1
-                                                                            </span>
-                                                                        </td>
-                                                                    </tr>
-                
-                                                                    <tr>
-                                                                        <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                            <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px;\\">
-                                                                                meta value ordinal 1
-                                                                            </span>
-                                                                        </td>
-                                                                    </tr>
-                
-                
                 
                 
                                                                     <tr>
                                                                         <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                             <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px;\\">
-                                                                                when label is empty shows only value row
+                                                                                Skoda Octavia
                                                                             </span>
                                                                         </td>
                                                                     </tr>
@@ -1428,7 +1331,6 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             </tr>
                 
                 
-                
                                                                     <tr>
                                                                         <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                             <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px;\\">
@@ -1436,7 +1338,6 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                             </span>
                                                                         </td>
                                                                     </tr>
-                
                 
                 
                 
