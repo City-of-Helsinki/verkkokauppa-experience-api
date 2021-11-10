@@ -3,6 +3,7 @@ import {
   getAllRestrictedServiceConfiguration,
   getPublicServiceConfiguration,
   getRestrictedServiceConfiguration,
+  validateApiKey,
 } from './service'
 import axios from 'axios'
 
@@ -98,5 +99,40 @@ describe('Test Configurations from backend', () => {
       key: 'PAYMENT_API_KEY',
     })
     await expect(result).toBe(mockData)
+  })
+})
+
+describe('Test validateApiKey', () => {
+  const baseUrl = 'test.dev.hel'
+  process.env.CONFIGURATION_BACKEND_URL = baseUrl
+  const p = { namespace: 'ns1', apiKey: 'ak1' }
+  it('Should call /api-access/validate', async () => {
+    axiosMock.get.mockResolvedValue({ data: true })
+    await validateApiKey(p)
+    expect(axiosMock.get).toHaveBeenCalledTimes(1)
+    expect(axiosMock.get.mock.calls[0]![0]).toEqual(
+      `${baseUrl}/api-access/validate`
+    )
+    expect(axiosMock.get.mock.calls[0]![1]).toEqual({
+      params: {
+        namespace: 'ns1',
+        token: 'ak1',
+      },
+    })
+  })
+  it('Should throw failed-to-validate-api-key error for unknown errors', async () => {
+    axiosMock.get.mockRejectedValue(undefined)
+    await expect(validateApiKey(p)).rejects.toThrow(
+      /failed-to-validate-api-key/
+    )
+  })
+  it('Should throw api-key-validation-failed error for unsuccessful validation', async () => {
+    axiosMock.get.mockResolvedValue({ data: false })
+    await expect(validateApiKey(p)).rejects.toThrow(/api-key-validation-failed/)
+  })
+  it('Should return undefined for successful validation', async () => {
+    axiosMock.get.mockResolvedValue({ data: true })
+    const res = await validateApiKey(p)
+    expect(res).toEqual(undefined)
   })
 })
