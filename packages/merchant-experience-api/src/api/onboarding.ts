@@ -1,7 +1,10 @@
 import { AbstractController, Data, ValidatedRequest } from '@verkkokauppa/core'
 import type { Response } from 'express'
 import * as yup from 'yup'
-import { createPublicServiceConfigurations } from '@verkkokauppa/configuration-backend'
+import {
+  createPublicServiceConfigurations,
+  validateApiKey,
+} from '@verkkokauppa/configuration-backend'
 
 const merchantCommonSchema = yup.object({
   merchantName: yup.string(),
@@ -40,6 +43,9 @@ const requestSchema = yup.object().shape({
     namespace: yup.string().required(),
   }),
   body: merchantFrontendSchema,
+  headers: yup.object().shape({
+    'api-key': yup.string().required(),
+  }),
 })
 
 export class Onboarding extends AbstractController<typeof requestSchema> {
@@ -52,7 +58,10 @@ export class Onboarding extends AbstractController<typeof requestSchema> {
     const {
       params: { namespace },
       body,
+      headers: { 'api-key': apiKey },
     } = req
+
+    await validateApiKey({ namespace, apiKey })
 
     const configurations = await createPublicServiceConfigurations({
       namespace,

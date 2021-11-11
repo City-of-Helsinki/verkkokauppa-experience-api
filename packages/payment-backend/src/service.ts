@@ -212,6 +212,28 @@ export const getPaymentForOrder = async (p: {
   }
 }
 
+export const getPaymentForOrderAdmin = async (p: {
+  orderId: string
+}): Promise<Payment> => {
+  const { orderId } = p
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment-admin/online/get`
+  try {
+    const res = await axios.get(url, {
+      params: { orderId },
+    })
+    return res.data
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new PaymentNotFound()
+    }
+    throw new GetPaymentForOrderFailure(e)
+  }
+}
+
 export const paidPaymentExists = async (p: {
   orderId: string
   namespace: string

@@ -137,7 +137,67 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "api-key",
+						"value": "{{namespaceApiKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"namespaceEntityId\": \"{{namespaceProductFound}}\",\n    \"name\": \"Some Product Name\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{productExperienceUrl}}",
+					"host": [
+						"{{productExperienceUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Product with invalid api key 403",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"var requestData = JSON.parse(pm.request.body);",
+							"",
+							"pm.test(\"Status code is 403\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
+							"});",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"api-key-validation-failed\")",
+							"});",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"invalid api key\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "api-key",
+						"value": "123",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"namespaceEntityId\": \"{{namespaceProductFound}}\",\n    \"name\": \"Some Product Name\"\n}",
@@ -295,7 +355,87 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "api-key",
+						"value": "{{namespaceApiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "namespace",
+						"value": "{{namespace}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"mainLedgerAccount\": \"mainLedgerAccount\",\n    \"vatCode\": \"24\",\n    \"internalOrder\": \"internalOrder\",\n    \"profitCenter\": \"profitCenter\",\n    \"project\": \"project\",\n    \"operationArea\": \"operationArea\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{productExperienceUrl}}/:id/accounting",
+					"host": [
+						"{{productExperienceUrl}}"
+					],
+					"path": [
+						":id",
+						"accounting"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{productFound}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Product Accounting with invalid api key 403",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = pm.response.json();",
+							"var requestData = JSON.parse(pm.request.body);",
+							"",
+							"pm.test(\"Status code is 403\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"pm.test(\"Response has only one error\", function () {",
+							"    pm.expect(data.errors.length).to.eq(1)",
+							"});",
+							"pm.test(\"Response has correct error code for invalid request\", function () {",
+							"    pm.expect(data.errors[0].code).to.eq(\"api-key-validation-failed\")",
+							"});",
+							"pm.test(\"Response has correct error message for invalid request\", function () {",
+							"    pm.expect(data.errors[0].message).to.eq(\"invalid api key\")",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "api-key",
+						"value": "123",
+						"type": "text"
+					},
+					{
+						"key": "namespace",
+						"value": "{{namespace}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"mainLedgerAccount\": \"mainLedgerAccount\",\n    \"vatCode\": \"24\",\n    \"internalOrder\": \"internalOrder\",\n    \"profitCenter\": \"profitCenter\",\n    \"project\": \"project\",\n    \"operationArea\": \"operationArea\"\n}",
