@@ -6,17 +6,22 @@ import { OnlinePaymentReturnController } from './api/onlinePaymentReturnControll
 import { OnlinePaymentNotifyController } from './api/onlinePaymentNotifyController'
 import { GetPaymentController } from './api/getPaymentController'
 import { Health } from './api/health'
+import { GetPaymentAdminController } from './api/getPaymentAdminController'
 
 const createPaymentController = new CreatePaymentController()
 const getPaymentMethodListCtrl = new GetPaymentMethodListController()
 const onlinePaymentReturnController = new OnlinePaymentReturnController()
 const onlinePaymentNotifyController = new OnlinePaymentNotifyController()
 const getPaymentController = new GetPaymentController()
+const getPaymentAdminController = new GetPaymentAdminController()
 const healthController = new Health()
 
 const router = Router()
 router.get('/health', (req, res) => healthController.execute(req, res))
 router.get('/:orderId', (req, res) => getPaymentController.execute(req, res))
+router.get('/admin/:orderId', (req, res) =>
+  getPaymentAdminController.execute(req, res)
+)
 router.post('/:orderId', (req, res) =>
   createPaymentController.execute(req, res)
 )

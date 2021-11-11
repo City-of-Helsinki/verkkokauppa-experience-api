@@ -15,7 +15,7 @@ const requestSchema = yup.object().shape({
   }),
 })
 
-export class GetPaymentController extends AbstractController<
+export class GetPaymentAdminController extends AbstractController<
   typeof requestSchema
 > {
   protected readonly requestSchema = requestSchema
