@@ -8,6 +8,8 @@ export type MerchantConfigurationKeys = {
   merchantUrl: string
   merchantTermsOfServiceUrl: string
   merchantBusinessId: string
+  // Merchant restricted values
+  merchantPaymentWebhookUrl: string
 }
 
 export type PublicServiceConfigurationKeys = {
@@ -32,6 +34,8 @@ export type RestrictedServiceConfigurationKeys = {
   PAYMENT_LANGUAGE: string
   PAYMENT_SUBMERCHANT_ID: string
   PAYMENT_CP: string
+  // Merchant
+  merchantPaymentWebhookUrl: string
 }
 
 export interface ServiceConfiguration {
