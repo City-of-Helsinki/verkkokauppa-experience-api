@@ -52,6 +52,7 @@ export interface Order {
   checkoutUrl?: string
   customer?: OrderCustomer
   status?: string
+  subscriptionId?: string
   type: OrderType
 }
 
@@ -66,6 +67,7 @@ export interface OrderBackendResponse {
   customerPhone?: string
   status?: string
   type: OrderType
+  subscriptionId?: string
 }
 
 export type OrderWithItemsBackendResponse = {

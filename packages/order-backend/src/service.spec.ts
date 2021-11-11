@@ -19,6 +19,7 @@ const orderMock = {
   user: 'test@test.dev.hel',
   createdAt: '1619157868',
   type: 'order',
+  status: 'draft',
 }
 
 const orderBackendCustomerMock = {
@@ -361,6 +362,43 @@ describe('Test Get Order', () => {
       ...orderMock,
       ...orderCustomerMock,
       items: mockData.items,
+      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
+    })
+  })
+  it('Should get subscription type order with items correctly with backend url set', async () => {
+    process.env.ORDER_BACKEND_URL = 'test.dev.hel'
+    const mockData = {
+      order: {
+        ...orderMock,
+        ...orderBackendCustomerMock,
+        type: 'subscription',
+        subscriptionId: '8f346802-b564-490f-b8af-ff8a7ea923db',
+      },
+      items: [
+        {
+          orderId: orderMock.orderId,
+          orderItemId: '19699acf-b0a3-440f-818f-e582825fa3a7',
+          productId: '30a245ed-5fca-4fcf-8b2a-cdf1ce6fca0d',
+          quantity: 1,
+          productName: 'Product Name',
+          unit: 'pcs',
+          rowPriceNet: '100',
+          rowPriceVat: '24',
+          rowPriceTotal: '124',
+        },
+      ],
+    }
+    axiosMock.get.mockResolvedValue({ data: mockData })
+    const result = await getOrder({
+      orderId: orderMock.orderId,
+      user: orderMock.user,
+    })
+    expect(result).toEqual({
+      ...orderMock,
+      ...orderCustomerMock,
+      type: 'subscription',
+      items: mockData.items,
+      subscriptionId: mockData.order.subscriptionId,
       checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
     })
   })
