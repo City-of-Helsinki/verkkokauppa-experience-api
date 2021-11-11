@@ -11,7 +11,11 @@ import {
   GetPublicServiceConfigurationFailure,
   GetRestrictedServiceConfigurationFailure,
 } from './errors'
-import { ExperienceFailure } from '@verkkokauppa/core'
+import {
+  ExperienceError,
+  ExperienceFailure,
+  StatusCode,
+} from '@verkkokauppa/core'
 
 export const getAllPublicServiceConfiguration = async (p: {
   namespace: string
@@ -126,6 +130,44 @@ export const createPublicServiceConfigurations = async (p: {
       code: 'failed-to-create-public-service-configurations',
       message: 'Failed to create public service configurations',
       source: e,
+    })
+  }
+}
+
+const isApiKeyValid = async (p: {
+  namespace: string
+  apiKey: string
+}): Promise<boolean> => {
+  const { namespace, apiKey: token } = p
+  if (!process.env.CONFIGURATION_BACKEND_URL) {
+    throw new Error('No configuration backend URL set')
+  }
+  const url = `${process.env.CONFIGURATION_BACKEND_URL}/api-access/validate`
+  try {
+    const res = await axios.get(url, {
+      params: { namespace, token },
+    })
+    return res.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-validate-api-key',
+      message: 'Failed to validate api key',
+      source: e,
+    })
+  }
+}
+
+export const validateApiKey = async (p: {
+  namespace: string
+  apiKey: string
+}): Promise<void> => {
+  const isValid = await isApiKeyValid(p)
+  if (!isValid) {
+    throw new ExperienceError({
+      code: 'api-key-validation-failed',
+      message: 'invalid api key',
+      responseStatus: StatusCode.Forbidden,
+      logLevel: 'info',
     })
   }
 }

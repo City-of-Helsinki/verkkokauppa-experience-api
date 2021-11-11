@@ -16,6 +16,7 @@ COPY ./packages/product-backend ./packages/product-backend
 COPY ./packages/product-mapping-backend ./packages/product-mapping-backend
 COPY ./packages/price-backend ./packages/price-backend
 COPY ./packages/product-experience-api ./packages/product-experience-api
+COPY ./packages/configuration-backend ./packages/configuration-backend
 
 # Chown to correct user
 USER 0
@@ -29,6 +30,7 @@ RUN yarn workspace @verkkokauppa/product-backend install
 RUN yarn workspace @verkkokauppa/product-mapping-backend install
 RUN yarn workspace @verkkokauppa/price-backend install
 RUN yarn workspace @verkkokauppa/product-experience-api install
+RUN yarn workspace @verkkokauppa/configuration-backend install
 
 # Create production build
 FROM base as production
@@ -36,6 +38,8 @@ RUN yarn workspace @verkkokauppa/core build
 RUN yarn workspace @verkkokauppa/product-backend build
 RUN yarn workspace @verkkokauppa/product-mapping-backend build
 RUN yarn workspace @verkkokauppa/price-backend build
+RUN yarn workspace @verkkokauppa/configuration-backend build
+
 RUN yarn workspace @verkkokauppa/product-experience-api build
 EXPOSE 8080
 CMD yarn workspace @verkkokauppa/product-experience-api start -d

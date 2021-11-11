@@ -14,6 +14,7 @@ import { CalculateTotalsController } from './api/calculateTotals'
 import { InstantPurchase } from './api/instantPurchase'
 import { ConfirmAndCreatePayment } from './api/confirmAndCreatePayment'
 import { Health } from './api/health'
+import { GetAdminController } from './api/getAdminController'
 
 const createController = new CreateController()
 const cartToOrderController = new CartToOrder()
@@ -22,6 +23,7 @@ const confirmAndCreatePaymentController = new ConfirmAndCreatePayment()
 const setCustomerController = new SetCustomerController()
 const addItemController = new AddItemController()
 const getController = new GetController()
+const getAdminController = new GetAdminController()
 const getSubscriptionCtrl = new getSubscriptionController()
 const searchActiveSubscriptionsCtrl = new searchActiveSubscriptionsController()
 const createSubscriptionCtrl = new createSubscriptionController()
@@ -34,6 +36,9 @@ const router = Router()
 router.post('/', (req, res) => createController.execute(req, res))
 router.get('/health', (req, res) => healthController.execute(req, res))
 router.get('/:orderId', (req, res) => getController.execute(req, res))
+router.get('/admin/:orderId', (req, res) =>
+  getAdminController.execute(req, res)
+)
 router.get('/subscription/:id', (req, res) =>
   getSubscriptionCtrl.execute(req, res)
 )

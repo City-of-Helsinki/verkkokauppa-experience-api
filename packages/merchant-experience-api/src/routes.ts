@@ -11,11 +11,6 @@ const onboardingController = new Onboarding()
 
 router.get('/health', (req, res) => healthController.execute(req, res))
 router.get('/:namespace', (req, res) => getController.execute(req, res))
-
-if (parseInt(process.env.ENABLE_MERCHANT_ONBOARDING!)) {
-  router.post('/:namespace', (req, res) =>
-    onboardingController.execute(req, res)
-  )
-}
+router.post('/:namespace', (req, res) => onboardingController.execute(req, res))
 
 export default router
