@@ -31,25 +31,23 @@ export function parseOrderItemMetaVisibilityAndOrdinal(
 
   let metaItemsOrdinal: OrderItemMeta[] = []
   let metaItemsNoOrdinal: OrderItemMeta[] = []
-  metaItem.forEach((orderItem) => {
-    if (
-      orderItem.visibleInCheckout === 'true' ||
-      !orderItem.visibleInCheckout
-    ) {
+
+  metaItem
+    .filter(
+      (meta) => meta.visibleInCheckout === 'true' || !meta.visibleInCheckout
+    )
+    .forEach((orderItem) => {
       // If the metadata is marked for display on the receipt (visibleInCheckout = true)
       // and no metadata value is specified for the label field
       // at the checkout, only the value is displayed
-      if (orderItem.visibleInCheckout === 'true' && orderItem.label) {
-        orderItem.key = ''
-      }
+      orderItem.key = '' // Key should not be visible in emails
       // Metadata is arranged at the receipt based on the ordinal number if a value is given
       if (orderItem.ordinal) {
         metaItemsOrdinal[parseInt(orderItem.ordinal)] = orderItem
       } else {
         metaItemsNoOrdinal.push(orderItem)
       }
-    }
-  })
+    })
   return [...metaItemsOrdinal, ...metaItemsNoOrdinal]
 }
 
