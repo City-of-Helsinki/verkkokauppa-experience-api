@@ -59,7 +59,7 @@ describe('Test service.ts functions', () => {
       orderItemMetaId: 'ec627fb7-d557-4b7b-9c1c-61434322c109',
       orderItemId: 'orderItemId1',
       orderId: '76a9121f-3bb7-33b2-8ca8-bc6a23db24c1',
-      key: 'meta key ordinal 0 show all',
+      key: '',
       value: 'meta value ordinal 0 show all',
       label: 'meta label ordinal 0 show all',
       visibleInCheckout: 'true',
@@ -70,7 +70,7 @@ describe('Test service.ts functions', () => {
       orderItemMetaId: 'ec627fb7-d557-4b7b-9c1c-61434322c109',
       orderItemId: 'orderItemId2',
       orderId: '76a9121f-3bb7-33b2-8ca8-bc6a23db24c1',
-      key: 'meta key ordinal 1',
+      key: '',
       value: 'meta value ordinal 1',
       label: 'meta label ordinal 1',
       visibleInCheckout: 'true',
@@ -81,7 +81,7 @@ describe('Test service.ts functions', () => {
       orderItemMetaId: 'ec627fb7-d557-4b7b-9c1c-61434322c109',
       orderItemId: 'orderItemId1',
       orderId: '76a9121f-3bb7-33b2-8ca8-bc6a23db24c1',
-      key: '', // This should be empty when label is not given.
+      key: '',
       value: 'when label is empty shows only value row',
       visibleInCheckout: 'true',
     })
@@ -90,7 +90,7 @@ describe('Test service.ts functions', () => {
       orderItemMetaId: 'ec627fb7-d557-4b7b-9c1c-61434322c109',
       orderItemId: 'orderItemId3',
       orderId: 'no-ordinal-3bb7-33b2-8ca8-bc6a23db24c1',
-      key: 'meta key no ordinal',
+      key: '',
       value: 'meta value no ordinal',
       label: 'meta label no ordinal',
     })
