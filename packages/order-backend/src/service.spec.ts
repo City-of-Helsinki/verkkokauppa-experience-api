@@ -441,7 +441,7 @@ describe('Test Calculate Totals for Order', () => {
       ...orderMock,
       items: [],
       customer: undefined,
-      status: undefined,
+      status: 'draft',
       priceNet: '0',
       priceVat: '0',
       priceTotal: '0',
