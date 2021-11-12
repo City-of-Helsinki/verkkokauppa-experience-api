@@ -42,6 +42,7 @@ describe('Test onboarding', () => {
         'merchantPhone',
         'merchantUrl',
         'merchantTermsOfServiceUrl',
+        'merchantPaymentWebhookUrl',
         'merchantBusinessId',
         'orderCreatedRedirectUrl',
         'orderCancelRedirectUrl',
