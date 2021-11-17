@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "b381f581-f2c2-48d8-a358-0a9d9c1af6f1",
+		"_postman_id": "7e021e4a-9704-4c04-b362-9e8487e88605",
 		"name": "product-experience-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -121,8 +121,8 @@
 							"pm.test(\"Status code is 201\", function () {",
 							"    pm.response.to.have.status(201);",
 							"});",
-							"pm.test(\"Response contains correct mapped ID\", function () {",
-							"    pm.expect(data.productId).to.eql(pm.variables.get(\"productFound\"));",
+							"pm.test(\"Response contains mapped ID\", function () {",
+							"    pm.expect(data.productId).to.exist;",
 							"});",
 							"pm.test(\"Response contains correct namespace\", function () {",
 							"    pm.expect(data.namespace).to.eql(requestData.namespace);",
@@ -232,11 +232,11 @@
 							"pm.test(\"Response contains correct ID\", function () {",
 							"    pm.expect(data.productId).to.eql(productId);",
 							"});",
-							"pm.test(\"Response contains correct namespace\", function () {",
-							"    pm.expect(data.namespace).to.eql(pm.variables.get(\"namespace\"))",
+							"pm.test(\"Response contains namespace\", function () {",
+							"    pm.expect(data.namespace).to.exist",
 							"});",
-							"pm.test(\"Response contains correct namespaceEntityId\", function () {",
-							"    pm.expect(data.namespaceEntityId).to.eql(pm.variables.get(\"namespaceProductFound\"))",
+							"pm.test(\"Response contains namespaceEntityId\", function () {",
+							"    pm.expect(data.namespaceEntityId).to.exist",
 							"});"
 						],
 						"type": "text/javascript"
