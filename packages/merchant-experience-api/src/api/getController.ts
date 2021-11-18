@@ -19,6 +19,7 @@ const keyMap: { [key: string]: string } = {
   MERCHANT_URL: 'merchantUrl',
   MERCHANT_TERMS_OF_SERVICE_URL: 'merchantTermsOfServiceUrl',
   MERCHANT_PAYMENT_WEBHOOK_URL: 'merchantPaymentWebhookUrl',
+  MERCHANT_ORDER_WEBHOOK_URL: 'merchantOrderWebhookUrl',
   MERCHANT_BUSINESS_ID: 'merchantBusinessId',
   ORDER_CREATED_REDIRECT_URL: 'orderCreatedRedirectUrl',
 }
