@@ -266,7 +266,6 @@ const transFormBackendOrder = (p: OrderWithItemsBackendResponse): Order => {
       phone: customerPhone,
     }
   }
-  let receiptPath = `/receipt`
   let data: any = {
     orderId,
     namespace,
@@ -278,7 +277,7 @@ const transFormBackendOrder = (p: OrderWithItemsBackendResponse): Order => {
     type,
     subscriptionId,
     checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}`,
-    receiptUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}${receiptPath}?user=${user}`,
+    receiptUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}/receipt?user=${user}`,
   }
   if (priceNet && priceVat && priceTotal) {
     data = {
