@@ -26,6 +26,9 @@
             ],
             "@verkkokauppa/configuration-backend": [
                 "../configuration-backend"
+            ],
+            "@verkkokauppa/auth-helsinki-profile": [
+                "../auth-helsinki-profile"
             ]
         }
     },
@@ -53,6 +56,9 @@
         },
         {
             "path": "../configuration-backend"
+        },
+        {
+            "path": "../auth-helsinki-profile"
         }
     ]
 }
