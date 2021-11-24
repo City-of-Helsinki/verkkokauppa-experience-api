@@ -7,12 +7,17 @@ import { OnlinePaymentNotifyController } from './api/onlinePaymentNotifyControll
 import { GetPaymentController } from './api/getPaymentController'
 import { Health } from './api/health'
 import { GetPaymentAdminController } from './api/getPaymentAdminController'
+import { withAuthentication } from '../../auth-helsinki-profile/src'
 
-const createPaymentController = new CreatePaymentController()
-const getPaymentMethodListCtrl = new GetPaymentMethodListController()
+const createPaymentController = new (withAuthentication(
+  CreatePaymentController
+))()
+const getPaymentMethodListCtrl = new (withAuthentication(
+  GetPaymentMethodListController
+))()
 const onlinePaymentReturnController = new OnlinePaymentReturnController()
 const onlinePaymentNotifyController = new OnlinePaymentNotifyController()
-const getPaymentController = new GetPaymentController()
+const getPaymentController = new (withAuthentication(GetPaymentController))()
 const getPaymentAdminController = new GetPaymentAdminController()
 const healthController = new Health()
 
