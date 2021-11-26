@@ -20,7 +20,9 @@ import {
   OrderValidationError,
   SetCustomerToOrderFailure,
   SetOrderTotalsFailure,
+  SubscriptionNotFoundError,
 } from './errors'
+import { ExperienceFailure } from '@verkkokauppa/core'
 
 export const createOrder = async (p: {
   namespace: string
@@ -341,5 +343,30 @@ export const createAccountingEntryForOrder = async (
     return result.data
   } catch (e) {
     throw new CreateOrderAccountingFailure(e)
+  }
+}
+
+export const getOrdersBySubscription = async (p: {
+  subscriptionId: string
+  user: string
+}): Promise<Order[]> => {
+  const { subscriptionId, user: userId } = p
+  const url = `${process.env.ORDER_BACKEND_URL}/order/get-by-subscription`
+  try {
+    const res = await axios.get(url, {
+      params: { subscriptionId, userId },
+    })
+    return res.data.map((order: OrderWithItemsBackendResponse) =>
+      transFormBackendOrder(order)
+    )
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new SubscriptionNotFoundError(subscriptionId)
+    }
+    throw new ExperienceFailure({
+      code: 'failed-to-get-subscription-orders',
+      message: `Failed to get orders for subscription ${subscriptionId}`,
+      source: e,
+    })
   }
 }
