@@ -96,6 +96,17 @@ export class OrderNotFoundError extends ExperienceError {
   }
 }
 
+export class SubscriptionNotFoundError extends ExperienceError {
+  constructor(id: string) {
+    super({
+      code: 'subscription-not-found',
+      message: `Subscription ${id} not found`,
+      responseStatus: StatusCode.NotFound,
+      logLevel: 'info',
+    })
+  }
+}
+
 export class SetOrderTotalsFailure extends ExperienceFailure {
   constructor(source: Error) {
     super({
