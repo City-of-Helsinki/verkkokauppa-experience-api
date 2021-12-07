@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "e4e2406d-0c85-4940-87dc-7bee88c4b809",
-		"name": "order-experience-api",
+		"_postman_id": "86c4b291-5300-4dce-92e5-381c454c870c",
+		"name": "order-experience-api Copy",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -2734,7 +2734,8 @@
 							"    pm.expect(data.order.priceTotal).to.eql(pm.variables.get('rowPriceTotal').toString());",
 							"});",
 							"",
-							"/* Cart checks */",
+							"/* Cart checks ",
+							"DISABLED until cart integration is active",
 							"pm.test(\"Response contains cart ID\", function () {",
 							"    pm.expect(data.cart.cartId).to.not.empty",
 							"});",
@@ -2770,7 +2771,8 @@
 							"});",
 							"pm.test(\"Response cart item has correct unit\", function () {",
 							"    pm.expect(data.cart.items[0].unit).to.eql(data.order.items[0].unit);",
-							"});"
+							"});",
+							"*/"
 						],
 						"type": "text/javascript"
 					}
