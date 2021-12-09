@@ -110,4 +110,25 @@ export const searchActiveSubscriptions = async (p: {
   }
 }
 
+export const cancelSubscription = async (p: {
+  id: string
+  user: string
+}): Promise<Subscription> => {
+  const { id, user: userId } = p
+  checkBackendUrlExists()
+
+  const url = `${process.env.ORDER_BACKEND_URL + SUBSCRIPTION_API_ROOT}/cancel`
+  try {
+    const result = await axios.post<Subscription>(url, {
+      params: { id, userId },
+    })
+    return result.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-cancel-subscription',
+      message: 'Failed to cancel subscription',
+      source: e,
+    })
+  }
+}
 // TODO: update method?
