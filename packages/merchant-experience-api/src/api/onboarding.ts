@@ -17,6 +17,7 @@ const merchantCommonSchema = yup.object({
   merchantTermsOfServiceUrl: yup.string(),
   merchantPaymentWebhookUrl: yup.string(),
   merchantOrderWebhookUrl: yup.string(),
+  merchantSubscriptionWebhookUrl: yup.string(),
   merchantBusinessId: yup.string(),
 })
 
