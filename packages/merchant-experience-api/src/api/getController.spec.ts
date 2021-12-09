@@ -49,6 +49,10 @@ describe('Test getController', () => {
         configurationKey: 'merchantOrderWebhookUrl',
         configurationValue: 'merchant_order_webhook',
       },
+      {
+        configurationKey: 'merchantSubscriptionWebhookUrl',
+        configurationValue: 'merchant_subscription_webhook',
+      },
     ])
     await getController.implementation(
       { params: { namespace: 'ns1' } } as any,
@@ -63,6 +67,7 @@ describe('Test getController', () => {
       orderCreatedRedirectUrl: 'https://test.url',
       merchantPaymentWebhookUrl: 'merchant_payment_webhook',
       merchantOrderWebhookUrl: 'merchant_order_webhook',
+      merchantSubscriptionWebhookUrl: 'merchant_subscription_webhook',
     })
   })
 })
