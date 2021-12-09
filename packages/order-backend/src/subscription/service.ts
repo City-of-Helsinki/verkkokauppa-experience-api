@@ -113,13 +113,13 @@ export const searchActiveSubscriptions = async (p: {
 export const cancelSubscription = async (p: {
   id: string
   user: string
-}): Promise<{}> => {
+}): Promise<Subscription> => {
   const { id, user: userId } = p
   checkBackendUrlExists()
 
   const url = `${process.env.ORDER_BACKEND_URL + SUBSCRIPTION_API_ROOT}/cancel`
   try {
-    const result = await axios.post<{ id: string }>(url, {
+    const result = await axios.post<Subscription>(url, {
       params: { id, userId },
     })
     return result.data
