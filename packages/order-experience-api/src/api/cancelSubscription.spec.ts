@@ -28,7 +28,7 @@ const requestBody = {}
 const requestHeaders = {}
 
 const mockRequest = {
-  params: { subscriptionId: 'test123' },
+  params: { id: 'test123' },
   body: requestBody,
   headers: requestHeaders,
 } as any
