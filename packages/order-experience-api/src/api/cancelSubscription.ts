@@ -6,7 +6,6 @@ import {
 } from '@verkkokauppa/core'
 import type { Response } from 'express'
 import { cancelSubscription } from '@verkkokauppa/order-backend'
-import { URL } from 'url'
 import * as yup from 'yup'
 
 const requestSchema = yup.object().shape({
