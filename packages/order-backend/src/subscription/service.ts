@@ -119,7 +119,7 @@ export const cancelSubscription = async (p: {
 
   const url = `${process.env.ORDER_BACKEND_URL + SUBSCRIPTION_API_ROOT}/cancel`
   try {
-    const result = await axios.post<Subscription>(url, {
+    const result = await axios.post<Subscription>(url, undefined, {
       params: { id, userId },
     })
     return result.data
