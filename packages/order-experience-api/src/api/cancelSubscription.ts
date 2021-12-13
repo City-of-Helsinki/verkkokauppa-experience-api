@@ -10,7 +10,7 @@ import * as yup from 'yup'
 
 const requestSchema = yup.object().shape({
   params: yup.object().shape({
-    subscriptionId: yup.string().required(),
+    id: yup.string().required(),
   }),
   headers: yup.object().shape({
     user: yup.string().required(),
