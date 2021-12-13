@@ -1,6 +1,5 @@
 import { AbstractController, ValidatedRequest } from '@verkkokauppa/core'
 import type { Response } from 'express'
-import { GetController } from './getController'
 import { CancelSubscription } from './cancelSubscription'
 
 jest.mock('@verkkokauppa/order-backend')
