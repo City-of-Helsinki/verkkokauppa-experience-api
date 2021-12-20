@@ -50,6 +50,7 @@ export interface Order {
   priceVat?: string
   priceTotal?: string
   checkoutUrl?: string
+  receiptUrl?: string
   customer?: OrderCustomer
   status?: string
   subscriptionId?: string

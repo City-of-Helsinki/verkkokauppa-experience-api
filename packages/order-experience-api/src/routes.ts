@@ -15,6 +15,8 @@ import { InstantPurchase } from './api/instantPurchase'
 import { ConfirmAndCreatePayment } from './api/confirmAndCreatePayment'
 import { Health } from './api/health'
 import { GetAdminController } from './api/getAdminController'
+import { GetSubscriptionOrdersController } from './api/getSubscriptionOrdersController'
+import { CancelSubscription } from './api/cancelSubscription'
 import { withAuthentication } from '../../auth-helsinki-profile/src'
 
 const createController = new CreateController()
@@ -27,6 +29,9 @@ const setCustomerController = new (withAuthentication(SetCustomerController))()
 const addItemController = new (withAuthentication(AddItemController))()
 const getController = new (withAuthentication(GetController))()
 const getAdminController = new GetAdminController()
+const getSubscriptionOrdersCtrl = new (withAuthentication(
+  GetSubscriptionOrdersController
+))()
 const getSubscriptionCtrl = new (withAuthentication(
   getSubscriptionController
 ))()
@@ -38,6 +43,7 @@ const calculateTotalsController = new (withAuthentication(
 ))()
 const instantPurchaseController = new InstantPurchase()
 const healthController = new Health()
+const cancelSubscription = new (withAuthentication(CancelSubscription))()
 
 const router = Router()
 router.post('/', (req, res) => createController.execute(req, res))
@@ -48,6 +54,9 @@ router.get('/admin/:orderId', (req, res) =>
 )
 router.get('/subscription/:id', (req, res) =>
   getSubscriptionCtrl.execute(req, res)
+)
+router.get('/subscription/:id/orders', (req, res) =>
+  getSubscriptionOrdersCtrl.execute(req, res)
 )
 router.post('/:orderId/customer', (req, res) =>
   setCustomerController.execute(req, res)
@@ -75,6 +84,9 @@ router.post('/subscription/create-from-order', (req, res) =>
 )
 router.post('/subscription/search/active', (req, res) =>
   searchActiveSubscriptionsCtrl.execute(req, res)
+)
+router.post('/subscription/:id/cancel', (req, res) =>
+  cancelSubscription.execute(req, res)
 )
 
 router.post('/instantPurchase', (req, res) =>
