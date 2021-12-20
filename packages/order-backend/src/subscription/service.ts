@@ -1,12 +1,8 @@
 import axios from 'axios'
 import type { Subscription } from './types'
 import type { Order } from '../types'
-import {
-  ExperienceError,
-  ExperienceFailure,
-  StatusCode,
-} from '@verkkokauppa/core'
-import { OrderNotFoundError } from '../errors'
+import { ExperienceFailure } from '@verkkokauppa/core'
+import { OrderNotFoundError, SubscriptionNotFoundError } from '../errors'
 
 const SUBSCRIPTION_API_ROOT = '/subscription'
 
@@ -78,12 +74,7 @@ export const getSubscription = async (p: {
     return result.data
   } catch (e) {
     if (e.response?.status === 404) {
-      throw new ExperienceError({
-        code: 'subscription-not-found',
-        message: `Subscription ${id} not found`,
-        responseStatus: StatusCode.NotFound,
-        logLevel: 'info',
-      })
+      throw new SubscriptionNotFoundError(id)
     }
     throw new ExperienceFailure({
       code: 'failed-to-get-subscription',
@@ -119,4 +110,25 @@ export const searchActiveSubscriptions = async (p: {
   }
 }
 
+export const cancelSubscription = async (p: {
+  id: string
+  user: string
+}): Promise<Subscription> => {
+  const { id, user: userId } = p
+  checkBackendUrlExists()
+
+  const url = `${process.env.ORDER_BACKEND_URL + SUBSCRIPTION_API_ROOT}/cancel`
+  try {
+    const result = await axios.post<Subscription>(url, undefined, {
+      params: { id, userId },
+    })
+    return result.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-cancel-subscription',
+      message: 'Failed to cancel subscription',
+      source: e,
+    })
+  }
+}
 // TODO: update method?
