@@ -17,7 +17,7 @@ import { Health } from './api/health'
 import { GetAdminController } from './api/getAdminController'
 import { GetSubscriptionOrdersController } from './api/getSubscriptionOrdersController'
 import { CancelSubscription } from './api/cancelSubscription'
-import { withAuthentication } from '../../auth-helsinki-profile/src'
+import { withAuthentication } from '@verkkokauppa/auth-helsinki-profile'
 
 const createController = new CreateController()
 const cartToOrderController = new CartToOrder()

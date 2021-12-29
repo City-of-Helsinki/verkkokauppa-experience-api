@@ -7,7 +7,7 @@ import { OnlinePaymentNotifyController } from './api/onlinePaymentNotifyControll
 import { GetPaymentController } from './api/getPaymentController'
 import { Health } from './api/health'
 import { GetPaymentAdminController } from './api/getPaymentAdminController'
-import { withAuthentication } from '../../auth-helsinki-profile/src'
+import { withAuthentication } from '@verkkokauppa/auth-helsinki-profile'
 
 const createPaymentController = new (withAuthentication(
   CreatePaymentController
