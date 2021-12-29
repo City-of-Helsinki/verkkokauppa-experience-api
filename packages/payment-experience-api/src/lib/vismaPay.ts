@@ -31,6 +31,9 @@ export const createUserRedirectUrl = async ({
   } else if (canRetryPayment(vismaStatus)) {
     redirectUrl.pathname = `${order.orderId}/summary`
     redirectUrl.searchParams.append('paymentPaid', 'false')
+  } else if (isAuthorized(vismaStatus)) {
+    redirectUrl.pathname = `${order.orderId}/card-update-success`
+    return redirectUrl
   } else {
     redirectUrl.pathname = `${order.orderId}/failure`
   }
@@ -60,6 +63,11 @@ const isFailure = (p: VismaStatus) => {
   return !paymentPaid && !canRetry
 }
 
+export const isAuthorized = (p: VismaStatus) => {
+  const { paymentPaid, authorized } = p
+  return !paymentPaid && authorized
+}
+
 const getServiceSpecificRedirectUrl = async (p: {
   order: Order
   vismaStatus: VismaStatus
@@ -79,9 +87,13 @@ const getServiceSpecificRedirectUrl = async (p: {
       const redirectUrl = new URL(
         paymentReturnUrlConfiguration.configurationValue
       )
+
       redirectUrl.searchParams.append('orderId', order.orderId)
       if (isPaid(vismaStatus)) {
         redirectUrl.pathname = 'success'
+        return redirectUrl
+      } else if (isAuthorized(vismaStatus)) {
+        redirectUrl.pathname = 'authorized'
         return redirectUrl
       } else if (isFailure(vismaStatus)) {
         redirectUrl.pathname = 'failure'
