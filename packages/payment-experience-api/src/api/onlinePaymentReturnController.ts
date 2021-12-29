@@ -6,17 +6,21 @@ import {
 import type { Request, Response } from 'express'
 import {
   createUserRedirectUrl,
+  isAuthorized,
   parseOrderIdFromRedirect,
 } from '../lib/vismaPay'
 import { URL } from 'url'
 import { getOrderAdmin } from '@verkkokauppa/order-backend'
 import {
+  cancelPaymentAdmin,
   checkVismaReturnUrl,
   getPaymentForOrder,
+  getPaymentsForOrderAdmin,
   Order,
 } from '@verkkokauppa/payment-backend'
 import { getMerchantDetailsForOrder } from '@verkkokauppa/configuration-backend'
 import { sendEmailToCustomer } from '@verkkokauppa/message-backend'
+import { PaymentStatus } from '@verkkokauppa/payment-backend/dist/enums'
 
 export class OnlinePaymentReturnController extends AbstractController {
   protected readonly requestSchema = null
@@ -67,6 +71,18 @@ export class OnlinePaymentReturnController extends AbstractController {
           logger.error(e)
         }
       }
+      if (isAuthorized(vismaStatus)) {
+        const cancelled = await this.cancelAuthorizationPayments(order)
+        // Error count more than 0
+        if (cancelled[1] != 0) {
+          return result.redirect(
+            302,
+            OnlinePaymentReturnController.getCardRenewalFailureRedirectUrl(
+              order.orderId
+            ).toString()
+          )
+        }
+      }
       return result.redirect(302, redirectUrl.toString())
     } catch (error) {
       logger.error(error)
@@ -86,6 +102,16 @@ export class OnlinePaymentReturnController extends AbstractController {
     }
     const redirectUrl = new URL(process.env.REDIRECT_PAYMENT_URL_BASE)
     redirectUrl.pathname = 'failure'
+
+    return redirectUrl.toString()
+  }
+
+  private static getCardRenewalFailureRedirectUrl(orderId: string) {
+    if (!process.env.REDIRECT_PAYMENT_URL_BASE) {
+      throw new Error('No default redirect url specified')
+    }
+    const redirectUrl = new URL(process.env.REDIRECT_PAYMENT_URL_BASE)
+    redirectUrl.pathname = `${orderId}/card-update-success`
 
     return redirectUrl.toString()
   }
@@ -113,5 +139,29 @@ export class OnlinePaymentReturnController extends AbstractController {
       })
     }
     return email
+  }
+
+  public async cancelAuthorizationPayments(order: Order) {
+    let failCount = 0
+    let successCount = 0
+    const cancellablePayments = await getPaymentsForOrderAdmin(
+      order,
+      PaymentStatus.AUTHORIZED
+    )
+    for (const [, payment] of Object.entries(cancellablePayments)) {
+      const result = await cancelPaymentAdmin(payment.paymentId)
+      if (result.result === 0) {
+        logger.info(
+          `Payment cancellation successfully with payment id : ${payment.paymentId} `
+        )
+        successCount++
+      } else {
+        logger.info(
+          `Payment cancellation with payment id : ${payment.paymentId} failed`
+        )
+        failCount++
+      }
+    }
+    return [successCount, failCount]
   }
 }

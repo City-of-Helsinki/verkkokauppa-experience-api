@@ -1,15 +1,23 @@
 import axios from 'axios'
-import type { Order, Payment, PaymentMethod, VismaStatus } from './types'
+import type {
+  Order,
+  Payment,
+  PaymentMethod,
+  VismaPayResponse,
+  VismaStatus,
+} from './types'
 import type { ParsedQs } from 'qs'
 import {
   CheckVismaReturnUrlFailure,
   CreatePaymentFromOrderFailure,
   GetPaymentForOrderFailure,
   GetPaymentMethodListFailure,
+  GetPaymentsForOrderFailure,
   GetPaymentStatusFailure,
   GetPaymentUrlFailure,
   PaymentMethodsNotFound,
   PaymentNotFound,
+  PaymentsNotFound,
   PaymentValidationError,
 } from './errors'
 
@@ -224,6 +232,53 @@ export const getPaymentForOrderAdmin = async (p: {
   try {
     const res = await axios.get(url, {
       params: { orderId },
+    })
+    return res.data
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new PaymentNotFound()
+    }
+    throw new GetPaymentForOrderFailure(e)
+  }
+}
+
+export const getPaymentsForOrderAdmin = async (
+  p: {
+    orderId: string
+    namespace: string
+  },
+  paymentStatus: string
+): Promise<Payment[]> => {
+  const { orderId, namespace } = p
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment-admin/online/list`
+  try {
+    const res = await axios.get<Payment[]>(url, {
+      params: { orderId, namespace, paymentStatus },
+    })
+    return res.data
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new PaymentsNotFound()
+    }
+    throw new GetPaymentsForOrderFailure(e)
+  }
+}
+
+export const cancelPaymentAdmin = async (
+  paymentId: string
+): Promise<VismaPayResponse> => {
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment-admin/online/cancel`
+  try {
+    const res = await axios.get(url, {
+      params: { paymentId },
     })
     return res.data
   } catch (e) {
