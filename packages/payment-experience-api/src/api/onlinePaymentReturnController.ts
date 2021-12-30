@@ -17,10 +17,10 @@ import {
   getPaymentForOrder,
   getPaymentsForOrderAdmin,
   Order,
+  PaymentStatus,
 } from '@verkkokauppa/payment-backend'
 import { getMerchantDetailsForOrder } from '@verkkokauppa/configuration-backend'
 import { sendEmailToCustomer } from '@verkkokauppa/message-backend'
-import { PaymentStatus } from '@verkkokauppa/payment-backend/dist/enums'
 
 export class OnlinePaymentReturnController extends AbstractController {
   protected readonly requestSchema = null
