@@ -20,6 +20,7 @@ import {
   PaymentsNotFound,
   PaymentValidationError,
 } from './errors'
+import { ExperienceFailure } from '@verkkokauppa/core'
 
 const PAYMENT_METHOD_MAP = new Map()
   .set('invoice', 'billing')
@@ -42,6 +43,12 @@ const PAYMENT_METHOD_MAP = new Map()
   .set('joustoraha', 'online')
   .set('laskuyritykselle', 'online')
   .set('creditcards', 'online')
+
+const checkBackendUrlExists = () => {
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+}
 
 export const createPaymentFromOrder = async (parameters: {
   order: Order
@@ -318,4 +325,35 @@ export const createPaymentFromUnpaidOrder = async (p: {
     )
   }
   return createPaymentFromOrder(p)
+}
+
+export const createAuthorizedPaymentAndGetCardUpdateUrl = async (
+  order: Order
+): Promise<String> => {
+  checkBackendUrlExists()
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment-admin/online/create/card-renewal-payment`
+
+  const dto = {
+    order: {
+      order: {
+        ...order,
+        customerFirstName: order.customer?.firstName,
+        customerLastName: order.customer?.lastName,
+        customerEmail: order.customer?.email,
+      },
+      items: order.items,
+    },
+  }
+
+  try {
+    const result = await axios.post<String>(url, dto)
+    return result.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-cancel-subscription',
+      message: 'Failed to cancel subscription',
+      source: e,
+    })
+  }
 }
