@@ -44,7 +44,7 @@ export const withAuthentication = <
             return cb(null, key.getPublicKey())
           })
         }
-        verify(token, getSigningKey,{ algorithms: ['RS256'], issuer: process.env.HEL_PROFILE_ISSUER }, (err, decoded) => {
+        verify(token, getSigningKey, { algorithms: ['RS256'], issuer: process.env.HEL_PROFILE_ISSUER, audience: process.env.HEL_PROFILE_AUDIENCE }, (err, decoded) => {
           const experienceError = (message: string) => new ExperienceError({
             code: 'authentication-failed',
             message: message,
