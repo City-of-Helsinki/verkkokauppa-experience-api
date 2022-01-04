@@ -147,9 +147,7 @@ export const setSubscriptionItemMeta = async (p: {
 }): Promise<OrderItemMeta[]> => {
   const { subscriptionId, orderItemId, meta } = p
   checkBackendUrlExists()
-  const url = `${
-    process.env.ORDER_BACKEND_URL + SUBSCRIPTION_API_ROOT
-  }/set-item-meta`
+  const url = `${process.env.ORDER_BACKEND_URL}/subscription-admin/set-item-meta`
   try {
     const res = await axios.post(url, meta, {
       params: { subscriptionId, orderItemId },
