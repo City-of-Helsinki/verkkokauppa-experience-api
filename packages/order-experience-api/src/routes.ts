@@ -17,6 +17,7 @@ import { Health } from './api/health'
 import { GetAdminController } from './api/getAdminController'
 import { GetSubscriptionOrdersController } from './api/getSubscriptionOrdersController'
 import { CancelSubscription } from './api/cancelSubscription'
+import { SetSubscriptionItemMetaController } from './api/setSubscriptionItemMeta'
 
 const createController = new CreateController()
 const cartToOrderController = new CartToOrder()
@@ -35,6 +36,7 @@ const calculateTotalsController = new CalculateTotalsController()
 const instantPurchaseController = new InstantPurchase()
 const healthController = new Health()
 const cancelSubscription = new CancelSubscription()
+const setSubscriptionItemMeta = new SetSubscriptionItemMetaController()
 
 const router = Router()
 router.post('/', (req, res) => createController.execute(req, res))
@@ -78,6 +80,9 @@ router.post('/subscription/search/active', (req, res) =>
 )
 router.post('/subscription/:id/cancel', (req, res) =>
   cancelSubscription.execute(req, res)
+)
+router.post('/subscription/:id/meta/:itemId', (req, res) =>
+  setSubscriptionItemMeta.execute(req, res)
 )
 
 router.post('/instantPurchase', (req, res) =>
