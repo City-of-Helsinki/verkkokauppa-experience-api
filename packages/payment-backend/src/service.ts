@@ -278,9 +278,7 @@ export const getPaymentsForOrderAdmin = async (
 export const cancelPaymentAdmin = async (
   paymentId: string
 ): Promise<VismaPayResponse> => {
-  if (!process.env.PAYMENT_BACKEND_URL) {
-    throw new Error('No payment API backend URL set')
-  }
+  checkBackendUrlExists()
 
   const url = `${process.env.PAYMENT_BACKEND_URL}/payment-admin/online/cancel`
   try {
@@ -351,8 +349,8 @@ export const createAuthorizedPaymentAndGetCardUpdateUrl = async (
     return result.data
   } catch (e) {
     throw new ExperienceFailure({
-      code: 'failed-to-cancel-subscription',
-      message: 'Failed to cancel subscription',
+      code: 'failed-to-create-card-renewal-payment',
+      message: 'Failed to create card renewal payment',
       source: e,
     })
   }
