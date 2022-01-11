@@ -19,24 +19,29 @@ const merchantCommonSchema = yup.object({
   merchantOrderWebhookUrl: yup.string(),
   merchantSubscriptionWebhookUrl: yup.string(),
   merchantBusinessId: yup.string(),
+  subscriptionPriceUrl: yup.string(),
 })
 
 const merchantBackendSchema = merchantCommonSchema
   .shape({
     ORDER_CREATED_REDIRECT_URL: yup.string(),
     ORDER_CANCEL_REDIRECT_URL: yup.string(),
+    SUBSCRIPTION_PRICE_URL: yup.string(),
   })
   .from('orderCreatedRedirectUrl', 'ORDER_CREATED_REDIRECT_URL')
   .from('orderCancelRedirectUrl', 'ORDER_CANCEL_REDIRECT_URL')
+  .from('subscriptionPriceUrl', 'SUBSCRIPTION_PRICE_URL')
   .noUnknown()
 
 const merchantFrontendSchema = merchantCommonSchema
   .shape({
     orderCreatedRedirectUrl: yup.string(),
     orderCancelRedirectUrl: yup.string(),
+    subscriptionPriceUrl: yup.string(),
   })
   .from('ORDER_CREATED_REDIRECT_URL', 'orderCreatedRedirectUrl')
   .from('ORDER_CANCEL_REDIRECT_URL', 'orderCancelRedirectUrl')
+  .from('SUBSCRIPTION_PRICE_URL', 'subscriptionPriceUrl')
   .noUnknown()
 
 const merchantKeys = Object.keys(merchantBackendSchema.describe().fields)
