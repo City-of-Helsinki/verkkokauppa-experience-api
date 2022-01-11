@@ -48,6 +48,7 @@ describe('Test onboarding', () => {
         'merchantBusinessId',
         'orderCreatedRedirectUrl',
         'orderCancelRedirectUrl',
+        'subscriptionPriceUrl',
       ]
       await Promise.all(
         merchantKeys.map(async (k) => {
