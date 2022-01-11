@@ -88,11 +88,43 @@ export class PaymentNotFound extends ExperienceError {
   }
 }
 
+export class PaymentsNotFound extends ExperienceError {
+  constructor() {
+    super({
+      code: 'payments-not-found',
+      message: 'Payments not found',
+      logLevel: 'info',
+      responseStatus: StatusCode.NotFound,
+    })
+    Object.setPrototypeOf(this, PaymentsNotFound.prototype)
+  }
+}
+
 export class GetPaymentForOrderFailure extends ExperienceFailure {
   constructor(source: Error) {
     super({
       code: 'failed-to-get-payment-for-order',
       message: 'Failed to get payment for order',
+      source,
+    })
+  }
+}
+
+export class CancelPaymentWithPaymentIdFailure extends ExperienceFailure {
+  constructor(source: Error) {
+    super({
+      code: 'failed-to-cancel-payment-for-payment-id',
+      message: 'Failed to cancel payment for given payment id',
+      source,
+    })
+  }
+}
+
+export class GetPaymentsForOrderFailure extends ExperienceFailure {
+  constructor(source: Error) {
+    super({
+      code: 'failed-to-get-payments-for-order',
+      message: 'Failed to get payments for order',
       source,
     })
   }

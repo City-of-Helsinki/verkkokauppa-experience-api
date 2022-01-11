@@ -1,17 +1,26 @@
 import axios from 'axios'
-import type { Order, Payment, PaymentMethod, VismaStatus } from './types'
+import type {
+  Order,
+  Payment,
+  PaymentMethod,
+  VismaPayResponse,
+  VismaStatus,
+} from './types'
 import type { ParsedQs } from 'qs'
 import {
   CheckVismaReturnUrlFailure,
   CreatePaymentFromOrderFailure,
   GetPaymentForOrderFailure,
   GetPaymentMethodListFailure,
+  GetPaymentsForOrderFailure,
   GetPaymentStatusFailure,
   GetPaymentUrlFailure,
   PaymentMethodsNotFound,
   PaymentNotFound,
+  PaymentsNotFound,
   PaymentValidationError,
 } from './errors'
+import { ExperienceFailure } from '@verkkokauppa/core'
 
 const PAYMENT_METHOD_MAP = new Map()
   .set('invoice', 'billing')
@@ -34,6 +43,12 @@ const PAYMENT_METHOD_MAP = new Map()
   .set('joustoraha', 'online')
   .set('laskuyritykselle', 'online')
   .set('creditcards', 'online')
+
+const checkBackendUrlExists = () => {
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+}
 
 export const createPaymentFromOrder = async (parameters: {
   order: Order
@@ -234,6 +249,51 @@ export const getPaymentForOrderAdmin = async (p: {
   }
 }
 
+export const getPaymentsForOrderAdmin = async (
+  p: {
+    orderId: string
+    namespace: string
+  },
+  paymentStatus: string
+): Promise<Payment[]> => {
+  const { orderId, namespace } = p
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment-admin/online/list`
+  try {
+    const res = await axios.get<Payment[]>(url, {
+      params: { orderId, namespace, paymentStatus },
+    })
+    return res.data
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new PaymentsNotFound()
+    }
+    throw new GetPaymentsForOrderFailure(e)
+  }
+}
+
+export const cancelPaymentAdmin = async (
+  paymentId: string
+): Promise<VismaPayResponse> => {
+  checkBackendUrlExists()
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment-admin/online/cancel`
+  try {
+    const res = await axios.get(url, {
+      params: { paymentId },
+    })
+    return res.data
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new PaymentNotFound()
+    }
+    throw new GetPaymentForOrderFailure(e)
+  }
+}
+
 export const paidPaymentExists = async (p: {
   orderId: string
   namespace: string
@@ -263,4 +323,35 @@ export const createPaymentFromUnpaidOrder = async (p: {
     )
   }
   return createPaymentFromOrder(p)
+}
+
+export const createAuthorizedPaymentAndGetCardUpdateUrl = async (
+  order: Order
+): Promise<String> => {
+  checkBackendUrlExists()
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment-admin/online/create/card-renewal-payment`
+
+  const dto = {
+    order: {
+      order: {
+        ...order,
+        customerFirstName: order.customer?.firstName,
+        customerLastName: order.customer?.lastName,
+        customerEmail: order.customer?.email,
+      },
+      items: order.items,
+    },
+  }
+
+  try {
+    const result = await axios.post<String>(url, dto)
+    return result.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-create-card-renewal-payment',
+      message: 'Failed to create card renewal payment',
+      source: e,
+    })
+  }
 }
