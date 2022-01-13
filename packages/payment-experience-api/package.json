@@ -1,6 +1,6 @@
 {
   "name": "@verkkokauppa/payment-experience-api",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -10,7 +10,7 @@
     "compile": "tsc --build && cp \"./package.json\" ./dist/",
     "lint": "eslint \"./src/**/*.{ts,tsx}\" --max-warnings=0",
     "start": "node dist/index.js",
-    "dev": "NODE_ENV=development nodemon src/index.ts"
+    "dev": "NODE_ENV=development nodemon -L src/index.ts"
   },
   "dependencies": {
     "@verkkokauppa/configuration-backend": "^1.0.0",
