@@ -8,6 +8,7 @@ import { GetPaymentController } from './api/getPaymentController'
 import { Health } from './api/health'
 import { GetPaymentAdminController } from './api/getPaymentAdminController'
 import { withAuthentication } from '@verkkokauppa/auth-helsinki-profile'
+import { SubscriptionTokenizeController } from './api/subscriptionTokenizeController'
 
 const createPaymentController = new (withAuthentication(
   CreatePaymentController
@@ -20,6 +21,7 @@ const onlinePaymentNotifyController = new OnlinePaymentNotifyController()
 const getPaymentController = new (withAuthentication(GetPaymentController))()
 const getPaymentAdminController = new GetPaymentAdminController()
 const healthController = new Health()
+const subscriptionTokenizeController = new SubscriptionTokenizeController()
 
 const router = Router()
 router.get('/health', (req, res) => healthController.execute(req, res))
@@ -39,4 +41,8 @@ router.get('/onlinePayment/return', (req, res) =>
 router.get('/onlinePayment/notify', (req, res) =>
   onlinePaymentNotifyController.execute(req, res)
 )
+router.get('/subscription/:subscriptionId/tokenize', (req, res) =>
+  subscriptionTokenizeController.execute(req, res)
+)
+
 export default router
