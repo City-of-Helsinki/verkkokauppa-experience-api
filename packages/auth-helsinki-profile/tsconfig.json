@@ -1,0 +1,22 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        "rootDir": "./src",
+        "outDir": "./dist",
+        "composite": true,
+        "baseUrl": "./",
+        "paths": {
+            "@verkkokauppa/core": [
+                "../core"
+            ]
+        }
+    },
+    "include": [
+        "src/**/*"
+    ],
+    "references": [
+        {
+            "path": "../core"
+        }
+    ]
+}

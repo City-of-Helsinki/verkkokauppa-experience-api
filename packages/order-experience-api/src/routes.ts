@@ -17,24 +17,33 @@ import { Health } from './api/health'
 import { GetAdminController } from './api/getAdminController'
 import { GetSubscriptionOrdersController } from './api/getSubscriptionOrdersController'
 import { CancelSubscription } from './api/cancelSubscription'
+import { withAuthentication } from '@verkkokauppa/auth-helsinki-profile'
 
 const createController = new CreateController()
 const cartToOrderController = new CartToOrder()
-const cancelController = new CancelController()
-const confirmAndCreatePaymentController = new ConfirmAndCreatePayment()
-const setCustomerController = new SetCustomerController()
-const addItemController = new AddItemController()
-const getController = new GetController()
+const cancelController = new (withAuthentication(CancelController))()
+const confirmAndCreatePaymentController = new (withAuthentication(
+  ConfirmAndCreatePayment
+))()
+const setCustomerController = new (withAuthentication(SetCustomerController))()
+const addItemController = new (withAuthentication(AddItemController))()
+const getController = new (withAuthentication(GetController))()
 const getAdminController = new GetAdminController()
-const getSubscriptionCtrl = new getSubscriptionController()
-const getSubscriptionOrdersCtrl = new GetSubscriptionOrdersController()
+const getSubscriptionOrdersCtrl = new (withAuthentication(
+  GetSubscriptionOrdersController
+))()
+const getSubscriptionCtrl = new (withAuthentication(
+  getSubscriptionController
+))()
 const searchActiveSubscriptionsCtrl = new searchActiveSubscriptionsController()
 const createSubscriptionCtrl = new createSubscriptionController()
 const createSubscriptionsFromOrderCtrl = new createSubscriptionsFromOrderController()
-const calculateTotalsController = new CalculateTotalsController()
+const calculateTotalsController = new (withAuthentication(
+  CalculateTotalsController
+))()
 const instantPurchaseController = new InstantPurchase()
 const healthController = new Health()
-const cancelSubscription = new CancelSubscription()
+const cancelSubscription = new (withAuthentication(CancelSubscription))()
 
 const router = Router()
 router.post('/', (req, res) => createController.execute(req, res))
