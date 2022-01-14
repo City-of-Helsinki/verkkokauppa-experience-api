@@ -1,6 +1,6 @@
 {
   "name": "@verkkokauppa/order-experience-api",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -20,6 +20,7 @@
     "@verkkokauppa/payment-backend": "^1.0.0",
     "@verkkokauppa/price-backend": "^1.0.0",
     "@verkkokauppa/product-backend": "^1.0.0",
+    "@verkkokauppa/auth-helsinki-profile": "^1.0.0",
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "compression": "^1.7.4",

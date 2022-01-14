@@ -18,6 +18,7 @@ COPY ./packages/message-backend ./packages/message-backend
 COPY ./packages/product-backend ./packages/product-backend
 COPY ./packages/configuration-backend ./packages/configuration-backend
 COPY ./packages/payment-experience-api ./packages/payment-experience-api
+COPY ./packages/auth-helsinki-profile ./packages/auth-helsinki-profile
 
 # Chown to correct user
 USER 0
@@ -28,6 +29,7 @@ USER 1001
 
 # Run install for all required packages
 RUN yarn workspace @verkkokauppa/core install && \
+yarn workspace @verkkokauppa/auth-helsinki-profile install && \
 yarn workspace @verkkokauppa/order-backend install && \
 yarn workspace @verkkokauppa/payment-backend install && \
 yarn workspace @verkkokauppa/message-backend install  && \
@@ -38,6 +40,7 @@ yarn workspace @verkkokauppa/payment-experience-api install
 # Create production build
 FROM base as production
 RUN yarn workspace @verkkokauppa/core build && \
+yarn workspace @verkkokauppa/auth-helsinki-profile build && \
 yarn workspace @verkkokauppa/order-backend build && \
 yarn workspace @verkkokauppa/payment-backend build && \
 yarn workspace @verkkokauppa/message-backend build && \

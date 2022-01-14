@@ -5,7 +5,7 @@ import { RequestValidationError, UnexpectedError } from '../errors'
 import { ExperienceError } from '../models'
 import axios, { AxiosRequestConfig } from 'axios'
 
-type UnknownRequest = Request<unknown, unknown, unknown>
+export type UnknownRequest = Request<unknown, unknown, unknown>
 export type ValidatedRequest<
   TRequestSchema extends AnyObjectSchema
 > = UnknownRequest & Asserts<TRequestSchema>
@@ -21,7 +21,11 @@ export abstract class AbstractController<
     if (this.requestSchema === null) {
       return req
     }
-    return this.requestSchema.validate(req, { abortEarly: false })
+    try {
+      return this.requestSchema.validate(req, { abortEarly: false })
+    } catch (e) {
+      throw new RequestValidationError(e.errors.join('\n'))
+    }
   }
 
   protected abstract implementation(
@@ -33,17 +37,13 @@ export abstract class AbstractController<
     const start = process.hrtime.bigint()
     try {
       const validatedReq = await this.validateRequest(req)
-      try {
-        await this.implementation(validatedReq, res)
-      } catch (err) {
-        if (err instanceof ExperienceError) {
-          this.error(res, err)
-        } else {
-          this.error(res, new UnexpectedError(err))
-        }
-      }
+      await this.implementation(validatedReq, res)
     } catch (err) {
-      this.error(res, new RequestValidationError(err.errors.join('\n')))
+      if (err instanceof ExperienceError) {
+        this.error(res, err)
+      } else {
+        this.error(res, new UnexpectedError(err))
+      }
     }
     const end = process.hrtime.bigint()
     logger.info(
