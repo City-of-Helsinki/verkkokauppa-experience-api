@@ -22,5 +22,5 @@ export interface Subscription {
   priceNet: string
   priceVat: string
   priceTotal: string
-  relatedOrderIds: Set<string>
+  orderId?: string
 }
