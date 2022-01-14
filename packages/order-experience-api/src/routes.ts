@@ -17,6 +17,7 @@ import { Health } from './api/health'
 import { GetAdminController } from './api/getAdminController'
 import { GetSubscriptionOrdersController } from './api/getSubscriptionOrdersController'
 import { CancelSubscription } from './api/cancelSubscription'
+import { SetSubscriptionItemMetaController } from './api/setSubscriptionItemMeta'
 import { withAuthentication } from '@verkkokauppa/auth-helsinki-profile'
 
 const createController = new CreateController()
@@ -43,6 +44,7 @@ const calculateTotalsController = new (withAuthentication(
 ))()
 const instantPurchaseController = new InstantPurchase()
 const healthController = new Health()
+const setSubscriptionItemMeta = new SetSubscriptionItemMetaController()
 const cancelSubscription = new (withAuthentication(CancelSubscription))()
 
 const router = Router()
@@ -87,6 +89,9 @@ router.post('/subscription/search/active', (req, res) =>
 )
 router.post('/subscription/:id/cancel', (req, res) =>
   cancelSubscription.execute(req, res)
+)
+router.post('/subscription/:id/meta/:itemId', (req, res) =>
+  setSubscriptionItemMeta.execute(req, res)
 )
 
 router.post('/instantPurchase', (req, res) =>
