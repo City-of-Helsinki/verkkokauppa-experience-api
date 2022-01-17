@@ -15,6 +15,7 @@ COPY ./packages/core ./packages/core
 COPY ./packages/cart-backend ./packages/cart-backend
 COPY ./packages/order-backend ./packages/order-backend
 COPY ./packages/payment-backend ./packages/payment-backend
+COPY ./packages/message-backend ./packages/message-backend
 COPY ./packages/price-backend ./packages/price-backend
 COPY ./packages/product-backend ./packages/product-backend
 COPY ./packages/configuration-backend ./packages/configuration-backend
@@ -31,6 +32,7 @@ USER 1001
 RUN yarn workspace @verkkokauppa/core install
 RUN yarn workspace @verkkokauppa/cart-backend install
 RUN yarn workspace @verkkokauppa/order-backend install
+RUN yarn workspace @verkkokauppa/message-backend install
 RUN yarn workspace @verkkokauppa/price-backend install
 RUN yarn workspace @verkkokauppa/product-backend install
 RUN yarn workspace @verkkokauppa/payment-backend install
@@ -45,6 +47,7 @@ RUN yarn workspace @verkkokauppa/order-backend build
 RUN yarn workspace @verkkokauppa/price-backend build
 RUN yarn workspace @verkkokauppa/product-backend build
 RUN yarn workspace @verkkokauppa/payment-backend build
+RUN yarn workspace @verkkokauppa/message-backend build
 RUN yarn workspace @verkkokauppa/configuration-backend build
 RUN yarn workspace @verkkokauppa/order-experience-api build
 EXPOSE 8080
