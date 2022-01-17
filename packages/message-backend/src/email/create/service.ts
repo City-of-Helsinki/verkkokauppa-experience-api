@@ -7,7 +7,7 @@ import type { SUPPORTED_LANGUAGES } from '../../i18n/types'
 const fs = require('fs')
 const path = require('path')
 
-export const createOrderConfirmationEmailTemplate = async <T>(params: {
+export const createEmailTemplate = async <T>(params: {
   fileName: HbsTemplateFiles
   templateParams: T
 }): Promise<EmailTemplateDto> => {
