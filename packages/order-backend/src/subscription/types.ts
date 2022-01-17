@@ -1,4 +1,5 @@
 export interface Subscription {
+  subscriptionId: string
   status: string
   namespace: string
   merchantName: string
@@ -22,5 +23,5 @@ export interface Subscription {
   priceNet: string
   priceVat: string
   priceTotal: string
-  relatedOrderIds: Set<string>
+  orderId: string
 }
