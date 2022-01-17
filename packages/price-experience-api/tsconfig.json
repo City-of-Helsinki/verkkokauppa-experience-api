@@ -6,11 +6,11 @@
         "composite": true,
         "baseUrl": "./",
         "paths": {
-            "@verkkokauppa/price-backend": [
-                "../price-backend"
-            ],
             "@verkkokauppa/core": [
                 "../core"
+            ],
+            "@verkkokauppa/price-backend": [
+                "../price-backend"
             ]
         }
     },
@@ -19,10 +19,10 @@
     ],
     "references": [
         {
-            "path": "../price-backend"
+            "path": "../core"
         },
         {
-            "path": "../core"
+            "path": "../price-backend"
         }
     ]
 }
