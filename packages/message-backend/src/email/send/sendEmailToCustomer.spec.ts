@@ -1,5 +1,5 @@
 import type { Order } from '../create/types'
-import { sendEmailToCustomer } from './service'
+import { sendOrderConfirmationEmailToCustomer } from './service'
 import axios from 'axios'
 import type { MessageResult } from './types'
 jest.mock('axios')
@@ -130,7 +130,7 @@ describe('sendEmailToCustomer.spec.ts', () => {
     // @ts-ignore
     axios.post.mockResolvedValue(resp)
 
-    const sent = await sendEmailToCustomer({
+    const sent = await sendOrderConfirmationEmailToCustomer({
       order: order,
       fileName: 'orderConfirmation',
       emailHeader:

@@ -1,0 +1,110 @@
+<tr>
+    <td class="email-body" width="100%" cellpadding="0" cellspacing="0">
+        <table class="email-body_inner" align="center" width="414" cellpadding="0" cellspacing="0" role="presentation">
+            <!-- Body content -->
+            <tr>
+                <td class="content-cell">
+                    <div class="f-fallback">
+                        <h1 style="margin-bottom: 0; border-top: 1rem solid #ffffff">{{I18n 'subscriptionPaymentFailed.information.header'}}</h1>
+
+                        <table class="purchase" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                            <tr>
+                                <td colspan="2">
+                                    <table class="purchase_content" width="100%" cellpadding="0" cellspacing="0">
+                                        {{#each order.items}}
+                                            <tr>
+                                                <td width="80%" class="purchase_item">
+                                                    <span class="f-fallback" style="font-weight:bolder;">
+                                                        {{productName}}
+                                                    </span>
+                                                </td>
+                                                <td class="align-right" width="20%" class="purchase_item">
+                                                    <span class="f-fallback no-wrap">
+                                                        {{rowPriceTotal}} €
+                                                    </span>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td width="80%" class="purchase_item">
+                                                    <span class="f-fallback">
+                                                        {{I18n 'subscriptionPaymentFailed.information.alv'}} ({{vatPercentage}}%)
+                                                    </span>
+                                                </td>
+                                                <td class="align-right" width="20%" class="purchase_item pb-1">
+                                                    <span class="f-fallback no-wrap">
+                                                        {{priceVat}} €
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            {{#each meta}}
+
+                                                {{#if label}}
+                                                    <tr>
+                                                        <td width="100%" class="purchase_item">
+                                                        <span class="f-fallback no-wrap pb-1" style="font-size:14px; font-weight:bold;">
+                                                            {{label}}
+                                                        </span>
+                                                        </td>
+                                                    </tr>
+                                                {{/if}}
+
+                                                {{#if value}}
+                                                    <tr>
+                                                        <td width="100%" class="purchase_item">
+                                                            <span class="f-fallback no-wrap pb-1" style="font-size:14px;">
+                                                                {{value}}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                {{/if}}
+                                                {{#if @last}}
+                                                    <tr>
+                                                        <td>
+                                                            <span>&emsp;</span>
+                                                        </td>
+                                                    </tr>
+                                                {{/if}}
+
+                                            {{/each}}
+
+                                        {{/each}}
+                                        <tr>
+
+                                        <tr class="pb-1">
+                                            <td width="100%" class="purchase_item pb-1">
+                                                <span class="f-fallback">
+                                                    {{I18n 'subscriptionPaymentFailed.information.paymentFailedText'}}
+                                                </span>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td width="100%" class="purchase_item pb-1">
+                                                <span class="f-fallback">
+                                                    {{I18n 'subscriptionPaymentFailed.information.cardUpdateText'}}
+                                                    <a href="{{order.updateCardUrl}}" target="_blank">{{order.updateCardUrl}}</a>
+                                                </span>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td width="100%" class="purchase_item pb-1">
+                                                <span class="f-fallback">
+                                                    {{I18n 'subscriptionPaymentFailed.information.cardUpdateText'}}
+                                                    <a href="{{order.updateCardUrl}}" target="_blank">{{order.updateCardUrl}}</a>
+                                                </span>
+                                            </td>
+                                        </tr>
+
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
