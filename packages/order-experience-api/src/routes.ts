@@ -17,24 +17,37 @@ import { Health } from './api/health'
 import { GetAdminController } from './api/getAdminController'
 import { GetSubscriptionOrdersController } from './api/getSubscriptionOrdersController'
 import { CancelSubscription } from './api/cancelSubscription'
+import { SendSubscriptionContractEmail } from './api/sendSubscriptionContractEmail'
+import { SetSubscriptionItemMetaController } from './api/setSubscriptionItemMeta'
+import { withAuthentication } from '@verkkokauppa/auth-helsinki-profile'
 
 const createController = new CreateController()
 const cartToOrderController = new CartToOrder()
-const cancelController = new CancelController()
-const confirmAndCreatePaymentController = new ConfirmAndCreatePayment()
-const setCustomerController = new SetCustomerController()
-const addItemController = new AddItemController()
-const getController = new GetController()
+const cancelController = new (withAuthentication(CancelController))()
+const confirmAndCreatePaymentController = new (withAuthentication(
+  ConfirmAndCreatePayment
+))()
+const setCustomerController = new (withAuthentication(SetCustomerController))()
+const addItemController = new (withAuthentication(AddItemController))()
+const getController = new (withAuthentication(GetController))()
 const getAdminController = new GetAdminController()
-const getSubscriptionCtrl = new getSubscriptionController()
-const getSubscriptionOrdersCtrl = new GetSubscriptionOrdersController()
+const getSubscriptionOrdersCtrl = new (withAuthentication(
+  GetSubscriptionOrdersController
+))()
+const getSubscriptionCtrl = new (withAuthentication(
+  getSubscriptionController
+))()
 const searchActiveSubscriptionsCtrl = new searchActiveSubscriptionsController()
 const createSubscriptionCtrl = new createSubscriptionController()
 const createSubscriptionsFromOrderCtrl = new createSubscriptionsFromOrderController()
-const calculateTotalsController = new CalculateTotalsController()
+const calculateTotalsController = new (withAuthentication(
+  CalculateTotalsController
+))()
 const instantPurchaseController = new InstantPurchase()
 const healthController = new Health()
-const cancelSubscription = new CancelSubscription()
+const setSubscriptionItemMeta = new SetSubscriptionItemMetaController()
+const cancelSubscription = new (withAuthentication(CancelSubscription))()
+const sendSubscriptionContractEmail = new SendSubscriptionContractEmail()
 
 const router = Router()
 router.post('/', (req, res) => createController.execute(req, res))
@@ -78,6 +91,12 @@ router.post('/subscription/search/active', (req, res) =>
 )
 router.post('/subscription/:id/cancel', (req, res) =>
   cancelSubscription.execute(req, res)
+)
+router.post('/subscription/:id/meta/:itemId', (req, res) =>
+  setSubscriptionItemMeta.execute(req, res)
+)
+router.post('/subscription/:id/emailSubscriptionContract', (req, res) =>
+  sendSubscriptionContractEmail.execute(req, res)
 )
 
 router.post('/instantPurchase', (req, res) =>

@@ -70,4 +70,5 @@ export interface Payment {
   description: string | null
   additionalInfo: string
   token: string
+  timestamp: string
 }
