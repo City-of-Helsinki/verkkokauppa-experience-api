@@ -50,6 +50,11 @@ export type VismaStatus = {
   paymentPaid: boolean
   canRetry: boolean
   valid: boolean
+  authorized?: boolean
+}
+
+export type VismaPayResponse = {
+  result: number
 }
 
 export interface Payment {

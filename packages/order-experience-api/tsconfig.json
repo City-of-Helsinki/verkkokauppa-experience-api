@@ -9,6 +9,9 @@
             "@verkkokauppa/cart-backend": [
                 "../cart-backend"
             ],
+            "@verkkokauppa/configuration-backend": [
+                "../configuration-backend"
+            ],
             "@verkkokauppa/core": [
                 "../core"
             ],
@@ -24,8 +27,8 @@
             "@verkkokauppa/product-backend": [
                 "../product-backend"
             ],
-            "@verkkokauppa/configuration-backend": [
-                "../configuration-backend"
+            "@verkkokauppa/auth-helsinki-profile": [
+                "../auth-helsinki-profile"
             ],
             "@verkkokauppa/message-backend": [
                 "../message-backend"
@@ -38,6 +41,9 @@
     "references": [
         {
             "path": "../cart-backend"
+        },
+        {
+            "path": "../configuration-backend"
         },
         {
             "path": "../core"
@@ -55,7 +61,7 @@
             "path": "../product-backend"
         },
         {
-            "path": "../configuration-backend"
+            "path": "../auth-helsinki-profile"
         },
         {
             "path": "../message-backend"

@@ -38,11 +38,17 @@
             ],
             "@verkkokauppa/message-experience-api/*": [
                 "message-experience-api/src/*"
+            ],
+            "@verkkokauppa/auth-helsinki-profile/*": [
+                "auth-helsinki-profile/src/*"
             ]
         }
     },
     "files": [],
     "references": [
+        {
+            "path": "packages/auth-helsinki-profile"
+        },
         {
             "path": "packages/cart-backend"
         },

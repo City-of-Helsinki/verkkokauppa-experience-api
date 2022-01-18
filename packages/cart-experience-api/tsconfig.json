@@ -6,17 +6,17 @@
         "composite": true,
         "baseUrl": "./",
         "paths": {
-            "@verkkokauppa/product-backend": [
-                "../product-backend"
-            ],
-            "@verkkokauppa/price-backend": [
-                "../price-backend"
-            ],
             "@verkkokauppa/cart-backend": [
                 "../cart-backend"
             ],
             "@verkkokauppa/core": [
                 "../core"
+            ],
+            "@verkkokauppa/price-backend": [
+                "../price-backend"
+            ],
+            "@verkkokauppa/product-backend": [
+                "../product-backend"
             ]
         }
     },
@@ -25,16 +25,16 @@
     ],
     "references": [
         {
-            "path": "../product-backend"
+            "path": "../cart-backend"
+        },
+        {
+            "path": "../core"
         },
         {
             "path": "../price-backend"
         },
         {
-            "path": "../cart-backend"
-        },
-        {
-            "path": "../core"
+            "path": "../product-backend"
         }
     ]
 }
