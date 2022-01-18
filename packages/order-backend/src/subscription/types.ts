@@ -12,6 +12,7 @@ export interface Subscription {
   user: string
   startDate: string
   endDate: string
+  renewalDate: string
   billingStartDate: string
   periodUnit: string
   periodFrequency: number

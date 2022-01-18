@@ -5,10 +5,10 @@
       "c4_2_3_weekly": "viikon",
       "c4_2_3_monthly": "kuukauden",
       "c4_2_3_yearly": "vuoden",
-      "abbr_daily": "vrk.",
-      "abbr_weekly": "vk.",
-      "abbr_monthly": "kk.",
-      "abbr_yearly": "v."
+      "abbr_daily": "vrk",
+      "abbr_weekly": "vk",
+      "abbr_monthly": "kk",
+      "abbr_yearly": "v"
     }
   }
 }
