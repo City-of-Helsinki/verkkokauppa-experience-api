@@ -1,6 +1,6 @@
 import axios from 'axios'
 import type { Subscription } from './types'
-import type { Order } from '../types'
+import type { Order, OrderItemMeta } from '../types'
 import { ExperienceFailure } from '@verkkokauppa/core'
 import { OrderNotFoundError, SubscriptionNotFoundError } from '../errors'
 
@@ -143,7 +143,7 @@ export const cancelSubscription = async (p: {
 
   const url = `${process.env.ORDER_BACKEND_URL + SUBSCRIPTION_API_ROOT}/cancel`
   try {
-    const result = await axios.post<Subscription>(url, {
+    const result = await axios.post<Subscription>(url, undefined, {
       params: { id, userId },
     })
     return result.data
@@ -156,3 +156,32 @@ export const cancelSubscription = async (p: {
   }
 }
 // TODO: update method?
+
+export const setSubscriptionItemMeta = async (p: {
+  subscriptionId: string
+  orderItemId: string
+  meta: {
+    orderItemMetaId?: string
+    key: string
+    value: string
+    label?: string
+    visibleInCheckout?: boolean
+    ordinal?: string
+  }[]
+}): Promise<OrderItemMeta[]> => {
+  const { subscriptionId, orderItemId, meta } = p
+  checkBackendUrlExists()
+  const url = `${process.env.ORDER_BACKEND_URL}/subscription-admin/set-item-meta`
+  try {
+    const res = await axios.post(url, meta, {
+      params: { subscriptionId, orderItemId },
+    })
+    return res.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-set-subscription-item-meta',
+      message: 'Failed to set subscription item meta',
+      source: e,
+    })
+  }
+}

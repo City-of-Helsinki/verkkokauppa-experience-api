@@ -20,6 +20,7 @@ COPY ./packages/price-backend ./packages/price-backend
 COPY ./packages/product-backend ./packages/product-backend
 COPY ./packages/configuration-backend ./packages/configuration-backend
 COPY ./packages/order-experience-api ./packages/order-experience-api
+COPY ./packages/auth-helsinki-profile ./packages/auth-helsinki-profile
 
 # Chown to correct user
 USER 0
@@ -30,6 +31,7 @@ USER 1001
 
 # Run install for all required packages
 RUN yarn workspace @verkkokauppa/core install
+RUN yarn workspace @verkkokauppa/auth-helsinki-profile install
 RUN yarn workspace @verkkokauppa/cart-backend install
 RUN yarn workspace @verkkokauppa/order-backend install
 RUN yarn workspace @verkkokauppa/message-backend install
@@ -42,6 +44,7 @@ RUN yarn workspace @verkkokauppa/order-experience-api install
 # Create production build
 FROM base as production
 RUN yarn workspace @verkkokauppa/core build
+RUN yarn workspace @verkkokauppa/auth-helsinki-profile build
 RUN yarn workspace @verkkokauppa/cart-backend build
 RUN yarn workspace @verkkokauppa/order-backend build
 RUN yarn workspace @verkkokauppa/price-backend build

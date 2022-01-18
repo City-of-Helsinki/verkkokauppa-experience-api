@@ -8,9 +8,6 @@
         "paths": {
             "@verkkokauppa/core": [
                 "../core"
-            ],
-            "@verkkokauppa/price-backend": [
-                "../price-backend"
             ]
         }
     },
@@ -20,9 +17,6 @@
     "references": [
         {
             "path": "../core"
-        },
-        {
-            "path": "../price-backend"
         }
     ]
 }
