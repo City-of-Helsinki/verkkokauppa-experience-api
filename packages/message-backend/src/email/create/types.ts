@@ -106,4 +106,7 @@ export interface Payment {
   token: string
 }
 
-export type HbsTemplateFiles = 'orderConfirmation' | 'subscriptionPaymentFailed'
+export type HbsTemplateFiles =
+  | 'orderConfirmation'
+  | 'subscriptionContract'
+  | 'subscriptionPaymentFailed'

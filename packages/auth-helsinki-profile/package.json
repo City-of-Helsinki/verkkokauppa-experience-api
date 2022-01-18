@@ -1,0 +1,22 @@
+{
+  "name": "@verkkokauppa/auth-helsinki-profile",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
+    "prepack": "yarn build",
+    "build": "yarn clean && yarn compile",
+    "compile": "tsc --build && cp \"./package.json\" ./dist/",
+    "lint": "eslint \"./src/**/*.{ts,tsx}\" --max-warnings=0"
+  },
+  "dependencies": {
+    "@verkkokauppa/core": "^1.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "jwks-rsa": "^2.0.5"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^8.5.6"
+  }
+}

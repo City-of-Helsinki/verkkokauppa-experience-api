@@ -1,6 +1,6 @@
 {
   "name": "@verkkokauppa/payment-experience-api",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -13,6 +13,7 @@
     "dev": "NODE_ENV=development nodemon -L src/index.ts"
   },
   "dependencies": {
+    "@verkkokauppa/auth-helsinki-profile": "^1.0.0",
     "@verkkokauppa/configuration-backend": "^1.0.0",
     "@verkkokauppa/core": "^1.0.0",
     "@verkkokauppa/message-backend": "^1.0.0",
