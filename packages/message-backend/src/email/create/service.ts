@@ -29,6 +29,28 @@ export const createOrderConfirmationEmailTemplate = async <T>(params: {
   }
 }
 
+export const createSubscriptionPaymentFailedEmailTemplate = async <T>(params: {
+  fileName: HbsTemplateFiles
+  templateParams: T
+}): Promise<EmailTemplateDto> => {
+  const handleBar = HandleBarTemplate<T>('fi')
+  const files = fs.readdirSync(path.join(__dirname, `/templates/`))
+
+  if (!files.includes(`${params.fileName}.hbs`)) {
+    return {
+      template: '',
+      error: 'Email template cant be found',
+    }
+  }
+  handleBar.setFileName(params.fileName)
+  handleBar.setTemplateParams(params.templateParams)
+  const template = handleBar.createTemplate()
+
+  return {
+    template: template(handleBar.templateParams),
+  }
+}
+
 export function createTemplate(this: any): any {
   // Open template file
   const source = fs.readFileSync(

@@ -1,6 +1,9 @@
 import axios from 'axios'
 import { SendOrderConfirmationEmailFailure } from '../../errors'
-import { createOrderConfirmationEmailTemplate } from '../create/service'
+import {
+  createOrderConfirmationEmailTemplate,
+  createSubscriptionPaymentFailedEmailTemplate,
+} from '../create/service'
 import type {
   HbsTemplateFiles,
   Order,
@@ -51,7 +54,7 @@ export function parseOrderItemMetaVisibilityAndOrdinal(
   return [...metaItemsOrdinal, ...metaItemsNoOrdinal]
 }
 
-export const sendEmailToCustomer = async (p: {
+export const sendOrderConfirmationEmailToCustomer = async (p: {
   order: Order
   fileName: HbsTemplateFiles
   sendTo: string
@@ -62,6 +65,38 @@ export const sendEmailToCustomer = async (p: {
   // Reorder metas to show in correct order using ordinal etc.
   parseOrderMetas(order)
   const created = await createOrderConfirmationEmailTemplate<OrderConfirmationEmailParameters>(
+    {
+      fileName: fileName,
+      templateParams: { order: order },
+    }
+  )
+
+  const url = `${process.env.MESSAGE_BACKEND_URL}/message/send/email`
+
+  try {
+    const result = await axios.post<any>(url, {
+      orderId: order.orderId,
+      receiver: p.sendTo,
+      header: p.emailHeader,
+      body: created.template,
+    })
+    return result.data
+  } catch (e) {
+    throw new SendOrderConfirmationEmailFailure(e)
+  }
+}
+
+export const sendSubscriptionPaymentFailedEmailToCustomer = async (p: {
+  order: Order
+  fileName: HbsTemplateFiles
+  sendTo: string
+  emailHeader: string
+}): Promise<any> => {
+  isMessageBackendUrlSet()
+  const { order, fileName } = p
+  // Reorder metas to show in correct order using ordinal etc.
+  parseOrderMetas(order)
+  const created = await createSubscriptionPaymentFailedEmailTemplate<OrderConfirmationEmailParameters>(
     {
       fileName: fileName,
       templateParams: { order: order },

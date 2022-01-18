@@ -12,6 +12,10 @@ export interface OrderConfirmationEmailParameters {
   order: Order
 }
 
+export interface SubscriptionPaymentFailedEmailParameters {
+  order: Order
+}
+
 export type OrderCustomer = {
   firstName: string
   lastName: string
@@ -102,4 +106,4 @@ export interface Payment {
   token: string
 }
 
-export type HbsTemplateFiles = 'orderConfirmation'
+export type HbsTemplateFiles = 'orderConfirmation' | 'subscriptionPaymentFailed'
