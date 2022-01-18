@@ -1,4 +1,8 @@
-import { AbstractController, ValidatedRequest } from '@verkkokauppa/core'
+import {
+  AbstractController,
+  ValidatedRequest,
+  parseTimestamp,
+} from '@verkkokauppa/core'
 import * as yup from 'yup'
 import type { Response } from 'express'
 import {
@@ -8,6 +12,7 @@ import {
 } from '@verkkokauppa/message-backend'
 import { getSubscriptionAdmin } from '@verkkokauppa/order-backend'
 import { getPaymentForOrder } from '@verkkokauppa/payment-backend'
+import { getMerchantDetailsForOrder } from '@verkkokauppa/configuration-backend'
 
 const requestSchema = yup.object().shape({
   params: yup.object().shape({
@@ -34,7 +39,10 @@ export class SendSubscriptionContractEmail extends AbstractController<
     // await validateApiKey()
     // Assumption: subscription is currently on its first order
     const subscription = await getSubscriptionAdmin({ id })
-    const payment = await getPaymentForOrder(subscription)
+    const [payment, merchant] = await Promise.all([
+      getPaymentForOrder(subscription),
+      getMerchantDetailsForOrder(subscription),
+    ])
 
     const secondPaymentDate = new Date(subscription.endDate)
     // TODO: get the subscription threshold from backend
@@ -42,8 +50,9 @@ export class SendSubscriptionContractEmail extends AbstractController<
 
     const subscriptionContractPdf = await createSubscriptionContractBinary({
       ...subscription,
-      firstPaymentTimestamp: payment.timestamp,
-      secondPaymentTimestamp: secondPaymentDate.toISOString(),
+      merchantName: merchant.merchantName,
+      firstPaymentDate: parseTimestamp(payment.timestamp).toISOString(),
+      secondPaymentDate: secondPaymentDate.toISOString(),
     })
 
     const { template: body } = await createEmailTemplate({
