@@ -1,3 +1,2 @@
-import * as caseUtils from './caseUtils'
-
-export { caseUtils }
+export * from './caseUtils'
+export * from './parseTimestamp'

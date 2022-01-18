@@ -22,6 +22,6 @@ export interface Subscription {
   quantity: number
   priceNet: string
   priceVat: string
-  priceTotal: string
+  priceGross: string
   orderId: string
 }

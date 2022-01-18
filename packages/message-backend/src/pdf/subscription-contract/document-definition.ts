@@ -19,7 +19,9 @@ const sideMargin = 50
 const datetimeFormat = ['fi-FI', { timeZone: 'Europe/Helsinki' }] as const
 const localeDateString = (datetime?: string) => {
   const d = datetime ? new Date(datetime) : new Date()
-  return d.toLocaleDateString(...datetimeFormat)
+  // For some reason fi-FI yields mm/dd/yyyy instead of dd.mm.yyyy
+  const parts = d.toLocaleDateString(...datetimeFormat).split('/')
+  return `${parts[1]}.${parts[0]}.${parts[2]}`
 }
 
 export const documentDefinition = (subscription: {
@@ -32,9 +34,9 @@ export const documentDefinition = (subscription: {
   endDate: string
   periodUnit: string
   periodFrequency: string | number
-  firstPaymentTimestamp: string
-  secondPaymentTimestamp: string
-  priceTotal: string
+  firstPaymentDate: string
+  secondPaymentDate: string
+  priceGross: string
 }): TDocumentDefinitions => {
   return {
     defaultStyle: {
@@ -114,11 +116,11 @@ export const documentDefinition = (subscription: {
                   )} – ${localeDateString(
                     subscription.endDate
                   )} maksettu ${localeDateString(
-                    subscription.firstPaymentTimestamp
+                    subscription.firstPaymentDate
                   )}.`,
                   '\n',
                   `Seuraavan tilausjakson veloitus ${localeDateString(
-                    subscription.secondPaymentTimestamp
+                    subscription.secondPaymentDate
                   )}, jonka jälkeen ${subscription.periodFrequency} ${i18n.t(
                     `c4_2_3_${subscription.periodUnit}`
                   )} välein.`,
@@ -136,7 +138,7 @@ export const documentDefinition = (subscription: {
             ],
             [
               'Tilausjakson hinta',
-              `${subscription.priceTotal} € / ${
+              `${subscription.priceGross} € / ${
                 subscription.periodFrequency
               } ${i18n.t(`abbr_${subscription.periodUnit}`)}\n\n`,
             ],
