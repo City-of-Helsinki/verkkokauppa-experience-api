@@ -280,6 +280,7 @@ const transFormBackendOrder = (p: OrderWithItemsBackendResponse): Order => {
     subscriptionId,
     checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}`,
     receiptUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}/receipt?user=${user}`,
+    loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${orderId}`,
   }
   if (priceNet && priceVat && priceTotal) {
     data = {
