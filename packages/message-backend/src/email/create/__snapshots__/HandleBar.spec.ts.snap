@@ -2034,7 +2034,7 @@ exports[`Create templates from parameters Should compile subscriptionPaymentFail
                             <tr>
                                 <td class=\\"content-cell\\">
                                     <div class=\\"f-fallback\\">
-                                        <h1 style=\\"margin-bottom: 0\\">Tilausvahvistus ja kuitti</h1>
+                                        <h1 style=\\"margin-bottom: 0\\">Maksukortin veloitus epäonnistui</h1>
                 
                                         <table class=\\"purchase\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\" role=\\"presentation\\">
                                             <tr>
@@ -2042,9 +2042,9 @@ exports[`Create templates from parameters Should compile subscriptionPaymentFail
                                                     <table class=\\"purchase_content\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\">
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Kiitos tilauksestasi dummy-order-KYV-466 16.08.2021 Tilausaika 07:56:57
-                                                                                </span>
+                                                                <span class=\\"f-fallback\\">
+                                                                    Palvelu:  &lt;Helsingin kaupungin asukaspysäköinti&gt; 
+                                                                </span>
                                                             </td>
                                                         </tr>
                                                     </table>
@@ -2064,37 +2064,39 @@ exports[`Create templates from parameters Should compile subscriptionPaymentFail
                             <tr>
                                 <td class=\\"content-cell\\">
                                     <div class=\\"f-fallback\\">
-                                        <h1 style=\\"margin-bottom: 0; border-top: 1rem solid #ffffff\\">Maksutiedot</h1>
+                                        <h1 style=\\"margin-bottom: 0; border-top: 1rem solid #ffffff\\">Tilauksesi: </h1>
                 
                                         <table class=\\"purchase\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\" role=\\"presentation\\">
                                             <tr>
                                                 <td colspan=\\"2\\">
                                                     <table class=\\"purchase_content\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\">
+                
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback\\" style=\\"font-weight:bolder;\\">
-                                                                        Pysäköintivyöhyke K
+                                                                        productName
                                                                     </span>
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback no-wrap\\">
-                                                                        744 €
+                                                                        124 €
                                                                     </span>
                                                                 </td>
                                                             </tr>
                 
-                                                            <tr>
-                                                                <td width=\\"80%\\" class=\\"purchase_item\\">
-                                                                    <span class=\\"f-fallback\\">
-                                                                        Sis. alv (24%)
-                                                                    </span>
-                                                                </td>
-                                                                <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item pb-1\\">
-                                                                    <span class=\\"f-fallback no-wrap\\">
-                                                                        72 €
-                                                                    </span>
-                                                                </td>
-                                                            </tr>
+                                                                <tr>
+                                                                    <td width=\\"80%\\" class=\\"purchase_item\\">
+                                                                        <span class=\\"f-fallback\\">
+                                                                            Sis. alv (24%)
+                                                                        </span>
+                                                                    </td>
+                                                                    <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item pb-1\\">
+                                                                        <span class=\\"f-fallback no-wrap\\">
+                                                                            24 €
+                                                                        </span>
+                                                                    </td>
+                                                                </tr>
+                
                 
                 
                 
@@ -2131,225 +2133,33 @@ exports[`Create templates from parameters Should compile subscriptionPaymentFail
                                                                     </tr>
                 
                 
-                                                            <tr>
-                                                                <td width=\\"80%\\" class=\\"purchase_item\\">
-                                                                    <span class=\\"f-fallback\\" style=\\"font-weight:bolder;\\">
-                                                                        Kiinteähintainen tuote 1
-                                                                    </span>
-                                                                </td>
-                                                                <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
-                                                                    <span class=\\"f-fallback no-wrap\\">
-                                                                        744 €
-                                                                    </span>
-                                                                </td>
-                                                            </tr>
-                
-                                                            <tr>
-                                                                <td width=\\"80%\\" class=\\"purchase_item\\">
-                                                                    <span class=\\"f-fallback\\">
-                                                                        Sis. alv (24%)
-                                                                    </span>
-                                                                </td>
-                                                                <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item pb-1\\">
-                                                                    <span class=\\"f-fallback no-wrap\\">
-                                                                        72 €
-                                                                    </span>
-                                                                </td>
-                                                            </tr>
-                
-                
-                                                                    <tr>
-                                                                        <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                            <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px;\\">
-                                                                                meta value ordinal 0 show all
-                                                                            </span>
-                                                                        </td>
-                                                                    </tr>
-                
-                
-                
-                                                                    <tr>
-                                                                        <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                            <span class=\\"f-fallback no-wrap pb-1\\" style=\\"font-size:14px;\\">
-                                                                                when label is empty shows only value row
-                                                                            </span>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>
-                                                                            <span>&emsp;</span>
-                                                                        </td>
-                                                                    </tr>
-                
                 
                                                         <tr>
-                                                            <td width=\\"80%\\" class=\\"purchase_item\\" style=\\"border-top: 1rem solid #ffffff\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Maksettu yhteensä
-                                                                                </span>
-                                                            </td>
-                                                            <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\" style=\\"border-top: 1rem solid #ffffff\\">
-                                                                                <span class=\\"f-fallback no-wrap\\">
-                                                                                    1488 €
-                                                                                </span>
+                
+                                                        <tr class=\\"pb-1\\">
+                                                            <td width=\\"100%\\" class=\\"purchase_item pb-1\\">
+                                                                <span class=\\"f-fallback\\">
+                                                                    Tilauksesi veloitus epäonnistui. Syynä voi olla esimerkiksi maksukortin vanhentuminen, internetkäytön esto tai riittämätön kate. Tarkista korttisi asetukset oman pankkisi kautta viipymättä.
+                                                                </span>
                                                             </td>
                                                         </tr>
                 
-                                                        <tr>
-                                                            <td width=\\"80%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Maksutapa
-                                                                                </span>
-                                                            </td>
-                                                            <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback no-wrap\\">
-                                                                                    Nordea
-                                                                                </span>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td width=\\"80%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Päivämäärä
-                                                                                </span>
-                                                            </td>
-                                                            <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback no-wrap\\">
-                                                                                    01.09.2021 08:18:44
-                                                                                </span>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-                                            </tr>
-                                        </table>
-                
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>                <tr>
-                    <td class=\\"email-body\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\">
-                        <table class=\\"email-body_inner\\" align=\\"center\\" width=\\"414\\" cellpadding=\\"0\\" cellspacing=\\"0\\" role=\\"presentation\\">
-                            <!-- Body content -->
-                            <tr>
-                                <td class=\\"content-cell\\">
-                                    <div class=\\"f-fallback\\">
-                                        <hr>
-                                        <h1 style=\\"margin-bottom: 0;border-top: 1rem solid #ffffff\\">Tilaajan tiedot</h1>
-                
-                                        <table class=\\"purchase\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\" role=\\"presentation\\">
-                                            <tr>
-                                                <td colspan=\\"2\\">
-                                                    <table class=\\"purchase_content\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\">
-                
-                                                        <tr>
-                                                            <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Essi esimerkki
-                                                                                </span>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    essi.esimerkki@gmail.com
-                                                                                </span>
-                                                            </td>
-                                                        </tr>
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item pb-1\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    +358123456789
-                                                                                </span>
+                                                                <span class=\\"f-fallback\\">
+                                                                    Voit halutessasi päivittää maksukorttisi tiedot osoitteessa:
+                                                                    <a href=\\"http://localhost:3000/dummy-order-KYV-466/update-card?user&#x3D;userId\\" target=\\"_blank\\">http://localhost:3000/dummy-order-KYV-466/update-card?user&#x3D;userId</a>
+                                                                </span>
                                                             </td>
                                                         </tr>
-                                                        <tr>
-                                                            <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    Esimerkkiosoite 1
-                                                                                </span>
-                                                            </td>
-                                                        </tr>
-                                                            <tr>
-                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                                <span class=\\"f-fallback\\">
-                                                                                    123456 Esimerkkitoimipaikka
-                                                                                </span>
-                                                                </td>
-                                                            </tr>
                 
-                                                    </table>
-                                                </td>
-                                            </tr>
-                                        </table>
-                
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>                <tr>
-                    <td class=\\"email-body\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\">
-                        <table class=\\"email-body_inner\\" align=\\"center\\" width=\\"414\\" cellpadding=\\"0\\" cellspacing=\\"0\\" role=\\"presentation\\">
-                            <!-- Body content -->
-                            <tr>
-                                <td class=\\"content-cell\\">
-                                    <div class=\\"f-fallback\\">
-                                        <hr>
-                                        <h1 style=\\"margin-bottom: 0; border-top: 1rem solid #ffffff\\">Myyjän tiedot</h1>
-                
-                                        <table class=\\"purchase\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\" role=\\"presentation\\">
-                                            <tr>
-                                                <td colspan=\\"2\\">
-                                                    <table class=\\"purchase_content\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\">
                                                         <tr>
-                                                            <td width=\\"100%\\" class=\\"purchase_item\\">
+                                                            <td width=\\"100%\\" class=\\"purchase_item pb-1\\">
                                                                 <span class=\\"f-fallback\\">
-                                                                    merchantName
-                                                                </span>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                <span class=\\"f-fallback\\">
-                                                                    merchantStreet
-                                                                </span>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                <span class=\\"f-fallback\\">
-                                                                    merchantZip merchantCity
-                                                                </span>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                <span class=\\"f-fallback\\">
-                                                                    merchantEmail
-                                                                </span>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                <span class=\\"f-fallback\\">
-                                                                    merchantPhone
-                                                                </span>
-                                                            </td>
-                                                        </tr>
-                                                            <tr>
-                                                                <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                <span class=\\"f-fallback\\">
-                                                                    Y-tunnus merchantBusinessId
-                                                                </span>
-                                                                </td>
-                                                            </tr>
-                                                        <tr>
-                                                            <td width=\\"100%\\" class=\\"purchase_item\\">
-                                                                <span class=\\"f-fallback\\">
-                                                                    Mikäli sinulla on tilaukseen liittyen kysymyksiä kohdistathan ne suoraan myyjälle merchantName
+                                                                    Tilaukseen liittämäsi maksukortin 
+                                                                    4321
+                                                                    veloitusta yritetään uudelleen muutaman päivän sisällä. Mikäli veloituksen uusintayritys ei onnistu, tilatun palvelun käyttöoikeus päättyy
+                                                                    01.01.2022 07:56:57
                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -2357,13 +2167,11 @@ exports[`Create templates from parameters Should compile subscriptionPaymentFail
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                 <span class=\\"f-fallback\\">
-                                                                    Myyjä toimittaa tarvittaessa erikseen lisäohjeet palvelun/tuotteen käyttöön tai toimitukseen liittyen.
-                Sopimusehtoihin voit tutustua täällä:
-                                                                    <a href=\\"merchantTermsOfServiceUrl\\" target=\\"_blank\\">merchantTermsOfServiceUrl</a>
+                                                                    Linkki
+                                                                    <a href=\\"merchantUrl\\" target=\\"_blank\\">merchantUrl</a>
                                                                 </span>
                                                             </td>
                                                         </tr>
-                
                                                     </table>
                                                 </td>
                                             </tr>
