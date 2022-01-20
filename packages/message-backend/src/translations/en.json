@@ -27,29 +27,18 @@
   "subscriptionPaymentFailed": {
     "clock": "Tilausaika",
     "order": {
-      "mainHeader": "Maksukortin veloitus epäonnistui",
-      "header": "Palvelu: ",
-      "headerTwo": "Tilauksesi: "
-    },
-    "merchant": {
-      "header": "Palvelu:",
-      "textOne": "Mikäli sinulla on tilaukseen liittyen kysymyksiä kohdistathan ne suoraan myyjälle",
-      "textTwo": "Linkki",
-      "headerTwo": "Myyjän tiedot",
-      "businessId": "Y-tunnus"
-    },
-    "customer": {
-      "header": "Tilaajan tiedot"
+      "mainHeader": "Failed to charge your payment card",
+      "header": "Service: "
     },
     "information": {
-      "header": "Tilauksesi: ",
-      "alv": "Sis. alv",
-      "paymentFailedText": "Tilauksesi veloitus epäonnistui. Syynä voi olla esimerkiksi maksukortin vanhentuminen, internetkäytön esto tai riittämätön kate. Tarkista korttisi asetukset oman pankkisi kautta viipymättä.",
-      "cardUpdateText": "Voit halutessasi päivittää maksukorttisi tiedot osoitteessa:",
-      "cardLinkedText": "Tilaukseen liittämäsi maksukortin ",
-      "cardLinkedRetryPaymentText": "veloitusta yritetään uudelleen muutaman päivän sisällä. Mikäli veloituksen uusintayritys ei onnistu, tilatun palvelun käyttöoikeus päättyy",
-      "date": "Päivämäärä",
-      "linkText": "Linkki"
+      "header": "Your order: ",
+      "alv": "Incl. VAT",
+      "paymentFailedText": "Your order could not be charged. This could be because your payment card has expired, your card is not valid for online payments or you have insufficient funds. Check your card’s settings with your bank without delay.",
+      "cardUpdateText": "To update your payment card details, please visit:",
+      "cardLinkedText": "A new attempt will be made to charge the payment card ",
+      "cardLinkedRetryPaymentText": "linked to your subscription within a few days. If the new attempt to charge the card is unsuccessful, your right to use the subscribed service will expire on ",
+      "linkText": "Link",
+      "cityText": "City of Helsinki"
     }
   }
 }

@@ -27,29 +27,18 @@
   "subscriptionPaymentFailed": {
     "clock": "Tilausaika",
     "order": {
-      "mainHeader": "Maksukortin veloitus epäonnistui",
-      "header": "Palvelu: ",
-      "headerTwo": "Tilauksesi: "
-    },
-    "merchant": {
-      "header": "Palvelu:",
-      "textOne": "Mikäli sinulla on tilaukseen liittyen kysymyksiä kohdistathan ne suoraan myyjälle",
-      "textTwo": "Linkki",
-      "headerTwo": "Myyjän tiedot",
-      "businessId": "Y-tunnus"
-    },
-    "customer": {
-      "header": "Tilaajan tiedot"
+      "mainHeader": "Debiteringen av betalkortet misslyckades.",
+      "header": "Tjänst: "
     },
     "information": {
-      "header": "Tilauksesi: ",
-      "alv": "Sis. alv",
-      "paymentFailedText": "Tilauksesi veloitus epäonnistui. Syynä voi olla esimerkiksi maksukortin vanhentuminen, internetkäytön esto tai riittämätön kate. Tarkista korttisi asetukset oman pankkisi kautta viipymättä.",
-      "cardUpdateText": "Voit halutessasi päivittää maksukorttisi tiedot osoitteessa:",
-      "cardLinkedText": "Tilaukseen liittämäsi maksukortin ",
-      "cardLinkedRetryPaymentText": "veloitusta yritetään uudelleen muutaman päivän sisällä. Mikäli veloituksen uusintayritys ei onnistu, tilatun palvelun käyttöoikeus päättyy",
-      "date": "Päivämäärä",
-      "linkText": "Linkki"
+      "header": "Din beställning: ",
+      "alv": "Inkl. moms",
+      "paymentFailedText": "Debitering av beställningen misslyckades. Orsaken till att debiteringen misslyckades kan vara till exempel att betalkortets giltighetstid har gått ut, användning av kortet för webbetalningar inte är tillåten eller täckningen på kortet är otillräcklig. Kontrollera inställningarna för ditt kort snarast möjligt med din egen bank.",
+      "cardUpdateText": "Du kan uppdatera dina betalkortsuppgifter på: ",
+      "cardLinkedText": "Ett nytt debiteringsförsök på betalkortet ",
+      "cardLinkedRetryPaymentText": " som anslutits till din beställning kommer att göras inom några dagar. Om det nya debiteringsförsöket inte lyckas, upphör rätten att använda den beställda tjänsten ",
+      "linkText": "Länk",
+      "cityText": "Helsingfors stad"
     }
   }
 }
