@@ -46,7 +46,10 @@
       "alv": "Sis. alv",
       "paymentFailedText": "Tilauksesi veloitus epäonnistui. Syynä voi olla esimerkiksi maksukortin vanhentuminen, internetkäytön esto tai riittämätön kate. Tarkista korttisi asetukset oman pankkisi kautta viipymättä.",
       "cardUpdateText": "Voit halutessasi päivittää maksukorttisi tiedot osoitteessa:",
-      "date": "Päivämäärä"
+      "cardLinkedText": "Tilaukseen liittämäsi maksukortin ",
+      "cardLinkedRetryPaymentText": "veloitusta yritetään uudelleen muutaman päivän sisällä. Mikäli veloituksen uusintayritys ei onnistu, tilatun palvelun käyttöoikeus päättyy",
+      "date": "Päivämäärä",
+      "linkText": "Linkki"
     }
   }
 }

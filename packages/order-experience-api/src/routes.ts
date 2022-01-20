@@ -18,6 +18,7 @@ import { GetAdminController } from './api/getAdminController'
 import { GetSubscriptionOrdersController } from './api/getSubscriptionOrdersController'
 import { CancelSubscription } from './api/cancelSubscription'
 import { SendSubscriptionContractEmail } from './api/sendSubscriptionContractEmail'
+import { SendSubscriptionPaymentFailedEmail } from './api/sendSubscriptionPaymentFailedEmail'
 import { SetSubscriptionItemMetaController } from './api/setSubscriptionItemMeta'
 import { withAuthentication } from '@verkkokauppa/auth-helsinki-profile'
 
@@ -48,6 +49,7 @@ const healthController = new Health()
 const setSubscriptionItemMeta = new SetSubscriptionItemMetaController()
 const cancelSubscription = new (withAuthentication(CancelSubscription))()
 const sendSubscriptionContractEmail = new SendSubscriptionContractEmail()
+const sendSubscriptionPaymentFailedEmail = new SendSubscriptionPaymentFailedEmail()
 
 const router = Router()
 router.post('/', (req, res) => createController.execute(req, res))
@@ -97,6 +99,9 @@ router.post('/subscription/:id/meta/:itemId', (req, res) =>
 )
 router.post('/subscription/:id/emailSubscriptionContract', (req, res) =>
   sendSubscriptionContractEmail.execute(req, res)
+)
+router.post('/subscription/:id/emailSubscriptionPaymentFailed', (req, res) =>
+  sendSubscriptionPaymentFailedEmail.execute(req, res)
 )
 
 router.post('/instantPurchase', (req, res) =>

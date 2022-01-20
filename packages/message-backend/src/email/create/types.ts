@@ -14,6 +14,7 @@ export interface OrderConfirmationEmailParameters {
 
 export interface SubscriptionPaymentFailedEmailParameters {
   order: Order
+  subscription: Subscription
 }
 
 export type OrderCustomer = {
@@ -75,8 +76,12 @@ export type OrderItemMeta = {
   ordinal?: string
 }
 
+export type SubscriptionItemMeta = OrderItemMeta & {
+  subscriptionId: string
+}
+
 export interface Order {
-  payment: Payment | null
+  payment?: Payment | null
   orderId: string
   createdAt: string
   items: OrderItem[]
@@ -110,3 +115,37 @@ export type HbsTemplateFiles =
   | 'orderConfirmation'
   | 'subscriptionContract'
   | 'subscriptionPaymentFailed'
+
+export interface Subscription {
+  subscriptionId: string
+  status: string
+  namespace: string
+  merchantName: string
+  customerFirstName: string
+  customerLastName: string
+  customerEmail: string
+  customerPhone: string
+  paymentMethod: string
+  paymentMethodToken: string
+  paymentMethodExpirationYear: string
+  paymentMethodExpirationMonth: string
+  paymentMethodCardLastFourDigits: string
+  user: string
+  startDate: string
+  endDate: string
+  renewalDate: string
+  billingStartDate: string
+  periodUnit: string
+  periodFrequency: number
+  periodCount: number
+  productId: string
+  orderItemId: string
+  productName: string
+  quantity: number
+  priceNet: string
+  priceVat: string
+  priceGross: string
+  vatPercentage: string
+  orderId: string
+  meta?: SubscriptionItemMeta[]
+}

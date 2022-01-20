@@ -1,16 +1,15 @@
 import axios from 'axios'
 import { SendOrderConfirmationEmailFailure } from '../../errors'
-import {
-  createOrderConfirmationEmailTemplate,
-  createSubscriptionPaymentFailedEmailTemplate,
-  createEmailTemplate,
-} from '../create/service'
+import { createEmailTemplate } from '../create/service'
 
 import type {
   HbsTemplateFiles,
   Order,
   OrderConfirmationEmailParameters,
   OrderItemMeta,
+  Subscription,
+  SubscriptionItemMeta,
+  SubscriptionPaymentFailedEmailParameters,
 } from '../create/types'
 
 function isMessageBackendUrlSet() {
@@ -26,6 +25,11 @@ export function parseOrderMetas(order: Order) {
     )
   })
 }
+export function parseSubscriptionMetas(subscription: Subscription) {
+  subscription.meta = parseSubscriptionItemMetaVisibilityAndOrdinal(
+    subscription.meta
+  )
+}
 
 export function parseOrderItemMetaVisibilityAndOrdinal(
   metaItem: OrderItemMeta[] | undefined
@@ -36,6 +40,35 @@ export function parseOrderItemMetaVisibilityAndOrdinal(
 
   let metaItemsOrdinal: OrderItemMeta[] = []
   let metaItemsNoOrdinal: OrderItemMeta[] = []
+
+  metaItem
+    .filter(
+      (meta) => meta.visibleInCheckout === 'true' || !meta.visibleInCheckout
+    )
+    .forEach((orderItem) => {
+      // If the metadata is marked for display on the receipt (visibleInCheckout = true)
+      // and no metadata value is specified for the label field
+      // at the checkout, only the value is displayed
+      orderItem.key = '' // Key should not be visible in emails
+      // Metadata is arranged at the receipt based on the ordinal number if a value is given
+      if (orderItem.ordinal) {
+        metaItemsOrdinal[parseInt(orderItem.ordinal)] = orderItem
+      } else {
+        metaItemsNoOrdinal.push(orderItem)
+      }
+    })
+  return [...metaItemsOrdinal, ...metaItemsNoOrdinal]
+}
+
+export function parseSubscriptionItemMetaVisibilityAndOrdinal(
+  metaItem: SubscriptionItemMeta[] | undefined
+) {
+  if (!Array.isArray(metaItem)) {
+    return []
+  }
+
+  let metaItemsOrdinal: SubscriptionItemMeta[] = []
+  let metaItemsNoOrdinal: SubscriptionItemMeta[] = []
 
   metaItem
     .filter(
@@ -108,18 +141,19 @@ export const sendOrderConfirmationEmailToCustomer = async (p: {
 
 export const sendSubscriptionPaymentFailedEmailToCustomer = async (p: {
   order: Order
-  fileName: HbsTemplateFiles
+  subscription: Subscription
   sendTo: string
   emailHeader: string
 }): Promise<any> => {
   isMessageBackendUrlSet()
-  const { order, fileName } = p
+  const { order, subscription } = p
   // Reorder metas to show in correct order using ordinal etc.
   parseOrderMetas(order)
-  const created = await createSubscriptionPaymentFailedEmailTemplate<OrderConfirmationEmailParameters>(
+  parseSubscriptionMetas(subscription)
+  const created = await createEmailTemplate<SubscriptionPaymentFailedEmailParameters>(
     {
-      fileName: fileName,
-      templateParams: { order: order },
+      fileName: 'subscriptionPaymentFailed',
+      templateParams: { order: order, subscription: subscription },
     }
   )
 
@@ -134,6 +168,7 @@ export const sendSubscriptionPaymentFailedEmailToCustomer = async (p: {
     })
     return result.data
   } catch (e) {
+    //FIXME
     throw new SendOrderConfirmationEmailFailure(e)
   }
 }
