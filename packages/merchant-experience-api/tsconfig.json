@@ -6,11 +6,11 @@
         "composite": true,
         "baseUrl": "./",
         "paths": {
-            "@verkkokauppa/core": [
-                "../core"
-            ],
             "@verkkokauppa/configuration-backend": [
                 "../configuration-backend"
+            ],
+            "@verkkokauppa/core": [
+                "../core"
             ]
         }
     },
@@ -19,10 +19,10 @@
     ],
     "references": [
         {
-            "path": "../core"
+            "path": "../configuration-backend"
         },
         {
-            "path": "../configuration-backend"
+            "path": "../core"
         }
     ]
 }

@@ -9,6 +9,9 @@ export interface Subscription {
   customerPhone: string
   paymentMethod: string
   paymentMethodToken: string
+  paymentMethodExpirationYear: string
+  paymentMethodExpirationMonth: string
+  paymentMethodCardLastFourDigits: string
   user: string
   startDate: string
   endDate: string
@@ -24,5 +27,6 @@ export interface Subscription {
   priceNet: string
   priceVat: string
   priceGross: string
+  vatPercentage: string
   orderId: string
 }

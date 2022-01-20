@@ -11,33 +11,36 @@
                             <tr>
                                 <td colspan="2">
                                     <table class="purchase_content" width="100%" cellpadding="0" cellspacing="0">
-                                        {{#each order.items}}
+
                                             <tr>
                                                 <td width="80%" class="purchase_item">
                                                     <span class="f-fallback" style="font-weight:bolder;">
-                                                        {{productName}}
+                                                        {{subscription.productName}}
                                                     </span>
                                                 </td>
                                                 <td class="align-right" width="20%" class="purchase_item">
                                                     <span class="f-fallback no-wrap">
-                                                        {{rowPriceTotal}} €
+                                                        {{subscription.priceGross}} €
                                                     </span>
                                                 </td>
                                             </tr>
 
-                                            <tr>
-                                                <td width="80%" class="purchase_item">
-                                                    <span class="f-fallback">
-                                                        {{I18n 'subscriptionPaymentFailed.information.alv'}} ({{vatPercentage}}%)
-                                                    </span>
-                                                </td>
-                                                <td class="align-right" width="20%" class="purchase_item pb-1">
-                                                    <span class="f-fallback no-wrap">
-                                                        {{priceVat}} €
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                            {{#each meta}}
+                                            {{#ifCond subscription.vatPercentage '>' '0'}}
+                                                <tr>
+                                                    <td width="80%" class="purchase_item">
+                                                        <span class="f-fallback">
+                                                            {{I18n 'subscriptionPaymentFailed.information.alv'}} ({{subscription.vatPercentage}}%)
+                                                        </span>
+                                                    </td>
+                                                    <td class="align-right" width="20%" class="purchase_item pb-1">
+                                                        <span class="f-fallback no-wrap">
+                                                            {{subscription.priceVat}} €
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            {{/ifCond}}
+
+                                            {{#each subscription.meta}}
 
                                                 {{#if label}}
                                                     <tr>
@@ -68,7 +71,7 @@
 
                                             {{/each}}
 
-                                        {{/each}}
+
                                         <tr>
 
                                         <tr class="pb-1">
@@ -91,12 +94,22 @@
                                         <tr>
                                             <td width="100%" class="purchase_item pb-1">
                                                 <span class="f-fallback">
-                                                    {{I18n 'subscriptionPaymentFailed.information.cardUpdateText'}}
-                                                    <a href="{{order.updateCardUrl}}" target="_blank">{{order.updateCardUrl}}</a>
+                                                    {{I18n 'subscriptionPaymentFailed.information.cardLinkedText'}}
+                                                    {{subscription.paymentMethodCardLastFourDigits}}
+                                                    {{I18n 'subscriptionPaymentFailed.information.cardLinkedRetryPaymentText'}}
+                                                    {{DateTime subscription.endDate}}
                                                 </span>
                                             </td>
                                         </tr>
 
+                                        <tr>
+                                            <td width="100%" class="purchase_item">
+                                                <span class="f-fallback">
+                                                    {{I18n 'subscriptionPaymentFailed.information.linkText'}}
+                                                    <a href="{{order.merchant.merchantUrl}}" target="_blank">{{order.merchant.merchantUrl}}</a>
+                                                </span>
+                                            </td>
+                                        </tr>
                                     </table>
                                 </td>
                             </tr>
