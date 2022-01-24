@@ -132,7 +132,6 @@ describe('sendEmailToCustomer.spec.ts', () => {
 
     const sent = await sendOrderConfirmationEmailToCustomer({
       order: order,
-      fileName: 'orderConfirmation',
       emailHeader:
         'Tilausvahvistus ja kuitti / Order confirmation and receipt / Beställningsbekräftelse och kvitto',
       sendTo: 'dummy@email.com',
