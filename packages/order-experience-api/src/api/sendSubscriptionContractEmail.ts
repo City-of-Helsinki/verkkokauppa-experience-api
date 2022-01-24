@@ -9,11 +9,13 @@ import {
   createEmailTemplate,
   createSubscriptionContractBinary,
   sendEmail,
+  createSubscriptionTermsOfServiceBinary,
 } from '@verkkokauppa/message-backend'
 import { getSubscriptionAdmin } from '@verkkokauppa/order-backend'
 import { getPaymentForOrder } from '@verkkokauppa/payment-backend'
 import {
   getMerchantDetailsForOrder,
+  getSubscriptionTermsOfServiceBinary,
   validateAdminApiKey,
 } from '@verkkokauppa/configuration-backend'
 
@@ -42,9 +44,10 @@ export class SendSubscriptionContractEmail extends AbstractController<
     await validateAdminApiKey({ apiKey })
     // Assumption: subscription is currently on its first order
     const subscription = await getSubscriptionAdmin({ id })
-    const [payment, merchant] = await Promise.all([
+    const [payment, merchant, merchantTosPdf] = await Promise.all([
       getPaymentForOrder(subscription),
       getMerchantDetailsForOrder(subscription),
+      getSubscriptionTermsOfServiceBinary(subscription),
     ])
 
     const subscriptionContractPdf = await createSubscriptionContractBinary({
@@ -53,6 +56,8 @@ export class SendSubscriptionContractEmail extends AbstractController<
       firstPaymentDate: parseTimestamp(payment.timestamp).toISOString(),
       secondPaymentDate: subscription.renewalDate,
     })
+
+    const tosPdf = createSubscriptionTermsOfServiceBinary()
 
     const { template: body } = await createEmailTemplate({
       fileName: 'subscriptionContract',
@@ -64,7 +69,11 @@ export class SendSubscriptionContractEmail extends AbstractController<
       receiver: subscription.customerEmail,
       header: 'Tilaussopimus',
       body,
-      attachments: { 'tilaussopimus.pdf': subscriptionContractPdf },
+      attachments: {
+        'tilaussopimus.pdf': subscriptionContractPdf,
+        'asiointipalvelun-ehdot.pdf': merchantTosPdf,
+        'yleiset-ehdot.pdf': tosPdf,
+      },
     })
 
     return this.success(res, {})
