@@ -21,6 +21,7 @@ export type PublicServiceConfigurationKeys = {
   PAYMENT_API_VERSION: string
   PAYMENT_RETURN_URL: string
   PAYMENT_NOTIFICATION_URL: string
+  merchantSubscriptionTermsOfServiceUrl: string
 } & MerchantConfigurationKeys
 
 export type RestrictedServiceConfigurationKeys = {
