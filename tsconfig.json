@@ -44,6 +44,9 @@
     "files": [],
     "references": [
         {
+            "path": "packages/auth-helsinki-profile"
+        },
+        {
             "path": "packages/cart-backend"
         },
         {

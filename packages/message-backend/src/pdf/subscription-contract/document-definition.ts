@@ -13,6 +13,7 @@ i18n
     resources: translations,
   })
   .then(() => {})
+// import i18n from './../../i18n/init'
 
 const sideMargin = 50
 

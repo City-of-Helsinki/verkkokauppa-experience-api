@@ -77,7 +77,7 @@ export type OrderItemMeta = {
 }
 
 export type SubscriptionItemMeta = OrderItemMeta & {
-  subscriptionId: string
+  subscriptionId?: string
 }
 
 export interface Order {
