@@ -39,7 +39,8 @@ export class SendSubscriptionPaymentFailedEmail extends AbstractController<
       order: order,
       subscription: subscription,
       sendTo: subscription.customerEmail,
-      emailHeader: 'Maksukortin veloitus epäonnistui',
+      emailHeader:
+        'Maksukortin veloitus epäonnistui | Failed to charge your payment card | Debiteringen av betalkortet misslyckades',
     })
 
     return this.success(res, {})

@@ -20,7 +20,7 @@ import {
   PaymentStatus,
 } from '@verkkokauppa/payment-backend'
 import { getMerchantDetailsForOrder } from '@verkkokauppa/configuration-backend'
-import { sendOrderConfirmationEmailToCustomer } from '@verkkokauppa/message-backend'
+import { sendEmailToCustomer } from '@verkkokauppa/message-backend'
 
 export class OnlinePaymentReturnController extends AbstractController {
   protected readonly requestSchema = null
@@ -124,8 +124,9 @@ export class OnlinePaymentReturnController extends AbstractController {
       payment: payments,
       merchant,
     }
-    const email = await sendOrderConfirmationEmailToCustomer({
+    const email = await sendEmailToCustomer({
       order: orderWithPayments,
+      fileName: 'orderConfirmation',
       emailHeader:
         'Tilausvahvistus ja kuitti / Order confirmation and receipt / Beställningsbekräftelse och kvitto',
       sendTo: orderWithPayments?.customer?.email || '',
