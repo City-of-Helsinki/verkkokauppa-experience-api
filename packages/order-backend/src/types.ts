@@ -51,6 +51,7 @@ export interface Order {
   priceTotal?: string
   checkoutUrl?: string
   receiptUrl?: string
+  loggedInCheckoutUrl?: string
   customer?: OrderCustomer
   status?: string
   subscriptionId?: string

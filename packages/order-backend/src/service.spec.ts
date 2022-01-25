@@ -65,6 +65,7 @@ describe('Test Create Order', () => {
       updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
       checkoutUrl: `https://checkout.dev.hel/${mockData.order.orderId}`,
       receiptUrl: `https://checkout.dev.hel/${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
+      loggedInCheckoutUrl: `https://checkout.dev.hel/profile/${mockData.order.orderId}`,
     })
   })
   it('Should create order with items correctly with backend url set', async () => {
@@ -130,6 +131,7 @@ describe('Test Create Order', () => {
       updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
       checkoutUrl: `https://checkout.dev.hel/${mockData.order.orderId}`,
       receiptUrl: `https://checkout.dev.hel/${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
+      loggedInCheckoutUrl: `https://checkout.dev.hel/profile/${mockData.order.orderId}`,
     })
   })
 })
@@ -177,6 +179,7 @@ describe('Test Cancel Order', () => {
       updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
       checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
       receiptUrl: `https://checkout.dev.hel/${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
+      loggedInCheckoutUrl: `https://checkout.dev.hel/profile/${mockData.order.orderId}`,
     })
   })
 })
@@ -245,6 +248,7 @@ describe('Test Add items to order', () => {
       updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
       checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
       receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
+      loggedInCheckoutUrl: `https://checkout.dev.hel/profile/${mockData.order.orderId}`,
     })
   })
 })
@@ -283,6 +287,7 @@ describe('Test Set Customer To Order', () => {
       updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
       checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
       receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
+      loggedInCheckoutUrl: `https://checkout.dev.hel/profile/${mockData.order.orderId}`,
     })
   })
   it('Should set customer correctly with backend url set for order with items', async () => {
@@ -318,6 +323,7 @@ describe('Test Set Customer To Order', () => {
       updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
       checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
       receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
+      loggedInCheckoutUrl: `https://checkout.dev.hel/profile/${mockData.order.orderId}`,
     })
   })
 })
@@ -351,6 +357,7 @@ describe('Test Get Order', () => {
       updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
       checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
       receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
+      loggedInCheckoutUrl: `https://checkout.dev.hel/profile/${mockData.order.orderId}`,
     })
   })
   it('Should get order with items correctly with backend url set', async () => {
@@ -387,6 +394,7 @@ describe('Test Get Order', () => {
       updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
       checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
       receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
+      loggedInCheckoutUrl: `https://checkout.dev.hel/profile/${mockData.order.orderId}`,
     })
   })
   it('Should get subscription type order with items correctly with backend url set', async () => {
@@ -427,6 +435,7 @@ describe('Test Get Order', () => {
       updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
       checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
       receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
+      loggedInCheckoutUrl: `https://checkout.dev.hel/profile/${mockData.order.orderId}`,
     })
   })
 })
@@ -475,6 +484,7 @@ describe('Test Calculate Totals for Order', () => {
       updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
       checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
       receiptUrl: `https://checkout.dev.hel/${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
+      loggedInCheckoutUrl: `https://checkout.dev.hel/profile/${mockData.order.orderId}`,
     })
   })
   it('Should set totals for order with items correctly with backend url set', async () => {
@@ -520,6 +530,7 @@ describe('Test Calculate Totals for Order', () => {
       updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
       checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
       receiptUrl: `https://checkout.dev.hel/${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
+      loggedInCheckoutUrl: `https://checkout.dev.hel/profile/${mockData.order.orderId}`,
     })
   })
 })

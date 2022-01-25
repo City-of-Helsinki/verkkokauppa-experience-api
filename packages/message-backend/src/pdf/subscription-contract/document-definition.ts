@@ -1,19 +1,6 @@
 // eslint-disable-next-line import/no-unresolved
 import type { TDocumentDefinitions } from 'pdfmake/interfaces'
-import type i18default from 'i18next'
-const i18n: typeof i18default = require('i18next')
-import * as translations from './translations.json'
-
-i18n
-  .init({
-    interpolation: {
-      escapeValue: false,
-    },
-    lng: 'fi',
-    resources: translations,
-  })
-  .then(() => {})
-// import i18n from './../../i18n/init'
+import i18next from '../../i18n/init'
 
 const sideMargin = 50
 
@@ -122,8 +109,8 @@ export const documentDefinition = (subscription: {
                   '\n',
                   `Seuraavan tilausjakson veloitus ${localeDateString(
                     subscription.secondPaymentDate
-                  )}, jonka jälkeen ${subscription.periodFrequency} ${i18n.t(
-                    `c4_2_3_${subscription.periodUnit}`
+                  )}, jonka jälkeen ${subscription.periodFrequency} ${i18next.t(
+                    `subscriptionContractPdf.c4_2_3_${subscription.periodUnit}`
                   )} välein.`,
                   '\n',
                   'Maksut veloitetaan Tilaajan ensimmäisen maksun yhteydessä antamalta maksuvälineeltä tai Tilaajan päivittäessä maksuvälineen tietoa viimeksi päivitetyltä maksuvälineeltä.',
@@ -133,15 +120,17 @@ export const documentDefinition = (subscription: {
             ],
             [
               'Tilausjakson pituus',
-              `${subscription.periodFrequency} ${i18n.t(
-                `abbr_${subscription.periodUnit}`
+              `${subscription.periodFrequency} ${i18next.t(
+                `subscriptionContractPdf.abbr_${subscription.periodUnit}`
               )}\n\n`,
             ],
             [
               'Tilausjakson hinta',
               `${subscription.priceGross} € / ${
                 subscription.periodFrequency
-              } ${i18n.t(`abbr_${subscription.periodUnit}`)}\n\n`,
+              } ${i18next.t(
+                `subscriptionContractPdf.abbr_${subscription.periodUnit}`
+              )}\n\n`,
             ],
             [
               'Tilaussopimusta koskevat ehdot',
