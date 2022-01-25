@@ -2,6 +2,7 @@ import axios from 'axios'
 import {
   GeneralSendEmailFailure,
   SendOrderConfirmationEmailFailure,
+  SendSubscriptionContractEmailFailure,
   SendSubscriptionPaymentFailedEmailToCustomer,
 } from '../../errors'
 import { createEmailTemplate } from '../create/service'
@@ -95,7 +96,7 @@ export const sendEmail = async (p: {
       case 'subscriptionPaymentFailed':
         throw new SendSubscriptionPaymentFailedEmailToCustomer(e)
       case 'subscriptionContract':
-        throw new SendSubscriptionPaymentFailedEmailToCustomer(e)
+        throw new SendSubscriptionContractEmailFailure(e)
       default:
         throw new GeneralSendEmailFailure(e)
     }

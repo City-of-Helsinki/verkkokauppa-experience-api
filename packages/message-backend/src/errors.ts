@@ -30,7 +30,7 @@ export class SendSubscriptionPaymentFailedEmailToCustomer extends ExperienceFail
   }
 }
 
-export class SendSubscriptionContractEmailToCustomer extends ExperienceFailure {
+export class SendSubscriptionContractEmailFailure extends ExperienceFailure {
   constructor(source: Error) {
     super({
       code: 'failed-to-send-subscription-contract-email',
