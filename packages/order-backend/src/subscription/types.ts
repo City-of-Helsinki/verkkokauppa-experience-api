@@ -1,4 +1,5 @@
 export interface Subscription {
+  subscriptionId: string
   status: string
   namespace: string
   merchantName: string
@@ -11,6 +12,7 @@ export interface Subscription {
   user: string
   startDate: string
   endDate: string
+  renewalDate: string
   billingStartDate: string
   periodUnit: string
   periodFrequency: number
@@ -21,6 +23,6 @@ export interface Subscription {
   quantity: number
   priceNet: string
   priceVat: string
-  priceTotal: string
-  orderId?: string
+  priceGross: string
+  orderId: string
 }

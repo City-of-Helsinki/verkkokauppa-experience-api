@@ -3,11 +3,12 @@ import type { EmailTemplateDto, HbsTemplateFiles } from './types'
 import * as Handlebars from 'handlebars'
 import i18next from './../../i18n/init'
 import type { SUPPORTED_LANGUAGES } from '../../i18n/types'
+import { parseTimestamp } from '@verkkokauppa/core'
 
 const fs = require('fs')
 const path = require('path')
 
-export const createOrderConfirmationEmailTemplate = async <T>(params: {
+export const createEmailTemplate = async <T>(params: {
   fileName: HbsTemplateFiles
   templateParams: T
 }): Promise<EmailTemplateDto> => {
@@ -118,18 +119,7 @@ export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
       )
     }
 
-    // Example date string 20210901-05184
-    const year = date.substring(0, 4)
-    // Minus one because js month starts at 0 not 01.
-    const month = date.substring(4, 6) - 1
-    const day = date.substring(6, 8)
-    const hours = date.substring(9, 11)
-    const minutes = date.substring(11, 13)
-    const seconds = date.substring(13, 15)
-
-    const dateObj = new Date(
-      Date.UTC(year, month, day, hours, minutes, seconds)
-    )
+    const dateObj = parseTimestamp(date)
 
     return (
       dateObj.toLocaleDateString('de-DE', {

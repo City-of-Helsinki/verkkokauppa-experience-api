@@ -171,3 +171,10 @@ export const validateApiKey = async (p: {
     })
   }
 }
+
+export const validateAdminApiKey = async (p: {
+  apiKey: string
+}): Promise<void> => {
+  const { apiKey } = p
+  return validateApiKey({ namespace: 'admin', apiKey })
+}

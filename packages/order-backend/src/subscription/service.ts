@@ -84,6 +84,30 @@ export const getSubscription = async (p: {
   }
 }
 
+export const getSubscriptionAdmin = async (p: {
+  id: string
+}): Promise<Subscription> => {
+  const { id } = p
+  checkBackendUrlExists()
+
+  const url = `${process.env.ORDER_BACKEND_URL}/subscription-admin/get`
+  try {
+    const result = await axios.get<Subscription>(url, {
+      params: { id },
+    })
+    return result.data
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new SubscriptionNotFoundError(id)
+    }
+    throw new ExperienceFailure({
+      code: 'failed-to-get-subscription',
+      message: `Failed to get subscription ${id}`,
+      source: e,
+    })
+  }
+}
+
 export const searchActiveSubscriptions = async (p: {
   activeAtDate: string
   customerEmail: string

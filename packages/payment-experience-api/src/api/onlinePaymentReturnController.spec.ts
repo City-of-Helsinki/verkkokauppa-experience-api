@@ -108,7 +108,7 @@ describe('Test receipt send', () => {
       expect(data.header).toEqual(
         'Tilausvahvistus ja kuitti / Order confirmation and receipt / Beställningsbekräftelse och kvitto'
       )
-      expect(data.orderId).toEqual('145d8829-07b7-4b03-ab0e-24063958ab9b')
+      expect(data.id).toEqual('145d8829-07b7-4b03-ab0e-24063958ab9b')
       expect(data.receiver).toEqual('essi.esimerkki@gmail.com')
       if (url.includes(`message/send/email`)) {
         return Promise.resolve({ data: messageMock })

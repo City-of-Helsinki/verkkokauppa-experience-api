@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { SendOrderConfirmationEmailFailure } from '../../errors'
-import { createOrderConfirmationEmailTemplate } from '../create/service'
+import { createEmailTemplate } from '../create/service'
 import type {
   HbsTemplateFiles,
   Order,
@@ -51,34 +51,52 @@ export function parseOrderItemMetaVisibilityAndOrdinal(
   return [...metaItemsOrdinal, ...metaItemsNoOrdinal]
 }
 
+export const sendEmail = async (p: {
+  id: string
+  sender?: string
+  receiver: string
+  header: string
+  body: string
+  attachments: { [filename: string]: string }
+}): Promise<void> => {
+  const { id, sender, receiver, header, body, attachments } = p
+  isMessageBackendUrlSet()
+
+  const url = `${process.env.MESSAGE_BACKEND_URL}/message/send/email`
+  try {
+    const res = await axios.post(url, {
+      id,
+      sender,
+      receiver,
+      header,
+      body,
+      attachments,
+    })
+    return res.data
+  } catch (e) {
+    throw new SendOrderConfirmationEmailFailure(e)
+  }
+}
+
 export const sendEmailToCustomer = async (p: {
   order: Order
   fileName: HbsTemplateFiles
   sendTo: string
   emailHeader: string
 }): Promise<any> => {
-  isMessageBackendUrlSet()
   const { order, fileName } = p
   // Reorder metas to show in correct order using ordinal etc.
   parseOrderMetas(order)
-  const created = await createOrderConfirmationEmailTemplate<OrderConfirmationEmailParameters>(
-    {
-      fileName: fileName,
-      templateParams: { order: order },
-    }
-  )
+  const created = await createEmailTemplate<OrderConfirmationEmailParameters>({
+    fileName: fileName,
+    templateParams: { order: order },
+  })
 
-  const url = `${process.env.MESSAGE_BACKEND_URL}/message/send/email`
-
-  try {
-    const result = await axios.post<any>(url, {
-      orderId: order.orderId,
-      receiver: p.sendTo,
-      header: p.emailHeader,
-      body: created.template,
-    })
-    return result.data
-  } catch (e) {
-    throw new SendOrderConfirmationEmailFailure(e)
-  }
+  return sendEmail({
+    id: order.orderId,
+    receiver: p.sendTo,
+    header: p.emailHeader,
+    body: created.template,
+    attachments: {},
+  })
 }
