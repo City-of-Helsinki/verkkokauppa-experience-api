@@ -7,16 +7,21 @@
   "scripts": {
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
     "prepack": "yarn build",
-    "build": "yarn clean && yarn compile && yarn copy:email-templates",
+    "build": "yarn clean && yarn compile && yarn copy:email-templates && yarn copy:fonts",
     "compile": "tsc --build && cp \"./package.json\" ./dist/",
     "lint": "eslint \"./src/**/*.{ts,tsx}\" --max-warnings=0",
-    "copy:email-templates": "cp -R ./src/email/create/templates ./dist/email/create/"
+    "copy:email-templates": "cp -R ./src/email/create/templates ./dist/email/create/",
+    "copy:fonts": "cp -R ./src/pdf/fonts ./dist/pdf/"
   },
   "dependencies": {
     "@verkkokauppa/core": "^1.0.0",
     "axios": "^0.21.1",
     "handlebars": "^4.7.7",
     "i18next": "^20.4.0",
+    "pdfmake": "^0.2.4",
     "qs": "^6.10.1"
+  },
+  "devDependencies": {
+    "@types/pdfmake": "^0.1.19"
   }
 }
