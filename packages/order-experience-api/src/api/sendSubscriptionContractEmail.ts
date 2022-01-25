@@ -14,7 +14,7 @@ import { getSubscriptionAdmin } from '@verkkokauppa/order-backend'
 import { getPaymentForOrder } from '@verkkokauppa/payment-backend'
 import {
   getMerchantDetailsForOrder,
-  validateApiKey,
+  validateAdminApiKey,
 } from '@verkkokauppa/configuration-backend'
 
 const requestSchema = yup.object().shape({
@@ -39,7 +39,7 @@ export class SendSubscriptionContractEmail extends AbstractController<
       params: { id },
       headers: { 'api-key': apiKey },
     } = req
-    await validateApiKey({ apiKey, namespace: 'admin' })
+    await validateAdminApiKey({ apiKey })
     // Assumption: subscription is currently on its first order
     const subscription = await getSubscriptionAdmin({ id })
     const [payment, merchant] = await Promise.all([
