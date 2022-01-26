@@ -1,6 +1,8 @@
 export interface OrderItemRequest {
   productId: string
   productName: string
+  productLabel?: string
+  productDescription?: string
   quantity: number
   unit: string
   rowPriceNet: string

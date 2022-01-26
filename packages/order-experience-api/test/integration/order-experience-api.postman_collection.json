@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "86c4b291-5300-4dce-92e5-381c454c870c",
-		"name": "order-experience-api Copy",
+		"_postman_id": "01a21f6b-7818-40b7-9b52-4f8d84bb495c",
+		"name": "order-experience-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -703,11 +703,19 @@
 							"    pm.expect(data.items).to.not.empty",
 							"});",
 							"pm.test(\"Response item has order ID\", function () {",
-							"    var data = pm.response.json();",
 							"    pm.expect(data.items[0].orderId).to.eq(pm.environment.get(\"orderWithItems\"))",
 							"});",
 							"pm.test(\"Response item has correct product ID\", function () {",
 							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
+							"});",
+							"pm.test(\"Response item has correct product name\", function () {",
+							"    pm.expect(data.items[0].productName).to.eql(\"Product Name\");",
+							"});",
+							"pm.test(\"Response item has correct product label\", function () {",
+							"    pm.expect(data.items[0].productLabel).to.eql(\"Product Label\");",
+							"});",
+							"pm.test(\"Response item has correct product description\", function () {",
+							"    pm.expect(data.items[0].productDescription).to.eql(\"Product Description\");",
 							"});",
 							"pm.test(\"Response item has correct quantity\", function () {",
 							"    pm.expect(data.items[0].quantity).to.eql(pm.variables.get('qty'));",
@@ -782,7 +790,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{orderWithItemsUser}}\",\n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{orderWithItemsUser}}\",\n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"productLabel\": \"Product Label\",\n            \"productDescription\": \"Product Description\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -860,6 +868,15 @@
 							"});",
 							"pm.test(\"Response item has correct product ID\", function () {",
 							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
+							"});",
+							"pm.test(\"Response item has correct product name\", function () {",
+							"    pm.expect(data.items[0].productName).to.eql(\"Product Name\");",
+							"});",
+							"pm.test(\"Response item has correct product label\", function () {",
+							"    pm.expect(data.items[0].productLabel).to.eql(\"Product Label\");",
+							"});",
+							"pm.test(\"Response item has correct product description\", function () {",
+							"    pm.expect(data.items[0].productDescription).to.eql(\"Product Description\");",
 							"});",
 							"pm.test(\"Response item has correct quantity\", function () {",
 							"    pm.expect(data.items[0].quantity).to.eql(pm.variables.get(\"qty\"));",
@@ -1101,6 +1118,16 @@
 							"pm.test(\"Response item has correct product ID\", function () {",
 							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
 							"});",
+							"pm.test(\"Response item has correct product name\", function () {",
+							"    pm.expect(data.items[0].productName).to.eql(\"Product Name\");",
+							"});",
+							"pm.test(\"Response item has correct product label\", function () {",
+							"    pm.expect(data.items[0].productLabel).to.eql(\"Product Label\");",
+							"});",
+							"pm.test(\"Response item has correct product description\", function () {",
+							"    pm.expect(data.items[0].productDescription).to.eql(\"Product Description\");",
+							"});",
+							"pm.tes",
 							"pm.test(\"Response item has correct quantity\", function () {",
 							"    pm.expect(data.items[0].quantity).to.eql(pm.variables.get(\"qty\"));",
 							"});",
@@ -1208,7 +1235,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{orderWithItemsAndMetaUser}}\", \n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                },\n                {\n                    \"key\": \"anotherMeta\",\n                    \"value\": \"valueForMeta\",\n                    \"label\": \"Visible in Checkout\",\n                    \"visibleInCheckout\": true,\n                    \"ordinal\": \"2\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{orderWithItemsAndMetaUser}}\", \n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"productLabel\": \"Product Label\",\n            \"productDescription\": \"ProductDescription\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                },\n                {\n                    \"key\": \"anotherMeta\",\n                    \"value\": \"valueForMeta\",\n                    \"label\": \"Visible in Checkout\",\n                    \"visibleInCheckout\": true,\n                    \"ordinal\": \"2\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1554,6 +1581,16 @@
 							"pm.test(\"Response item has correct product ID\", function () {",
 							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
 							"});",
+							"pm.test(\"Response item has correct product name\", function () {",
+							"    pm.expect(data.items[0].productName).to.eql(\"Product Name\");",
+							"});",
+							"pm.test(\"Response item has correct product label\", function () {",
+							"    pm.expect(data.items[0].productLabel).to.eql(\"Product Label\");",
+							"});",
+							"pm.test(\"Response item has correct product description\", function () {",
+							"    pm.expect(data.items[0].productDescription).to.eql(\"Product Description\");",
+							"});",
+							"pm.tes",
 							"pm.test(\"Response item has correct quantity\", function () {",
 							"    pm.expect(data.items[0].quantity).to.eql(pm.variables.get('qty'));",
 							"});",
@@ -1675,7 +1712,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{orderWithRecurringItemAndMetaUser}}\", \n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"startDate\": \"2021-10-19T10:00:00\",\n            \"billingStartDate\":\"2021-11-19T10:00:00\",\n            \"periodFrequency\":\"1\",\n            \"periodUnit\": \"monthly\",\n            \"periodCount\": null,\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                },\n                {\n                    \"key\": \"anotherMeta\",\n                    \"value\": \"valueForMeta\",\n                    \"label\": \"Visible in Checkout\",\n                    \"visibleInCheckout\": true,\n                    \"ordinal\": \"2\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{orderWithRecurringItemAndMetaUser}}\", \n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"productLabel\": \"Product Label\",\n            \"productDescription\": \"Product Description\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"startDate\": \"2021-10-19T10:00:00\",\n            \"billingStartDate\":\"2021-11-19T10:00:00\",\n            \"periodFrequency\":\"1\",\n            \"periodUnit\": \"monthly\",\n            \"periodCount\": null,\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                },\n                {\n                    \"key\": \"anotherMeta\",\n                    \"value\": \"valueForMeta\",\n                    \"label\": \"Visible in Checkout\",\n                    \"visibleInCheckout\": true,\n                    \"ordinal\": \"2\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1756,6 +1793,16 @@
 							"pm.test(\"Response item has correct product ID\", function () {",
 							"    pm.expect(data.items[0].productId).to.eql(pm.variables.get(\"productFound\"));",
 							"});",
+							"pm.test(\"Response item has correct product name\", function () {",
+							"    pm.expect(data.items[0].productName).to.eql(\"Product Name\");",
+							"});",
+							"pm.test(\"Response item has correct product label\", function () {",
+							"    pm.expect(data.items[0].productLabel).to.eql(\"Product Label\");",
+							"});",
+							"pm.test(\"Response item has correct product description\", function () {",
+							"    pm.expect(data.items[0].productDescription).to.eql(\"Product Description\");",
+							"});",
+							"pm.tes",
 							"pm.test(\"Response item has correct quantity\", function () {",
 							"    pm.expect(data.items[0].quantity).to.eql(pm.variables.get('qty'));",
 							"});",
@@ -1880,7 +1927,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{orderWithRecurringItemAndMetaUser}}\", \n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"startDate\": \"2021-10-19T10:00:00\",\n            \"billingStartDate\":\"2021-11-19T10:00:00\",\n            \"periodFrequency\":\"1\",\n            \"periodUnit\": \"monthly\",\n            \"periodCount\": 1,\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                },\n                {\n                    \"key\": \"anotherMeta\",\n                    \"value\": \"valueForMeta\",\n                    \"label\": \"Visible in Checkout\",\n                    \"visibleInCheckout\": true,\n                    \"ordinal\": \"2\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
+					"raw": "{\n    \"namespace\": \"{{namespace}}\",\n    \"user\": \"{{orderWithRecurringItemAndMetaUser}}\", \n    \"priceNet\": \"{{rowPriceNet}}\",\n    \"priceVat\": \"{{rowPriceVat}}\",\n    \"priceTotal\": \"{{rowPriceTotal}}\",\n    \"items\": [\n        {\n            \"productId\": \"{{productFound}}\",\n            \"quantity\": {{qty}},\n            \"productName\": \"Product Name\",\n            \"productLabel\": \"Product Label\",\n            \"productDescription\": \"Product Description\",\n            \"unit\": \"pcs\",\n            \"rowPriceNet\": \"{{rowPriceNet}}\",\n            \"rowPriceVat\": \"{{rowPriceVat}}\",\n            \"rowPriceTotal\": \"{{rowPriceTotal}}\",\n            \"startDate\": \"2021-10-19T10:00:00\",\n            \"billingStartDate\":\"2021-11-19T10:00:00\",\n            \"periodFrequency\":\"1\",\n            \"periodUnit\": \"monthly\",\n            \"periodCount\": 1,\n            \"vatPercentage\": \"24\",\n            \"priceNet\": \"{{priceNet}}\",\n            \"priceVat\": \"{{priceVat}}\",\n            \"priceGross\": \"{{priceGross}}\",\n            \"meta\": [\n                {\n                    \"key\": \"licensePlateNumber\",\n                    \"value\": \"KYV-123\",\n                    \"label\": \"Rekisterinumero\",\n                    \"visibleInCheckout\": false,\n                    \"ordinal\": \"1\"\n                },\n                {\n                    \"key\": \"anotherMeta\",\n                    \"value\": \"valueForMeta\",\n                    \"label\": \"Visible in Checkout\",\n                    \"visibleInCheckout\": true,\n                    \"ordinal\": \"2\"\n                }\n            ]\n        }\n    ],\n    \"customer\": {\n        \"firstName\": \"{{testCustomerFirstName}}\",\n        \"lastName\": \"{{testCustomerLastName}}\",\n        \"email\": \"{{testCustomerEmail}}\",\n        \"phone\": \"{{testCustomerPhone}}\"\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
