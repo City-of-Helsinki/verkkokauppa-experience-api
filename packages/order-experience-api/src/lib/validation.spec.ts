@@ -16,6 +16,8 @@ describe('Test Order Validations', () => {
       {
         productId: '123',
         productName: 'Name',
+        productLabel: 'Product Label',
+        productDescription: 'Product Description',
         quantity: 2,
         unit: 'pcs',
         rowPriceNet: '100',

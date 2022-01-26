@@ -17,6 +17,8 @@ const orderMock = {
     {
       productId: 'pid1',
       productName: 'n1',
+      productLabel: 'pl1',
+      productDescription: 'pd1',
       quantity: 1,
       unit: 'unit1',
       rowPriceNet: '50',
@@ -39,6 +41,8 @@ const orderMock = {
     {
       productId: 'pid2',
       productName: 'n2',
+      productLabel: 'pl2',
+      productDescription: 'pd2',
       quantity: 2,
       unit: 'unit2',
       rowPriceNet: '200',

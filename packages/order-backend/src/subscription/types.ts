@@ -20,6 +20,8 @@ export interface Subscription {
   productId: string
   orderItemId: string
   productName: string
+  productLabel?: string
+  productDescription?: string
   quantity: number
   priceNet: string
   priceVat: string
