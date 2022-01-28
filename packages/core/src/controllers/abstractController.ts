@@ -22,7 +22,7 @@ export abstract class AbstractController<
       return req
     }
     try {
-      return this.requestSchema.validate(req, { abortEarly: false })
+      return await this.requestSchema.validate(req, { abortEarly: false })
     } catch (e) {
       throw new RequestValidationError(e.errors.join('\n'))
     }
