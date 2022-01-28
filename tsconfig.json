@@ -38,6 +38,9 @@
             ],
             "@verkkokauppa/message-experience-api/*": [
                 "message-experience-api/src/*"
+            ],
+            "@verkkokauppa/auth-helsinki-profile/*": [
+                "auth-helsinki-profile/src/*"
             ]
         }
     },
