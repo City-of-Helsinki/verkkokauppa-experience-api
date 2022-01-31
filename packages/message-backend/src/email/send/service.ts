@@ -1,11 +1,20 @@
 import axios from 'axios'
-import { SendOrderConfirmationEmailFailure } from '../../errors'
+import {
+  GeneralSendEmailFailure,
+  SendOrderConfirmationEmailFailure,
+  SendSubscriptionContractEmailFailure,
+  SendSubscriptionPaymentFailedEmailToCustomer,
+} from '../../errors'
 import { createEmailTemplate } from '../create/service'
+
 import type {
   HbsTemplateFiles,
   Order,
   OrderConfirmationEmailParameters,
   OrderItemMeta,
+  Subscription,
+  SubscriptionItemMeta,
+  SubscriptionPaymentFailedEmailParameters,
 } from '../create/types'
 
 function isMessageBackendUrlSet() {
@@ -16,21 +25,27 @@ function isMessageBackendUrlSet() {
 
 export function parseOrderMetas(order: Order) {
   order.items.forEach((orderItem) => {
-    orderItem.meta = parseOrderItemMetaVisibilityAndOrdinal(
+    orderItem.meta = parseItemMetaVisibilityAndOrdinal(
       orderItem.meta || undefined
     )
   })
 }
 
-export function parseOrderItemMetaVisibilityAndOrdinal(
-  metaItem: OrderItemMeta[] | undefined
+export function parseSubscriptionMetas(subscription: Subscription) {
+  subscription.meta = parseItemMetaVisibilityAndOrdinal(
+    subscription.meta || undefined
+  )
+}
+
+export function parseItemMetaVisibilityAndOrdinal(
+  metaItem: (SubscriptionItemMeta[] & OrderItemMeta[]) | undefined
 ) {
   if (!Array.isArray(metaItem)) {
     return []
   }
 
-  let metaItemsOrdinal: OrderItemMeta[] = []
-  let metaItemsNoOrdinal: OrderItemMeta[] = []
+  let metaItemsOrdinal: SubscriptionItemMeta[] & OrderItemMeta[] = []
+  let metaItemsNoOrdinal: SubscriptionItemMeta[] & OrderItemMeta[] = []
 
   metaItem
     .filter(
@@ -58,6 +73,7 @@ export const sendEmail = async (p: {
   header: string
   body: string
   attachments: { [filename: string]: string }
+  emailType: HbsTemplateFiles
 }): Promise<void> => {
   const { id, sender, receiver, header, body, attachments } = p
   isMessageBackendUrlSet()
@@ -74,21 +90,30 @@ export const sendEmail = async (p: {
     })
     return res.data
   } catch (e) {
-    throw new SendOrderConfirmationEmailFailure(e)
+    switch (p.emailType) {
+      case 'orderConfirmation':
+        throw new SendOrderConfirmationEmailFailure(e)
+      case 'subscriptionPaymentFailed':
+        throw new SendSubscriptionPaymentFailedEmailToCustomer(e)
+      case 'subscriptionContract':
+        throw new SendSubscriptionContractEmailFailure(e)
+      default:
+        throw new GeneralSendEmailFailure(e)
+    }
   }
 }
 
-export const sendEmailToCustomer = async (p: {
+export const sendOrderConfirmationEmailToCustomer = async (p: {
   order: Order
-  fileName: HbsTemplateFiles
   sendTo: string
   emailHeader: string
 }): Promise<any> => {
-  const { order, fileName } = p
+  const emailType = 'orderConfirmation'
+  const { order } = p
   // Reorder metas to show in correct order using ordinal etc.
   parseOrderMetas(order)
   const created = await createEmailTemplate<OrderConfirmationEmailParameters>({
-    fileName: fileName,
+    fileName: emailType,
     templateParams: { order: order },
   })
 
@@ -98,5 +123,35 @@ export const sendEmailToCustomer = async (p: {
     header: p.emailHeader,
     body: created.template,
     attachments: {},
+    emailType: emailType,
+  })
+}
+
+export const sendSubscriptionPaymentFailedEmailToCustomer = async (p: {
+  order: Order
+  subscription: Subscription
+  sendTo: string
+  emailHeader: string
+}): Promise<any> => {
+  const emailType = 'subscriptionPaymentFailed'
+  const { order, subscription } = p
+  // Reorder metas to show in correct order using ordinal etc.
+  parseOrderMetas(order)
+  parseSubscriptionMetas(subscription)
+
+  const created = await createEmailTemplate<SubscriptionPaymentFailedEmailParameters>(
+    {
+      fileName: emailType,
+      templateParams: { order: order, subscription: subscription },
+    }
+  )
+
+  return sendEmail({
+    id: order.orderId,
+    receiver: p.sendTo,
+    header: p.emailHeader,
+    body: created.template,
+    attachments: {},
+    emailType: emailType,
   })
 }

@@ -23,5 +23,22 @@
       "paymentMethod": "Payment method",
       "date": "Date"
     }
+  },
+  "subscriptionPaymentFailed": {
+    "clock": "Tilausaika",
+    "order": {
+      "mainHeader": "Failed to charge your payment card",
+      "header": "Service: "
+    },
+    "information": {
+      "header": "Your order: ",
+      "alv": "Incl. VAT",
+      "paymentFailedText": "Your order could not be charged. This could be because your payment card has expired, your card is not valid for online payments or you have insufficient funds. Check your card’s settings with your bank without delay.",
+      "cardUpdateText": "To update your payment card details, please visit:",
+      "cardLinkedText": "A new attempt will be made to charge the payment card ",
+      "cardLinkedRetryPaymentText": "linked to your subscription within a few days. If the new attempt to charge the card is unsuccessful, your right to use the subscribed service will expire on ",
+      "linkText": "Link",
+      "cityText": "City of Helsinki"
+    }
   }
 }

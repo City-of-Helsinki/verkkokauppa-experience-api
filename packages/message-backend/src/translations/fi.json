@@ -33,5 +33,34 @@
     "abbr_weekly": "vk",
     "abbr_monthly": "kk",
     "abbr_yearly": "v"
+  },
+  "subscriptionPaymentFailed": {
+    "clock": "Tilausaika",
+    "order": {
+      "mainHeader": "Maksukortin veloitus epäonnistui",
+      "header": "Palvelu: ",
+      "headerTwo": "Tilauksesi: "
+    },
+    "merchant": {
+      "header": "Palvelu:",
+      "textOne": "Mikäli sinulla on tilaukseen liittyen kysymyksiä kohdistathan ne suoraan myyjälle",
+      "textTwo": "Linkki",
+      "headerTwo": "Myyjän tiedot",
+      "businessId": "Y-tunnus"
+    },
+    "customer": {
+      "header": "Tilaajan tiedot"
+    },
+    "information": {
+      "header": "Tilauksesi: ",
+      "alv": "Sis. alv",
+      "paymentFailedText": "Tilauksesi veloitus epäonnistui. Syynä voi olla esimerkiksi maksukortin vanhentuminen, internetkäytön esto tai riittämätön kate. Tarkista korttisi asetukset oman pankkisi kautta viipymättä.",
+      "cardUpdateText": "Voit halutessasi päivittää maksukorttisi tiedot osoitteessa:",
+      "cardLinkedText": "Tilaukseen liittämäsi maksukortin ",
+      "cardLinkedRetryPaymentText": "veloitusta yritetään uudelleen muutaman päivän sisällä. Mikäli veloituksen uusintayritys ei onnistu, tilatun palvelun käyttöoikeus päättyy",
+      "date": "Päivämäärä",
+      "linkText": "Linkki",
+      "cityText": "Helsingin kaupunki"
+    }
   }
 }
