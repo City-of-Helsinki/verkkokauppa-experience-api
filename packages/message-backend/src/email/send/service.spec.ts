@@ -1,4 +1,4 @@
-import { parseOrderItemMetaVisibilityAndOrdinal } from './service'
+import { parseItemMetaVisibilityAndOrdinal } from './service'
 import type { OrderItemMeta } from '../create/types'
 
 describe('Test service.ts functions', () => {
@@ -53,7 +53,7 @@ describe('Test service.ts functions', () => {
       ] as OrderItemMeta[],
     }
 
-    order.meta = parseOrderItemMetaVisibilityAndOrdinal(order.meta || [])
+    order.meta = parseItemMetaVisibilityAndOrdinal(order.meta || [])
 
     expect(order.meta[0]).toEqual({
       orderItemMetaId: 'ec627fb7-d557-4b7b-9c1c-61434322c109',

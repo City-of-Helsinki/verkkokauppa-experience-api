@@ -23,5 +23,22 @@
       "paymentMethod": "Betalningssätt",
       "date": "Datum"
     }
+  },
+  "subscriptionPaymentFailed": {
+    "clock": "Tilausaika",
+    "order": {
+      "mainHeader": "Debiteringen av betalkortet misslyckades.",
+      "header": "Tjänst: "
+    },
+    "information": {
+      "header": "Din beställning: ",
+      "alv": "Inkl. moms",
+      "paymentFailedText": "Debitering av beställningen misslyckades. Orsaken till att debiteringen misslyckades kan vara till exempel att betalkortets giltighetstid har gått ut, användning av kortet för webbetalningar inte är tillåten eller täckningen på kortet är otillräcklig. Kontrollera inställningarna för ditt kort snarast möjligt med din egen bank.",
+      "cardUpdateText": "Du kan uppdatera dina betalkortsuppgifter på: ",
+      "cardLinkedText": "Ett nytt debiteringsförsök på betalkortet ",
+      "cardLinkedRetryPaymentText": " som anslutits till din beställning kommer att göras inom några dagar. Om det nya debiteringsförsöket inte lyckas, upphör rätten att använda den beställda tjänsten ",
+      "linkText": "Länk",
+      "cityText": "Helsingfors stad"
+    }
   }
 }

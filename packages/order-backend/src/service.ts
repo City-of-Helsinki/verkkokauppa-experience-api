@@ -281,6 +281,7 @@ const transFormBackendOrder = (p: OrderWithItemsBackendResponse): Order => {
     checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}`,
     receiptUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}/receipt?user=${user}`,
     loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${orderId}`,
+    updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}/update-card?user=${user}`,
   }
   if (priceNet && priceVat && priceTotal) {
     data = {

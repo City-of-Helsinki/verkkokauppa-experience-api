@@ -138,6 +138,64 @@ export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
     )
   })
 
+  Handlebars.registerHelper('DateTime', function (date) {
+    const dateObj = new Date(date)
+
+    return (
+      dateObj.toLocaleDateString('de-DE', {
+        timeZone: 'Europe/Helsinki',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      }) +
+      ' ' +
+      dateObj.toLocaleTimeString('de-DE', {
+        timeZone: 'Europe/Helsinki',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      })
+    )
+  })
+
+  Handlebars.registerHelper('ifCond', function (v1, operator, v2, options) {
+    switch (operator) {
+      case '==':
+        // @ts-ignore
+        return v1 == v2 ? options.fn(this) : options.inverse(this)
+      case '===':
+        // @ts-ignore
+        return v1 === v2 ? options.fn(this) : options.inverse(this)
+      case '!=':
+        // @ts-ignore
+        return v1 != v2 ? options.fn(this) : options.inverse(this)
+      case '!==':
+        // @ts-ignore
+        return v1 !== v2 ? options.fn(this) : options.inverse(this)
+      case '<':
+        // @ts-ignore
+        return v1 < v2 ? options.fn(this) : options.inverse(this)
+      case '<=':
+        // @ts-ignore
+        return v1 <= v2 ? options.fn(this) : options.inverse(this)
+      case '>':
+        // @ts-ignore
+        return v1 > v2 ? options.fn(this) : options.inverse(this)
+      case '>=':
+        // @ts-ignore
+        return v1 >= v2 ? options.fn(this) : options.inverse(this)
+      case '&&':
+        // @ts-ignore
+        return v1 && v2 ? options.fn(this) : options.inverse(this)
+      case '||':
+        // @ts-ignore
+        return v1 || v2 ? options.fn(this) : options.inverse(this)
+      default:
+        // @ts-ignore
+        return options.inverse(this)
+    }
+  })
+
   const partialsDir = `${__dirname}${path.sep}templates${path.sep}partials`
 
   const filenames = fs.readdirSync(partialsDir)

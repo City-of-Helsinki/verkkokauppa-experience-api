@@ -20,6 +20,8 @@ const orderMock = {
   createdAt: '1619157868',
   type: 'order',
   status: 'draft',
+  customer: undefined,
+  subscriptionId: undefined,
 }
 
 const orderBackendCustomerMock = {
@@ -60,9 +62,10 @@ describe('Test Create Order', () => {
     expect(result).toEqual({
       ...orderMock,
       items: [],
-      checkoutUrl: `https://checkout.dev.hel/${mockData.order.orderId}`,
-      receiptUrl: `https://checkout.dev.hel/${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
-      loggedInCheckoutUrl: `https://checkout.dev.hel/profile/${mockData.order.orderId}`,
+      updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
+      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
+      receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
+      loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
     })
   })
   it('Should create order with items correctly with backend url set', async () => {
@@ -129,9 +132,10 @@ describe('Test Create Order', () => {
       priceVat: '24',
       priceTotal: '124',
       items: mockData.items,
-      checkoutUrl: `https://checkout.dev.hel/${mockData.order.orderId}`,
-      receiptUrl: `https://checkout.dev.hel/${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
-      loggedInCheckoutUrl: `https://checkout.dev.hel/profile/${mockData.order.orderId}`,
+      updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
+      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
+      receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
+      loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
     })
   })
 })
@@ -145,6 +149,7 @@ describe('Test Cancel Order', () => {
   })
   it('Should cancel order correctly with backend url set', async () => {
     process.env.ORDER_BACKEND_URL = 'test.dev.hel'
+    process.env.CHECKOUT_BASE_URL = 'https://checkout.dev.hel/'
     const mockData = {
       order: {
         ...orderMock,
@@ -177,9 +182,10 @@ describe('Test Cancel Order', () => {
       ...orderCustomerMock,
       status: 'cancelled',
       items: mockData.items,
+      updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
       checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
-      receiptUrl: `https://checkout.dev.hel/${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
-      loggedInCheckoutUrl: `https://checkout.dev.hel/profile/${mockData.order.orderId}`,
+      receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
+      loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
     })
   })
 })
@@ -197,6 +203,7 @@ describe('Test Add items to order', () => {
   })
   it('Should add items correctly to order with backend url set', async () => {
     process.env.ORDER_BACKEND_URL = 'test.dev.hel'
+    process.env.CHECKOUT_BASE_URL = 'https://checkout.dev.hel/'
     const mockData = {
       order: {
         ...orderMock,
@@ -248,9 +255,10 @@ describe('Test Add items to order', () => {
       ...orderMock,
       ...orderCustomerMock,
       items: mockData.items,
+      updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
       checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
-      receiptUrl: `https://checkout.dev.hel/${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
-      loggedInCheckoutUrl: `https://checkout.dev.hel/profile/${mockData.order.orderId}`,
+      receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
+      loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
     })
   })
 })
@@ -268,6 +276,7 @@ describe('Test Set Customer To Order', () => {
   })
   it('Should set customer correctly with backend url set for order without items', async () => {
     process.env.ORDER_BACKEND_URL = 'test.dev.hel'
+    process.env.CHECKOUT_BASE_URL = 'https://checkout.dev.hel/'
     const mockData = {
       order: {
         ...orderMock,
@@ -285,13 +294,15 @@ describe('Test Set Customer To Order', () => {
       ...orderMock,
       ...orderCustomerMock,
       items: [],
+      updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
       checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
-      receiptUrl: `https://checkout.dev.hel/${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
-      loggedInCheckoutUrl: `https://checkout.dev.hel/profile/${mockData.order.orderId}`,
+      receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
+      loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
     })
   })
   it('Should set customer correctly with backend url set for order with items', async () => {
     process.env.ORDER_BACKEND_URL = 'test.dev.hel'
+    process.env.CHECKOUT_BASE_URL = 'https://checkout.dev.hel/'
     const mockData = {
       order: {
         ...orderMock,
@@ -321,9 +332,10 @@ describe('Test Set Customer To Order', () => {
       ...orderMock,
       ...orderCustomerMock,
       items: mockData.items,
+      updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
       checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
-      receiptUrl: `https://checkout.dev.hel/${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
-      loggedInCheckoutUrl: `https://checkout.dev.hel/profile/${mockData.order.orderId}`,
+      receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
+      loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
     })
   })
 })
@@ -337,6 +349,7 @@ describe('Test Get Order', () => {
   })
   it('Should get order correctly without items and with backend url set', async () => {
     process.env.ORDER_BACKEND_URL = 'test.dev.hel'
+    process.env.CHECKOUT_BASE_URL = 'https://checkout.dev.hel/'
     const mockData = {
       order: {
         ...orderMock,
@@ -353,13 +366,15 @@ describe('Test Get Order', () => {
       ...orderMock,
       ...orderCustomerMock,
       items: [],
+      updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
       checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
-      receiptUrl: `https://checkout.dev.hel/${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
-      loggedInCheckoutUrl: `https://checkout.dev.hel/profile/${mockData.order.orderId}`,
+      receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
+      loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
     })
   })
   it('Should get order with items correctly with backend url set', async () => {
     process.env.ORDER_BACKEND_URL = 'test.dev.hel'
+    process.env.CHECKOUT_BASE_URL = 'https://checkout.dev.hel/'
     const mockData = {
       order: {
         ...orderMock,
@@ -390,13 +405,15 @@ describe('Test Get Order', () => {
       ...orderMock,
       ...orderCustomerMock,
       items: mockData.items,
+      updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
       checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
-      receiptUrl: `https://checkout.dev.hel/${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
-      loggedInCheckoutUrl: `https://checkout.dev.hel/profile/${mockData.order.orderId}`,
+      receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
+      loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
     })
   })
   it('Should get subscription type order with items correctly with backend url set', async () => {
     process.env.ORDER_BACKEND_URL = 'test.dev.hel'
+    process.env.CHECKOUT_BASE_URL = 'https://checkout.dev.hel/'
     const mockData = {
       order: {
         ...orderMock,
@@ -431,9 +448,10 @@ describe('Test Get Order', () => {
       type: 'subscription',
       items: mockData.items,
       subscriptionId: mockData.order.subscriptionId,
+      updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
       checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
-      receiptUrl: `https://checkout.dev.hel/${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
-      loggedInCheckoutUrl: `https://checkout.dev.hel/profile/${mockData.order.orderId}`,
+      receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
+      loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
     })
   })
 })
@@ -479,9 +497,10 @@ describe('Test Calculate Totals for Order', () => {
       priceNet: '0',
       priceVat: '0',
       priceTotal: '0',
+      updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
       checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
-      receiptUrl: `https://checkout.dev.hel/${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
-      loggedInCheckoutUrl: `https://checkout.dev.hel/profile/${mockData.order.orderId}`,
+      receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
+      loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
     })
   })
   it('Should set totals for order with items correctly with backend url set', async () => {
@@ -526,9 +545,10 @@ describe('Test Calculate Totals for Order', () => {
       priceNet: '100',
       priceVat: '24',
       priceTotal: '124',
+      updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
       checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
-      receiptUrl: `https://checkout.dev.hel/${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
-      loggedInCheckoutUrl: `https://checkout.dev.hel/profile/${mockData.order.orderId}`,
+      receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
+      loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
     })
   })
 })
