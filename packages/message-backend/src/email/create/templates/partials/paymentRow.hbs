@@ -5,7 +5,7 @@
             <tr>
                 <td class="content-cell">
                     <div class="f-fallback">
-                        <h1 style="margin-bottom: 0; border-top: 1rem solid #ffffff">{{I18n 'orderConfirmation.receipt.header'}}</h1>
+                        <h1 style="margin-bottom: 0; border-top: 1rem solid transparent">{{I18n 'orderConfirmation.receipt.header'}}</h1>
 
                         <table class="purchase" width="100%" cellpadding="0" cellspacing="0" role="presentation">
                             <tr>
@@ -20,7 +20,7 @@
                                                 </td>
                                                 <td class="align-right" width="20%" class="purchase_item">
                                                     <span class="f-fallback no-wrap">
-                                                        {{rowPriceTotal}} €
+                                                        {{priceGross}} € / {{I18n 'orderConfirmation.receipt.unit.' unit}}
                                                     </span>
                                                 </td>
                                             </tr>
@@ -28,12 +28,13 @@
                                             <tr>
                                                 <td width="80%" class="purchase_item">
                                                     <span class="f-fallback">
+                                                        {{quantity}} {{I18n 'orderConfirmation.receipt.unit.' unit}} {{I18n 'orderConfirmation.receipt.total'}} 
                                                         {{I18n 'orderConfirmation.receipt.alv'}} ({{vatPercentage}}%)
                                                     </span>
                                                 </td>
                                                 <td class="align-right" width="20%" class="purchase_item pb-1">
                                                     <span class="f-fallback no-wrap">
-                                                        {{priceVat}} €
+                                                        {{rowPriceTotal}} €
                                                     </span>
                                                 </td>
                                             </tr>
@@ -41,8 +42,8 @@
 
                                                 {{#if label}}
                                                     <tr>
-                                                        <td width="100%" class="purchase_item">
-                                                        <span class="f-fallback no-wrap pb-1" style="font-size:14px; font-weight:bold;">
+                                                        <td width="100%" class="purchase_item" style="padding-top: 20px;">
+                                                        <span class="f-fallback no-wrap pb-1" style="font-size:16px; font-weight:600;">
                                                             {{label}}
                                                         </span>
                                                         </td>
@@ -52,35 +53,44 @@
                                                 {{#if value}}
                                                     <tr>
                                                         <td width="100%" class="purchase_item">
-                                                            <span class="f-fallback no-wrap pb-1" style="font-size:14px;">
+                                                            <span class="f-fallback no-wrap pb-1" style="font-size:16px;">
                                                                 {{value}}
                                                             </span>
                                                         </td>
                                                     </tr>
                                                 {{/if}}
-                                                {{#if @last}}
-                                                    <tr>
-                                                        <td>
-                                                            <span>&emsp;</span>
-                                                        </td>
-                                                    </tr>
-                                                {{/if}}
+                                            
 
                                             {{/each}}
-
+                                        <tr><td colspan="2"><hr class="purchase_item_divider"></td></tr>
                                         {{/each}}
                                         <tr>
-                                            <td width="80%" class="purchase_item" style="border-top: 1rem solid #ffffff">
+                                            <td width="80%" class="purchase_item" style="border-top: 1rem solid transparent">
                                                                 <span class="f-fallback">
                                                                     {{I18n 'orderConfirmation.receipt.paidTotal'}}
                                                                 </span>
                                             </td>
-                                            <td class="align-right" width="20%" class="purchase_item" style="border-top: 1rem solid #ffffff">
+                                            <td class="align-right" width="20%" class="purchase_item" style="border-top: 1rem solid transparent">
                                                                 <span class="f-fallback no-wrap">
                                                                     {{order.payment.total}} €
                                                                 </span>
                                             </td>
                                         </tr>
+                                        
+                                        {{#each vatTable}}
+                                        <tr>
+                                            <td width="80%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{I18n 'orderConfirmation.receipt.alv'}} ({{@key}}%)
+                                                                </span>
+                                            </td>
+                                            <td class="align-right" width="20%" class="purchase_item">
+                                                                <span class="f-fallback no-wrap">
+                                                                    {{this}} &euro;
+                                                                </span>
+                                            </td>
+                                        </tr>
+                                         {{/each}}
 
                                         <tr>
                                             <td width="80%" class="purchase_item">

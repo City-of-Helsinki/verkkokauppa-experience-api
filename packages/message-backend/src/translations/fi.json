@@ -21,7 +21,12 @@
       "alv": "Sis. alv",
       "paidTotal": "Maksettu yhteensä",
       "paymentMethod": "Maksutapa",
-      "date": "Päivämäärä"
+      "date": "Päivämäärä",
+      "total": "yhteensä",
+      "unit": {
+        "pcs": "kpl",
+        "month": "kk"
+      }
     }
   }
 }

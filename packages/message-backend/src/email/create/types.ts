@@ -10,6 +10,7 @@ export interface EmailTemplateDto {
 
 export interface OrderConfirmationEmailParameters {
   order: Order
+  vatTable: VatTable
 }
 
 export type OrderCustomer = {
@@ -100,6 +101,9 @@ export interface Payment {
   timestamp?: string
   paymentMethodLabel?: string
   token: string
+}
+export interface VatTable {
+  [index: string]: number
 }
 
 export type HbsTemplateFiles = 'orderConfirmation'

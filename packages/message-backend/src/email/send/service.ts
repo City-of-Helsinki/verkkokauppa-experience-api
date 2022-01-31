@@ -6,6 +6,7 @@ import type {
   Order,
   OrderConfirmationEmailParameters,
   OrderItemMeta,
+  VatTable,
 } from '../create/types'
 
 function isMessageBackendUrlSet() {
@@ -20,6 +21,21 @@ export function parseOrderMetas(order: Order) {
       orderItem.meta || undefined
     )
   })
+}
+
+export function parseOrderVat(order: Order) {
+  let vatTable = {} as VatTable
+
+  order.items.forEach((orderItem) => {
+    if (!vatTable[orderItem.vatPercentage]) {
+      vatTable[orderItem.vatPercentage] = 0
+    }
+    if (orderItem.rowPriceVat) {
+      vatTable[orderItem.vatPercentage] += +orderItem.rowPriceVat
+    }
+  })
+
+  return vatTable
 }
 
 export function parseOrderItemMetaVisibilityAndOrdinal(
@@ -61,10 +77,11 @@ export const sendEmailToCustomer = async (p: {
   const { order, fileName } = p
   // Reorder metas to show in correct order using ordinal etc.
   parseOrderMetas(order)
+  const vatTable = parseOrderVat(order)
   const created = await createOrderConfirmationEmailTemplate<OrderConfirmationEmailParameters>(
     {
       fileName: fileName,
-      templateParams: { order: order },
+      templateParams: { order: order, vatTable: vatTable },
     }
   )
 

@@ -3,6 +3,7 @@ import type { EmailTemplateDto, HbsTemplateFiles } from './types'
 import * as Handlebars from 'handlebars'
 import i18next from './../../i18n/init'
 import type { SUPPORTED_LANGUAGES } from '../../i18n/types'
+import { debug } from 'console'
 
 const fs = require('fs')
 const path = require('path')
@@ -50,6 +51,11 @@ export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
   i18next.changeLanguage(language).then(() => {})
 
   Handlebars.registerHelper('I18n', function (str) {
+    //If two parameters passed for I18n then concat second paramenter to first one
+    if (arguments.length > 2) {
+      str = str + arguments[1]
+    }
+
     return i18next != undefined ? i18next.t(str, arguments) : str
   })
 

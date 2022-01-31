@@ -1,4 +1,4 @@
-import { parseOrderMetas } from '../send/service'
+import { parseOrderMetas, parseOrderVat } from '../send/service'
 import { HandleBarTemplate } from './service'
 import type { Order, OrderConfirmationEmailParameters } from './types'
 
@@ -12,8 +12,8 @@ describe('Create templates from parameters', () => {
         {
           productId: 'productId2',
           productName: 'Pysäköintivyöhyke K',
-          quantity: 1,
-          unit: '1',
+          quantity: 2,
+          unit: 'pcs',
           rowPriceNet: '600',
           rowPriceVat: '144',
           rowPriceTotal: '744',
@@ -49,7 +49,7 @@ describe('Create templates from parameters', () => {
           productId: 'productId1',
           productName: 'Kiinteähintainen tuote 1',
           quantity: 1,
-          unit: '1',
+          unit: 'pcs',
           rowPriceNet: '600',
           rowPriceVat: '144',
           rowPriceTotal: '744',
@@ -124,9 +124,11 @@ describe('Create templates from parameters', () => {
     } as Order
 
     parseOrderMetas(order)
+    const vatTable = parseOrderVat(order)
 
     const templateParams: OrderConfirmationEmailParameters = {
       order: order,
+      vatTable: vatTable,
     }
 
     const template = HandleBarTemplate<OrderConfirmationEmailParameters>('fi')
