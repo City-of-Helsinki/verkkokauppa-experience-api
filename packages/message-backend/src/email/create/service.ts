@@ -3,7 +3,6 @@ import type { EmailTemplateDto, HbsTemplateFiles } from './types'
 import * as Handlebars from 'handlebars'
 import i18next from './../../i18n/init'
 import type { SUPPORTED_LANGUAGES } from '../../i18n/types'
-import { debug } from 'console'
 
 const fs = require('fs')
 const path = require('path')
