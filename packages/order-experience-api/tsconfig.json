@@ -6,6 +6,9 @@
         "composite": true,
         "baseUrl": "./",
         "paths": {
+            "@verkkokauppa/auth-helsinki-profile": [
+                "../auth-helsinki-profile"
+            ],
             "@verkkokauppa/cart-backend": [
                 "../cart-backend"
             ],
@@ -14,6 +17,9 @@
             ],
             "@verkkokauppa/core": [
                 "../core"
+            ],
+            "@verkkokauppa/message-backend": [
+                "../message-backend"
             ],
             "@verkkokauppa/order-backend": [
                 "../order-backend"
@@ -26,12 +32,6 @@
             ],
             "@verkkokauppa/product-backend": [
                 "../product-backend"
-            ],
-            "@verkkokauppa/auth-helsinki-profile": [
-                "../auth-helsinki-profile"
-            ],
-            "@verkkokauppa/message-backend": [
-                "../message-backend"
             ]
         }
     },
@@ -40,6 +40,9 @@
     ],
     "references": [
         {
+            "path": "../auth-helsinki-profile"
+        },
+        {
             "path": "../cart-backend"
         },
         {
@@ -47,6 +50,9 @@
         },
         {
             "path": "../core"
+        },
+        {
+            "path": "../message-backend"
         },
         {
             "path": "../order-backend"
@@ -59,12 +65,6 @@
         },
         {
             "path": "../product-backend"
-        },
-        {
-            "path": "../auth-helsinki-profile"
-        },
-        {
-            "path": "../message-backend"
         }
     ]
 }
