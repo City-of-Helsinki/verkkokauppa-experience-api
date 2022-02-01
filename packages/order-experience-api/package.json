@@ -1,6 +1,6 @@
 {
   "name": "@verkkokauppa/order-experience-api",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -17,11 +17,11 @@
     "@verkkokauppa/cart-backend": "^1.0.0",
     "@verkkokauppa/configuration-backend": "^1.0.0",
     "@verkkokauppa/core": "^1.0.0",
+    "@verkkokauppa/message-backend": "^1.0.0",
     "@verkkokauppa/order-backend": "^1.0.0",
     "@verkkokauppa/payment-backend": "^1.0.0",
     "@verkkokauppa/price-backend": "^1.0.0",
     "@verkkokauppa/product-backend": "^1.0.0",
-    "@verkkokauppa/message-backend": "^1.0.0",
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "compression": "^1.7.4",
