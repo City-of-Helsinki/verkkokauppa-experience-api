@@ -13,15 +13,13 @@ const checkBackendUrlExists = () => {
 }
 
 export const createSubscription = async (
-  p: Subscription
+  dto: Subscription
 ): Promise<{ id: string }> => {
   checkBackendUrlExists()
 
   const url = `${process.env.ORDER_BACKEND_URL + SUBSCRIPTION_API_ROOT}`
   try {
-    const result = await axios.post<{ id: string }>(url, {
-      params: p,
-    })
+    const result = await axios.post<{ id: string }>(url, dto)
     return result.data
   } catch (e) {
     throw new ExperienceFailure({
