@@ -59,10 +59,16 @@
                                                         </td>
                                                     </tr>
                                                 {{/if}}
+                                                {{#if @last}}
+                                                    <tr>
+                                                        <td>
+                                                            <span>&emsp;</span>
+                                                        </td>
+                                                    </tr>
+                                                {{/if}}
 
                                             {{/each}}
                                         
-                                        <tr><td colspan="2"><hr class="purchase_item_divider"></td></tr>
                                         {{/each}}
                                         <tr>
                                             <td width="80%" class="purchase_item" style="border-top: 1rem solid transparent;">

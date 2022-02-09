@@ -566,9 +566,13 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                             </span>
                                                                         </td>
                                                                     </tr>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <span>&emsp;</span>
+                                                                        </td>
+                                                                    </tr>
                 
                                                         
-                                                        <tr><td colspan=\\"2\\"><hr class=\\"purchase_item_divider\\"></td></tr>
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback\\" style=\\"font-weight:bolder;\\">
@@ -614,9 +618,13 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                             </span>
                                                                         </td>
                                                                     </tr>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <span>&emsp;</span>
+                                                                        </td>
+                                                                    </tr>
                 
                                                         
-                                                        <tr><td colspan=\\"2\\"><hr class=\\"purchase_item_divider\\"></td></tr>
                                                         <tr>
                                                             <td width=\\"80%\\" class=\\"purchase_item\\" style=\\"border-top: 1rem solid transparent;\\">
                                                                                 <span class=\\"f-fallback\\">
@@ -944,9 +952,13 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                             </span>
                                                                         </td>
                                                                     </tr>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <span>&emsp;</span>
+                                                                        </td>
+                                                                    </tr>
                 
                                                         
-                                                        <tr><td colspan=\\"2\\"><hr class=\\"purchase_item_divider\\"></td></tr>
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback\\" style=\\"font-weight:bolder;\\">
@@ -992,9 +1004,13 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                             </span>
                                                                         </td>
                                                                     </tr>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <span>&emsp;</span>
+                                                                        </td>
+                                                                    </tr>
                 
                                                         
-                                                        <tr><td colspan=\\"2\\"><hr class=\\"purchase_item_divider\\"></td></tr>
                                                         <tr>
                                                             <td width=\\"80%\\" class=\\"purchase_item\\" style=\\"border-top: 1rem solid transparent;\\">
                                                                                 <span class=\\"f-fallback\\">
@@ -1322,9 +1338,13 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                             </span>
                                                                         </td>
                                                                     </tr>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <span>&emsp;</span>
+                                                                        </td>
+                                                                    </tr>
                 
                                                         
-                                                        <tr><td colspan=\\"2\\"><hr class=\\"purchase_item_divider\\"></td></tr>
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback\\" style=\\"font-weight:bolder;\\">
@@ -1370,9 +1390,13 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                             </span>
                                                                         </td>
                                                                     </tr>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <span>&emsp;</span>
+                                                                        </td>
+                                                                    </tr>
                 
                                                         
-                                                        <tr><td colspan=\\"2\\"><hr class=\\"purchase_item_divider\\"></td></tr>
                                                         <tr>
                                                             <td width=\\"80%\\" class=\\"purchase_item\\" style=\\"border-top: 1rem solid transparent;\\">
                                                                                 <span class=\\"f-fallback\\">
