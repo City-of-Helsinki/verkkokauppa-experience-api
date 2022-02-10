@@ -58,7 +58,7 @@ export class RecreateSubscriptionController extends AbstractController<
     res: Response
   ): Promise<any> {
     const {
-      params: { id },
+      params: { id: oldSubscriptionId },
       headers: { 'api-key': apiKey, namespace },
       body: { updatedFields },
     } = req
@@ -66,6 +66,7 @@ export class RecreateSubscriptionController extends AbstractController<
     await validateApiKey({ apiKey, namespace })
 
     const {
+      id,
       subscriptionId,
       orderId,
       paymentMethodExpirationYear,
@@ -75,7 +76,7 @@ export class RecreateSubscriptionController extends AbstractController<
       meta,
       status,
       ...oldSubscription
-    } = await getSubscriptionAdmin({ id })
+    } = await getSubscriptionAdmin({ id: oldSubscriptionId })
 
     if (status !== 'active') {
       throw new ExperienceError({
