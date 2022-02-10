@@ -12,6 +12,13 @@
                                 <td colspan="2">
                                     <table class="purchase_content" width="100%" cellpadding="0" cellspacing="0">
                                         {{#each order.items}}
+                                            {{#if productLabel}}
+                                            <tr>
+                                                <td width="100%" colspan="2" class="purchase_item">
+                                                    <h2>{{productLabel}}</h2>
+                                                </td>
+                                            </tr>
+                                            {{/if}}
                                             <tr>
                                                 <td width="80%" class="purchase_item">
                                                     <span class="f-fallback" style="font-weight:bolder;">
@@ -19,11 +26,30 @@
                                                     </span>
                                                 </td>
                                                 <td class="align-right" width="20%" class="purchase_item">
+                                                    {{#if originalPriceGross}}
+                                                    <span class="f-fallback no-wrap" style="color: rgb(153, 152, 152); text-decoration: line-through;">
+                                                        {{originalPriceGross}} €
+                                                    </span>&nbsp;
+                                                    {{/if}}
                                                     <span class="f-fallback no-wrap">
                                                         {{priceGross}} € / {{I18n 'orderConfirmation.receipt.unit.' unit}}
                                                     </span>
                                                 </td>
                                             </tr>
+                                            {{#if productDescription}}
+                                            <tr>
+                                                <td width="80%" class="purchase_item">
+                                                    <span class="f-fallback" style="font-weight:normal;">
+                                                        {{productDescription}}
+                                                    </span>
+                                                </td>
+                                                <td class="align-right" width="20%" class="purchase_item">
+                                                    <span class="f-fallback no-wrap">
+                                                        &nbsp;
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            {{/if}}
 
                                             <tr>
                                                 <td width="80%" class="purchase_item">
@@ -68,6 +94,11 @@
                                                 {{/if}}
 
                                             {{/each}}
+                                              <tr>
+                                                <td>
+                                                    <span>&emsp;</span>
+                                                </td>
+                                            </tr>
                                         
                                         {{/each}}
                                         <tr>
