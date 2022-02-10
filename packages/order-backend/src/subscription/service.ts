@@ -13,7 +13,7 @@ const checkBackendUrlExists = () => {
 }
 
 export const createSubscription = async (
-  dto: Subscription
+  dto: Partial<Subscription>
 ): Promise<{ id: string }> => {
   checkBackendUrlExists()
 
@@ -163,7 +163,7 @@ export const setSubscriptionItemMeta = async (p: {
     key: string
     value: string
     label?: string
-    visibleInCheckout?: boolean
+    visibleInCheckout?: boolean | string
     ordinal?: string
   }[]
 }): Promise<OrderItemMeta[]> => {
@@ -179,6 +179,45 @@ export const setSubscriptionItemMeta = async (p: {
     throw new ExperienceFailure({
       code: 'failed-to-set-subscription-item-meta',
       message: 'Failed to set subscription item meta',
+      source: e,
+    })
+  }
+}
+
+export const setSubscriptionCardToken = async (p: {
+  subscriptionId: string
+  user: string
+  paymentMethodToken: string
+  paymentMethodExpirationYear: string
+  paymentMethodExpirationMonth: string
+  paymentMethodCardLastFourDigits: string
+}) => {
+  const {
+    subscriptionId,
+    user,
+    paymentMethodCardLastFourDigits,
+    paymentMethodToken,
+    paymentMethodExpirationMonth,
+    paymentMethodExpirationYear,
+  } = p
+  checkBackendUrlExists()
+  const url = `${process.env.ORDER_BACKEND_URL}/subscription/set-card-token`
+  try {
+    const res = await axios.put(url, {
+      subscriptionId,
+      user,
+      paymentCardInfoDto: {
+        cardToken: paymentMethodToken,
+        expYear: paymentMethodExpirationYear,
+        expMonth: paymentMethodExpirationMonth,
+        cardLastFourDigits: paymentMethodCardLastFourDigits,
+      },
+    })
+    return res.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-set-subscription-card-token',
+      message: 'Failed to set subscription card token',
       source: e,
     })
   }
