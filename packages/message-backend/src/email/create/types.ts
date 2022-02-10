@@ -43,8 +43,13 @@ export type OrderMerchant = {
 export interface OrderItemRequest {
   productId: string
   productName: string
+  productLabel?: string
+  productDescription?: string
   quantity: number
   unit: string
+  originalPriceNet?: string
+  originalPriceVat?: string
+  originalPriceGross?: string
   rowPriceNet: string
   rowPriceVat: string
   rowPriceTotal: string
