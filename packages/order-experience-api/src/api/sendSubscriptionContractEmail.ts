@@ -74,6 +74,7 @@ export class SendSubscriptionContractEmail extends AbstractController<
         'asiointipalvelun-ehdot.pdf': merchantTosPdf,
         'yleiset-ehdot.pdf': tosPdf,
       },
+      emailType: 'subscriptionContract',
     })
 
     return this.success(res, {})

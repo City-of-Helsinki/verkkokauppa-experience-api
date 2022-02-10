@@ -21,7 +21,12 @@
       "alv": "Incl. VAT",
       "paidTotal": "Paid in total",
       "paymentMethod": "Payment method",
-      "date": "Date"
+      "date": "Date",
+       "total": "in total",
+       "unit": {
+         "pcs": "pcs",
+         "month": "month"
+       }
     }
   },
   "subscriptionPaymentFailed": {

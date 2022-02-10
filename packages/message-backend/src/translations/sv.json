@@ -21,7 +21,12 @@
       "alv": "Inkl. moms",
       "paidTotal": "Betalat totalt",
       "paymentMethod": "Betalningssätt",
-      "date": "Datum"
+      "date": "Datum",
+       "total": "totalt",
+       "unit": {
+         "pcs": "st.",
+         "month": "mån."
+       }
     }
   },
   "subscriptionPaymentFailed": {
