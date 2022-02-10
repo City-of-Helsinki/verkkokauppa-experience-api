@@ -1,4 +1,5 @@
 export interface Subscription {
+  id: string
   subscriptionId: string
   status: string
   namespace: string
