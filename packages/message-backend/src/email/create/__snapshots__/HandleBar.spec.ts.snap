@@ -484,7 +484,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback\\">
-                                                                                    Kiitos tilauksestasi dummy-order-KYV-136 16.08.2021 Tilausaika 07:56:57
+                                                                                    Kiitos tilauksestasi dummy-order-KYV-136 08/16/2021 Tilausaika 7:56:57 AM
                                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -512,14 +512,34 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                 <td colspan=\\"2\\">
                                                     <table class=\\"purchase_content\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\">
                                                             <tr>
+                                                                <td width=\\"100%\\" colspan=\\"2\\" class=\\"purchase_item\\">
+                                                                    <h2>Product Label</h2>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback\\" style=\\"font-weight:bolder;\\">
                                                                         Pysäköintivyöhyke K
                                                                     </span>
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
+                                                                    <span class=\\"f-fallback no-wrap\\" style=\\"color: rgb(153, 152, 152); text-decoration: line-through;\\">
+                                                                        100 €
+                                                                    </span>&nbsp;
                                                                     <span class=\\"f-fallback no-wrap\\">
-                                                                        372 € / 1
+                                                                        372 € / kpl
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td width=\\"80%\\" class=\\"purchase_item\\">
+                                                                    <span class=\\"f-fallback\\" style=\\"font-weight:normal;\\">
+                                                                        Product Description
+                                                                    </span>
+                                                                </td>
+                                                                <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
+                                                                    <span class=\\"f-fallback no-wrap\\">
+                                                                        &nbsp;
                                                                     </span>
                                                                 </td>
                                                             </tr>
@@ -527,7 +547,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback\\">
-                                                                        1 1 yhteensä 
+                                                                        1 kpl yhteensä 
                                                                         Sis. alv (24%)
                                                                     </span>
                                                                 </td>
@@ -572,7 +592,17 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                         </td>
                                                                     </tr>
                 
+                                                              <tr>
+                                                                <td>
+                                                                    <span>&emsp;</span>
+                                                                </td>
+                                                            </tr>
                                                         
+                                                            <tr>
+                                                                <td width=\\"100%\\" colspan=\\"2\\" class=\\"purchase_item\\">
+                                                                    <h2>Product Label</h2>
+                                                                </td>
+                                                            </tr>
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback\\" style=\\"font-weight:bolder;\\">
@@ -580,8 +610,23 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                     </span>
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
+                                                                    <span class=\\"f-fallback no-wrap\\" style=\\"color: rgb(153, 152, 152); text-decoration: line-through;\\">
+                                                                        100 €
+                                                                    </span>&nbsp;
                                                                     <span class=\\"f-fallback no-wrap\\">
-                                                                        372 € / 1
+                                                                        372 € / kpl
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td width=\\"80%\\" class=\\"purchase_item\\">
+                                                                    <span class=\\"f-fallback\\" style=\\"font-weight:normal;\\">
+                                                                        Product Description
+                                                                    </span>
+                                                                </td>
+                                                                <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
+                                                                    <span class=\\"f-fallback no-wrap\\">
+                                                                        &nbsp;
                                                                     </span>
                                                                 </td>
                                                             </tr>
@@ -589,7 +634,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback\\">
-                                                                        1 1 yhteensä 
+                                                                        1 kpl yhteensä 
                                                                         Sis. alv (24%)
                                                                     </span>
                                                                 </td>
@@ -624,6 +669,11 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                         </td>
                                                                     </tr>
                 
+                                                              <tr>
+                                                                <td>
+                                                                    <span>&emsp;</span>
+                                                                </td>
+                                                            </tr>
                                                         
                                                         <tr>
                                                             <td width=\\"80%\\" class=\\"purchase_item\\" style=\\"border-top: 1rem solid transparent;\\">
@@ -671,7 +721,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             </td>
                                                             <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback no-wrap\\">
-                                                                                    01.09.2021 08:18:44
+                                                                                    09/01/2021 8:18:44 AM
                                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -870,7 +920,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback\\">
-                                                                                    Thank you for your order dummy-order-KYV-136 16.08.2021 Order time 07:56:57
+                                                                                    Thank you for your order dummy-order-KYV-136 08/16/2021 Order time 7:56:57 AM
                                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -898,14 +948,34 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                 <td colspan=\\"2\\">
                                                     <table class=\\"purchase_content\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\">
                                                             <tr>
+                                                                <td width=\\"100%\\" colspan=\\"2\\" class=\\"purchase_item\\">
+                                                                    <h2>Product Label</h2>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback\\" style=\\"font-weight:bolder;\\">
                                                                         Pysäköintivyöhyke K
                                                                     </span>
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
+                                                                    <span class=\\"f-fallback no-wrap\\" style=\\"color: rgb(153, 152, 152); text-decoration: line-through;\\">
+                                                                        100 €
+                                                                    </span>&nbsp;
                                                                     <span class=\\"f-fallback no-wrap\\">
-                                                                        372 € / 1
+                                                                        372 € / pcs
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td width=\\"80%\\" class=\\"purchase_item\\">
+                                                                    <span class=\\"f-fallback\\" style=\\"font-weight:normal;\\">
+                                                                        Product Description
+                                                                    </span>
+                                                                </td>
+                                                                <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
+                                                                    <span class=\\"f-fallback no-wrap\\">
+                                                                        &nbsp;
                                                                     </span>
                                                                 </td>
                                                             </tr>
@@ -913,7 +983,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback\\">
-                                                                        1 1 in total 
+                                                                        1 pcs in total 
                                                                         Incl. VAT (24%)
                                                                     </span>
                                                                 </td>
@@ -958,7 +1028,17 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                         </td>
                                                                     </tr>
                 
+                                                              <tr>
+                                                                <td>
+                                                                    <span>&emsp;</span>
+                                                                </td>
+                                                            </tr>
                                                         
+                                                            <tr>
+                                                                <td width=\\"100%\\" colspan=\\"2\\" class=\\"purchase_item\\">
+                                                                    <h2>Product Label</h2>
+                                                                </td>
+                                                            </tr>
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback\\" style=\\"font-weight:bolder;\\">
@@ -966,8 +1046,23 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                     </span>
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
+                                                                    <span class=\\"f-fallback no-wrap\\" style=\\"color: rgb(153, 152, 152); text-decoration: line-through;\\">
+                                                                        100 €
+                                                                    </span>&nbsp;
                                                                     <span class=\\"f-fallback no-wrap\\">
-                                                                        372 € / 1
+                                                                        372 € / pcs
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td width=\\"80%\\" class=\\"purchase_item\\">
+                                                                    <span class=\\"f-fallback\\" style=\\"font-weight:normal;\\">
+                                                                        Product Description
+                                                                    </span>
+                                                                </td>
+                                                                <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
+                                                                    <span class=\\"f-fallback no-wrap\\">
+                                                                        &nbsp;
                                                                     </span>
                                                                 </td>
                                                             </tr>
@@ -975,7 +1070,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback\\">
-                                                                        1 1 in total 
+                                                                        1 pcs in total 
                                                                         Incl. VAT (24%)
                                                                     </span>
                                                                 </td>
@@ -1010,6 +1105,11 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                         </td>
                                                                     </tr>
                 
+                                                              <tr>
+                                                                <td>
+                                                                    <span>&emsp;</span>
+                                                                </td>
+                                                            </tr>
                                                         
                                                         <tr>
                                                             <td width=\\"80%\\" class=\\"purchase_item\\" style=\\"border-top: 1rem solid transparent;\\">
@@ -1057,7 +1157,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             </td>
                                                             <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback no-wrap\\">
-                                                                                    01.09.2021 08:18:44
+                                                                                    09/01/2021 8:18:44 AM
                                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -1256,7 +1356,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback\\">
-                                                                                    Tack för din beställning dummy-order-KYV-136 16.08.2021 Beställningstid 07:56:57
+                                                                                    Tack för din beställning dummy-order-KYV-136 08/16/2021 Beställningstid 7:56:57 AM
                                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -1284,14 +1384,34 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                 <td colspan=\\"2\\">
                                                     <table class=\\"purchase_content\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\">
                                                             <tr>
+                                                                <td width=\\"100%\\" colspan=\\"2\\" class=\\"purchase_item\\">
+                                                                    <h2>Product Label</h2>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback\\" style=\\"font-weight:bolder;\\">
                                                                         Pysäköintivyöhyke K
                                                                     </span>
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
+                                                                    <span class=\\"f-fallback no-wrap\\" style=\\"color: rgb(153, 152, 152); text-decoration: line-through;\\">
+                                                                        100 €
+                                                                    </span>&nbsp;
                                                                     <span class=\\"f-fallback no-wrap\\">
-                                                                        372 € / 1
+                                                                        372 € / st.
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td width=\\"80%\\" class=\\"purchase_item\\">
+                                                                    <span class=\\"f-fallback\\" style=\\"font-weight:normal;\\">
+                                                                        Product Description
+                                                                    </span>
+                                                                </td>
+                                                                <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
+                                                                    <span class=\\"f-fallback no-wrap\\">
+                                                                        &nbsp;
                                                                     </span>
                                                                 </td>
                                                             </tr>
@@ -1299,7 +1419,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback\\">
-                                                                        1 1 totalt 
+                                                                        1 st. totalt 
                                                                         Inkl. moms (24%)
                                                                     </span>
                                                                 </td>
@@ -1344,7 +1464,17 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                         </td>
                                                                     </tr>
                 
+                                                              <tr>
+                                                                <td>
+                                                                    <span>&emsp;</span>
+                                                                </td>
+                                                            </tr>
                                                         
+                                                            <tr>
+                                                                <td width=\\"100%\\" colspan=\\"2\\" class=\\"purchase_item\\">
+                                                                    <h2>Product Label</h2>
+                                                                </td>
+                                                            </tr>
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback\\" style=\\"font-weight:bolder;\\">
@@ -1352,8 +1482,23 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                     </span>
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
+                                                                    <span class=\\"f-fallback no-wrap\\" style=\\"color: rgb(153, 152, 152); text-decoration: line-through;\\">
+                                                                        100 €
+                                                                    </span>&nbsp;
                                                                     <span class=\\"f-fallback no-wrap\\">
-                                                                        372 € / 1
+                                                                        372 € / st.
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td width=\\"80%\\" class=\\"purchase_item\\">
+                                                                    <span class=\\"f-fallback\\" style=\\"font-weight:normal;\\">
+                                                                        Product Description
+                                                                    </span>
+                                                                </td>
+                                                                <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
+                                                                    <span class=\\"f-fallback no-wrap\\">
+                                                                        &nbsp;
                                                                     </span>
                                                                 </td>
                                                             </tr>
@@ -1361,7 +1506,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback\\">
-                                                                        1 1 totalt 
+                                                                        1 st. totalt 
                                                                         Inkl. moms (24%)
                                                                     </span>
                                                                 </td>
@@ -1396,6 +1541,11 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                         </td>
                                                                     </tr>
                 
+                                                              <tr>
+                                                                <td>
+                                                                    <span>&emsp;</span>
+                                                                </td>
+                                                            </tr>
                                                         
                                                         <tr>
                                                             <td width=\\"80%\\" class=\\"purchase_item\\" style=\\"border-top: 1rem solid transparent;\\">
@@ -1443,7 +1593,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             </td>
                                                             <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback no-wrap\\">
-                                                                                    01.09.2021 08:18:44
+                                                                                    09/01/2021 8:18:44 AM
                                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -2214,7 +2364,7 @@ exports[`Create templates from parameters Should compile subscriptionPaymentFail
                                                                     Tilaukseen liittämäsi maksukortin 
                                                                     4321
                                                                     veloitusta yritetään uudelleen muutaman päivän sisällä. Mikäli veloituksen uusintayritys ei onnistu, tilatun palvelun käyttöoikeus päättyy
-                                                                    01.01.2022 07:56:57
+                                                                    01/01/2022 7:56:57 AM
                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -2400,7 +2550,7 @@ exports[`Create templates from parameters Should compile subscriptionPaymentFail
                                                                     A new attempt will be made to charge the payment card 
                                                                     4321
                                                                     linked to your subscription within a few days. If the new attempt to charge the card is unsuccessful, your right to use the subscribed service will expire on 
-                                                                    01.01.2022 07:56:57
+                                                                    01/01/2022 7:56:57 AM
                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -2586,7 +2736,7 @@ exports[`Create templates from parameters Should compile subscriptionPaymentFail
                                                                     Ett nytt debiteringsförsök på betalkortet 
                                                                     4321
                                                                      som anslutits till din beställning kommer att göras inom några dagar. Om det nya debiteringsförsöket inte lyckas, upphör rätten att använda den beställda tjänsten 
-                                                                    01.01.2022 07:56:57
+                                                                    01/01/2022 7:56:57 AM
                                                                 </span>
                                                             </td>
                                                         </tr>
