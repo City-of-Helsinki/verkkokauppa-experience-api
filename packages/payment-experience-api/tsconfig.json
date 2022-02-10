@@ -6,6 +6,9 @@
         "composite": true,
         "baseUrl": "./",
         "paths": {
+            "@verkkokauppa/auth-helsinki-profile": [
+                "../auth-helsinki-profile"
+            ],
             "@verkkokauppa/configuration-backend": [
                 "../configuration-backend"
             ],
@@ -23,9 +26,6 @@
             ],
             "@verkkokauppa/product-backend": [
                 "../product-backend"
-            ],
-            "@verkkokauppa/auth-helsinki-profile": [
-                "../auth-helsinki-profile"
             ]
         }
     },
@@ -33,6 +33,9 @@
         "src/**/*"
     ],
     "references": [
+        {
+            "path": "../auth-helsinki-profile"
+        },
         {
             "path": "../configuration-backend"
         },
@@ -50,9 +53,6 @@
         },
         {
             "path": "../product-backend"
-        },
-        {
-            "path": "../auth-helsinki-profile"
         }
     ]
 }

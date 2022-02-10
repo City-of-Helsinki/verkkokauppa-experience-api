@@ -1,4 +1,8 @@
-import { parseOrderMetas, parseSubscriptionMetas } from '../send/service'
+import {
+  parseOrderMetas,
+  parseSubscriptionMetas,
+  parseOrderVat,
+} from '../send/service'
 import { HandleBarTemplate } from './service'
 import type {
   Order,
@@ -17,12 +21,17 @@ describe('Create templates from parameters', () => {
         {
           productId: 'productId2',
           productName: 'Pysäköintivyöhyke K',
+          productLabel: 'Product Label',
+          productDescription: 'Product Description',
           quantity: 1,
-          unit: '1',
+          unit: 'pcs',
           rowPriceNet: '600',
           rowPriceVat: '144',
           rowPriceTotal: '744',
           vatPercentage: '24',
+          originalPriceNet: '76',
+          originalPriceVat: '24',
+          originalPriceGross: '100',
           priceNet: '300',
           priceVat: '72',
           priceGross: '372',
@@ -53,12 +62,17 @@ describe('Create templates from parameters', () => {
         {
           productId: 'productId1',
           productName: 'Kiinteähintainen tuote 1',
+          productLabel: 'Product Label',
+          productDescription: 'Product Description',
           quantity: 1,
-          unit: '1',
+          unit: 'pcs',
           rowPriceNet: '600',
           rowPriceVat: '144',
           rowPriceTotal: '744',
           vatPercentage: '24',
+          originalPriceNet: '76',
+          originalPriceVat: '24',
+          originalPriceGross: '100',
           priceNet: '300',
           priceVat: '72',
           priceGross: '372',
@@ -129,9 +143,11 @@ describe('Create templates from parameters', () => {
     } as Order
 
     parseOrderMetas(order)
+    const vatTable = parseOrderVat(order)
 
     const templateParams: OrderConfirmationEmailParameters = {
       order: order,
+      vatTable: vatTable,
     }
 
     const template = HandleBarTemplate<OrderConfirmationEmailParameters>('fi')
@@ -165,12 +181,17 @@ describe('Create templates from parameters', () => {
         {
           productId: 'productId2',
           productName: 'Pysäköintivyöhyke K',
+          productLabel: 'Product Label',
+          productDescription: 'Product Description',
           quantity: 1,
           unit: '1',
           rowPriceNet: '600',
           rowPriceVat: '144',
           rowPriceTotal: '744',
           vatPercentage: '24',
+          originalPriceNet: '76',
+          originalPriceVat: '24',
+          originalPriceGross: '100',
           priceNet: '300',
           priceVat: '72',
           priceGross: '372',
