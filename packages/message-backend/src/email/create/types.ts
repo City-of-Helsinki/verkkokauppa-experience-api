@@ -10,6 +10,7 @@ export interface EmailTemplateDto {
 
 export interface OrderConfirmationEmailParameters {
   order: Order
+  vatTable: VatTable
 }
 
 export interface SubscriptionPaymentFailedEmailParameters {
@@ -42,8 +43,13 @@ export type OrderMerchant = {
 export interface OrderItemRequest {
   productId: string
   productName: string
+  productLabel?: string
+  productDescription?: string
   quantity: number
   unit: string
+  originalPriceNet?: string
+  originalPriceVat?: string
+  originalPriceGross?: string
   rowPriceNet: string
   rowPriceVat: string
   rowPriceTotal: string
@@ -109,6 +115,10 @@ export interface Payment {
   timestamp?: string
   paymentMethodLabel?: string
   token: string
+}
+
+export interface VatTable {
+  [index: string]: number
 }
 
 export type HbsTemplateFiles =

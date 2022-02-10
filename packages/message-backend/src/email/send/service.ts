@@ -15,12 +15,28 @@ import type {
   Subscription,
   SubscriptionItemMeta,
   SubscriptionPaymentFailedEmailParameters,
+  VatTable,
 } from '../create/types'
 
 function isMessageBackendUrlSet() {
   if (!process.env.MESSAGE_BACKEND_URL) {
     throw new Error('No message backend URL set')
   }
+}
+
+export function parseOrderVat(order: Order) {
+  let vatTable = {} as VatTable
+
+  order.items.forEach((orderItem) => {
+    if (!vatTable[orderItem.vatPercentage]) {
+      vatTable[orderItem.vatPercentage] = 0
+    }
+    if (orderItem.rowPriceVat) {
+      vatTable[orderItem.vatPercentage] += +orderItem.rowPriceVat
+    }
+  })
+
+  return vatTable
 }
 
 export function parseOrderMetas(order: Order) {
@@ -112,9 +128,11 @@ export const sendOrderConfirmationEmailToCustomer = async (p: {
   const { order } = p
   // Reorder metas to show in correct order using ordinal etc.
   parseOrderMetas(order)
+  const vatTable = parseOrderVat(order)
+
   const created = await createEmailTemplate<OrderConfirmationEmailParameters>({
     fileName: emailType,
-    templateParams: { order: order },
+    templateParams: { order: order, vatTable: vatTable },
   })
 
   return sendEmail({
