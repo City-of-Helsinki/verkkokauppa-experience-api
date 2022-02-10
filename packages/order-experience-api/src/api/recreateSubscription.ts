@@ -110,7 +110,10 @@ export class RecreateSubscriptionController extends AbstractController<
       await setSubscriptionItemMeta({
         subscriptionId: newSubscription.id,
         orderItemId: oldSubscription.orderItemId,
-        meta,
+        meta: meta.map((m) => ({
+          ...m,
+          orderItemMetaId: undefined,
+        })),
       })
     }
 
