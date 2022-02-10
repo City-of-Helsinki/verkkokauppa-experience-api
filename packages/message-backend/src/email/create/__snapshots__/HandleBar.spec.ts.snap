@@ -484,7 +484,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback\\">
-                                                                                    Kiitos tilauksestasi dummy-order-KYV-136 08/16/2021 Tilausaika 7:56:57 AM
+                                                                                    Kiitos tilauksestasi dummy-order-KYV-136 16.08.2021 Tilausaika 07:56:57
                                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -671,7 +671,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             </td>
                                                             <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback no-wrap\\">
-                                                                                    09/01/2021 8:18:44 AM
+                                                                                    01.09.2021 08:18:44
                                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -870,7 +870,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback\\">
-                                                                                    Thank you for your order dummy-order-KYV-136 08/16/2021 Order time 7:56:57 AM
+                                                                                    Thank you for your order dummy-order-KYV-136 16.08.2021 Order time 07:56:57
                                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -1057,7 +1057,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             </td>
                                                             <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback no-wrap\\">
-                                                                                    09/01/2021 8:18:44 AM
+                                                                                    01.09.2021 08:18:44
                                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -1256,7 +1256,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback\\">
-                                                                                    Tack för din beställning dummy-order-KYV-136 08/16/2021 Beställningstid 7:56:57 AM
+                                                                                    Tack för din beställning dummy-order-KYV-136 16.08.2021 Beställningstid 07:56:57
                                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -1443,7 +1443,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             </td>
                                                             <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
                                                                                 <span class=\\"f-fallback no-wrap\\">
-                                                                                    09/01/2021 8:18:44 AM
+                                                                                    01.09.2021 08:18:44
                                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -2214,7 +2214,7 @@ exports[`Create templates from parameters Should compile subscriptionPaymentFail
                                                                     Tilaukseen liittämäsi maksukortin 
                                                                     4321
                                                                     veloitusta yritetään uudelleen muutaman päivän sisällä. Mikäli veloituksen uusintayritys ei onnistu, tilatun palvelun käyttöoikeus päättyy
-                                                                    01/01/2022 7:56:57 AM
+                                                                    01.01.2022 07:56:57
                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -2400,7 +2400,7 @@ exports[`Create templates from parameters Should compile subscriptionPaymentFail
                                                                     A new attempt will be made to charge the payment card 
                                                                     4321
                                                                     linked to your subscription within a few days. If the new attempt to charge the card is unsuccessful, your right to use the subscribed service will expire on 
-                                                                    01/01/2022 7:56:57 AM
+                                                                    01.01.2022 07:56:57
                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -2586,7 +2586,7 @@ exports[`Create templates from parameters Should compile subscriptionPaymentFail
                                                                     Ett nytt debiteringsförsök på betalkortet 
                                                                     4321
                                                                      som anslutits till din beställning kommer att göras inom några dagar. Om det nya debiteringsförsöket inte lyckas, upphör rätten att använda den beställda tjänsten 
-                                                                    01/01/2022 7:56:57 AM
+                                                                    01.01.2022 07:56:57
                                                                 </span>
                                                             </td>
                                                         </tr>

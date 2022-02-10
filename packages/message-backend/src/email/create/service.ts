@@ -54,8 +54,10 @@ export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
     //If two parameters passed for I18n then concat second paramenter to first one
     if (arguments.length > 2) {
       str = str + arguments[1]
+      return i18next != undefined ? i18next.t(str, arguments[1]) : str
     }
-    return i18next != undefined ? i18next.t(str, arguments[1]) : str
+
+    return i18next != undefined ? i18next.t(str, arguments) : str
   })
 
   Handlebars.registerHelper('UPPER', function (str) {
