@@ -519,7 +519,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback no-wrap\\">
-                                                                        372 € / orderConfirmation.receipt.unit.1
+                                                                        372 € / 1
                                                                     </span>
                                                                 </td>
                                                             </tr>
@@ -527,7 +527,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback\\">
-                                                                        1 orderConfirmation.receipt.unit.1 yhteensä 
+                                                                        1 1 yhteensä 
                                                                         Sis. alv (24%)
                                                                     </span>
                                                                 </td>
@@ -581,7 +581,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback no-wrap\\">
-                                                                        372 € / orderConfirmation.receipt.unit.1
+                                                                        372 € / 1
                                                                     </span>
                                                                 </td>
                                                             </tr>
@@ -589,7 +589,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback\\">
-                                                                        1 orderConfirmation.receipt.unit.1 yhteensä 
+                                                                        1 1 yhteensä 
                                                                         Sis. alv (24%)
                                                                     </span>
                                                                 </td>
@@ -905,7 +905,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback no-wrap\\">
-                                                                        372 € / orderConfirmation.receipt.unit.1
+                                                                        372 € / 1
                                                                     </span>
                                                                 </td>
                                                             </tr>
@@ -913,7 +913,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback\\">
-                                                                        1 orderConfirmation.receipt.unit.1 in total 
+                                                                        1 1 in total 
                                                                         Incl. VAT (24%)
                                                                     </span>
                                                                 </td>
@@ -967,7 +967,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback no-wrap\\">
-                                                                        372 € / orderConfirmation.receipt.unit.1
+                                                                        372 € / 1
                                                                     </span>
                                                                 </td>
                                                             </tr>
@@ -975,7 +975,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback\\">
-                                                                        1 orderConfirmation.receipt.unit.1 in total 
+                                                                        1 1 in total 
                                                                         Incl. VAT (24%)
                                                                     </span>
                                                                 </td>
@@ -1291,7 +1291,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback no-wrap\\">
-                                                                        372 € / orderConfirmation.receipt.unit.1
+                                                                        372 € / 1
                                                                     </span>
                                                                 </td>
                                                             </tr>
@@ -1299,7 +1299,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback\\">
-                                                                        1 orderConfirmation.receipt.unit.1 totalt 
+                                                                        1 1 totalt 
                                                                         Inkl. moms (24%)
                                                                     </span>
                                                                 </td>
@@ -1353,7 +1353,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                                 </td>
                                                                 <td class=\\"align-right\\" width=\\"20%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback no-wrap\\">
-                                                                        372 € / orderConfirmation.receipt.unit.1
+                                                                        372 € / 1
                                                                     </span>
                                                                 </td>
                                                             </tr>
@@ -1361,7 +1361,7 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             <tr>
                                                                 <td width=\\"80%\\" class=\\"purchase_item\\">
                                                                     <span class=\\"f-fallback\\">
-                                                                        1 orderConfirmation.receipt.unit.1 totalt 
+                                                                        1 1 totalt 
                                                                         Inkl. moms (24%)
                                                                     </span>
                                                                 </td>
