@@ -1,4 +1,8 @@
-import { parseOrderMetas, parseSubscriptionMetas } from '../send/service'
+import {
+  parseOrderMetas,
+  parseSubscriptionMetas,
+  parseOrderVat,
+} from '../send/service'
 import { HandleBarTemplate } from './service'
 import type {
   Order,
@@ -129,9 +133,11 @@ describe('Create templates from parameters', () => {
     } as Order
 
     parseOrderMetas(order)
+    const vatTable = parseOrderVat(order)
 
     const templateParams: OrderConfirmationEmailParameters = {
       order: order,
+      vatTable: vatTable,
     }
 
     const template = HandleBarTemplate<OrderConfirmationEmailParameters>('fi')
