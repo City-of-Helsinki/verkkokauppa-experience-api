@@ -55,8 +55,7 @@ export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
     if (arguments.length > 2) {
       str = str + arguments[1]
     }
-
-    return i18next != undefined ? i18next.t(str, arguments) : str
+    return i18next != undefined ? i18next.t(str, arguments[1]) : str
   })
 
   Handlebars.registerHelper('UPPER', function (str) {
