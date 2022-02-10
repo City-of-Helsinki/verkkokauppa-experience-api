@@ -47,9 +47,9 @@ export interface OrderItemRequest {
   productDescription?: string
   quantity: number
   unit: string
-  originalPriceNet: string
-  originalPriceVat: string
-  originalPriceGross: string
+  originalPriceNet?: string
+  originalPriceVat?: string
+  originalPriceGross?: string
   rowPriceNet: string
   rowPriceVat: string
   rowPriceTotal: string
