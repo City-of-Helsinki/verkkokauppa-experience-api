@@ -2,6 +2,7 @@ import {
   AbstractController,
   Data,
   ExperienceError,
+  ExperienceFailure,
   StatusCode,
   ValidatedRequest,
 } from '@verkkokauppa/core'
@@ -95,29 +96,44 @@ export class RecreateSubscriptionController extends AbstractController<
       billingStartDate: oldSubscription.endDate,
     })
 
-    if (paymentMethodToken) {
-      await setSubscriptionCardToken({
-        subscriptionId: newSubscription.id,
+    try {
+      if (paymentMethodToken) {
+        await setSubscriptionCardToken({
+          subscriptionId: newSubscription.id,
+          user: oldSubscription.user,
+          paymentMethodCardLastFourDigits,
+          paymentMethodToken,
+          paymentMethodExpirationMonth,
+          paymentMethodExpirationYear,
+        })
+      }
+
+      if (meta?.length > 0) {
+        await setSubscriptionItemMeta({
+          subscriptionId: newSubscription.id,
+          orderItemId: oldSubscription.orderItemId,
+          meta: meta.map((m) => ({
+            ...m,
+            orderItemMetaId: undefined,
+          })),
+        })
+      }
+
+      await cancelSubscription({
+        id: subscriptionId,
         user: oldSubscription.user,
-        paymentMethodCardLastFourDigits,
-        paymentMethodToken,
-        paymentMethodExpirationMonth,
-        paymentMethodExpirationYear,
+      })
+    } catch (e) {
+      await cancelSubscription({
+        id: newSubscription.id,
+        user: oldSubscription.user,
+      })
+      throw new ExperienceFailure({
+        code: 'failed-to-recreate-subscription',
+        message: `Failed to recreate subscription ${subscriptionId}`,
+        source: e,
       })
     }
-
-    if (meta?.length > 0) {
-      await setSubscriptionItemMeta({
-        subscriptionId: newSubscription.id,
-        orderItemId: oldSubscription.orderItemId,
-        meta: meta.map((m) => ({
-          ...m,
-          orderItemMetaId: undefined,
-        })),
-      })
-    }
-
-    await cancelSubscription({ id: subscriptionId, user: oldSubscription.user })
 
     return this.created(res, new Data(newSubscription).serialize())
   }
