@@ -2339,6 +2339,77 @@
 			"response": []
 		},
 		{
+			"name": "Recreate Subscription 201",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"pm.test(\"Response contains ID\", function () {",
+							"    pm.expect(pm.response.json().id).to.exist",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "namespace",
+						"value": "{{namespace}}",
+						"type": "text"
+					},
+					{
+						"key": "api-key",
+						"value": "{{namespaceApiKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"updatedFields\": {}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{orderExperienceUrl}}/subscription/:id/recreate",
+					"host": [
+						"{{orderExperienceUrl}}"
+					],
+					"path": [
+						"subscription",
+						":id",
+						"recreate"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{subscriptionFromOrder}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Subscription Search Active 200",
 			"event": [
 				{
