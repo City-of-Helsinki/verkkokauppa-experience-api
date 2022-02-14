@@ -2349,7 +2349,7 @@
 							"    pm.response.to.have.status(201);",
 							"});",
 							"pm.test(\"Response contains ID\", function () {",
-							"    pm.expect(data.id).to.exist",
+							"    pm.expect(pm.response.json().id).to.exist",
 							"});",
 							""
 						],
