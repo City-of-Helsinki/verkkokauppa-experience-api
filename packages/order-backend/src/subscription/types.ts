@@ -1,4 +1,5 @@
 export interface Subscription {
+  id: string
   subscriptionId: string
   status: string
   namespace: string
@@ -31,4 +32,20 @@ export interface Subscription {
   priceGross: string
   vatPercentage: string
   orderId: string
+  originalPriceNet: string
+  originalPriceVat: string
+  originalPriceGross: string
+  meta: SubscriptionItemMeta[]
+}
+
+export interface SubscriptionItemMeta {
+  orderItemMetaId: string
+  orderItemId: string
+  orderId: string
+  subscriptionId: string
+  key: string
+  value: string
+  label: string
+  visibleInCheckout: string
+  ordinal: string
 }
