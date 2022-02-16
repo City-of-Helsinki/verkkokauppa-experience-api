@@ -1,5 +1,11 @@
-import { createUserRedirectUrl, parseOrderIdFromRedirect } from './vismaPay'
+import {
+  createPaymentRedirectUrlFromVismaStatus,
+  createUserRedirectUrl,
+  parseOrderIdFromRedirect,
+} from './vismaPay'
 import axios from 'axios'
+import { URL } from 'url'
+import { PaymentType, VismaStatus } from '@verkkokauppa/payment-backend'
 
 jest.mock('axios')
 const axiosMock = axios as jest.Mocked<typeof axios>
@@ -53,7 +59,12 @@ describe('Test User redirection creation', () => {
     await expect(
       createUserRedirectUrl({
         order: orderMock,
-        vismaStatus: { canRetry: false, paymentPaid: false, valid: true },
+        vismaStatus: {
+          canRetry: false,
+          paymentPaid: false,
+          valid: true,
+          paymentType: PaymentType.CREDIT_CARDS,
+        },
       })
     ).rejects.toThrow('No default redirect url specified')
   })
@@ -69,7 +80,12 @@ describe('Test User redirection creation', () => {
     axiosMock.get.mockResolvedValue({ data: configMock })
     const result = await createUserRedirectUrl({
       order: orderMock,
-      vismaStatus: { canRetry: false, paymentPaid: false, valid: true },
+      vismaStatus: {
+        canRetry: false,
+        paymentPaid: false,
+        valid: true,
+        paymentType: PaymentType.CREDIT_CARDS,
+      },
     })
     expect(result.toString()).toBe(
       `${process.env.REDIRECT_PAYMENT_URL_BASE}/145d8829-07b7-4b03-ab0e-24063958ab9b/failure`
@@ -88,7 +104,12 @@ describe('Test User redirection creation', () => {
     axiosMock.get.mockResolvedValue({ data: configMock })
     const result = await createUserRedirectUrl({
       order: orderMock,
-      vismaStatus: { canRetry: false, paymentPaid: false, valid: true },
+      vismaStatus: {
+        canRetry: false,
+        paymentPaid: false,
+        valid: true,
+        paymentType: PaymentType.CREDIT_CARDS,
+      },
     })
     expect(result.toString()).toBe(
       `https://service.dev.hel/failure?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b`
@@ -106,7 +127,12 @@ describe('Test User redirection creation', () => {
     axiosMock.get.mockResolvedValue({ data: configMock })
     const result = await createUserRedirectUrl({
       order: orderMock,
-      vismaStatus: { canRetry: true, paymentPaid: false, valid: true },
+      vismaStatus: {
+        canRetry: true,
+        paymentPaid: false,
+        valid: true,
+        paymentType: PaymentType.CREDIT_CARDS,
+      },
     })
     expect(result.toString()).toBe(
       `${process.env.REDIRECT_PAYMENT_URL_BASE}/145d8829-07b7-4b03-ab0e-24063958ab9b/summary?paymentPaid=false`
@@ -125,7 +151,12 @@ describe('Test User redirection creation', () => {
     axiosMock.get.mockResolvedValue({ data: configMock })
     const result = await createUserRedirectUrl({
       order: orderMock,
-      vismaStatus: { canRetry: true, paymentPaid: false, valid: true },
+      vismaStatus: {
+        canRetry: true,
+        paymentPaid: false,
+        valid: true,
+        paymentType: PaymentType.CREDIT_CARDS,
+      },
     })
     expect(result.toString()).toBe(
       `${process.env.REDIRECT_PAYMENT_URL_BASE}/145d8829-07b7-4b03-ab0e-24063958ab9b/summary?paymentPaid=false`
@@ -143,7 +174,12 @@ describe('Test User redirection creation', () => {
     axiosMock.get.mockResolvedValue({ data: configMock })
     const result = await createUserRedirectUrl({
       order: orderMock,
-      vismaStatus: { canRetry: false, paymentPaid: true, valid: true },
+      vismaStatus: {
+        canRetry: false,
+        paymentPaid: true,
+        valid: true,
+        paymentType: PaymentType.CREDIT_CARDS,
+      },
     })
     expect(result.toString()).toBe(
       `${process.env.REDIRECT_PAYMENT_URL_BASE}/145d8829-07b7-4b03-ab0e-24063958ab9b/success`
@@ -204,7 +240,12 @@ describe('Test User redirection creation', () => {
 
     const result = await createUserRedirectUrl({
       order: orderMock,
-      vismaStatus: { canRetry: false, paymentPaid: true, valid: true },
+      vismaStatus: {
+        canRetry: false,
+        paymentPaid: true,
+        valid: true,
+        paymentType: PaymentType.CREDIT_CARDS,
+      },
     })
     expect(result.toString()).toBe(
       `${configMock.configurationValue}/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b`
@@ -224,10 +265,68 @@ describe('Test User redirection creation', () => {
     axiosMock.get.mockResolvedValue({ data: configMock })
     const result = await createUserRedirectUrl({
       order: orderMock,
-      vismaStatus: { canRetry: false, paymentPaid: true, valid: false },
+      vismaStatus: {
+        canRetry: false,
+        paymentPaid: true,
+        valid: false,
+        paymentType: PaymentType.CREDIT_CARDS,
+      },
     })
     expect(result.toString()).toBe(
       `${process.env.REDIRECT_PAYMENT_URL_BASE}/failure`
+    )
+  })
+
+  it('Redirect url creation function test', async () => {
+    process.env.REDIRECT_PAYMENT_URL_BASE = 'https://test.dev.hel'
+    process.env.CONFIGURATION_BACKEND_URL = 'https://test.dev.hel'
+    process.env.MESSAGE_BACKEND_URL = 'https://test.dev.hel'
+    process.env.PAYMENT_BACKEND_URL = 'https://test.dev.hel'
+
+    const configMock = {
+      configurationId: '2f815a93-4c5c-442f-ba09-f294ecc12679',
+      namespace: 'test',
+      configurationKey: 'ORDER_CREATED_REDIRECT_URL',
+      configurationValue: 'https://service.dev.hel',
+      restricted: false,
+    }
+
+    let mockVismaStatus = {
+      paymentPaid: true,
+      canRetry: false,
+      valid: true,
+      authorized: true,
+      paymentType: 'string',
+    } as VismaStatus
+    const mockRedirectUrl = new URL(configMock.configurationValue)
+    const createdUrl = createPaymentRedirectUrlFromVismaStatus(
+      mockVismaStatus,
+      orderMock,
+      mockRedirectUrl,
+      true
+    )
+    expect(createdUrl.pathname).toBe(`/${orderMock.orderId}/success`)
+
+    mockVismaStatus.paymentPaid = false
+    const createdUrl2 = createPaymentRedirectUrlFromVismaStatus(
+      mockVismaStatus,
+      orderMock,
+      mockRedirectUrl,
+      true
+    )
+    expect(createdUrl2.pathname).toBe(`/${orderMock.orderId}/failure`)
+
+    mockVismaStatus.paymentPaid = false
+    mockVismaStatus.authorized = false
+    mockVismaStatus.paymentType = PaymentType.CARD_RENEWAL.toString()
+    const createdUrl3 = createPaymentRedirectUrlFromVismaStatus(
+      mockVismaStatus,
+      orderMock,
+      mockRedirectUrl,
+      true
+    )
+    expect(createdUrl3.pathname).toBe(
+      `/${orderMock.orderId}/card-update-failed`
     )
   })
 })

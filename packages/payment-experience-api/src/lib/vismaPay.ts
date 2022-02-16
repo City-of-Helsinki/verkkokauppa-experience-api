@@ -2,6 +2,7 @@ import { URL } from 'url'
 import { getPublicServiceConfiguration } from '@verkkokauppa/configuration-backend'
 import type { Order, VismaStatus } from '@verkkokauppa/payment-backend'
 import { logger } from '@verkkokauppa/core'
+import { PaymentType } from '@verkkokauppa/payment-backend'
 
 export const createUserRedirectUrl = async ({
   order,
@@ -13,11 +14,11 @@ export const createUserRedirectUrl = async ({
   if (!process.env.REDIRECT_PAYMENT_URL_BASE) {
     throw new Error('No default redirect url specified')
   }
-  const redirectUrl = new URL(process.env.REDIRECT_PAYMENT_URL_BASE)
+  let internalRedirectUrl = new URL(process.env.REDIRECT_PAYMENT_URL_BASE)
 
   if (!vismaStatus.valid) {
-    redirectUrl.pathname = 'failure'
-    return redirectUrl
+    internalRedirectUrl.pathname = 'failure'
+    return internalRedirectUrl
   }
 
   const serviceSpecificRedirectUrl = await getServiceSpecificRedirectUrl({
@@ -25,20 +26,14 @@ export const createUserRedirectUrl = async ({
     vismaStatus,
   })
 
-  // No service specific configuration set OR can still retry payment in checkout
-  if (isPaid(vismaStatus)) {
-    redirectUrl.pathname = `${order.orderId}/success`
-  } else if (canRetryPayment(vismaStatus)) {
-    redirectUrl.pathname = `${order.orderId}/summary`
-    redirectUrl.searchParams.append('paymentPaid', 'false')
-  } else if (isAuthorized(vismaStatus)) {
-    redirectUrl.pathname = `${order.orderId}/card-update-success`
-    return redirectUrl
-  } else {
-    redirectUrl.pathname = `${order.orderId}/failure`
-  }
+  internalRedirectUrl = createPaymentRedirectUrlFromVismaStatus(
+    vismaStatus,
+    order,
+    internalRedirectUrl,
+    true
+  )
 
-  return serviceSpecificRedirectUrl || redirectUrl
+  return serviceSpecificRedirectUrl || internalRedirectUrl
 }
 
 export const parseOrderIdFromRedirect = (p: { query: any }) => {
@@ -46,6 +41,35 @@ export const parseOrderIdFromRedirect = (p: { query: any }) => {
 
   const result = query.ORDER_NUMBER?.toString().split('_')
   return result[0]
+}
+
+export const createPaymentRedirectUrlFromVismaStatus = (
+  vismaStatus: VismaStatus,
+  order: Order,
+  redirectUrl: URL,
+  isInternalUrl: boolean
+) => {
+  // use empty orderId when using
+  let orderId = ''
+  // If using internal url we need to append orderId to path
+  if (isInternalUrl) {
+    orderId = order.orderId
+  }
+  // No service specific configuration set OR can still retry payment in checkout
+  if (isPaid(vismaStatus)) {
+    redirectUrl.pathname = `${orderId}/success`
+  } else if (canRetryPayment(vismaStatus)) {
+    redirectUrl.pathname = `${orderId}/summary`
+    redirectUrl.searchParams.append('paymentPaid', 'false')
+  } else if (isAuthorized(vismaStatus) && isCardRenewal(vismaStatus)) {
+    redirectUrl.pathname = `${orderId}/card-update-success`
+  } else if (isCardRenewal(vismaStatus)) {
+    // If card renewal is not authorized it must be failed, so forward to card-update-failed
+    redirectUrl.pathname = `${orderId}/card-update-failed`
+  } else {
+    redirectUrl.pathname = `${orderId}/failure`
+  }
+  return redirectUrl
 }
 
 const isPaid = (p: VismaStatus) => {
@@ -58,14 +82,18 @@ const canRetryPayment = (p: VismaStatus) => {
   return !paymentPaid && canRetry
 }
 
-const isFailure = (p: VismaStatus) => {
-  const { paymentPaid, canRetry } = p
-  return !paymentPaid && !canRetry
-}
+// const isFailure = (p: VismaStatus) => {
+//   const { paymentPaid, canRetry } = p
+//   return !paymentPaid && !canRetry
+// }
 
 export const isAuthorized = (p: VismaStatus) => {
   const { paymentPaid, authorized } = p
   return !paymentPaid && authorized
+}
+
+export const isCardRenewal = (vismaStatus: VismaStatus) => {
+  return vismaStatus.paymentType == PaymentType.CARD_RENEWAL.toString()
 }
 
 const getServiceSpecificRedirectUrl = async (p: {
@@ -84,21 +112,20 @@ const getServiceSpecificRedirectUrl = async (p: {
       !canRetryPayment(vismaStatus)
     ) {
       // Use service redirect url if configuration is set
-      const redirectUrl = new URL(
+      let redirectUrl = new URL(
         paymentReturnUrlConfiguration.configurationValue
       )
 
       redirectUrl.searchParams.append('orderId', order.orderId)
-      if (isPaid(vismaStatus)) {
-        redirectUrl.pathname = 'success'
-        return redirectUrl
-      } else if (isAuthorized(vismaStatus)) {
-        redirectUrl.pathname = 'authorized'
-        return redirectUrl
-      } else if (isFailure(vismaStatus)) {
-        redirectUrl.pathname = 'failure'
-        return redirectUrl
-      }
+
+      redirectUrl = createPaymentRedirectUrlFromVismaStatus(
+        vismaStatus,
+        order,
+        redirectUrl,
+        false
+      )
+
+      return redirectUrl
     }
   } catch (e) {
     logger.error(e) // Return undefined if no service specific url can be generated
