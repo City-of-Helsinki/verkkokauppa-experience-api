@@ -51,6 +51,7 @@ export type VismaStatus = {
   canRetry: boolean
   valid: boolean
   authorized?: boolean
+  paymentType: string
 }
 
 export type VismaPayResponse = {
