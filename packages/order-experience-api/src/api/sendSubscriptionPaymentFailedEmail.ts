@@ -5,8 +5,9 @@ import { sendSubscriptionPaymentFailedEmailToCustomer } from '@verkkokauppa/mess
 import {
   getOrderAdmin,
   getSubscriptionAdmin,
+  incrementValidationFailedEmailSentCountAdmin,
 } from '@verkkokauppa/order-backend'
-import { validateApiKey } from '@verkkokauppa/configuration-backend'
+import { validateAdminApiKey } from '@verkkokauppa/configuration-backend'
 
 const requestSchema = yup.object().shape({
   params: yup.object().shape({
@@ -30,7 +31,8 @@ export class SendSubscriptionPaymentFailedEmail extends AbstractController<
       params: { id },
       headers: { 'api-key': apiKey },
     } = req
-    await validateApiKey({ apiKey, namespace: 'admin' })
+    await validateAdminApiKey({ apiKey })
+
     // Assumption: subscription is currently on its first order
     const subscription = await getSubscriptionAdmin({ id })
     const order = await getOrderAdmin({ orderId: subscription.orderId })
@@ -42,7 +44,9 @@ export class SendSubscriptionPaymentFailedEmail extends AbstractController<
       emailHeader:
         'Maksukortin veloitus epäonnistui | Failed to charge your payment card | Debiteringen av betalkortet misslyckades',
     })
-
-    return this.success(res, {})
+    const data = await incrementValidationFailedEmailSentCountAdmin({
+      subscriptionId: subscription.subscriptionId,
+    })
+    return this.success(res, { count: data })
   }
 }
