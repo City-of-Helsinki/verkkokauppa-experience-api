@@ -61,7 +61,7 @@ export class SendSubscriptionContractEmail extends AbstractController<
 
     const { template: body } = await createEmailTemplate({
       fileName: 'subscriptionContract',
-      templateParams: {},
+      templateParams: { subscription, merchant },
     })
 
     await sendEmail({

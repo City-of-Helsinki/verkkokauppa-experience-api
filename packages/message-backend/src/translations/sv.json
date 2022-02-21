@@ -45,5 +45,23 @@
       "linkText": "Länk",
       "cityText": "Helsingfors stad"
     }
+  },
+  "subscriptionContractEmail": {
+    "merchant": {
+      "h1": "Säljarens uppgifter",
+      "p1": "Om du har frågor kring beställningen eller du vill återkalla beställningen, vänligen kontakta säljaren.",
+      "p2": "Säljaren tillställer vid behov särskilda extra anvisningar för användning eller leverans av servicen/produkten.",
+      "businessId": "FO-nummer"
+    },
+    "daily": "dag",
+    "weekly": "vecka",
+    "monthly": "månad",
+    "yearly": "år",
+    "h1": "Beställningsavtal:",
+    "p1": "Tack för din beställning",
+    "p2": "Du har valt fortlöpande beställning som beställningstyp. Bifogade hittar du beställningsavtalet och avtalsvillkoren för fortlöpande beställning.",
+    "p3_1": "Avgifter för din beställning debiteras i fortsättningen från det betalkort som du använde i samband med beställningen. Debiteringsdatum för nästa avgift är",
+    "p3_2": "Därefter debiteras avgifterna för beställningen varje",
+    "p3_3": "."
   }
 }
