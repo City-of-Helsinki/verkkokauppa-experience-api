@@ -61,13 +61,16 @@ export class SendSubscriptionContractEmail extends AbstractController<
 
     const { template: body } = await createEmailTemplate({
       fileName: 'subscriptionContract',
-      templateParams: { subscription, merchant },
+      templateParams: {
+        subscription: { createdAt: new Date().toISOString(), ...subscription },
+        merchant,
+      },
     })
 
     await sendEmail({
       id: subscription.subscriptionId,
       receiver: subscription.customerEmail,
-      header: 'Tilaussopimus',
+      header: `Tilaussopimus: ${subscription.productName} / Subscription agreement: ${subscription.productName} / Beställningsavtal: ${subscription.productName}`,
       body,
       attachments: {
         'tilaussopimus.pdf': subscriptionContractPdf,
