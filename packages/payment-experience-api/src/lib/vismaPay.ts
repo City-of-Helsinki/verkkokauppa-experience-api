@@ -82,11 +82,6 @@ const canRetryPayment = (p: VismaStatus) => {
   return !paymentPaid && canRetry
 }
 
-// const isFailure = (p: VismaStatus) => {
-//   const { paymentPaid, canRetry } = p
-//   return !paymentPaid && !canRetry
-// }
-
 export const isAuthorized = (p: VismaStatus) => {
   const { paymentPaid, authorized } = p
   return !paymentPaid && authorized
