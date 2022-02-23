@@ -7,6 +7,7 @@ import type { Request, Response } from 'express'
 import {
   createUserRedirectUrl,
   isAuthorized,
+  isCardRenewal,
   parseOrderIdFromRedirect,
 } from '../lib/vismaPay'
 import { URL } from 'url'
@@ -57,24 +58,21 @@ export class OnlinePaymentReturnController extends AbstractController {
           OnlinePaymentReturnController.getFailureRedirectUrl().toString()
         )
       }
+
       const order = await getOrderAdmin({ orderId })
       const redirectUrl = await createUserRedirectUrl({
         order,
         vismaStatus,
       })
-      if (vismaStatus.paymentPaid) {
-        logger.info(`Send receipt for order ${orderId}`)
-        try {
-          await this.sendReceipt(order)
-        } catch (e) {
-          // Skip errors for receipt sending
-          logger.error(e)
-        }
-      }
-      if (isAuthorized(vismaStatus)) {
+      // Function contains internal checks when to send receipt.
+      await this.sendReceiptToCustomer(vismaStatus, orderId, order)
+
+      // Only cancel authorized card renewals.
+      if (isAuthorized(vismaStatus) && isCardRenewal(vismaStatus)) {
         const cancelled = await this.cancelAuthorizationPayments(order)
         // Error count more than 0
-        if (cancelled[1] != 0) {
+        let cancelledCount = cancelled[1]
+        if (cancelledCount != 0) {
           return result.redirect(
             302,
             OnlinePaymentReturnController.getCardRenewalFailureRedirectUrl(
@@ -83,6 +81,7 @@ export class OnlinePaymentReturnController extends AbstractController {
           )
         }
       }
+
       return result.redirect(302, redirectUrl.toString())
     } catch (error) {
       logger.error(error)
@@ -93,6 +92,23 @@ export class OnlinePaymentReturnController extends AbstractController {
         302,
         OnlinePaymentReturnController.getFailureRedirectUrl().toString()
       )
+    }
+  }
+
+  private async sendReceiptToCustomer(
+    vismaStatus: any,
+    orderId: string,
+    order: any
+  ) {
+    // Send email only when payment is paid and not an card renewal.
+    if (vismaStatus.paymentPaid && !isCardRenewal(vismaStatus)) {
+      logger.info(`Send receipt for order ${orderId}`)
+      try {
+        await this.sendReceipt(order)
+      } catch (e) {
+        // Skip errors for receipt sending
+        logger.error(e)
+      }
     }
   }
 
@@ -111,7 +127,7 @@ export class OnlinePaymentReturnController extends AbstractController {
       throw new Error('No default redirect url specified')
     }
     const redirectUrl = new URL(process.env.REDIRECT_PAYMENT_URL_BASE)
-    redirectUrl.pathname = `${orderId}/card-update-success`
+    redirectUrl.pathname = `${orderId}/card-update-failed`
 
     return redirectUrl.toString()
   }
