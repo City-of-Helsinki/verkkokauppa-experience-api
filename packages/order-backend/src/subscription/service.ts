@@ -106,6 +106,30 @@ export const getSubscriptionAdmin = async (p: {
   }
 }
 
+export const incrementValidationFailedEmailSentCountAdmin = async (p: {
+  subscriptionId: string
+}): Promise<Subscription> => {
+  const { subscriptionId } = p
+  checkBackendUrlExists()
+
+  const url = `${process.env.ORDER_BACKEND_URL}/subscription-admin/validation-failed-email-sent-increment`
+  try {
+    const result = await axios.get<Subscription>(url, {
+      params: { subscriptionId },
+    })
+    return result.data
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new SubscriptionNotFoundError(subscriptionId)
+    }
+    throw new ExperienceFailure({
+      code: 'failed-to-increment-validation-failed-email-count-subscription',
+      message: `Failed to increment validation email sent count to subscription ${subscriptionId}`,
+      source: e,
+    })
+  }
+}
+
 export const searchActiveSubscriptions = async (p: {
   activeAtDate: string
   customerEmail: string
