@@ -29,6 +29,24 @@
       }
     }
   },
+  "subscriptionContractEmail": {
+    "merchant": {
+      "h1": "Myyjän tiedot",
+      "p1": "Mikäli sinulla on tilaukseen liittyviä kysymyksiä tai haluat peruuttaa tilauksen, olethan yhteydessä myyjään.",
+      "p2": "Myyjä toimittaa tarvittaessa erikseen lisäohjeet palvelun/tuotteen käyttöön tai toimitukseen liittyen.",
+      "businessId": "Y-tunnus"
+    },
+    "daily": "vrk",
+    "weekly": "vk",
+    "monthly": "kk",
+    "yearly": "v",
+    "h1": "Tilaussopimus:",
+    "p1": "Kiitos tilauksestasi",
+    "p2": "Olet valinnut tilaustyypiksi jatkuvan tilauksen. Liitteenä löydät jatkuvaa tilausta koskevan tilaussopimuksen sekä sopimusehdot.",
+    "p3_1": "Tilaukseesi liittyvät maksut veloitetaan jatkossa tilauksen yhteydessä käyttämältäsi maksukortilta. Seuraavan maksun veloituspäivä on",
+    "p3_2": "Tämän jälkeen tilaukseen liittyvät maksut veloitetaan",
+    "p3_3": " välein."
+  },
   "subscriptionContractPdf": {
     "c4_2_3_daily": "vuorokauden",
     "c4_2_3_weekly": "viikon",

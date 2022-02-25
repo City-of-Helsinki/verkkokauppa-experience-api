@@ -45,5 +45,23 @@
       "linkText": "Link",
       "cityText": "City of Helsinki"
     }
+  },
+  "subscriptionContractEmail": {
+    "merchant": {
+      "h1": "Vendor details",
+      "p1": "If you have any questions related to your subscription or would like to cancel the subscription, please contact the vendor.",
+      "p2": "If necessary, the vendor will provide you with additional instructions related to the use or delivery of the service/product.",
+      "businessId": "Business ID"
+    },
+    "daily": "day(s)",
+    "weekly": "week(s)",
+    "monthly": "month(s)",
+    "yearly": "year(s)",
+    "h1": "Subscription agreement:",
+    "p1": "Thank you for your subscription",
+    "p2": "You have selected subscription as the type of order. Enclosed here are the subscription agreement and the terms and conditions of the agreement.",
+    "p3_1": "Payments related to your subscription will be charged to the payment card you used when making the subscription. The next payment will be charged on",
+    "p3_2": "After that, the payments related to the subscription will be charged every",
+    "p3_3": "."
   }
 }
