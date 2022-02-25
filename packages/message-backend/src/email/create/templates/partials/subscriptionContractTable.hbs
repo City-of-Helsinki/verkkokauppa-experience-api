@@ -1,0 +1,138 @@
+<table class="email-wrapper" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+    <tr>
+        <td align="center">
+            <table class="email-content" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                <tr>
+                    <td class="email-body" width="100%" cellpadding="0" cellspacing="0">
+                        <table class="email-body_inner" align="center" width="414" cellpadding="0" cellspacing="0" role="presentation">
+                            <tr>
+                                <td class="content-cell">
+                                    <div class="f-fallback">
+                                        <h1 style="margin-bottom: 0">{{I18n 'subscriptionContractEmail.h1'}} {{subscription.productName}}</h1>
+                                        <table class="purchase" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                                            <tr>
+                                                <td colspan="2">
+                                                    <table class="purchase_content" width="100%" cellpadding="0" cellspacing="0">
+                                                        <tr class="pb-1">
+                                                            <td width="100%" class="purchase_item pb-1">
+                                                                <span class="f-fallback">
+                                                                    {{I18n 'subscriptionContractEmail.p1'}} {{subscription.subscriptionId}} {{DateTime subscription.createdAt}}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="pb-1">
+                                                            <td width="100%" class="purchase_item pb-1">
+                                                                <span class="f-fallback">
+                                                                    {{I18n 'subscriptionContractEmail.p2'}}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{I18n 'subscriptionContractEmail.p3_1'}} {{Date subscription.renewalDate}}. {{I18n 'subscriptionContractEmail.p3_2'}} {{subscription.periodFrequency}} {{I18n 'subscriptionContractEmail.' subscription.periodUnit}}{{I18n 'subscriptionContractEmail.p3_3'}}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="email-body" width="100%" cellpadding="0" cellspacing="0">
+                        <table class="email-body_inner" align="center" width="414" cellpadding="0" cellspacing="0" role="presentation">
+                            <tr>
+                                <td class="content-cell">
+                                    <div class="f-fallback">
+                                        <hr>
+                                        <h1 style="margin-bottom: 0; border-top: 1rem solid transparent;">{{I18n 'subscriptionContractEmail.merchant.h1'}}</h1>
+                                        <table class="purchase" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                                            <tr>
+                                                <td colspan="2">
+                                                    <table class="purchase_content" width="100%" cellpadding="0" cellspacing="0">
+                                                        <tr>
+                                                            <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{merchant.merchantName}}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{merchant.merchantStreet}}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{merchant.merchantZip}} {{merchant.merchantCity}}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{merchant.merchantEmail}}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{merchant.merchantPhone}}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        {{#if merchant.merchantBusinessId}}
+                                                            <tr>
+                                                                <td width="100%" class="purchase_item">
+                                                                    <span class="f-fallback">
+                                                                        {{I18n 'subscriptionContractEmail.merchant.businessId'}} {{merchant.merchantBusinessId}}
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                        {{/if}}
+                                                        <tr class="pb-1">
+                                                            <td width="100%" class="purchase_item pb-1">
+                                                                <span class="f-fallback">
+                                                                    <a href="{{merchant.merchantTermsOfServiceUrl}}" target="_blank">{{merchant.merchantTermsOfServiceUrl}}</a>
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="pb-1">
+                                                            <td width="100%" class="purchase_item pb-1">
+                                                                <span class="f-fallback">
+                                                                    {{I18n 'subscriptionContractEmail.merchant.p1'}}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{I18n 'subscriptionContractEmail.merchant.p2'}}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                {{> footerRow}}
+            </table>
+        </td>
+    </tr>
+</table>
