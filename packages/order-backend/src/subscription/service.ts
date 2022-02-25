@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { Subscription } from './types'
+import type { Subscription, SubscriptionsList } from './types'
 import type { Order, OrderItemMeta } from '../types'
 import { ExperienceFailure } from '@verkkokauppa/core'
 import { OrderNotFoundError, SubscriptionNotFoundError } from '../errors'
@@ -77,6 +77,31 @@ export const getSubscription = async (p: {
     throw new ExperienceFailure({
       code: 'failed-to-get-subscription',
       message: `Failed to get subscription ${id}`,
+      source: e,
+    })
+  }
+}
+
+export const listSubscriptions = async (p: {
+  orderId: string
+  user: string
+}): Promise<SubscriptionsList> => {
+  const { orderId, user: userId } = p
+  checkBackendUrlExists()
+
+  const url = `${process.env.ORDER_BACKEND_URL}/subscription-get-by-order-id`
+  try {
+    const result = await axios.get<SubscriptionsList>(url, {
+      params: { orderId, userId },
+    })
+    return result.data
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new SubscriptionNotFoundError(orderId)
+    }
+    throw new ExperienceFailure({
+      code: 'failed-to-list-subscriptions',
+      message: `Failed to list subscription with order id ${orderId}`,
       source: e,
     })
   }

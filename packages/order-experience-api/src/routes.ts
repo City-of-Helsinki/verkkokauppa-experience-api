@@ -22,6 +22,7 @@ import { SendSubscriptionPaymentFailedEmail } from './api/sendSubscriptionPaymen
 import { SetSubscriptionItemMetaController } from './api/setSubscriptionItemMeta'
 import { withAuthentication } from '@verkkokauppa/auth-helsinki-profile'
 import { RecreateSubscriptionController } from './api/recreateSubscription'
+import { ListSubscriptionsController } from './api/listSubscriptions'
 
 const createController = new CreateController()
 const cartToOrderController = new CartToOrder()
@@ -52,6 +53,7 @@ const cancelSubscription = new (withAuthentication(CancelSubscription))()
 const sendSubscriptionContractEmail = new SendSubscriptionContractEmail()
 const sendSubscriptionPaymentFailedEmail = new SendSubscriptionPaymentFailedEmail()
 const recreateSubscription = new RecreateSubscriptionController()
+const listSubscriptionsController = new ListSubscriptionsController()
 
 const router = Router()
 router.post('/', (req, res) => createController.execute(req, res))
@@ -107,6 +109,9 @@ router.post('/subscription/:id/emailSubscriptionPaymentFailed', (req, res) =>
 )
 router.post('/subscription/:id/recreate', (req, res) =>
   recreateSubscription.execute(req, res)
+)
+router.get('/subscriptions/get-by-order-id/:orderId', (req, res) =>
+  listSubscriptionsController.execute(req, res)
 )
 
 router.post('/instantPurchase', (req, res) =>
