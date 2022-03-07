@@ -82,6 +82,31 @@ export const getSubscription = async (p: {
   }
 }
 
+export const listSubscriptions = async (p: {
+  orderId: string
+  user: string
+}): Promise<Subscription[]> => {
+  const { orderId, user: userId } = p
+  checkBackendUrlExists()
+
+  const url = `${process.env.ORDER_BACKEND_URL}/subscription-get-by-order-id`
+  try {
+    const result = await axios.get<Subscription[]>(url, {
+      params: { orderId, userId },
+    })
+    return result.data
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new SubscriptionNotFoundError(orderId)
+    }
+    throw new ExperienceFailure({
+      code: 'failed-to-list-subscriptions',
+      message: `Failed to list subscription with order id ${orderId}`,
+      source: e,
+    })
+  }
+}
+
 export const getSubscriptionAdmin = async (p: {
   id: string
 }): Promise<Subscription> => {
