@@ -49,7 +49,3 @@ export interface SubscriptionItemMeta {
   visibleInCheckout: string
   ordinal: string
 }
-
-export type SubscriptionsList = {
-  [key: string]: Subscription
-}
