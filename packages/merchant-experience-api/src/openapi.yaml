@@ -1,0 +1,158 @@
+openapi: 3.0.3
+info:
+  title: Merchant experience API
+  version: 1.0.0
+servers:
+  - url: /v1/merchant
+components:
+  schemas:
+    ErrorBody:
+      type: object
+      required:
+        - errors
+      properties:
+        errors:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required:
+              - code
+              - message
+            properties:
+              code:
+                type: string
+              message:
+                type: string
+    Configurations:
+      type: object
+      properties:
+        merchantName:
+          type: string
+        merchantStreet:
+          type: string
+        merchantZip:
+          type: string
+        merchantCity:
+          type: string
+        merchantEmail:
+          type: string
+        merchantPhone:
+          type: string
+        merchantUrl:
+          type: string
+        merchantTermsOfServiceUrl:
+          type: string
+        merchantPaymentWebhookUrl:
+          type: string
+        merchantOrderWebhookUrl:
+          type: string
+        merchantSubscriptionWebhookUrl:
+          type: string
+        merchantSubscriptionTermsOfServiceUrl:
+          type: string
+        merchantBusinessId:
+          type: string
+        orderCreatedRedirectUrl:
+          type: string
+        orderCancelRedirectUrl:
+          type: string
+        subscriptionPriceUrl:
+          type: string
+  parameters:
+    ApiKey:
+      name: api-key
+      in: header
+      description: Api key for the namespace
+      required: true
+      schema:
+        type: string
+  responses:
+    InvalidApiKey:
+      description: Invalid api key
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
+    RequestValidationFailed:
+      description: Invalid request data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
+paths:
+  /{namespace}:
+    parameters:
+      - name: namespace
+        in: path
+        description: Merchant namespace
+        required: true
+        schema:
+          type: string
+    get:
+      description: Get merchant configurations
+      responses:
+        '200':
+          description: An object of merchant configurations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  merchantName:
+                    type: string
+                  merchantStreet:
+                    type: string
+                  merchantZip:
+                    type: string
+                  merchantCity:
+                    type: string
+                  merchantEmail:
+                    type: string
+                  merchantPhone:
+                    type: string
+                  merchantUrl:
+                    type: string
+                  merchantTermsOfServiceUrl:
+                    type: string
+                  merchantPaymentWebhookUrl:
+                    type: string
+                  merchantOrderWebhookUrl:
+                    type: string
+                  merchantSubscriptionWebhookUrl:
+                    type: string
+                  merchantBusinessId:
+                    type: string
+                  orderCreatedRedirectUrl:
+                    type: string
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      description: Insert merchant configurations
+      parameters:
+        - $ref: '#/components/parameters/ApiKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Configurations'
+      responses:
+        '201':
+          description: An object of merchant configurations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Configurations'
+        '400':
+          $ref: '#/components/responses/RequestValidationFailed'
+        '403':
+          $ref: '#/components/responses/InvalidApiKey'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
