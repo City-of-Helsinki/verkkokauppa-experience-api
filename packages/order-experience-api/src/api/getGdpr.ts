@@ -364,7 +364,7 @@ const orderToNode = (o: Order): Node => {
 
 const requestSchema = yup.object().shape({
   params: yup.object().shape({
-    user: yup.string().required(),
+    id: yup.string().required(),
   }),
   headers: yup.object().shape({
     user: yup.string().required(),
@@ -400,7 +400,7 @@ export class GetGdprController extends withAuthentication(
     res: Response
   ) {
     const {
-      params: { user: userParam },
+      params: { id: userParam },
       headers: { user },
     } = req
     const displayable = req.query.displayable ?? false

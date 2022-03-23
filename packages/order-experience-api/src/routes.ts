@@ -121,6 +121,8 @@ router.post('/instantPurchase', (req, res) =>
   instantPurchaseController.execute(req, res)
 )
 
-router.get('/gdpr-api/v1', (req, res) => getGdprController.execute(req, res))
+router.get('/gdpr-api/v1/profiles/:id', (req, res) =>
+  getGdprController.execute(req, res)
+)
 
 export default router
