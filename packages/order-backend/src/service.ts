@@ -372,3 +372,24 @@ export const getOrdersBySubscription = async (p: {
     })
   }
 }
+
+export const getOrdersByUserAdmin = async (p: {
+  user: string
+}): Promise<Order[]> => {
+  const { user: userId } = p
+  const url = `${process.env.ORDER_BACKEND_URL}/order-admin/get-all`
+  try {
+    const res = await axios.get(url, {
+      params: { userId },
+    })
+    return res.data.map((order: OrderWithItemsBackendResponse) =>
+      transFormBackendOrder(order)
+    )
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-get-orders',
+      message: `Failed to get orders for user ${userId}`,
+      source: e,
+    })
+  }
+}
