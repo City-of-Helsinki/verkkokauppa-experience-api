@@ -7,7 +7,7 @@ import {
 import { getOrderAdmin } from '@verkkokauppa/order-backend'
 import * as yup from 'yup'
 import { validateAdminApiKey } from '@verkkokauppa/configuration-backend'
-import { OnlinePaymentReturnController } from './onlinePaymentReturnController'
+import { sendReceiptToCustomer } from '../lib/sendEmail'
 
 const requestSchema = yup.object().shape({
   params: yup.object().shape({
@@ -37,16 +37,11 @@ export class SendReceiptPaymentAdminInternalController extends AbstractControlle
     const dto = new Data(await getPaymentForOrderAdmin(order))
     // Check that status is paid_online before sending
     const vismaStatus = {
-      paymentPaid: dto.serialize().paymentStatus === PaymentStatus.PAID_ONLINE,
+      paymentPaid: dto.serialize().status === PaymentStatus.PAID_ONLINE,
     }
 
-    const onlinePaymentReturnController = new OnlinePaymentReturnController()
     // Function contains internal checks when to send receipt.
-    await onlinePaymentReturnController.sendReceiptToCustomer(
-      vismaStatus,
-      orderId,
-      order
-    )
+    await sendReceiptToCustomer(vismaStatus, orderId, order)
 
     return this.success<any>(result, dto.serialize())
   }
