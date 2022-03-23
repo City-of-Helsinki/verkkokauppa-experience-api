@@ -95,7 +95,7 @@ export class OnlinePaymentReturnController extends AbstractController {
     }
   }
 
-  private async sendReceiptToCustomer(
+  public async sendReceiptToCustomer(
     vismaStatus: any,
     orderId: string,
     order: any
