@@ -1,8 +1,4 @@
-import {
-  AbstractController,
-  ExperienceFailure,
-  logger,
-} from '@verkkokauppa/core'
+import { AbstractController, logger } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
 import {
   createUserRedirectUrl,
@@ -15,13 +11,11 @@ import { getOrderAdmin } from '@verkkokauppa/order-backend'
 import {
   cancelPaymentAdmin,
   checkVismaReturnUrl,
-  getPaymentForOrder,
   getPaymentsForOrderAdmin,
   Order,
   PaymentStatus,
 } from '@verkkokauppa/payment-backend'
-import { getMerchantDetailsForOrder } from '@verkkokauppa/configuration-backend'
-import { sendOrderConfirmationEmailToCustomer } from '@verkkokauppa/message-backend'
+import { sendReceiptToCustomer } from '../lib/sendEmail'
 
 export class OnlinePaymentReturnController extends AbstractController {
   protected readonly requestSchema = null
@@ -65,7 +59,7 @@ export class OnlinePaymentReturnController extends AbstractController {
         vismaStatus,
       })
       // Function contains internal checks when to send receipt.
-      await this.sendReceiptToCustomer(vismaStatus, orderId, order)
+      await sendReceiptToCustomer(vismaStatus, orderId, order)
 
       // Only cancel authorized card renewals.
       if (isAuthorized(vismaStatus) && isCardRenewal(vismaStatus)) {
@@ -95,23 +89,6 @@ export class OnlinePaymentReturnController extends AbstractController {
     }
   }
 
-  private async sendReceiptToCustomer(
-    vismaStatus: any,
-    orderId: string,
-    order: any
-  ) {
-    // Send email only when payment is paid and not an card renewal.
-    if (vismaStatus.paymentPaid && !isCardRenewal(vismaStatus)) {
-      logger.info(`Send receipt for order ${orderId}`)
-      try {
-        await this.sendReceipt(order)
-      } catch (e) {
-        // Skip errors for receipt sending
-        logger.error(e)
-      }
-    }
-  }
-
   private static getFailureRedirectUrl() {
     if (!process.env.REDIRECT_PAYMENT_URL_BASE) {
       throw new Error('No default redirect url specified')
@@ -130,30 +107,6 @@ export class OnlinePaymentReturnController extends AbstractController {
     redirectUrl.pathname = `${orderId}/card-update-failed`
 
     return redirectUrl.toString()
-  }
-
-  public async sendReceipt(order: Order) {
-    const payments = await getPaymentForOrder(order)
-    const merchant = await getMerchantDetailsForOrder(order)
-    const orderWithPayments = {
-      ...order,
-      payment: payments,
-      merchant,
-    }
-    const email = await sendOrderConfirmationEmailToCustomer({
-      order: orderWithPayments,
-      emailHeader:
-        'Tilausvahvistus ja kuitti / Order confirmation and receipt / Beställningsbekräftelse och kvitto',
-      sendTo: orderWithPayments?.customer?.email || '',
-    })
-    if (email.error !== '') {
-      throw new ExperienceFailure({
-        code: 'failed-to-send-order-confirmation-email',
-        message: `Cannot send order confirmation email to customer`,
-        source: email.error,
-      })
-    }
-    return email
   }
 
   public async cancelAuthorizationPayments(order: Order) {
