@@ -23,6 +23,7 @@ import { SetSubscriptionItemMetaController } from './api/setSubscriptionItemMeta
 import { withAuthentication } from '@verkkokauppa/auth-helsinki-profile'
 import { RecreateSubscriptionController } from './api/recreateSubscription'
 import { ListSubscriptionsController } from './api/listSubscriptions'
+import { DeleteGdprController } from './api/deleteGdpr'
 
 const createController = new CreateController()
 const cartToOrderController = new CartToOrder()
@@ -54,6 +55,7 @@ const sendSubscriptionContractEmail = new SendSubscriptionContractEmail()
 const sendSubscriptionPaymentFailedEmail = new SendSubscriptionPaymentFailedEmail()
 const recreateSubscription = new RecreateSubscriptionController()
 const listSubscriptionsController = new ListSubscriptionsController()
+const deleteGdprController = new DeleteGdprController()
 
 const router = Router()
 router.post('/', (req, res) => createController.execute(req, res))
@@ -116,6 +118,10 @@ router.get('/subscriptions/get-by-order-id/:orderId', (req, res) =>
 
 router.post('/instantPurchase', (req, res) =>
   instantPurchaseController.execute(req, res)
+)
+
+router.delete('/gdpr-api/v1/profiles/:id', (req, res) =>
+  deleteGdprController.execute(req, res)
 )
 
 export default router
