@@ -9,6 +9,7 @@ import { Health } from './api/health'
 import { GetPaymentAdminController } from './api/getPaymentAdminController'
 import { withAuthentication } from '@verkkokauppa/auth-helsinki-profile'
 import { SubscriptionTokenizeController } from './api/subscriptionTokenizeController'
+import { SendReceiptPaymentAdminInternalController } from './api/sendReceiptPaymentAdminInternalController'
 
 const createPaymentController = new (withAuthentication(
   CreatePaymentController
@@ -17,6 +18,7 @@ const getPaymentMethodListCtrl = new (withAuthentication(
   GetPaymentMethodListController
 ))()
 const onlinePaymentReturnController = new OnlinePaymentReturnController()
+const sendReceiptPaymentAdminInternalController = new SendReceiptPaymentAdminInternalController()
 const onlinePaymentNotifyController = new OnlinePaymentNotifyController()
 const getPaymentController = new (withAuthentication(GetPaymentController))()
 const getPaymentAdminController = new GetPaymentAdminController()
@@ -43,6 +45,10 @@ router.get('/onlinePayment/notify', (req, res) =>
 )
 router.get('/subscription/:subscriptionId/tokenize', (req, res) =>
   subscriptionTokenizeController.execute(req, res)
+)
+
+router.get('/send/receipt/:orderId', (req, res) =>
+  sendReceiptPaymentAdminInternalController.execute(req, res)
 )
 
 export default router
