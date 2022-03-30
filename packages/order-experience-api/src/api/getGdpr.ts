@@ -429,7 +429,7 @@ export class GetGdprController extends withAuthentication(
     }
 
     const profile: Node = {
-      key: 'user',
+      key: 'profile',
       children: [
         {
           key: 'subscriptions',
