@@ -6,11 +6,12 @@
   "scripts": {
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
     "prepack": "yarn build",
-    "build": "yarn clean && yarn compile",
+    "build": "yarn clean && yarn compile && yarn copy:openapi",
     "compile": "tsc --build && cp \"./package.json\" ./dist/",
     "lint": "eslint \"./src/**/*.{ts,tsx}\" --max-warnings=0",
     "start": "node dist/index.js",
-    "dev": "NODE_ENV=development nodemon -L src/index.ts"
+    "dev": "NODE_ENV=development nodemon -L src/index.ts",
+    "copy:openapi": "cp ./src/openapi.yaml ./dist/"
   },
   "dependencies": {
     "@verkkokauppa/auth-helsinki-profile": "^1.0.0",
