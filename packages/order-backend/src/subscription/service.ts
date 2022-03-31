@@ -107,6 +107,27 @@ export const listSubscriptions = async (p: {
   }
 }
 
+export const getSubscriptionsByUserAdmin = async (p: {
+  user: string
+}): Promise<Subscription[]> => {
+  const { user: userId } = p
+  checkBackendUrlExists()
+
+  const url = `${process.env.ORDER_BACKEND_URL}/subscription-admin/get-all`
+  try {
+    const result = await axios.get<Subscription[]>(url, {
+      params: { userId },
+    })
+    return result.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-get-subscriptions',
+      message: `Failed to get subscriptions for user ${userId}`,
+      source: e,
+    })
+  }
+}
+
 export const getSubscriptionAdmin = async (p: {
   id: string
 }): Promise<Subscription> => {
