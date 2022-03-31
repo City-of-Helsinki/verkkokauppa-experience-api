@@ -1,0 +1,1027 @@
+openapi: 3.0.3
+info:
+  title: Order experience API
+  description: Implements public endpoints to manage orders and subscriptions
+  version: 1.0.0
+servers:
+  - url: /v1/order
+components:
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      description: Api key for a namespace issued by talpa verkkokauppa
+      in: header
+      name: api-key
+    HelsinkiProfile:
+      type: http
+      description: jwt issued by Helsinki Profile
+      scheme: bearer
+      bearerFormat: jwt
+    UserId:
+      type: apiKey
+      description: Id (e.g. uuid4) to identify anonymous users
+      in: header
+      name: user
+  schemas:
+    ErrorBody:
+      type: object
+      required:
+        - errors
+      properties:
+        errors:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required:
+              - code
+              - message
+            properties:
+              code:
+                type: string
+              message:
+                type: string
+    Customer:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+        - phone
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+    Order:
+      type: object
+      required:
+        - orderId
+        - namespace
+        - user
+        - createdAt
+      properties:
+        orderId:
+          type: string
+        namespace:
+          type: string
+        user:
+          type: string
+        createdAt:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        priceNet:
+          type: string
+        priceVat:
+          type: string
+        priceTotal:
+          type: string
+        checkoutUrl:
+          type: string
+        receiptUrl:
+          type: string
+        loggedInCheckoutUrl:
+          type: string
+        customer:
+          $ref: '#/components/schemas/Customer'
+        status:
+          type: string
+        subscriptionId:
+          type: string
+        type:
+          $ref: '#/components/schemas/OrderType'
+    OrderItem:
+      type: object
+      required:
+        - productId
+        - productName
+        - quantity
+        - unit
+        - rowPriceNet
+        - rowPriceVat
+        - rowPriceTotal
+        - priceNet
+        - priceGross
+        - priceVat
+        - vatPercentage
+      properties:
+        orderItemId:
+          type: string
+        orderId:
+          type: string
+        productId:
+          type: string
+        productName:
+          type: string
+        productLabel:
+          type: string
+        productDescription:
+          type: string
+        quantity:
+          type: integer
+          format: int32
+        unit:
+          type: string
+        rowPriceNet:
+          type: string
+        rowPriceVat:
+          type: string
+        rowPriceTotal:
+          type: string
+        periodUnit:
+          type: string
+        periodFrequency:
+          type: integer
+          format: int32
+        priceNet:
+          type: string
+        priceGross:
+          type: string
+        priceVat:
+          type: string
+        vatPercentage:
+          type: string
+        meta:
+          type: array
+          items:
+            $ref: '#/components/schemas/MetaItem'
+    MetaItem:
+      type: object
+      required:
+        - key
+        - value
+      properties:
+        orderItemMetaId:
+          type: string
+        orderItemId:
+          type: string
+        orderId:
+          type: string
+        key:
+          type: string
+        value:
+          type: string
+        label:
+          type: string
+        visibleInCheckout:
+          type: string
+        ordinal:
+          type: string
+    OrderType:
+      type: string
+      enum:
+        - subscription
+        - order
+    Subscription:
+      type: object
+      properties:
+        subscriptionId:
+          type: string
+        status:
+          type: string
+        namespace:
+          type: string
+        merchantName:
+          type: string
+        customerFirstName:
+          type: string
+        customerLastName:
+          type: string
+        customerEmail:
+          type: string
+        customerPhone:
+          type: string
+        paymentMethod:
+          type: string
+        paymentMethodToken:
+          type: string
+        paymentMethodExpirationYear:
+          type: string
+        paymentMethodExpirationMonth:
+          type: string
+        paymentMethodCardLastFourDigits:
+          type: string
+        user:
+          type: string
+        startDate:
+          type: string
+        endDate:
+          type: string
+        billingStartDate:
+          type: string
+        periodUnit:
+          type: string
+        periodFrequency:
+          type: integer
+          format: int32
+        periodCount:
+          type: integer
+          format: int32
+        productId:
+          type: string
+        productName:
+          type: string
+        productLabel:
+          type: string
+        productDescription:
+          type: string
+        quantity:
+          type: integer
+          format: int32
+        priceNet:
+          type: string
+        priceVat:
+          type: string
+        priceGross:
+          type: string
+        vatPercentage:
+          type: string
+        orderId:
+          type: string
+        orderItemId:
+          type: string
+        originalPriceNet:
+          type: string
+        originalPriceVat:
+          type: string
+        originalPriceGross:
+          type: string
+        meta:
+          type: array
+          items:
+            $ref: '#/components/schemas/MetaItem'
+  parameters:
+    Namespace:
+      name: namespace
+      in: header
+      required: true
+      schema:
+        type: string
+    OrderId:
+      name: orderId
+      in: path
+      required: true
+      schema:
+        type: string
+    SubscriptionId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    AuthenticationError:
+      description: Authentication failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
+    NotFound:
+      description: Entity (e.g. order) not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
+    InvalidApiKey:
+      description: Invalid api key
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
+    RequestValidationError:
+      description: Invalid request data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
+paths:
+  /:
+    post:
+      description: 'Create a new order. The resulting order type depends on the input: if periodUnit and periodFrequency are present, the order is of type subscription'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  required:
+                    - user
+                    - namespace
+                  properties:
+                    user:
+                      type: string
+                    namespace:
+                      type: string
+                - type: object
+                  required:
+                    - user
+                    - namespace
+                    - customer
+                    - items
+                  properties:
+                    user:
+                      type: string
+                    namespace:
+                      type: string
+                    customer:
+                      $ref: '#/components/schemas/Customer'
+                    items:
+                      $ref: '#/components/schemas/OrderItem'
+      responses:
+        '201':
+          description: The created order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /{orderId}:
+    get:
+      description: Get order
+      security:
+        - UserId: []
+        - HelsinkiProfile: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: The fetched order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '403':
+          $ref: '#/components/responses/AuthenticationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /admin/{orderId}:
+    get:
+      description: Get order
+      security:
+        - ApiKey: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+        - $ref: '#/components/parameters/Namespace'
+      responses:
+        '200':
+          description: The fetched order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '403':
+          $ref: '#/components/responses/InvalidApiKey'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /{orderId}/customer:
+    post:
+      description: Set order's customer
+      security:
+        - UserId: []
+        - HelsinkiProfile: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '200':
+          description: The resulting order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '403':
+          $ref: '#/components/responses/AuthenticationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /{orderId}/items:
+    post:
+      description: Add items to order
+      security:
+        - UserId: []
+        - HelsinkiProfile: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              minItems: 1
+              items:
+                $ref: '#/components/schemas/OrderItem'
+      responses:
+        '200':
+          description: The resulting order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '403':
+          $ref: '#/components/responses/AuthenticationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /{orderId}/cancel:
+    post:
+      description: Cancel order
+      security:
+        - UserId: []
+        - HelsinkiProfile: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: The resulting order and cancelUrl
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - order
+                  - cancelUrl
+                properties:
+                  order:
+                    $ref: '#/components/schemas/Order'
+                  cancelUrl:
+                    type: string
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '403':
+          $ref: '#/components/responses/AuthenticationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /{orderId}/confirmAndCreatePayment:
+    post:
+      description: Confirm order and create payment from it
+      security:
+        - UserId: []
+        - HelsinkiProfile: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - paymentMethod
+                - language
+              properties:
+                paymentMethod:
+                  type: string
+                language:
+                  type: string
+      responses:
+        '201':
+          description: The confirmed order and its created payment
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Order'
+                  - type: object
+                    required:
+                      - payment
+                    properties:
+                      payment:
+                        type: object
+                        required:
+                          - paymentUrl
+                        properties:
+                          paymentId:
+                            type: string
+                          namespace:
+                            type: string
+                          orderId:
+                            type: string
+                          status:
+                            type: string
+                          paymentMethod:
+                            type: string
+                          paymentType:
+                            type: string
+                          totalExclTax:
+                            type: number
+                            format: float
+                          total:
+                            type: number
+                            format: float
+                          taxAmount:
+                            type: number
+                            format: float
+                          description:
+                            type: string
+                          additionalInfo:
+                            type: string
+                          token:
+                            type: string
+                          timestamp:
+                            type: string
+                          paymentUrl:
+                            type: string
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '403':
+          $ref: '#/components/responses/AuthenticationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /{orderId}/calculateTotals:
+    post:
+      description: Calculate and set totals to order
+      security:
+        - UserId: []
+        - HelsinkiProfile: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: The resulting order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '403':
+          $ref: '#/components/responses/AuthenticationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /instantPurchase:
+    post:
+      description: Creates and confirms order for products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - products
+                - language
+                - namespace
+                - user
+              properties:
+                language:
+                  type: string
+                  enum:
+                    - en
+                    - fi
+                    - sv
+                namespace:
+                  type: string
+                user:
+                  type: string
+                products:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required:
+                      - productId
+                      - quantity
+                      - unit
+                    properties:
+                      productId:
+                        type: string
+                      quantity:
+                        type: integer
+                        format: int32
+                      unit:
+                        type: string
+      responses:
+        '201':
+          description: The resulting order and merchant configurations
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Order'
+                  - type: object
+                    required:
+                      - merchant
+                    properties:
+                      merchant:
+                        type: object
+                        properties:
+                          merchantName:
+                            type: string
+                          merchantStreet:
+                            type: string
+                          merchantZip:
+                            type: string
+                          merchantCity:
+                            type: string
+                          merchantEmail:
+                            type: string
+                          merchantPhone:
+                            type: string
+                          merchantUrl:
+                            type: string
+                          merchantTermsOfServiceUrl:
+                            type: string
+                          merchantBusinessId:
+                            type: string
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /subscription/{id}:
+    get:
+      description: Get subscription
+      security:
+        - UserId: [ ]
+        - HelsinkiProfile: [ ]
+      parameters:
+        - $ref: '#/components/parameters/SubscriptionId'
+      responses:
+        '200':
+          description: The fetched subscription
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '403':
+          $ref: '#/components/responses/AuthenticationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /subscription/{id}/orders:
+    get:
+      description: Get subscription's orders
+      security:
+        - UserId: [ ]
+        - HelsinkiProfile: [ ]
+      parameters:
+        - $ref: '#/components/parameters/SubscriptionId'
+      responses:
+        '200':
+          description: The found orders
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - orders
+                properties:
+                  orders:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '403':
+          $ref: '#/components/responses/AuthenticationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /subscription/create:
+    post:
+      description: Create subscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: The created subscription
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /subscription/create-from-order:
+    post:
+      description: Create subscriptions from order. Each order item creates its own subscription.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - orderId
+                - user
+              properties:
+                orderId:
+                  type: string
+                user:
+                  type: string
+      responses:
+        '201':
+          description: The subscription ids
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - subscriptionIds
+                properties:
+                  subscriptionIds:
+                    type: array
+                    items:
+                      type: string
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /subscription/search/active:
+    post:
+      description: Search active subscriptions
+      security:
+        - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - activeAtDate
+                - customerEmail
+                - status
+                - namespace
+              properties:
+                activeAtDate:
+                  type: string
+                customerEmail:
+                  type: string
+                status:
+                  type: string
+                namespace:
+                  type: string
+      responses:
+        '201':
+          description: The active subscriptions
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/Subscription'
+        '403':
+          $ref: '#/components/responses/InvalidApiKey'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /subscription/{id}/cancel:
+    post:
+      description: Cancel subscription
+      security:
+        - UserId: []
+        - HelsinkiProfile: []
+      parameters:
+        - $ref: '#/components/parameters/SubscriptionId'
+      responses:
+        '200':
+          description: The cancelled subscription
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/Subscription'
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '403':
+          $ref: '#/components/responses/AuthenticationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /subscription/{id}/meta/{itemId}:
+    post:
+      description: Set subscription's meta. Deletes old meta and adds new
+      security:
+        - ApiKey: []
+      parameters:
+        - $ref: '#/components/parameters/SubscriptionId'
+        - name: itemId
+          in: path
+          description: Id of the corresponding order item
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/Namespace'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - meta
+              properties:
+                meta:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/MetaItem'
+      responses:
+        '200':
+          description: The set subscription neta
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - meta
+                properties:
+                  meta:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MetaItem'
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '403':
+          $ref: '#/components/responses/InvalidApiKey'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /subscription/{id}/emailSubscriptionContract:
+    post:
+      description: Send subscription contract email to the subscription's customer
+      security:
+        - ApiKey: []
+      parameters:
+        - $ref: '#/components/parameters/SubscriptionId'
+      responses:
+        '200':
+          description: An empty object
+          content:
+            application/json:
+              schema:
+                type: object
+        '403':
+          $ref: '#/components/responses/InvalidApiKey'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /subscription/{id}/emailSubscriptionPaymentFailed:
+    post:
+      description: Send subscription payment failed email to the subscription's customer
+      security:
+        - ApiKey: []
+      parameters:
+        - $ref: '#/components/parameters/SubscriptionId'
+      responses:
+        '200':
+          description: Object containing count of how many times the email has been sent
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - count
+                properties:
+                  count:
+                    type: integer
+                    format: int32
+        '403':
+          $ref: '#/components/responses/InvalidApiKey'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /subscription/{id}/recreate:
+    post:
+      description: Create a new subscription from an old subscription. Cancels the old subscription
+      security:
+        - ApiKey: []
+      parameters:
+        - $ref: '#/components/parameters/SubscriptionId'
+        - $ref: '#/components/parameters/Namespace'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - updatedFields
+              properties:
+                updatedFields:
+                  type: object
+                  properties:
+                    customerPhone:
+                      type: string
+                    customerFirstName:
+                      type: string
+                    customerLastName:
+                      type: string
+                    customerEmail:
+                      type: string
+                    productName:
+                      type: string
+                    productLabel:
+                      type: string
+                    productDescription:
+                      type: string
+                    productId:
+                      type: string
+                    periodUnit:
+                      type: string
+                    periodFrequency:
+                      type: integer
+                      format: int32
+                    periodCount:
+                      type: integer
+                      format: int32
+                    vatPercentage:
+                      type: string
+                    priceNet:
+                      type: string
+                    priceVat:
+                      type: string
+                    priceGross:
+                      type: string
+      responses:
+        '201':
+          description: The new subscription
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '403':
+          $ref: '#/components/responses/InvalidApiKey'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /subscriptions/get-by-order-id/{orderId}:
+    get:
+      description: Get subscriptions that were created from order
+      security:
+        - UserId: []
+        - HelsinkiProfile: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: The subscriptions
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - subscriptions
+                properties:
+                  subscriptions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Subscription'
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '403':
+          $ref: '#/components/responses/AuthenticationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
