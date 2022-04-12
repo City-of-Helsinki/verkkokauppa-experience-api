@@ -85,5 +85,34 @@
       "linkText": "Linkki",
       "cityText": "Helsingin kaupunki"
     }
+  },
+  "subscriptionCardExpired": {
+    "clock": "Tilausaika",
+    "order": {
+      "mainHeader": "Maksukorttisi vanhenee pian – päivitä tiedot",
+      "header": "Palvelu: ",
+      "headerTwo": "Tilauksesi: "
+    },
+    "merchant": {
+      "header": "Palvelu:",
+      "textOne": "Mikäli sinulla on tilaukseen liittyen kysymyksiä kohdistathan ne suoraan myyjälle",
+      "textTwo": "Linkki",
+      "headerTwo": "Myyjän tiedot",
+      "businessId": "Y-tunnus"
+    },
+    "customer": {
+      "header": "Tilaajan tiedot"
+    },
+    "information": {
+      "header": "Tilauksesi: ",
+      "alv": "Sis. alv",
+      "cardUpdateText": "Päivittämällä maksukorttisi tiedot ennen ",
+      "cardUpdateTextRow2": " varmistat tilauksen jatkumisen ilman katkoja: ",
+      "cardLinkedText": "Tilaukseen liittämäsi maksukortti ",
+      "cardLinkedExpiringText": " on vanhenemassa.",
+      "date": "Päivämäärä",
+      "linkText": "Linkki",
+      "cityText": "Helsingin kaupunki"
+    }
   }
 }
