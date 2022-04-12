@@ -46,6 +46,23 @@
       "cityText": "Helsingfors stad"
     }
   },
+  "subscriptionCardExpired": {
+    "clock": "Tilausaika",
+    "order": {
+      "mainHeader": "Giltighetstiden för ditt betalkort upphör snart – vänligen uppdatera uppgifterna.",
+      "header": "Tjänst: "
+    },
+    "information": {
+      "header": "Din beställning: ",
+      "alv": "Inkl. moms",
+      "cardUpdateText": "Uppdatera betalkortsuppgifterna före ",
+      "cardUpdateTextRow2": " för att undvika avbrott i beställningen: ",
+      "cardLinkedText": "Giltighetstiden för det betalkort ",
+      "cardLinkedExpiringText": " som anslutits till din beställning upphör snart.",
+      "linkText": "Länk",
+      "cityText": "Helsingfors stad"
+    }
+  },
   "subscriptionContractEmail": {
     "merchant": {
       "h1": "Säljarens uppgifter",

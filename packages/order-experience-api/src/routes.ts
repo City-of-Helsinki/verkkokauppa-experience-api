@@ -23,6 +23,7 @@ import { SetSubscriptionItemMetaController } from './api/setSubscriptionItemMeta
 import { withAuthentication } from '@verkkokauppa/auth-helsinki-profile'
 import { RecreateSubscriptionController } from './api/recreateSubscription'
 import { ListSubscriptionsController } from './api/listSubscriptions'
+import { SendSubscriptionCardExpiredEmail } from './api/sendSubscriptionCardExpiredEmail'
 
 const createController = new CreateController()
 const cartToOrderController = new CartToOrder()
@@ -52,6 +53,7 @@ const setSubscriptionItemMeta = new SetSubscriptionItemMetaController()
 const cancelSubscription = new (withAuthentication(CancelSubscription))()
 const sendSubscriptionContractEmail = new SendSubscriptionContractEmail()
 const sendSubscriptionPaymentFailedEmail = new SendSubscriptionPaymentFailedEmail()
+const sendSubscriptionCardExpiredEmail = new SendSubscriptionCardExpiredEmail()
 const recreateSubscription = new RecreateSubscriptionController()
 const listSubscriptionsController = new ListSubscriptionsController()
 
@@ -106,6 +108,9 @@ router.post('/subscription/:id/emailSubscriptionContract', (req, res) =>
 )
 router.post('/subscription/:id/emailSubscriptionPaymentFailed', (req, res) =>
   sendSubscriptionPaymentFailedEmail.execute(req, res)
+)
+router.post('/subscription/:id/emailSubscriptionCardExpired', (req, res) =>
+  sendSubscriptionCardExpiredEmail.execute(req, res)
 )
 router.post('/subscription/:id/recreate', (req, res) =>
   recreateSubscription.execute(req, res)
