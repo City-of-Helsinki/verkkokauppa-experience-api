@@ -2239,7 +2239,7 @@ exports[`Create templates from parameters Should compile subscriptionCardExpired
                             <tr>
                                 <td class=\\"content-cell\\">
                                     <div class=\\"f-fallback\\">
-                                        <h1 style=\\"margin-bottom: 0\\">Maksukortin veloitus epäonnistui</h1>
+                                        <h1 style=\\"margin-bottom: 0\\">Maksukorttisi vanhenee pian – päivitä tiedot</h1>
                 
                                         <table class=\\"purchase\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\" role=\\"presentation\\">
                                             <tr>
@@ -2341,10 +2341,12 @@ exports[`Create templates from parameters Should compile subscriptionCardExpired
                 
                                                         <tr>
                 
-                                                        <tr class=\\"pb-1\\">
+                                                        <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item pb-1\\">
                                                                 <span class=\\"f-fallback\\">
-                                                                    Tilauksesi veloitus epäonnistui. Syynä voi olla esimerkiksi maksukortin vanhentuminen, internetkäytön esto tai riittämätön kate. Tarkista korttisi asetukset oman pankkisi kautta viipymättä.
+                                                                    Tilaukseen liittämäsi maksukortti 
+                                                                    4321
+                                                                     on vanhenemassa.
                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -2352,22 +2354,14 @@ exports[`Create templates from parameters Should compile subscriptionCardExpired
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item pb-1\\">
                                                                 <span class=\\"f-fallback\\">
-                                                                    Voit halutessasi päivittää maksukorttisi tiedot osoitteessa:
+                                                                    Päivittämällä maksukorttisi tiedot ennen 
+                                                                    30.03.2022 07:56:57
+                                                                     varmistat tilauksen jatkumisen ilman katkoja: 
                                                                     <a href=\\"http://localhost:3000/dummy-order-KYV-351/update-card?user&#x3D;userId\\" target=\\"_blank\\">http://localhost:3000/dummy-order-KYV-351/update-card?user&#x3D;userId</a>
                                                                 </span>
                                                             </td>
                                                         </tr>
                 
-                                                        <tr>
-                                                            <td width=\\"100%\\" class=\\"purchase_item pb-1\\">
-                                                                <span class=\\"f-fallback\\">
-                                                                    Tilaukseen liittämäsi maksukortin 
-                                                                    4321
-                                                                    veloitusta yritetään uudelleen muutaman päivän sisällä. Mikäli veloituksen uusintayritys ei onnistu, tilatun palvelun käyttöoikeus päättyy
-                                                                    01.01.2022 07:56:57
-                                                                </span>
-                                                            </td>
-                                                        </tr>
                 
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item pb-1\\">
@@ -2425,7 +2419,7 @@ exports[`Create templates from parameters Should compile subscriptionCardExpired
                             <tr>
                                 <td class=\\"content-cell\\">
                                     <div class=\\"f-fallback\\">
-                                        <h1 style=\\"margin-bottom: 0\\">Failed to charge your payment card</h1>
+                                        <h1 style=\\"margin-bottom: 0\\">Your payment card will expire soon – update your details</h1>
                 
                                         <table class=\\"purchase\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\" role=\\"presentation\\">
                                             <tr>
@@ -2527,10 +2521,12 @@ exports[`Create templates from parameters Should compile subscriptionCardExpired
                 
                                                         <tr>
                 
-                                                        <tr class=\\"pb-1\\">
+                                                        <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item pb-1\\">
                                                                 <span class=\\"f-fallback\\">
-                                                                    Your order could not be charged. This could be because your payment card has expired, your card is not valid for online payments or you have insufficient funds. Check your card’s settings with your bank without delay.
+                                                                    The payment card 
+                                                                    4321
+                                                                     linked to your subscription is about to expire.
                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -2538,22 +2534,14 @@ exports[`Create templates from parameters Should compile subscriptionCardExpired
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item pb-1\\">
                                                                 <span class=\\"f-fallback\\">
-                                                                    To update your payment card details, please visit:
+                                                                    By updating your payment card details before 
+                                                                    30.03.2022 07:56:57
+                                                                    , you can ensure that your subscription will continue without interruption: 
                                                                     <a href=\\"http://localhost:3000/dummy-order-KYV-351/update-card?user&#x3D;userId\\" target=\\"_blank\\">http://localhost:3000/dummy-order-KYV-351/update-card?user&#x3D;userId</a>
                                                                 </span>
                                                             </td>
                                                         </tr>
                 
-                                                        <tr>
-                                                            <td width=\\"100%\\" class=\\"purchase_item pb-1\\">
-                                                                <span class=\\"f-fallback\\">
-                                                                    A new attempt will be made to charge the payment card 
-                                                                    4321
-                                                                    linked to your subscription within a few days. If the new attempt to charge the card is unsuccessful, your right to use the subscribed service will expire on 
-                                                                    01.01.2022 07:56:57
-                                                                </span>
-                                                            </td>
-                                                        </tr>
                 
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item pb-1\\">
@@ -2611,7 +2599,7 @@ exports[`Create templates from parameters Should compile subscriptionCardExpired
                             <tr>
                                 <td class=\\"content-cell\\">
                                     <div class=\\"f-fallback\\">
-                                        <h1 style=\\"margin-bottom: 0\\">Debiteringen av betalkortet misslyckades.</h1>
+                                        <h1 style=\\"margin-bottom: 0\\">Giltighetstiden för ditt betalkort upphör snart – vänligen uppdatera uppgifterna.</h1>
                 
                                         <table class=\\"purchase\\" width=\\"100%\\" cellpadding=\\"0\\" cellspacing=\\"0\\" role=\\"presentation\\">
                                             <tr>
@@ -2713,10 +2701,12 @@ exports[`Create templates from parameters Should compile subscriptionCardExpired
                 
                                                         <tr>
                 
-                                                        <tr class=\\"pb-1\\">
+                                                        <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item pb-1\\">
                                                                 <span class=\\"f-fallback\\">
-                                                                    Debitering av beställningen misslyckades. Orsaken till att debiteringen misslyckades kan vara till exempel att betalkortets giltighetstid har gått ut, användning av kortet för webbetalningar inte är tillåten eller täckningen på kortet är otillräcklig. Kontrollera inställningarna för ditt kort snarast möjligt med din egen bank.
+                                                                    Giltighetstiden för det betalkort 
+                                                                    4321
+                                                                     som anslutits till din beställning upphör snart.
                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -2724,22 +2714,14 @@ exports[`Create templates from parameters Should compile subscriptionCardExpired
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item pb-1\\">
                                                                 <span class=\\"f-fallback\\">
-                                                                    Du kan uppdatera dina betalkortsuppgifter på: 
+                                                                    Uppdatera betalkortsuppgifterna före 
+                                                                    30.03.2022 07:56:57
+                                                                     för att undvika avbrott i beställningen: 
                                                                     <a href=\\"http://localhost:3000/dummy-order-KYV-351/update-card?user&#x3D;userId\\" target=\\"_blank\\">http://localhost:3000/dummy-order-KYV-351/update-card?user&#x3D;userId</a>
                                                                 </span>
                                                             </td>
                                                         </tr>
                 
-                                                        <tr>
-                                                            <td width=\\"100%\\" class=\\"purchase_item pb-1\\">
-                                                                <span class=\\"f-fallback\\">
-                                                                    Ett nytt debiteringsförsök på betalkortet 
-                                                                    4321
-                                                                     som anslutits till din beställning kommer att göras inom några dagar. Om det nya debiteringsförsöket inte lyckas, upphör rätten att använda den beställda tjänsten 
-                                                                    01.01.2022 07:56:57
-                                                                </span>
-                                                            </td>
-                                                        </tr>
                 
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item pb-1\\">
