@@ -1,4 +1,5 @@
 export * from './service'
 export * from './subscription/service'
 export * from './types'
+export * from './subscription/types'
 export * from './errors'
