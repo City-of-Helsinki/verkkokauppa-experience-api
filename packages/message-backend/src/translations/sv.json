@@ -47,7 +47,6 @@
     }
   },
   "subscriptionCardExpired": {
-    "clock": "Tilausaika",
     "order": {
       "mainHeader": "Giltighetstiden för ditt betalkort upphör snart – vänligen uppdatera uppgifterna.",
       "header": "Tjänst: "

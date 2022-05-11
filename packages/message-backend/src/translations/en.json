@@ -47,7 +47,6 @@
     }
   },
   "subscriptionCardExpired": {
-    "clock": "Tilausaika",
     "order": {
       "mainHeader": "Your payment card will expire soon – update your details",
       "header": "Service: "

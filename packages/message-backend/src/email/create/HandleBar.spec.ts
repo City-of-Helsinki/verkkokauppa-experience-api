@@ -513,7 +513,7 @@ describe('Create templates from parameters', () => {
 
     const subscriptionCardExpiredTemplate = compiledTemplate(templateParams)
     // Used to make developing faster when html can be "hot reloaded" from file.
-    const writeToFile = true
+    const writeToFile = false
     if (writeToFile) {
       try {
         fs.writeFileSync(
