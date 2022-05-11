@@ -87,7 +87,6 @@
     }
   },
   "subscriptionCardExpired": {
-    "clock": "Tilausaika",
     "order": {
       "mainHeader": "Maksukorttisi vanhenee pian – päivitä tiedot",
       "header": "Palvelu: ",
