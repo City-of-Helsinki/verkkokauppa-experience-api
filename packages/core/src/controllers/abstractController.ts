@@ -39,11 +39,12 @@ export abstract class AbstractController<
       const validatedReq = await this.validateRequest(req)
       await this.implementation(validatedReq, res)
     } catch (err) {
-      if (err instanceof ExperienceError) {
-        this.error(res, err)
-      } else {
-        this.error(res, new UnexpectedError(err))
-      }
+      const e = err instanceof ExperienceError ? err : new UnexpectedError(err)
+      this.respond(
+        res,
+        e.definition.responseStatus,
+        this.errorsToResponseOutput(this.logErrors([e]))
+      )
     }
     const end = process.hrtime.bigint()
     logger.info(
@@ -55,30 +56,29 @@ export abstract class AbstractController<
     )
   }
 
-  public success<T>(res: Response, dto?: T) {
+  public respond(res: Response, status: number, dto?: unknown) {
     if (dto) {
-      return res.status(200).json(dto)
+      return res.status(status).json(dto)
     } else {
-      return res.status(200)
+      return res.status(status)
     }
+  }
+
+  public success<T>(res: Response, dto?: T) {
+    return this.respond(res, 200, dto)
   }
 
   public created<T>(res: Response, dto?: T) {
-    if (dto) {
-      return res.status(201).json(dto)
-    } else {
-      return res.status(201)
-    }
+    return this.respond(res, 201, dto)
   }
 
-  public error(res: Response, error: ExperienceError, ...e: ExperienceError[]) {
-    const errors = [error, ...e]
+  public logErrors(errors: ExperienceError[]): ExperienceError[] {
     errors.forEach((e) => e.log(logger))
-    // TODO: formulate statusCode over all errors
-    const statusCode = error.definition.responseStatus
-    return res
-      .status(statusCode)
-      .json({ errors: errors.map((e) => e.toResponseOutput()) })
+    return errors
+  }
+
+  public errorsToResponseOutput(errors: ExperienceError[]) {
+    return { errors: errors.map((e) => e.toResponseOutput()) }
   }
 }
 

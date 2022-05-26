@@ -25,6 +25,7 @@ import { RecreateSubscriptionController } from './api/recreateSubscription'
 import { ListSubscriptionsController } from './api/listSubscriptions'
 import { GetGdprController } from './api/getGdpr'
 import { DeleteGdprController } from './api/deleteGdpr'
+import { CreateRefundController } from './api/createRefund'
 
 const createController = new CreateController()
 const cartToOrderController = new CartToOrder()
@@ -59,6 +60,7 @@ const listSubscriptionsController = new ListSubscriptionsController()
 // Authentication is already mixed in at the controller
 const getGdprController = new GetGdprController()
 const deleteGdprController = new DeleteGdprController()
+const createRefundController = new CreateRefundController()
 
 const router = Router()
 router.post('/', (req, res) => createController.execute(req, res))
@@ -130,5 +132,7 @@ router.get('/gdpr-api/v1/profiles/:id', (req, res) =>
 router.delete('/gdpr-api/v1/profiles/:id', (req, res) =>
   deleteGdprController.execute(req, res)
 )
+
+router.post('/refund', (req, res) => createRefundController.execute(req, res))
 
 export default router
