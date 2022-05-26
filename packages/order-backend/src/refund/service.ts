@@ -5,7 +5,7 @@ import {
   ExperienceFailure,
   StatusCode,
 } from '@verkkokauppa/core'
-import type { Order, OrderItem } from '../types'
+import type { Order } from '../types'
 
 const getBackendUrl = () => {
   const url = process.env.ORDER_BACKEND_URL
@@ -17,10 +17,9 @@ const getBackendUrl = () => {
 
 export const createRefund = async (p: {
   order: Order
-  items: OrderItem[]
   refundReason?: string
 }): Promise<RefundAggregate> => {
-  const { order: o, items } = p
+  const { order: o } = p
   const url = `${getBackendUrl()}/refund/create`
   try {
     const res = await axios.post(url, {
@@ -34,7 +33,7 @@ export const createRefund = async (p: {
         customerPhone: o.customer?.phone,
         refundReason: p.refundReason,
       } as Partial<Refund>,
-      items: items.map(
+      items: o.items.map(
         (i) =>
           ({
             orderItemId: i.orderItemId,
