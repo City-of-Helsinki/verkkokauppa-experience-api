@@ -102,7 +102,7 @@ export class CreateRefundController extends AbstractController<
               )
             }
             const refundedItems = orderRefunds
-              .flatMap((refund) => refund.items)
+              .reduce((a, r) => a.concat(r.items), [] as RefundItem[])
               .filter(
                 (refundItem) => refundItem.orderItemId === item.orderItemId
               )
@@ -134,8 +134,8 @@ export class CreateRefundController extends AbstractController<
             order: {
               ...order,
               ...calculateTotalsFromItems({ items: orderItems }),
+              items: orderItems,
             },
-            items: orderItems,
           })
 
           refunds.push({
@@ -159,9 +159,7 @@ export class CreateRefundController extends AbstractController<
       res,
       new Data({
         refunds,
-        ...(errors.length > 1
-          ? this.errorsToResponseOutput(this.logErrors(errors))
-          : undefined),
+        ...this.errorsToResponseOutput(this.logErrors(errors)),
       }).serialize()
     )
   }
