@@ -1025,3 +1025,168 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /refund:
+    post:
+      description: Create refunds for (multiple) orders. Beyond request body and api key validation, the refunds are processed individually separate of one another. As such, the response will be 200 OK regardless of the individual results.
+      security:
+        - ApiKey: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                required:
+                  - orderId
+                  - items
+                properties:
+                  orderId:
+                    type: string
+                  items:
+                    type: array
+                    minItems: 1
+                    items:
+                      type: object
+                      required:
+                        - orderItemId
+                        - quantity
+                      properties:
+                        orderItemId:
+                          type: string
+                        quantity:
+                          type: integer
+                          format: int32
+      responses:
+        '200':
+          description: The created refunds and errors. Both the arrays preserve ordering of the request body. In case of errors, the first missing refund would be the first element in errors etc. There is exactly one error for each failed refund creation.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - refunds
+                  - errors
+                properties:
+                  refunds:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - refundId
+                        - orderId
+                        - namespace
+                        - user
+                        - createdAt
+                        - status
+                        - confirmationUrl
+                        - items
+                      properties:
+                        refundId:
+                          type: string
+                        orderId:
+                          type: string
+                        namespace:
+                          type: string
+                        user:
+                          type: string
+                        createdAt:
+                          type: string
+                        status:
+                          type: string
+                          enum:
+                            - draft
+                            - confirmed
+                        customerFirstName:
+                          type: string
+                        customerLastName:
+                          type: string
+                        customerEmail:
+                          type: string
+                        customerPhone:
+                          type: string
+                        refundReason:
+                          type: string
+                        confirmationUrl:
+                          type: string
+                        items:
+                          type: array
+                          items:
+                            type: object
+                            required:
+                              - refundItemId
+                              - refundId
+                              - orderItemId
+                              - orderId
+                              - productId
+                              - productName
+                              - unit
+                              - quantity
+                              - rowPriceNet
+                              - rowPriceVat
+                              - rowPriceTotal
+                              - vatPercentage
+                              - priceNet
+                              - priceVat
+                              - priceGross
+                            properties:
+                              refundItemId:
+                                type: string
+                              refundId:
+                                type: string
+                              orderItemId:
+                                type: string
+                              orderId:
+                                type: string
+                              productId:
+                                type: string
+                              productName:
+                                type: string
+                              productLabel:
+                                type: string
+                              productDescription:
+                                type: string
+                              unit:
+                                type: string
+                              quantity:
+                                type: integer
+                                format: int32
+                              rowPriceNet:
+                                type: string
+                              rowPriceVat:
+                                type: string
+                              rowPriceTotal:
+                                type: string
+                              vatPercentage:
+                                type: string
+                              priceNet:
+                                type: string
+                              priceVat:
+                                type: string
+                              priceGross:
+                                type: string
+                              originalPriceNet:
+                                type: string
+                              originalPriceVat:
+                                type: string
+                              originalPriceGross:
+                                type: string
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - code
+                        - message
+                      properties:
+                        code:
+                          type: string
+                        message:
+                          type: string
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '403':
+          $ref: '#/components/responses/InvalidApiKey'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
