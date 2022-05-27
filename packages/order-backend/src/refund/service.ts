@@ -31,6 +31,9 @@ export const createRefund = async (p: {
         customerLastName: o.customer?.lastName,
         customerEmail: o.customer?.email,
         customerPhone: o.customer?.phone,
+        priceNet: o.priceNet,
+        priceVat: o.priceVat,
+        priceTotal: o.priceTotal,
         refundReason: p.refundReason,
       } as Partial<Refund>,
       items: o.items.map(
