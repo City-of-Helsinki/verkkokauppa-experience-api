@@ -1030,6 +1030,8 @@ paths:
       description: Create refunds for (multiple) orders. Beyond request body and api key validation, the refunds are processed individually separate of one another. As such, the response will be 200 OK regardless of the individual results.
       security:
         - ApiKey: [ ]
+      parameters:
+        - $ref: '#/components/parameters/Namespace'
       requestBody:
         required: true
         content:
