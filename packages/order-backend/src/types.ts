@@ -15,6 +15,9 @@ export interface OrderItemRequest {
   priceGross: string
   priceVat: string
   vatPercentage: string
+  originalPriceNet?: string
+  originalPriceVat?: string
+  originalPriceGross?: string
 }
 
 export type OrderItem = OrderItemRequest & {
