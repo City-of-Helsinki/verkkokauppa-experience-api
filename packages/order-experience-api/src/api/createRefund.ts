@@ -15,6 +15,7 @@ import {
   getRefundsByOrderAdmin,
   Refund,
   RefundItem,
+  confirmRefundAdmin,
 } from '@verkkokauppa/order-backend'
 import { paidPaymentExists } from '@verkkokauppa/payment-backend'
 import { calculateTotalsFromItems } from '../lib/totals'
@@ -49,6 +50,14 @@ export class CreateRefundController extends AbstractController<
 > {
   protected readonly requestSchema = requestSchema
 
+  constructor(
+    private readonly opts: {
+      confirmAndCreatePayment: boolean
+    }
+  ) {
+    super()
+  }
+
   protected async implementation(
     req: ValidatedRequest<typeof requestSchema>,
     res: Response
@@ -62,7 +71,8 @@ export class CreateRefundController extends AbstractController<
 
     const refunds: (Refund & {
       items: RefundItem[]
-      confirmationUrl: string
+      confirmationUrl?: string
+      payment?: unknown
     })[] = []
 
     const errors: ExperienceError[] = []
@@ -138,18 +148,30 @@ export class CreateRefundController extends AbstractController<
             },
           })
 
-          refunds.push({
-            ...refund,
+          if (!this.opts.confirmAndCreatePayment) {
+            return refunds.push({
+              ...refund,
+              items: refundItems,
+              confirmationUrl: `${req.get('host')}/refund/${
+                refund.refundId
+              }/confirmAndCreatePayment`,
+            })
+          }
+
+          const confirmedRefund = await confirmRefundAdmin(refund)
+
+          // TODO: create payment
+
+          return refunds.push({
+            ...confirmedRefund,
             items: refundItems,
-            confirmationUrl: `${req.get('host')}/refund/${
-              refund.refundId
-            }/confirmAndCreatePayment`,
+            payment: undefined,
           })
         } catch (e) {
           if (e instanceof ExperienceError) {
-            errors.push(e)
+            return errors.push(e)
           } else {
-            errors.push(new UnexpectedError(e))
+            return errors.push(new UnexpectedError(e))
           }
         }
       })

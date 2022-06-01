@@ -60,7 +60,12 @@ const listSubscriptionsController = new ListSubscriptionsController()
 // Authentication is already mixed in at the controller
 const getGdprController = new GetGdprController()
 const deleteGdprController = new DeleteGdprController()
-const createRefundController = new CreateRefundController()
+const createRefundController = new CreateRefundController({
+  confirmAndCreatePayment: false,
+})
+const instantRefundController = new CreateRefundController({
+  confirmAndCreatePayment: true,
+})
 
 const router = Router()
 router.post('/', (req, res) => createController.execute(req, res))
@@ -134,5 +139,9 @@ router.delete('/gdpr-api/v1/profiles/:id', (req, res) =>
 )
 
 router.post('/refund', (req, res) => createRefundController.execute(req, res))
+
+router.post('/refund/instant', (req, res) =>
+  instantRefundController.execute(req, res)
+)
 
 export default router
