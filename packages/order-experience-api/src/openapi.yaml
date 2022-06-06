@@ -1140,7 +1140,6 @@ paths:
                 type: object
                 required:
                   - orderId
-                  - items
                 properties:
                   orderId:
                     type: string
