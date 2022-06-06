@@ -32,7 +32,7 @@ const controller = new (class extends CreateRefundController {
   }
 
   respond = jest.fn()
-})()
+})({ confirmAndCreatePayment: false })
 
 const headers = { 'api-key': 'ak1', namespace: 'ns1' }
 
