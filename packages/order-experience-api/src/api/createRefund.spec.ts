@@ -382,4 +382,38 @@ describe('Test CreateRefundController', () => {
       ],
     })
   })
+  it('should use order.items in refund if request items are undefined', async () => {
+    getOrderAdminMock.mockImplementationOnce(() => ({
+      orderId: 'oid1',
+      items: [
+        {
+          orderItemId: 'ooid1',
+          quantity: 10,
+        },
+      ],
+    }))
+    await controller.implementation(
+      {
+        body: [
+          {
+            orderId: 'oid1',
+          },
+        ],
+        headers,
+      },
+      responseMock
+    )
+    expect(createRefundMock).toHaveBeenCalledTimes(1)
+    expect(createRefundMock.mock.calls[0][0]).toMatchObject({
+      order: {
+        orderId: 'oid1',
+        items: [
+          {
+            orderItemId: 'ooid1',
+            quantity: 10,
+          },
+        ],
+      },
+    })
+  })
 })

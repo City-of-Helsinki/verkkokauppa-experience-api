@@ -34,8 +34,7 @@ const requestSchema = yup.object().shape({
               quantity: yup.number().required(),
             })
           )
-          .min(1)
-          .required(),
+          .min(1),
       })
     )
     .required(),
@@ -94,8 +93,10 @@ export class CreateRefundController extends AbstractController<
               `order ${orderId} must be paid first`
             )
           }
-          const orderItems = items.map((item) => {
+          type Item = { quantity: number; orderItemId: string }
+          const orderItems = (items ?? order.items).map((item: Item) => {
             if (
+              items &&
               items.filter((e) => e.orderItemId === item.orderItemId).length > 1
             ) {
               throw new RequestValidationError(
