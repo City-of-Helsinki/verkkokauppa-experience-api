@@ -374,6 +374,12 @@ components:
       required: true
       schema:
         type: string
+    RefundId:
+      name: refundId
+      in: path
+      required: true
+      schema:
+        type: string
   responses:
     AuthenticationError:
       description: Authentication failed
@@ -1263,6 +1269,32 @@ paths:
                           type: string
                         message:
                           type: string
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '403':
+          $ref: '#/components/responses/InvalidApiKey'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /refund/{refundId}/confirm:
+    post:
+      description: Confirm refund
+      security:
+        - ApiKey: [ ]
+      parameters:
+        - $ref: '#/components/parameters/Namespace'
+        - $ref: '#/components/parameters/RefundId'
+      responses:
+        '200':
+          description: The confirmed refund
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - refund
+                properties:
+                  refund:
+                    $ref: '#/components/schemas/Refund'
         '400':
           $ref: '#/components/responses/RequestValidationError'
         '403':
