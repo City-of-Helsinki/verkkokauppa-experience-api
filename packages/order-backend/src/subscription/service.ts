@@ -176,6 +176,31 @@ export const incrementValidationFailedEmailSentCountAdmin = async (p: {
   }
 }
 
+export const createCardExpiredEmailEntityAdmin = async (p: {
+  subscriptionId: string
+  namespace: string
+}): Promise<Subscription> => {
+  const { subscriptionId, namespace } = p
+  checkBackendUrlExists()
+
+  const url = `${process.env.ORDER_BACKEND_URL}/subscription-admin/create-card-expired-email-entity`
+  try {
+    const result = await axios.get<Subscription>(url, {
+      params: { subscriptionId, namespace },
+    })
+    return result.data
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new SubscriptionNotFoundError(subscriptionId)
+    }
+    throw new ExperienceFailure({
+      code: 'failed-to-create-card-expired-email-entity-subscription',
+      message: `Failed to create expired card entity for subscription : ${subscriptionId}`,
+      source: e,
+    })
+  }
+}
+
 export const searchActiveSubscriptions = async (p: {
   activeAtDate: string
   customerEmail: string
