@@ -18,6 +18,11 @@ export interface SubscriptionPaymentFailedEmailParameters {
   subscription: Subscription
 }
 
+export interface SubscriptionCardExpiredEmailParameters {
+  order: Order
+  subscription: Subscription
+}
+
 export type OrderCustomer = {
   firstName: string
   lastName: string
@@ -125,6 +130,7 @@ export type HbsTemplateFiles =
   | 'orderConfirmation'
   | 'subscriptionContract'
   | 'subscriptionPaymentFailed'
+  | 'subscriptionCardExpired'
 
 export interface Subscription {
   subscriptionId: string
