@@ -73,3 +73,13 @@ export interface Payment {
   token: string
   timestamp: string
 }
+
+export interface PaymentFilter {
+  filterId: string
+  createdAt: string
+  namespace: string
+  referenceId: string
+  referenceType: string
+  type: string
+  value: string
+}
