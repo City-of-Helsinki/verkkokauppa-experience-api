@@ -5,6 +5,7 @@ import {
   getPaymentStatus,
   getPaymentUrl,
   paidPaymentExists,
+  savePaymentFiltersAdmin
 } from './service'
 
 jest.mock('axios')
@@ -39,6 +40,18 @@ const orderMock = {
     },
   ],
 }
+
+const paymentFiltersMock = [
+  {
+    filterId: 'faa1a6f9-0f01-4d54-89bb-6ff2e7314124',
+    createdAt: '1619157868',
+    namespace: 'testNameSpace',
+    referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
+    referenceType: 'order',
+    type: 'order',
+    value: "testValue"
+  }
+]
 
 describe('Test Create Payment for Order', () => {
   it('Should throw error with no backend url set', async () => {
@@ -266,5 +279,54 @@ describe('Test paidPaymentExists', () => {
   it('Should propagate failure', async () => {
     axiosMock.get.mockRejectedValueOnce({ response: { status: 500 } })
     await expect(paidPaymentExists(params)).rejects.toThrow()
+  })
+})
+
+describe('Test save payment filters for order', () => {
+  it('Should throw error with no backend url set', async () => {
+    process.env.PAYMENT_BACKEND_URL = ''
+    await expect(
+        savePaymentFiltersAdmin(paymentFiltersMock)
+    ).rejects.toThrow('No payment API backend URL set')
+  })
+
+  it('Should save payment filters for order', async () => {
+    process.env.PAYMENT_BACKEND_URL = 'test.dev.hel'
+
+    const paymentFilterReqeustDataMock = [
+        {
+            filterId: 'faa1a6f9-0f01-4d54-89bb-6ff2e7314124',
+            createdAt: '1619157868',
+            namespace: 'testNameSpace',
+            referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
+            referenceType: 'order',
+            type: 'order',
+            value: "testValue"
+        }
+    ]
+
+    axiosMock.post.mockResolvedValue({ data: paymentFiltersMock })
+    const result = await savePaymentFiltersAdmin(paymentFilterReqeustDataMock)
+
+    expect(axiosMock.post).toHaveBeenCalledTimes(1)
+    expect(axiosMock.post?.mock?.calls[0]![0]).toEqual(
+        'test.dev.hel/payment-admin/online/save-payment-filters'
+    )
+    expect(axiosMock.post?.mock?.calls[0]![1]).toEqual({
+        params: {
+            paymentFilter:[
+                {
+                    filterId: 'faa1a6f9-0f01-4d54-89bb-6ff2e7314124',
+                    createdAt: '1619157868',
+                    namespace: 'testNameSpace',
+                    referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
+                    referenceType: 'order',
+                    type: 'order',
+                    value: "testValue"
+                }
+            ]
+        }
+    })
+    expect(result).toEqual(paymentFiltersMock)
   })
 })
