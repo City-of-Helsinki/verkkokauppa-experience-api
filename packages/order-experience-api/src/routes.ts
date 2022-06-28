@@ -27,6 +27,7 @@ import { GetGdprController } from './api/getGdpr'
 import { DeleteGdprController } from './api/deleteGdpr'
 import { CreateRefundController } from './api/createRefund'
 import { ConfirmRefundController } from './api/confirmRefund'
+import { SendSubscriptionCardExpiredEmail } from './api/sendSubscriptionCardExpiredEmail'
 
 const createController = new CreateController()
 const cartToOrderController = new CartToOrder()
@@ -56,6 +57,7 @@ const setSubscriptionItemMeta = new SetSubscriptionItemMetaController()
 const cancelSubscription = new (withAuthentication(CancelSubscription))()
 const sendSubscriptionContractEmail = new SendSubscriptionContractEmail()
 const sendSubscriptionPaymentFailedEmail = new SendSubscriptionPaymentFailedEmail()
+const sendSubscriptionCardExpiredEmail = new SendSubscriptionCardExpiredEmail()
 const recreateSubscription = new RecreateSubscriptionController()
 const listSubscriptionsController = new ListSubscriptionsController()
 // Authentication is already mixed in at the controller
@@ -120,6 +122,9 @@ router.post('/subscription/:id/emailSubscriptionContract', (req, res) =>
 )
 router.post('/subscription/:id/emailSubscriptionPaymentFailed', (req, res) =>
   sendSubscriptionPaymentFailedEmail.execute(req, res)
+)
+router.post('/subscription/:id/emailSubscriptionCardExpired', (req, res) =>
+  sendSubscriptionCardExpiredEmail.execute(req, res)
 )
 router.post('/subscription/:id/recreate', (req, res) =>
   recreateSubscription.execute(req, res)
