@@ -357,7 +357,7 @@ export const createAuthorizedPaymentAndGetCardUpdateUrl = async (
   }
 }
 
-export const savePaymentFiltersAdmin  = async(
+export const savePaymentFiltersAdmin = async(
   paymentFilter: PaymentFilter[]
 ): Promise<PaymentFilter[]> => {
   checkBackendUrlExists()

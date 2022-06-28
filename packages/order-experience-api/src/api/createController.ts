@@ -3,13 +3,18 @@ import {
   Data,
   logger,
   ValidatedRequest,
-} from '@verkkokauppa/core'
+ RequestValidationError } from '@verkkokauppa/core'
 import type { Response } from 'express'
 import { createOrder, createOrderWithItems } from '@verkkokauppa/order-backend'
-import { customerSchema, itemsSchema } from '../lib/validation'
+import { savePaymentFiltersAdmin } from '@verkkokauppa/payment-backend'
+import {
+  customerSchema,
+  itemsSchema,
+  paymentFiltersSchema,
+} from '../lib/validation'
 import { calculateTotalsFromItems } from '../lib/totals'
 import * as yup from 'yup'
-import { RequestValidationError } from '@verkkokauppa/core/dist/errors'
+
 
 const requestSchema = yup.object().shape({
   body: yup.object().shape({
@@ -17,6 +22,7 @@ const requestSchema = yup.object().shape({
     user: yup.string().required(),
     items: itemsSchema.notRequired(),
     customer: customerSchema.notRequired().default(undefined),
+    paymentFilters: paymentFiltersSchema.required(),
   }),
 })
 
@@ -43,9 +49,14 @@ export class CreateController extends AbstractController<typeof requestSchema> {
     req: ValidatedRequest<typeof requestSchema>,
     res: Response
   ): Promise<any> {
-    const { namespace, user } = req.body
+    const { namespace, user, paymentFilters } = req.body
     logger.debug(`Create Order for namespace ${namespace} and user ${user}`)
-    const dto = new Data(await createOrder({ namespace, user }))
+    const orderData = await createOrder({ namespace, user })
+    const paymentFiltersData = await savePaymentFiltersAdmin(paymentFilters)
+    const dto = new Data({
+      ...orderData,
+      paymentFilters: paymentFiltersData
+    })
     return this.created<any>(res, dto.serialize())
   }
 
@@ -53,20 +64,24 @@ export class CreateController extends AbstractController<typeof requestSchema> {
     req: ValidatedRequest<typeof requestSchema>,
     res: Response
   ): Promise<any> {
-    const { namespace, user, items, customer } = req.body
+    const { namespace, user, items, customer, paymentFilters } = req.body
     logger.debug(
       `Create Order with Items for namespace ${namespace} and user ${user}`
     )
-    const dto = new Data(
-      await createOrderWithItems({
-        namespace,
-        user,
-        items,
-        customer,
-        ...calculateTotalsFromItems({ items }),
-      })
-    )
 
+    const orderData = await createOrderWithItems({
+      namespace,
+      user,
+      items,
+      customer,
+      ...calculateTotalsFromItems({ items }),
+    })
+    const paymentFilterData = await savePaymentFiltersAdmin(paymentFilters)
+
+    const dto = new Data({
+      ...orderData,
+      paymentFilters: paymentFilterData
+    })
     return this.created<any>(res, dto.serialize())
   }
 }

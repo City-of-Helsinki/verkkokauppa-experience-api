@@ -41,3 +41,15 @@ export const customerSchema = yup.object().shape({
 export const validateCustomer = (p: OrderCustomer): Promise<boolean> => {
   return customerSchema.isValid(p)
 }
+
+export const paymentFiltersSchema = yup.array().of(
+  yup.object().shape({
+    filterId: yup.string(),
+    createdAt: yup.string(),
+    namespace: yup.string().required(),
+    referenceId: yup.string().required(),
+    referenceType: yup.string().required(),
+    type: yup.string().required(),
+    value: yup.string().required(),
+  })
+)
