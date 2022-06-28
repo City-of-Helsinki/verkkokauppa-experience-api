@@ -46,6 +46,22 @@
       "cityText": "City of Helsinki"
     }
   },
+  "subscriptionCardExpired": {
+    "order": {
+      "mainHeader": "Your payment card will expire soon – update your details",
+      "header": "Service: "
+    },
+    "information": {
+      "header": "Your order: ",
+      "alv": "Incl. VAT",
+      "cardUpdateText": "By updating your payment card details before ",
+      "cardUpdateTextRow2": ", you can ensure that your subscription will continue without interruption: ",
+      "cardLinkedText": "The payment card ",
+      "cardLinkedExpiringText": " linked to your subscription is about to expire.",
+      "linkText": "Link",
+      "cityText": "City of Helsinki"
+    }
+  },
   "subscriptionContractEmail": {
     "merchant": {
       "h1": "Vendor details",

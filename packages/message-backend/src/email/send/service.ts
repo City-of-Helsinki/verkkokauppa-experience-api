@@ -16,6 +16,7 @@ import type {
   SubscriptionItemMeta,
   SubscriptionPaymentFailedEmailParameters,
   VatTable,
+  SubscriptionCardExpiredEmailParameters,
 } from '../create/types'
 
 function isMessageBackendUrlSet() {
@@ -158,6 +159,35 @@ export const sendSubscriptionPaymentFailedEmailToCustomer = async (p: {
   parseSubscriptionMetas(subscription)
 
   const created = await createEmailTemplate<SubscriptionPaymentFailedEmailParameters>(
+    {
+      fileName: emailType,
+      templateParams: { order: order, subscription: subscription },
+    }
+  )
+
+  return sendEmail({
+    id: order.orderId,
+    receiver: p.sendTo,
+    header: p.emailHeader,
+    body: created.template,
+    attachments: {},
+    emailType: emailType,
+  })
+}
+
+export const sendSubscriptionCardExpiredEmailToCustomer = async (p: {
+  order: Order
+  subscription: Subscription
+  sendTo: string
+  emailHeader: string
+}): Promise<any> => {
+  const emailType = 'subscriptionCardExpired'
+  const { order, subscription } = p
+  // Reorder metas to show in correct order using ordinal etc.
+  parseOrderMetas(order)
+  parseSubscriptionMetas(subscription)
+
+  const created = await createEmailTemplate<SubscriptionCardExpiredEmailParameters>(
     {
       fileName: emailType,
       templateParams: { order: order, subscription: subscription },
