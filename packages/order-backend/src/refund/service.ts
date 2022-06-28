@@ -107,6 +107,31 @@ export const confirmRefundAdmin = async (p: {
   }
 }
 
+export const getRefundAdmin = async (p: {
+  refundId: string
+}): Promise<RefundAggregate> => {
+  const { refundId } = p
+  const url = `${getBackendUrl()}/refund-admin/get-by-refund-id`
+  try {
+    const res = await axios.get(url, { params: { refundId } })
+    return res.data
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new ExperienceError({
+        code: 'refund-not-found',
+        message: `refund ${refundId} not found`,
+        responseStatus: StatusCode.NotFound,
+        logLevel: 'info',
+      })
+    }
+    throw new ExperienceFailure({
+      code: 'failed-to-get-refund',
+      message: `Failed to get refund ${refundId}`,
+      source: e,
+    })
+  }
+}
+
 export const getRefundsByOrderAdmin = async (p: {
   orderId: string
 }): Promise<RefundAggregate[]> => {

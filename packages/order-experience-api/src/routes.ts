@@ -26,6 +26,7 @@ import { ListSubscriptionsController } from './api/listSubscriptions'
 import { GetGdprController } from './api/getGdpr'
 import { DeleteGdprController } from './api/deleteGdpr'
 import { CreateRefundController } from './api/createRefund'
+import { ConfirmRefundController } from './api/confirmRefund'
 import { SendSubscriptionCardExpiredEmail } from './api/sendSubscriptionCardExpiredEmail'
 
 const createController = new CreateController()
@@ -68,6 +69,7 @@ const createRefundController = new CreateRefundController({
 const instantRefundController = new CreateRefundController({
   confirmAndCreatePayment: true,
 })
+const confirmRefundController = new ConfirmRefundController()
 
 const router = Router()
 router.post('/', (req, res) => createController.execute(req, res))
@@ -147,6 +149,10 @@ router.post('/refund', (req, res) => createRefundController.execute(req, res))
 
 router.post('/refund/instant', (req, res) =>
   instantRefundController.execute(req, res)
+)
+
+router.post('/refund/:refundId/confirm', (req, res) =>
+  confirmRefundController.execute(req, res)
 )
 
 export default router
