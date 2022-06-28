@@ -5,6 +5,12 @@ info:
 servers:
   - url: /v1/merchant
 components:
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      description: Api key for a namespace issued by talpa verkkokauppa
+      in: header
+      name: api-key
   schemas:
     ErrorBody:
       type: object
@@ -59,14 +65,8 @@ components:
           type: string
         subscriptionPriceUrl:
           type: string
-  parameters:
-    ApiKey:
-      name: api-key
-      in: header
-      description: Api key for the namespace
-      required: true
-      schema:
-        type: string
+        merchantRefundWebhookUrl:
+          type: string
   responses:
     InvalidApiKey:
       description: Invalid api key
@@ -135,8 +135,8 @@ paths:
           $ref: '#/components/responses/InternalServerError'
     post:
       description: Insert merchant configurations
-      parameters:
-        - $ref: '#/components/parameters/ApiKey'
+      security:
+        - ApiKey: [ ]
       requestBody:
         required: true
         content:
