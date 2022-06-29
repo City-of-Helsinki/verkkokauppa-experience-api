@@ -75,8 +75,8 @@ export interface Payment {
 }
 
 export interface PaymentFilter {
-  filterId: string
-  createdAt: string
+  filterId?: string
+  createdAt?: string
   namespace: string
   referenceId: string
   referenceType: string

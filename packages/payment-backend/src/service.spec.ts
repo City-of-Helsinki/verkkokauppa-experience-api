@@ -53,6 +53,10 @@ const paymentFiltersMock = [
   },
 ]
 
+beforeEach(() => {
+  jest.clearAllMocks()
+})
+
 describe('Test Create Payment for Order', () => {
   it('Should throw error with no backend url set', async () => {
     process.env.PAYMENT_BACKEND_URL = ''
