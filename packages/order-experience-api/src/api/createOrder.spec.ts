@@ -103,7 +103,7 @@ beforeEach(() => {
 })
 
 describe('Test CreateController', () => {
-  it('should throw validation error when order creation with items is done without customer data', async () => {
+  it('Should throw validation error when order creation with items is done without customer data', async () => {
     createOrderWithItemsMock.mockImplementationOnce(() => orderWithItemsMock)
     savePaymentFiltersAdminMock.mockImplementationOnce(
       () => paymentFiltersDataResponseMock
@@ -126,7 +126,7 @@ describe('Test CreateController', () => {
     ).rejects.toThrow('request-validation-failed')
   })
 
-  it('should throw validation error when payment filter lacks required properties', async () => {
+  it('Should throw validation error when payment filter lacks required properties', async () => {
     createOrderWithItemsMock.mockImplementationOnce(() => orderWithItemsMock)
     savePaymentFiltersAdminMock.mockImplementationOnce(
       () => paymentFiltersDataResponseMock
@@ -278,7 +278,7 @@ describe('Test CreateController', () => {
     ).rejects.toThrow('request-validation-failed')
   })
 
-  it('should return created order with payment filters', async () => {
+  it('Should return created order with payment filters', async () => {
     const mockServiceResponseData = {
       order: orderMock,
     }
@@ -304,7 +304,7 @@ describe('Test CreateController', () => {
       paymentFilters: [...paymentFiltersDataResponseMock],
     })
   }),
-    it('should return created order with items and payment filters', async () => {
+    it('Should return created order with items and payment filters', async () => {
       createOrderWithItemsMock.mockImplementationOnce(() => orderWithItemsMock)
       savePaymentFiltersAdminMock.mockImplementationOnce(
         () => paymentFiltersDataResponseMock
