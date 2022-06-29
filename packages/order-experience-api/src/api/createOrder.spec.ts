@@ -278,7 +278,7 @@ describe('Test CreateController', () => {
     ).rejects.toThrow('request-validation-failed')
   })
 
-  it('Should return created order with payment filters', async () => {
+  it('should return created order with payment filters', async () => {
     const mockServiceResponseData = {
       order: orderMock,
     }
@@ -304,7 +304,7 @@ describe('Test CreateController', () => {
       paymentFilters: [...paymentFiltersDataResponseMock],
     })
   }),
-    it('Should return created order with items and payment filters', async () => {
+    it('should return created order with items and payment filters', async () => {
       createOrderWithItemsMock.mockImplementationOnce(() => orderWithItemsMock)
       savePaymentFiltersAdminMock.mockImplementationOnce(
         () => paymentFiltersDataResponseMock
