@@ -3,7 +3,8 @@ import {
   Data,
   logger,
   ValidatedRequest,
- RequestValidationError } from '@verkkokauppa/core'
+  RequestValidationError,
+} from '@verkkokauppa/core'
 import type { Response } from 'express'
 import { createOrder, createOrderWithItems } from '@verkkokauppa/order-backend'
 import { savePaymentFiltersAdmin } from '@verkkokauppa/payment-backend'
@@ -14,7 +15,6 @@ import {
 } from '../lib/validation'
 import { calculateTotalsFromItems } from '../lib/totals'
 import * as yup from 'yup'
-
 
 const requestSchema = yup.object().shape({
   body: yup.object().shape({
@@ -55,7 +55,7 @@ export class CreateController extends AbstractController<typeof requestSchema> {
     const paymentFiltersData = await savePaymentFiltersAdmin(paymentFilters)
     const dto = new Data({
       ...orderData,
-      paymentFilters: paymentFiltersData
+      paymentFilters: paymentFiltersData,
     })
     return this.created<any>(res, dto.serialize())
   }
@@ -80,7 +80,7 @@ export class CreateController extends AbstractController<typeof requestSchema> {
 
     const dto = new Data({
       ...orderData,
-      paymentFilters: paymentFilterData
+      paymentFilters: paymentFilterData,
     })
     return this.created<any>(res, dto.serialize())
   }
