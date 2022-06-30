@@ -355,6 +355,39 @@ components:
                 type: string
               originalPriceGross:
                 type: string
+    PaymentFilter:
+      type: object
+      required:
+        - namespace
+        - referenceId
+        - referenceType
+        - filterType
+        - value
+      properties:
+        filterId:
+          type: string
+        createdAt:
+          type: string
+        namespace:
+          type: string
+        referenceId:
+          type: string
+        referenceType:
+          $ref: '#/components/schemas/ReferenceType'
+        filterType:
+          $ref: '#/components/schemas/FilterType'
+        value:
+          type: string
+    ReferenceType:
+      type: string
+      enum:
+        - order
+        - merchant
+    FilterType:
+      type: string
+      enum:
+        - order
+        - merchant
   parameters:
     Namespace:
       name: namespace
@@ -430,6 +463,10 @@ paths:
                       type: string
                     namespace:
                       type: string
+                    paymentFilters:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/PaymentFilter'
                 - type: object
                   required:
                     - user
@@ -445,13 +482,25 @@ paths:
                       $ref: '#/components/schemas/Customer'
                     items:
                       $ref: '#/components/schemas/OrderItem'
+                    paymentFilters:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/PaymentFilter'
+
       responses:
         '201':
           description: The created order
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Order'
+                type: object
+                properties:
+                  order:
+                    $ref: '#/components/schemas/Order'
+                  paymentFilters:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PaymentFilter'
         '400':
           $ref: '#/components/responses/RequestValidationError'
         '500':
