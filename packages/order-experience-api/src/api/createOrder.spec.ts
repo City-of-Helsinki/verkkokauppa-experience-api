@@ -1,6 +1,7 @@
 import type { Response } from 'express'
 import type { ValidatedRequest } from '@verkkokauppa/core'
 import { CreateController } from './createController'
+import { FilterType, ReferenceType } from '@verkkokauppa/payment-backend'
 
 jest.mock('@verkkokauppa/order-backend')
 jest.mock('@verkkokauppa/payment-backend')
@@ -70,8 +71,8 @@ const paymentFiltersDataResponseMock = [
     createdAt: '1619157868',
     namespace: 'testNameSpace',
     referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
-    referenceType: 'order',
-    type: 'order',
+    referenceType: ReferenceType.ORDER,
+    filterType: FilterType.ORDER,
     value: 'testValue',
   },
 ]
@@ -82,8 +83,8 @@ const paymentFiltersDataRequestMock = [
     createdAt: '',
     namespace: 'testNameSpace',
     referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
-    referenceType: 'order',
-    type: 'order',
+    referenceType: ReferenceType.ORDER,
+    filterType: FilterType.ORDER,
     value: 'testValue',
   },
 ]
@@ -138,8 +139,8 @@ describe('Test CreateController', () => {
         createdAt: '',
         namespace: '',
         referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
-        referenceType: 'order',
-        type: 'order',
+        referenceType: ReferenceType.ORDER,
+        filterType: FilterType.ORDER,
         value: 'testValue',
       },
     ]
@@ -167,8 +168,8 @@ describe('Test CreateController', () => {
         createdAt: '',
         namespace: 'testNameSpace',
         referenceId: '',
-        referenceType: 'order',
-        type: 'order',
+        referenceType: ReferenceType.ORDER,
+        filterType: FilterType.ORDER,
         value: 'testValue',
       },
     ]
@@ -197,7 +198,7 @@ describe('Test CreateController', () => {
         namespace: 'testNameSpace',
         referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
         referenceType: '',
-        type: 'order',
+        filterType: FilterType.ORDER,
         value: 'testValue',
       },
     ]
@@ -225,8 +226,8 @@ describe('Test CreateController', () => {
         createdAt: '',
         namespace: 'testNameSpace',
         referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
-        referenceType: 'order',
-        type: '',
+        referenceType: ReferenceType.ORDER,
+        filterType: '',
         value: 'testValue',
       },
     ]
@@ -254,9 +255,9 @@ describe('Test CreateController', () => {
         createdAt: '',
         namespace: 'testNameSpace',
         referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
-        referenceType: 'order',
-        type: 'order',
-        value: '',
+        referenceType: ReferenceType.MERCHANT,
+        filterType: FilterType.MERCHANT,
+        value: 'testValue',
       },
     ]
 
@@ -276,9 +277,38 @@ describe('Test CreateController', () => {
         responseMock
       )
     ).rejects.toThrow('request-validation-failed')
+
+    const paymentFiltersInvalidRequestMock7 = [
+      {
+        filterId: '',
+        createdAt: '',
+        namespace: 'testNameSpace',
+        referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
+        referenceType: ReferenceType.ORDER,
+        filterType: FilterType.ORDER,
+        value: '',
+      },
+    ]
+
+    await expect(
+      controller.implementation(
+        {
+          body: {
+            filterId: '',
+            createdAt: '',
+            namespace: 'testNameSpace',
+            user: 'test@test.dev.hel',
+            items: orderWithItemsMock.items,
+            paymentFilters: paymentFiltersInvalidRequestMock7,
+          },
+          get: () => 'test.com',
+        },
+        responseMock
+      )
+    ).rejects.toThrow('request-validation-failed')
   })
 
-  it('should return created order with payment filters', async () => {
+  it('Should return created order with payment filters', async () => {
     const mockServiceResponseData = {
       order: orderMock,
     }
@@ -304,7 +334,7 @@ describe('Test CreateController', () => {
       paymentFilters: [...paymentFiltersDataResponseMock],
     })
   }),
-    it('should return created order with items and payment filters', async () => {
+    it('Should return created order with items and payment filters', async () => {
       createOrderWithItemsMock.mockImplementationOnce(() => orderWithItemsMock)
       savePaymentFiltersAdminMock.mockImplementationOnce(
         () => paymentFiltersDataResponseMock

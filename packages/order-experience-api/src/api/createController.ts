@@ -52,12 +52,18 @@ export class CreateController extends AbstractController<typeof requestSchema> {
     const { namespace, user, paymentFilters } = req.body
     logger.debug(`Create Order for namespace ${namespace} and user ${user}`)
     const orderData = await createOrder({ namespace, user })
-    const paymentFiltersData = await savePaymentFiltersAdmin(paymentFilters)
-    const dto = new Data({
-      ...orderData,
-      paymentFilters: paymentFiltersData,
-    })
-    return this.created<any>(res, dto.serialize())
+
+    if (!!paymentFilters && paymentFilters.length > 0) {
+      const paymentFiltersData = await savePaymentFiltersAdmin(paymentFilters)
+      const dto = new Data({
+        ...orderData,
+        paymentFilters: paymentFiltersData,
+      })
+      return this.created<any>(res, dto.serialize())
+    } else {
+      const dto = new Data(orderData)
+      return this.created<any>(res, dto.serialize())
+    }
   }
 
   protected async createWithItems(
@@ -76,12 +82,17 @@ export class CreateController extends AbstractController<typeof requestSchema> {
       customer,
       ...calculateTotalsFromItems({ items }),
     })
-    const paymentFilterData = await savePaymentFiltersAdmin(paymentFilters)
 
-    const dto = new Data({
-      ...orderData,
-      paymentFilters: paymentFilterData,
-    })
-    return this.created<any>(res, dto.serialize())
+    if (!!paymentFilters && paymentFilters.length > 0) {
+      const paymentFiltersData = await savePaymentFiltersAdmin(paymentFilters)
+      const dto = new Data({
+        ...orderData,
+        paymentFilters: paymentFiltersData,
+      })
+      return this.created<any>(res, dto.serialize())
+    } else {
+      const dto = new Data(orderData)
+      return this.created<any>(res, dto.serialize())
+    }
   }
 }

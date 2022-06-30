@@ -7,6 +7,7 @@ import {
   paidPaymentExists,
   savePaymentFiltersAdmin,
 } from './service'
+import { FilterType, ReferenceType } from './enums'
 
 jest.mock('axios')
 const axiosMock = axios as jest.Mocked<typeof axios>
@@ -47,8 +48,8 @@ const paymentFiltersMock = [
     createdAt: '1619157868',
     namespace: 'testNameSpace',
     referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
-    referenceType: 'order',
-    type: 'order',
+    referenceType: ReferenceType.ORDER,
+    filterType: FilterType.ORDER,
     value: 'testValue',
   },
 ]
@@ -303,8 +304,8 @@ describe('Test save payment filters for order', () => {
         createdAt: '1619157868',
         namespace: 'testNameSpace',
         referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
-        referenceType: 'order',
-        type: 'order',
+        referenceType: ReferenceType.ORDER,
+        filterType: FilterType.ORDER,
         value: 'testValue',
       },
     ]
@@ -323,8 +324,8 @@ describe('Test save payment filters for order', () => {
             createdAt: '1619157868',
             namespace: 'testNameSpace',
             referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
-            referenceType: 'order',
-            type: 'order',
+            referenceType: ReferenceType.ORDER,
+            filterType: FilterType.ORDER,
             value: 'testValue',
           },
         ],

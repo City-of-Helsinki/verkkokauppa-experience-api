@@ -9,3 +9,13 @@ export enum PaymentType {
   CREDIT_CARDS = 'creditcards',
   CARD_RENEWAL = 'payment_card_renewal',
 }
+
+export enum ReferenceType {
+  ORDER = 'order',
+  MERCHANT = 'merchant',
+}
+
+export enum FilterType {
+  ORDER = 'order',
+  MERCHANT = 'merchant',
+}
