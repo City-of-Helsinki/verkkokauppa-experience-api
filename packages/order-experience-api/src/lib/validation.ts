@@ -45,8 +45,6 @@ export const validateCustomer = (p: OrderCustomer): Promise<boolean> => {
 
 export const paymentFiltersSchema = yup.array().of(
   yup.object().shape({
-    filterId: yup.string(),
-    createdAt: yup.string(),
     namespace: yup.string().required(),
     referenceId: yup.string().required(),
     referenceType: yup
