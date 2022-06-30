@@ -1,3 +1,5 @@
+import type { FilterType, ReferenceType } from './enums'
+
 export interface OrderItemRequest {
   productId: string
   productName: string
@@ -79,7 +81,7 @@ export interface PaymentFilter {
   createdAt?: string
   namespace: string
   referenceId: string
-  referenceType: string
-  type: string
+  referenceType: ReferenceType
+  filterType: FilterType
   value: string
 }
