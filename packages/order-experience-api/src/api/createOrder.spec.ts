@@ -90,6 +90,8 @@ const paymentFiltersDataRequestMock = [
 ]
 
 const controller = new (class extends CreateController {
+  testSchema = this.requestSchema
+
   implementation(req: ValidatedRequest<any>, res: Response): Promise<any> {
     return super.implementation(req, res)
   }
@@ -105,10 +107,6 @@ beforeEach(() => {
 
 describe('Test CreateController', () => {
   it('Should throw validation error when order creation with items is done without customer data', async () => {
-    createOrderWithItemsMock.mockImplementationOnce(() => orderWithItemsMock)
-    savePaymentFiltersAdminMock.mockImplementationOnce(
-      () => paymentFiltersDataResponseMock
-    )
     await expect(
       controller.implementation(
         {
@@ -128,11 +126,6 @@ describe('Test CreateController', () => {
   })
 
   it('Should throw validation error when payment filter lacks required properties', async () => {
-    createOrderWithItemsMock.mockImplementationOnce(() => orderWithItemsMock)
-    savePaymentFiltersAdminMock.mockImplementationOnce(
-      () => paymentFiltersDataResponseMock
-    )
-
     const paymentFiltersInvalidRequestMock = [
       {
         filterId: '',
@@ -146,21 +139,16 @@ describe('Test CreateController', () => {
     ]
 
     await expect(
-      controller.implementation(
-        {
-          body: {
-            filterId: '',
-            createdAt: '',
-            namespace: 'testNameSpace',
-            user: 'test@test.dev.hel',
-            items: orderWithItemsMock.items,
-            paymentFilters: paymentFiltersInvalidRequestMock,
-          },
-          get: () => 'test.com',
+      controller.testSchema.validate({
+        body: {
+          namespace: 'testNameSpace',
+          user: 'test@test.dev.hel',
+          customer: orderCustomerMock,
+          items: orderWithItemsMock.items,
+          paymentFilters: paymentFiltersInvalidRequestMock,
         },
-        responseMock
-      )
-    ).rejects.toThrow('request-validation-failed')
+      })
+    ).rejects.toThrow('body.paymentFilters[0].namespace is a required field')
 
     const paymentFiltersInvalidRequestMock2 = [
       {
@@ -175,21 +163,16 @@ describe('Test CreateController', () => {
     ]
 
     await expect(
-      controller.implementation(
-        {
-          body: {
-            filterId: '',
-            createdAt: '',
-            namespace: 'testNameSpace',
-            user: 'test@test.dev.hel',
-            items: orderWithItemsMock.items,
-            paymentFilters: paymentFiltersInvalidRequestMock2,
-          },
-          get: () => 'test.com',
+      controller.testSchema.validate({
+        body: {
+          namespace: 'testNameSpace',
+          user: 'test@test.dev.hel',
+          customer: orderCustomerMock,
+          items: orderWithItemsMock.items,
+          paymentFilters: paymentFiltersInvalidRequestMock2,
         },
-        responseMock
-      )
-    ).rejects.toThrow('request-validation-failed')
+      })
+    ).rejects.toThrow('body.paymentFilters[0].referenceId is a required field')
 
     const paymentFiltersInvalidRequestMock3 = [
       {
@@ -197,28 +180,24 @@ describe('Test CreateController', () => {
         createdAt: '',
         namespace: 'testNameSpace',
         referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
-        referenceType: '',
         filterType: FilterType.ORDER,
         value: 'testValue',
       },
     ]
 
     await expect(
-      controller.implementation(
-        {
-          body: {
-            filterId: '',
-            createdAt: '',
-            namespace: 'testNameSpace',
-            user: 'test@test.dev.hel',
-            items: orderWithItemsMock.items,
-            paymentFilters: paymentFiltersInvalidRequestMock3,
-          },
-          get: () => 'test.com',
+      controller.testSchema.validate({
+        body: {
+          namespace: 'testNameSpace',
+          user: 'test@test.dev.hel',
+          customer: orderCustomerMock,
+          items: orderWithItemsMock.items,
+          paymentFilters: paymentFiltersInvalidRequestMock3,
         },
-        responseMock
-      )
-    ).rejects.toThrow('request-validation-failed')
+      })
+    ).rejects.toThrow(
+      'body.paymentFilters[0].referenceType is a required field'
+    )
 
     const paymentFiltersInvalidRequestMock4 = [
       {
@@ -227,58 +206,23 @@ describe('Test CreateController', () => {
         namespace: 'testNameSpace',
         referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
         referenceType: ReferenceType.ORDER,
-        filterType: '',
         value: 'testValue',
       },
     ]
 
     await expect(
-      controller.implementation(
-        {
-          body: {
-            filterId: '',
-            createdAt: '',
-            namespace: 'testNameSpace',
-            user: 'test@test.dev.hel',
-            items: orderWithItemsMock.items,
-            paymentFilters: paymentFiltersInvalidRequestMock4,
-          },
-          get: () => 'test.com',
+      controller.testSchema.validate({
+        body: {
+          namespace: 'testNameSpace',
+          user: 'test@test.dev.hel',
+          customer: orderCustomerMock,
+          items: orderWithItemsMock.items,
+          paymentFilters: paymentFiltersInvalidRequestMock4,
         },
-        responseMock
-      )
-    ).rejects.toThrow('request-validation-failed')
+      })
+    ).rejects.toThrow('body.paymentFilters[0].filterType is a required field')
 
     const paymentFiltersInvalidRequestMock5 = [
-      {
-        filterId: '',
-        createdAt: '',
-        namespace: 'testNameSpace',
-        referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
-        referenceType: ReferenceType.MERCHANT,
-        filterType: FilterType.MERCHANT,
-        value: 'testValue',
-      },
-    ]
-
-    await expect(
-      controller.implementation(
-        {
-          body: {
-            filterId: '',
-            createdAt: '',
-            namespace: 'testNameSpace',
-            user: 'test@test.dev.hel',
-            items: orderWithItemsMock.items,
-            paymentFilters: paymentFiltersInvalidRequestMock5,
-          },
-          get: () => 'test.com',
-        },
-        responseMock
-      )
-    ).rejects.toThrow('request-validation-failed')
-
-    const paymentFiltersInvalidRequestMock7 = [
       {
         filterId: '',
         createdAt: '',
@@ -291,21 +235,134 @@ describe('Test CreateController', () => {
     ]
 
     await expect(
-      controller.implementation(
-        {
-          body: {
-            filterId: '',
-            createdAt: '',
-            namespace: 'testNameSpace',
-            user: 'test@test.dev.hel',
-            items: orderWithItemsMock.items,
-            paymentFilters: paymentFiltersInvalidRequestMock7,
-          },
-          get: () => 'test.com',
+      controller.testSchema.validate({
+        body: {
+          namespace: 'testNameSpace',
+          user: 'test@test.dev.hel',
+          customer: orderCustomerMock,
+          items: orderWithItemsMock.items,
+          paymentFilters: paymentFiltersInvalidRequestMock5,
         },
-        responseMock
-      )
-    ).rejects.toThrow('request-validation-failed')
+      })
+    ).rejects.toThrow('body.paymentFilters[0].value is a required field')
+  })
+
+  it('Should throw validation error when payment filters have invalid reference and filter types', async () => {
+    const paymentFiltersInvalidRequestMock = [
+      {
+        filterId: '',
+        createdAt: '',
+        namespace: 'testNameSpace',
+        referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
+        referenceType: 'not valid',
+        filterType: FilterType.MERCHANT,
+        value: 'testValue',
+      },
+    ]
+
+    await expect(
+      controller.testSchema.validate({
+        body: {
+          namespace: 'testNameSpace',
+          user: 'test@test.dev.hel',
+          customer: orderCustomerMock,
+          items: orderWithItemsMock.items,
+          paymentFilters: paymentFiltersInvalidRequestMock,
+        },
+      })
+    ).rejects.toThrow(
+      'body.paymentFilters[0].referenceType must be one of the following values: order, merchant'
+    )
+
+    const paymentFiltersInvalidRequestMock2 = [
+      {
+        filterId: '',
+        createdAt: '',
+        namespace: 'testNameSpace',
+        referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
+        referenceType: ReferenceType.MERCHANT,
+        filterType: 'not valid',
+        value: 'testValue',
+      },
+    ]
+
+    await expect(
+      controller.testSchema.validate({
+        body: {
+          namespace: 'testNameSpace',
+          user: 'test@test.dev.hel',
+          customer: orderCustomerMock,
+          items: orderWithItemsMock.items,
+          paymentFilters: paymentFiltersInvalidRequestMock2,
+        },
+      })
+    ).rejects.toThrow(
+      'body.paymentFilters[0].filterType must be one of the following values: order, merchant'
+    )
+
+    // Ensure valid values work
+    const paymentFiltersValidRequestMock = [
+      {
+        filterId: '',
+        createdAt: '',
+        namespace: 'testNameSpace',
+        referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
+        referenceType: ReferenceType.ORDER,
+        filterType: FilterType.ORDER,
+        value: 'testValue',
+      },
+    ]
+
+    expect(
+      await controller.testSchema.validate({
+        body: {
+          namespace: 'testNameSpace',
+          user: 'test@test.dev.hel',
+          customer: orderCustomerMock,
+          items: orderWithItemsMock.items,
+          paymentFilters: paymentFiltersValidRequestMock,
+        },
+      })
+    ).toEqual({
+      body: {
+        namespace: 'testNameSpace',
+        user: 'test@test.dev.hel',
+        customer: orderCustomerMock,
+        items: orderWithItemsMock.items,
+        paymentFilters: paymentFiltersValidRequestMock,
+      },
+    })
+    const paymentFiltersValidRequestMock2 = [
+      {
+        filterId: '',
+        createdAt: '',
+        namespace: 'testNameSpace',
+        referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
+        referenceType: ReferenceType.MERCHANT,
+        filterType: FilterType.MERCHANT,
+        value: 'testValue',
+      },
+    ]
+
+    expect(
+      await controller.testSchema.validate({
+        body: {
+          namespace: 'testNameSpace',
+          user: 'test@test.dev.hel',
+          customer: orderCustomerMock,
+          items: orderWithItemsMock.items,
+          paymentFilters: paymentFiltersValidRequestMock2,
+        },
+      })
+    ).toEqual({
+      body: {
+        namespace: 'testNameSpace',
+        user: 'test@test.dev.hel',
+        customer: orderCustomerMock,
+        items: orderWithItemsMock.items,
+        paymentFilters: paymentFiltersValidRequestMock2,
+      },
+    })
   })
 
   it('Should return created order with payment filters', async () => {
@@ -333,29 +390,30 @@ describe('Test CreateController', () => {
       order: { ...orderMock },
       paymentFilters: [...paymentFiltersDataResponseMock],
     })
-  }),
-    it('Should return created order with items and payment filters', async () => {
-      createOrderWithItemsMock.mockImplementationOnce(() => orderWithItemsMock)
-      savePaymentFiltersAdminMock.mockImplementationOnce(
-        () => paymentFiltersDataResponseMock
-      )
-      await controller.implementation(
-        {
-          body: {
-            namespace: 'testNameSpace',
-            user: 'test@test.dev.hel',
-            items: orderWithItemsMock.items,
-            customer: orderCustomerMock,
-            paymentFilters: paymentFiltersDataRequestMock,
-          },
-          get: () => 'test.com',
+  })
+
+  it('Should return created order with items and payment filters', async () => {
+    createOrderWithItemsMock.mockImplementationOnce(() => orderWithItemsMock)
+    savePaymentFiltersAdminMock.mockImplementationOnce(
+      () => paymentFiltersDataResponseMock
+    )
+    await controller.implementation(
+      {
+        body: {
+          namespace: 'testNameSpace',
+          user: 'test@test.dev.hel',
+          items: orderWithItemsMock.items,
+          customer: orderCustomerMock,
+          paymentFilters: paymentFiltersDataRequestMock,
         },
-        responseMock
-      )
-      expect(createOrderWithItemsMock).toHaveBeenCalledTimes(1)
-      expect(controller.respond.mock.calls[0][2]).toMatchObject({
-        ...orderWithItemsMock,
-        paymentFilters: [...paymentFiltersDataResponseMock],
-      })
+        get: () => 'test.com',
+      },
+      responseMock
+    )
+    expect(createOrderWithItemsMock).toHaveBeenCalledTimes(1)
+    expect(controller.respond.mock.calls[0][2]).toMatchObject({
+      ...orderWithItemsMock,
+      paymentFilters: [...paymentFiltersDataResponseMock],
     })
+  })
 })
