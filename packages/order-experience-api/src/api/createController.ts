@@ -22,7 +22,7 @@ const requestSchema = yup.object().shape({
     user: yup.string().required(),
     items: itemsSchema.notRequired(),
     customer: customerSchema.notRequired().default(undefined),
-    paymentFilters: paymentFiltersSchema.required(),
+    paymentFilters: paymentFiltersSchema.notRequired(),
   }),
 })
 
@@ -53,17 +53,15 @@ export class CreateController extends AbstractController<typeof requestSchema> {
     logger.debug(`Create Order for namespace ${namespace} and user ${user}`)
     const orderData = await createOrder({ namespace, user })
 
+    let paymentFiltersData = undefined
     if (!!paymentFilters && paymentFilters.length > 0) {
-      const paymentFiltersData = await savePaymentFiltersAdmin(paymentFilters)
-      const dto = new Data({
-        ...orderData,
-        paymentFilters: paymentFiltersData,
-      })
-      return this.created<any>(res, dto.serialize())
-    } else {
-      const dto = new Data(orderData)
-      return this.created<any>(res, dto.serialize())
+      paymentFiltersData = await savePaymentFiltersAdmin(paymentFilters)
     }
+    const dto = new Data({
+      ...orderData,
+      paymentFilters: paymentFiltersData ? paymentFiltersData : [],
+    })
+    return this.created<any>(res, dto.serialize())
   }
 
   protected async createWithItems(
@@ -83,16 +81,14 @@ export class CreateController extends AbstractController<typeof requestSchema> {
       ...calculateTotalsFromItems({ items }),
     })
 
+    let paymentFiltersData = undefined
     if (!!paymentFilters && paymentFilters.length > 0) {
-      const paymentFiltersData = await savePaymentFiltersAdmin(paymentFilters)
-      const dto = new Data({
-        ...orderData,
-        paymentFilters: paymentFiltersData,
-      })
-      return this.created<any>(res, dto.serialize())
-    } else {
-      const dto = new Data(orderData)
-      return this.created<any>(res, dto.serialize())
+      paymentFiltersData = await savePaymentFiltersAdmin(paymentFilters)
     }
+    const dto = new Data({
+      ...orderData,
+      paymentFilters: paymentFiltersData ? paymentFiltersData : [],
+    })
+    return this.created<any>(res, dto.serialize())
   }
 }
