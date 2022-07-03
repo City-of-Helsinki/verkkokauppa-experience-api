@@ -1,7 +1,7 @@
 import type { Response } from 'express'
 import type { ValidatedRequest } from '@verkkokauppa/core'
 import { CreateController } from './createController'
-import { FilterType, ReferenceType } from '@verkkokauppa/payment-backend'
+import { ReferenceType } from '@verkkokauppa/payment-backend'
 
 jest.mock('@verkkokauppa/order-backend')
 jest.mock('@verkkokauppa/payment-backend')
@@ -72,7 +72,7 @@ const paymentFiltersDataResponseMock = [
     namespace: 'testNameSpace',
     referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
     referenceType: ReferenceType.ORDER,
-    filterType: FilterType.ORDER,
+    filterType: 'banks',
     value: 'testValue',
   },
 ]
@@ -84,7 +84,7 @@ const paymentFiltersDataRequestMock = [
     namespace: 'testNameSpace',
     referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
     referenceType: ReferenceType.ORDER,
-    filterType: FilterType.ORDER,
+    filterType: 'banks',
     value: 'testValue',
   },
 ]
@@ -133,7 +133,7 @@ describe('Test CreateController', () => {
         namespace: '',
         referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
         referenceType: ReferenceType.ORDER,
-        filterType: FilterType.ORDER,
+        filterType: 'banks',
         value: 'testValue',
       },
     ]
@@ -157,7 +157,7 @@ describe('Test CreateController', () => {
         namespace: 'testNameSpace',
         referenceId: '',
         referenceType: ReferenceType.ORDER,
-        filterType: FilterType.ORDER,
+        filterType: 'banks',
         value: 'testValue',
       },
     ]
@@ -180,7 +180,7 @@ describe('Test CreateController', () => {
         createdAt: '',
         namespace: 'testNameSpace',
         referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
-        filterType: FilterType.ORDER,
+        filterType: 'banks',
         value: 'testValue',
       },
     ]
@@ -229,7 +229,7 @@ describe('Test CreateController', () => {
         namespace: 'testNameSpace',
         referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
         referenceType: ReferenceType.ORDER,
-        filterType: FilterType.ORDER,
+        filterType: 'banks',
         value: '',
       },
     ]
@@ -247,7 +247,7 @@ describe('Test CreateController', () => {
     ).rejects.toThrow('body.paymentFilters[0].value is a required field')
   })
 
-  it('Should throw validation error when payment filters have invalid reference and filter types', async () => {
+  it('Should throw validation error when payment filters have invalid reference types', async () => {
     const paymentFiltersInvalidRequestMock = [
       {
         filterId: '',
@@ -255,7 +255,7 @@ describe('Test CreateController', () => {
         namespace: 'testNameSpace',
         referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
         referenceType: 'not valid',
-        filterType: FilterType.MERCHANT,
+        filterType: 'banks',
         value: 'testValue',
       },
     ]
@@ -274,32 +274,6 @@ describe('Test CreateController', () => {
       'body.paymentFilters[0].referenceType must be one of the following values: order, merchant'
     )
 
-    const paymentFiltersInvalidRequestMock2 = [
-      {
-        filterId: '',
-        createdAt: '',
-        namespace: 'testNameSpace',
-        referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
-        referenceType: ReferenceType.MERCHANT,
-        filterType: 'not valid',
-        value: 'testValue',
-      },
-    ]
-
-    await expect(
-      controller.testSchema.validate({
-        body: {
-          namespace: 'testNameSpace',
-          user: 'test@test.dev.hel',
-          customer: orderCustomerMock,
-          items: orderWithItemsMock.items,
-          paymentFilters: paymentFiltersInvalidRequestMock2,
-        },
-      })
-    ).rejects.toThrow(
-      'body.paymentFilters[0].filterType must be one of the following values: order, merchant'
-    )
-
     // Ensure valid values work
     const paymentFiltersValidRequestMock = [
       {
@@ -308,7 +282,7 @@ describe('Test CreateController', () => {
         namespace: 'testNameSpace',
         referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
         referenceType: ReferenceType.ORDER,
-        filterType: FilterType.ORDER,
+        filterType: 'banks',
         value: 'testValue',
       },
     ]
@@ -339,7 +313,7 @@ describe('Test CreateController', () => {
         namespace: 'testNameSpace',
         referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
         referenceType: ReferenceType.MERCHANT,
-        filterType: FilterType.MERCHANT,
+        filterType: 'banks',
         value: 'testValue',
       },
     ]

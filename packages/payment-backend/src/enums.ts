@@ -14,8 +14,3 @@ export enum ReferenceType {
   ORDER = 'order',
   MERCHANT = 'merchant',
 }
-
-export enum FilterType {
-  ORDER = 'order',
-  MERCHANT = 'merchant',
-}

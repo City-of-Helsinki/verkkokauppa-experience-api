@@ -375,15 +375,10 @@ components:
         referenceType:
           $ref: '#/components/schemas/ReferenceType'
         filterType:
-          $ref: '#/components/schemas/FilterType'
+          type: string
         value:
           type: string
     ReferenceType:
-      type: string
-      enum:
-        - order
-        - merchant
-    FilterType:
       type: string
       enum:
         - order
