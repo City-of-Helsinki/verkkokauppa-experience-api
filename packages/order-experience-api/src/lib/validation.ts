@@ -3,7 +3,7 @@ import type {
   OrderItemRequest,
 } from '@verkkokauppa/order-backend'
 import * as yup from 'yup'
-import { FilterType, ReferenceType } from '@verkkokauppa/payment-backend'
+import { ReferenceType } from '@verkkokauppa/payment-backend'
 
 export const itemsSchema = yup.array().of(
   yup.object().shape({
@@ -51,10 +51,7 @@ export const paymentFiltersSchema = yup.array().of(
       .mixed<ReferenceType>()
       .oneOf(Object.values(ReferenceType))
       .required(),
-    filterType: yup
-      .mixed<FilterType>()
-      .oneOf(Object.values(FilterType))
-      .required(),
+    filterType: yup.string().required(),
     value: yup.string().required(),
   })
 )
