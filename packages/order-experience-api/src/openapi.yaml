@@ -375,7 +375,7 @@ components:
         referenceType:
           $ref: '#/components/schemas/ReferenceType'
         filterType:
-          type: string
+          $ref: '#/components/schemas/FilterType'
         value:
           type: string
     ReferenceType:
@@ -383,6 +383,13 @@ components:
       enum:
         - order
         - merchant
+    FilterType:
+      description: Value may be assigned as one of the listed groups or as a code value. When a code value is utilized, more detailed information has to be fetched separately.
+      type: string
+      enum:
+        - banks
+        - creditcards
+        - wallets
   parameters:
     Namespace:
       name: namespace
