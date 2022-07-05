@@ -7,6 +7,7 @@ import {
   getOrder,
   setOrderTotals,
   createAccountingEntryForOrder,
+  setInvoiceToOrder,
 } from './index'
 import axios from 'axios'
 
@@ -21,6 +22,7 @@ const orderMock = {
   type: 'order',
   status: 'draft',
   customer: undefined,
+  invoice: undefined,
   subscriptionId: undefined,
 }
 
@@ -31,12 +33,34 @@ const orderBackendCustomerMock = {
   customerPhone: '+358401231233',
 }
 
+const orderBackendInvoiceMock = {
+  invoice: {
+    businessId: 'businessId',
+    name: 'name',
+    address: 'address',
+    postcode: 'postcode',
+    city: 'city',
+    ovtId: 'ovtId',
+  },
+}
+
 const orderCustomerMock = {
   customer: {
     firstName: 'Customer',
     lastName: 'Name',
     email: 'test@test.dev.hel',
     phone: '+358401231233',
+  },
+}
+
+const orderInvoiceMock = {
+  invoice: {
+    businessId: 'businessId',
+    name: 'name',
+    address: 'address',
+    postcode: 'postcode',
+    city: 'city',
+    ovtId: 'ovtId',
   },
 }
 
@@ -331,6 +355,84 @@ describe('Test Set Customer To Order', () => {
     expect(result).toEqual({
       ...orderMock,
       ...orderCustomerMock,
+      items: mockData.items,
+      updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
+      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
+      receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
+      loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
+    })
+  })
+})
+
+describe('Test Set Invoice To Order', () => {
+  it('Should throw error with no backend url set', async () => {
+    process.env.ORDER_BACKEND_URL = ''
+    await expect(
+      setInvoiceToOrder({
+        orderId: orderMock.orderId,
+        user: orderMock.user,
+        ...orderInvoiceMock,
+      })
+    ).rejects.toThrow('No order backend URL set')
+  })
+  it('Should set invoice correctly with backend url set for order without items', async () => {
+    process.env.ORDER_BACKEND_URL = 'test.dev.hel'
+    process.env.CHECKOUT_BASE_URL = 'https://checkout.dev.hel/'
+    const mockData = {
+      order: {
+        ...orderMock,
+        ...orderBackendInvoiceMock,
+      },
+      items: [],
+    }
+    axiosMock.post.mockResolvedValue({ data: mockData })
+    const result = await setInvoiceToOrder({
+      orderId: orderMock.orderId,
+      user: orderMock.user,
+      ...orderInvoiceMock,
+    })
+    expect(result).toEqual({
+      ...orderMock,
+      ...orderInvoiceMock,
+      items: [],
+      updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
+      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
+      receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
+      loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
+    })
+  })
+
+  it('Should set invoice correctly with backend url set for order with items', async () => {
+    process.env.ORDER_BACKEND_URL = 'test.dev.hel'
+    process.env.CHECKOUT_BASE_URL = 'https://checkout.dev.hel/'
+    const mockData = {
+      order: {
+        ...orderMock,
+        ...orderBackendInvoiceMock,
+      },
+      items: [
+        {
+          productId: '30a245ed-5fca-4fcf-8b2a-cdf1ce6fca0d',
+          quantity: 1,
+          productName: 'Product Name',
+          productLabel: 'Product Label',
+          productDescription: 'Product Description',
+          unit: 'pcs',
+          rowPriceNet: 100,
+          rowPriceVat: 24,
+          rowPriceTotal: 124,
+        },
+      ],
+    }
+    axiosMock.post.mockResolvedValue({ data: mockData })
+    const result = await setInvoiceToOrder({
+      orderId: orderMock.orderId,
+      user: orderMock.user,
+      ...orderInvoiceMock,
+    })
+    expect(result).toEqual({
+      ...orderMock,
+      ...orderInvoiceMock,
       items: mockData.items,
       updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
       checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
