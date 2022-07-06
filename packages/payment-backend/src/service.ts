@@ -5,6 +5,7 @@ import type {
   PaymentMethod,
   VismaPayResponse,
   VismaStatus,
+  PaymentFilter,
 } from './types'
 import type { ParsedQs } from 'qs'
 import {
@@ -351,7 +352,27 @@ export const createAuthorizedPaymentAndGetCardUpdateUrl = async (
     throw new ExperienceFailure({
       code: 'failed-to-create-card-renewal-payment',
       message: 'Failed to create card renewal payment',
-      source: e,
+      source: (e as Error),
+    })
+  }
+}
+
+export const savePaymentFiltersAdmin = async(
+  paymentFilter: PaymentFilter[]
+): Promise<PaymentFilter[]> => {
+  checkBackendUrlExists()
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment-admin/online/save-payment-filters`
+  try {
+    const res = await axios.post<PaymentFilter[]>(url, {
+      params: { paymentFilter },
+    })
+    return res.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-save-payment-filter',
+      message: 'failed to save payment filter(s)',
+      source: (e as Error),
     })
   }
 }
