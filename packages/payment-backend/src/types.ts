@@ -1,3 +1,5 @@
+import type { ReferenceType } from './enums'
+
 export interface OrderItemRequest {
   productId: string
   productName: string
@@ -72,4 +74,14 @@ export interface Payment {
   additionalInfo: string
   token: string
   timestamp: string
+}
+
+export interface PaymentFilter {
+  filterId?: string
+  createdAt?: string
+  namespace: string
+  referenceId: string
+  referenceType: ReferenceType
+  filterType: string
+  value: string
 }
