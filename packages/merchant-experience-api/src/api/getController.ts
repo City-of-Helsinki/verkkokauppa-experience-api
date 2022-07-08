@@ -23,6 +23,7 @@ const keyMap: { [key: string]: string } = {
   MERCHANT_SUBSCRIPTION_WEBHOOK_URL: 'merchantSubscriptionWebhookUrl',
   MERCHANT_BUSINESS_ID: 'merchantBusinessId',
   ORDER_CREATED_REDIRECT_URL: 'orderCreatedRedirectUrl',
+  MERCHANT_REFUND_WEBHOOK_URL: 'merchantRefundWebhookUrl',
 }
 
 const keys = [...Object.keys(keyMap), ...Object.values(keyMap)]
