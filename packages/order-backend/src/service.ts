@@ -5,6 +5,8 @@ import type {
   OrderAccounting,
   OrderAccountingRequest,
   OrderCustomer,
+  OrderInvoice,
+  OrderInvoiceRequest,
   OrderItemRequest,
   OrderWithItemsBackendResponse,
 } from './types'
@@ -19,6 +21,7 @@ import {
   OrderNotFoundError,
   OrderValidationError,
   SetCustomerToOrderFailure,
+  SetInvoiceToOrderFailure,
   SetOrderTotalsFailure,
   SubscriptionNotFoundError,
 } from './errors'
@@ -169,6 +172,39 @@ export const setCustomerToOrder = async (p: {
   }
 }
 
+export const setInvoiceToOrder = async (p: {
+  orderId: string
+  user: string
+  invoice: OrderInvoice
+}): Promise<Order> => {
+  const { orderId, invoice, user: userId } = p
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+
+  const url = `${process.env.ORDER_BACKEND_URL}/order/setInvoice`
+  const orderInvoiceRequestDto: OrderInvoiceRequest = {
+    ...invoice,
+    orderId,
+    userId,
+  }
+  try {
+    const result = await axios.post<OrderWithItemsBackendResponse>(
+      url,
+      orderInvoiceRequestDto
+    )
+    return transFormBackendOrder(result.data)
+  } catch (e) {
+    if (e.response?.status === 403) {
+      throw new OrderValidationError('order is in an immutable state')
+    }
+    if (e.response?.status === 404) {
+      throw new OrderNotFoundError()
+    }
+    throw new SetInvoiceToOrderFailure(e)
+  }
+}
+
 export const addItemsToOrder = async (p: {
   orderId: string
   user: string
@@ -256,6 +292,7 @@ const transFormBackendOrder = (p: OrderWithItemsBackendResponse): Order => {
       priceTotal,
       type,
       subscriptionId,
+      invoice,
     },
     items,
   } = p
@@ -268,6 +305,7 @@ const transFormBackendOrder = (p: OrderWithItemsBackendResponse): Order => {
       phone: customerPhone,
     }
   }
+
   let data: any = {
     orderId,
     namespace,
@@ -278,6 +316,7 @@ const transFormBackendOrder = (p: OrderWithItemsBackendResponse): Order => {
     status,
     type,
     subscriptionId,
+    invoice,
     checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}`,
     receiptUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}/receipt?user=${user}`,
     loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${orderId}`,

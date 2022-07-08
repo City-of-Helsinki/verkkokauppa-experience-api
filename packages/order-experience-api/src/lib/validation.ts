@@ -38,6 +38,15 @@ export const customerSchema = yup.object().shape({
     .ensure(),
 })
 
+export const invoiceSchema = yup.object().shape({
+  businessId: yup.string().required(),
+  name: yup.string().required(),
+  address: yup.string().required(),
+  postcode: yup.string().required(),
+  city: yup.string().required(),
+  ovtId: yup.string().notRequired(),
+})
+
 export const validateCustomer = (p: OrderCustomer): Promise<boolean> => {
   return customerSchema.isValid(p)
 }
