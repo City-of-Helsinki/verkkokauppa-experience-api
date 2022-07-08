@@ -131,7 +131,7 @@ describe('Test CreateController', () => {
         filterId: '',
         createdAt: '',
         namespace: '',
-        referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
+        referenceId: '',
         referenceType: ReferenceType.ORDER,
         filterType: 'banks',
         value: 'testValue',
@@ -155,9 +155,8 @@ describe('Test CreateController', () => {
         filterId: '',
         createdAt: '',
         namespace: 'testNameSpace',
-        referenceId: '',
+        referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
         referenceType: ReferenceType.ORDER,
-        filterType: 'banks',
         value: 'testValue',
       },
     ]
@@ -172,62 +171,14 @@ describe('Test CreateController', () => {
           paymentFilters: paymentFiltersInvalidRequestMock2,
         },
       })
-    ).rejects.toThrow('body.paymentFilters[0].referenceId is a required field')
+    ).rejects.toThrow('body.paymentFilters[0].filterType is a required field')
 
     const paymentFiltersInvalidRequestMock3 = [
       {
         filterId: '',
         createdAt: '',
         namespace: 'testNameSpace',
-        referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
-        filterType: 'banks',
-        value: 'testValue',
-      },
-    ]
-
-    await expect(
-      controller.testSchema.validate({
-        body: {
-          namespace: 'testNameSpace',
-          user: 'test@test.dev.hel',
-          customer: orderCustomerMock,
-          items: orderWithItemsMock.items,
-          paymentFilters: paymentFiltersInvalidRequestMock3,
-        },
-      })
-    ).rejects.toThrow(
-      'body.paymentFilters[0].referenceType is a required field'
-    )
-
-    const paymentFiltersInvalidRequestMock4 = [
-      {
-        filterId: '',
-        createdAt: '',
-        namespace: 'testNameSpace',
-        referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
-        referenceType: ReferenceType.ORDER,
-        value: 'testValue',
-      },
-    ]
-
-    await expect(
-      controller.testSchema.validate({
-        body: {
-          namespace: 'testNameSpace',
-          user: 'test@test.dev.hel',
-          customer: orderCustomerMock,
-          items: orderWithItemsMock.items,
-          paymentFilters: paymentFiltersInvalidRequestMock4,
-        },
-      })
-    ).rejects.toThrow('body.paymentFilters[0].filterType is a required field')
-
-    const paymentFiltersInvalidRequestMock5 = [
-      {
-        filterId: '',
-        createdAt: '',
-        namespace: 'testNameSpace',
-        referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
+        referenceId: '',
         referenceType: ReferenceType.ORDER,
         filterType: 'banks',
         value: '',
@@ -241,102 +192,10 @@ describe('Test CreateController', () => {
           user: 'test@test.dev.hel',
           customer: orderCustomerMock,
           items: orderWithItemsMock.items,
-          paymentFilters: paymentFiltersInvalidRequestMock5,
+          paymentFilters: paymentFiltersInvalidRequestMock3,
         },
       })
     ).rejects.toThrow('body.paymentFilters[0].value is a required field')
-  })
-
-  it('Should throw validation error when payment filters have invalid reference types', async () => {
-    const paymentFiltersInvalidRequestMock = [
-      {
-        filterId: '',
-        createdAt: '',
-        namespace: 'testNameSpace',
-        referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
-        referenceType: 'not valid',
-        filterType: 'banks',
-        value: 'testValue',
-      },
-    ]
-
-    await expect(
-      controller.testSchema.validate({
-        body: {
-          namespace: 'testNameSpace',
-          user: 'test@test.dev.hel',
-          customer: orderCustomerMock,
-          items: orderWithItemsMock.items,
-          paymentFilters: paymentFiltersInvalidRequestMock,
-        },
-      })
-    ).rejects.toThrow(
-      'body.paymentFilters[0].referenceType must be one of the following values: order, merchant'
-    )
-
-    // Ensure valid values work
-    const paymentFiltersValidRequestMock = [
-      {
-        filterId: '',
-        createdAt: '',
-        namespace: 'testNameSpace',
-        referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
-        referenceType: ReferenceType.ORDER,
-        filterType: 'banks',
-        value: 'testValue',
-      },
-    ]
-
-    expect(
-      await controller.testSchema.validate({
-        body: {
-          namespace: 'testNameSpace',
-          user: 'test@test.dev.hel',
-          customer: orderCustomerMock,
-          items: orderWithItemsMock.items,
-          paymentFilters: paymentFiltersValidRequestMock,
-        },
-      })
-    ).toEqual({
-      body: {
-        namespace: 'testNameSpace',
-        user: 'test@test.dev.hel',
-        customer: orderCustomerMock,
-        items: orderWithItemsMock.items,
-        paymentFilters: paymentFiltersValidRequestMock,
-      },
-    })
-    const paymentFiltersValidRequestMock2 = [
-      {
-        filterId: '',
-        createdAt: '',
-        namespace: 'testNameSpace',
-        referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
-        referenceType: ReferenceType.MERCHANT,
-        filterType: 'banks',
-        value: 'testValue',
-      },
-    ]
-
-    expect(
-      await controller.testSchema.validate({
-        body: {
-          namespace: 'testNameSpace',
-          user: 'test@test.dev.hel',
-          customer: orderCustomerMock,
-          items: orderWithItemsMock.items,
-          paymentFilters: paymentFiltersValidRequestMock2,
-        },
-      })
-    ).toEqual({
-      body: {
-        namespace: 'testNameSpace',
-        user: 'test@test.dev.hel',
-        customer: orderCustomerMock,
-        items: orderWithItemsMock.items,
-        paymentFilters: paymentFiltersValidRequestMock2,
-      },
-    })
   })
 
   it('Should return created order with payment filters', async () => {

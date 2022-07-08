@@ -359,8 +359,6 @@ components:
       type: object
       required:
         - namespace
-        - referenceId
-        - referenceType
         - filterType
         - value
       properties:
@@ -468,7 +466,18 @@ paths:
                     paymentFilters:
                       type: array
                       items:
-                        $ref: '#/components/schemas/PaymentFilter'
+                        type: object
+                        required:
+                          - namespace
+                          - filterType
+                          - value
+                        properties:
+                          namespace:
+                            type: string
+                          filterType:
+                            $ref: '#/components/schemas/FilterType'
+                          value:
+                            type: string
                 - type: object
                   required:
                     - user
@@ -487,7 +496,18 @@ paths:
                     paymentFilters:
                       type: array
                       items:
-                        $ref: '#/components/schemas/PaymentFilter'
+                        type: object
+                        required:
+                          - namespace
+                          - filterType
+                          - value
+                        properties:
+                          namespace:
+                            type: string
+                          filterType:
+                            $ref: '#/components/schemas/FilterType'
+                          value:
+                            type: string
 
       responses:
         '201':
