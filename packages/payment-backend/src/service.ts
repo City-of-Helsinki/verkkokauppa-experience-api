@@ -226,7 +226,11 @@ export const getPaymentMethodList = async (parameters: {
   const paymentFilters = orderPaymentFilters.concat(merchantPaymentFilters)
   return onlineMethods.concat(offlineMethods).filter((method) => {
     return !paymentFilters.find((filter) => {
-      return filter.value === method.name
+      const value = filter.value.toLowerCase()
+      return (
+        value === method.name.toLowerCase() ||
+        value === method.code.toLowerCase()
+      )
     })
   })
 }
