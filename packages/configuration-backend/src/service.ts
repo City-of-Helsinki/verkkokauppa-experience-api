@@ -1,6 +1,10 @@
 import axios from 'axios'
 import type {
+  Configuration,
+  Merchant,
   MerchantConfigurationKeys,
+  MerchantKeys,
+  Namespace,
   PublicServiceConfigurationKeys,
   RestrictedServiceConfigurationKeys,
   ServiceConfiguration,
@@ -129,6 +133,76 @@ export const createPublicServiceConfigurations = async (p: {
     throw new ExperienceFailure({
       code: 'failed-to-create-public-service-configurations',
       message: 'Failed to create public service configurations',
+      source: e,
+    })
+  }
+}
+
+export const createMerchant = async (p: {
+  namespace: string
+  merchantKeys: MerchantKeys
+}): Promise<Merchant> => {
+  if (!process.env.MERCHANT_CONFIGURATION_BACKEND_URL) {
+    throw new Error('No configuration backend URL set')
+  }
+
+  const configurationsDto: Configuration[] = []
+
+  Object.entries(p.merchantKeys).forEach(([key, value]) => {
+    configurationsDto.push({ value: value, key: key, restricted: false })
+  })
+
+  const createMerchantPayload = {
+    configurations: configurationsDto,
+    namespace: p.namespace,
+  }
+
+  const url = `${process.env.MERCHANT_CONFIGURATION_BACKEND_URL}/merchant/upsert`
+  try {
+    const res = await axios.post(url, createMerchantPayload)
+    return res.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-create-merchant',
+      message: 'Failed to create/update merchant configurations',
+      source: e,
+    })
+  }
+}
+
+export const updateMerchant = async (merchant: Merchant): Promise<Merchant> => {
+  if (!process.env.MERCHANT_CONFIGURATION_BACKEND_URL) {
+    throw new Error('No configuration backend URL set')
+  }
+
+  const url = `${process.env.MERCHANT_CONFIGURATION_BACKEND_URL}/merchant/upsert`
+  try {
+    const res = await axios.post(url, merchant)
+    return res.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-update-merchant',
+      message: 'Failed to update merchant configurations',
+      source: e,
+    })
+  }
+}
+
+export const getNamespaceModel = async (
+  namespace: string
+): Promise<Namespace> => {
+  if (!process.env.MERCHANT_CONFIGURATION_BACKEND_URL) {
+    throw new Error('No configuration backend URL set')
+  }
+
+  const url = `${process.env.MERCHANT_CONFIGURATION_BACKEND_URL}/namespace/get?namespace=${namespace}`
+  try {
+    const res = await axios.get(url)
+    return res.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-get-namespace',
+      message: 'Failed to get namespace configurations',
       source: e,
     })
   }
