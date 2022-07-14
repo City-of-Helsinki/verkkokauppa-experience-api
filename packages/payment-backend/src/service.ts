@@ -2,10 +2,10 @@ import axios from 'axios'
 import type {
   Order,
   Payment,
+  PaymentFilter,
   PaymentMethod,
   VismaPayResponse,
   VismaStatus,
-  PaymentFilter,
 } from './types'
 import type { ParsedQs } from 'qs'
 import {
@@ -22,6 +22,7 @@ import {
   PaymentValidationError,
 } from './errors'
 import { ExperienceFailure } from '@verkkokauppa/core'
+import { ReferenceType } from './enums'
 
 const PAYMENT_METHOD_MAP = new Map()
   .set('invoice', 'billing')
@@ -101,7 +102,7 @@ export const createPaymentFromOrder = async (parameters: {
   }
 }
 
-export const getPaymentMethodList = async (parameters: {
+export const getOnlinePaymentMethods = async (parameters: {
   namespace: string
   totalPrice: number
   currency?: string
@@ -131,6 +132,107 @@ export const getPaymentMethodList = async (parameters: {
     }
     throw new GetPaymentMethodListFailure(e)
   }
+}
+
+export const getOfflinePaymentMethods = async (parameters: {
+  namespace: string
+  totalPrice: number
+  currency?: string
+  order: Order
+}): Promise<PaymentMethod[]> => {
+  const {
+    order: { items, ...orderDto },
+    ...params
+  } = parameters
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/offline/get-available-methods`
+
+  try {
+    // We use POST instead of GET since we need to send complex parameters,
+    // although using GET would be semantically more correct.
+    const result = await axios.post<PaymentMethod[]>(url, {
+      ...params,
+      orderDto,
+    })
+    return result.data
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new PaymentMethodsNotFound()
+    }
+    throw new GetPaymentMethodListFailure(e)
+  }
+}
+
+export const getPaymentFiltersAdmin = async (p: {
+  referenceId: string
+  referenceType: ReferenceType
+}): Promise<PaymentFilter[]> => {
+  const { referenceId, referenceType } = p
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment-admin/get-payment-filters`
+  try {
+    const res = await axios.get(url, {
+      params: { referenceId, referenceType },
+    })
+    return res.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-get-payment-filter',
+      message: 'failed to get payment filters',
+      source: e,
+    })
+  }
+}
+
+export const getMerchantPaymentFilters = (p: { merchantId: string }) => {
+  const { merchantId } = p
+  return getPaymentFiltersAdmin({
+    referenceType: ReferenceType.MERCHANT,
+    referenceId: merchantId,
+  })
+}
+
+export const getOrderPaymentFilters = (p: { orderId: string }) => {
+  const { orderId } = p
+  return getPaymentFiltersAdmin({
+    referenceType: ReferenceType.ORDER,
+    referenceId: orderId,
+  })
+}
+
+export const getPaymentMethodList = async (parameters: {
+  namespace: string
+  totalPrice: number
+  currency?: string
+  order: Order & { merchantId?: string }
+}): Promise<PaymentMethod[]> => {
+  const { merchantId } = parameters.order
+  const [
+    onlineMethods,
+    offlineMethods,
+    orderPaymentFilters,
+    merchantPaymentFilters,
+  ] = await Promise.all([
+    getOnlinePaymentMethods(parameters),
+    getOfflinePaymentMethods(parameters),
+    getOrderPaymentFilters(parameters.order),
+    merchantId ? getMerchantPaymentFilters({ merchantId }) : [],
+  ])
+  const paymentFilters = orderPaymentFilters.concat(merchantPaymentFilters)
+  return onlineMethods.concat(offlineMethods).filter((method) => {
+    return !paymentFilters.find((filter) => {
+      const value = filter.value.toLowerCase()
+      return (
+        value === method.name.toLowerCase() ||
+        value === method.code.toLowerCase()
+      )
+    })
+  })
 }
 
 export const checkVismaReturnUrl = async (p: {
@@ -352,12 +454,12 @@ export const createAuthorizedPaymentAndGetCardUpdateUrl = async (
     throw new ExperienceFailure({
       code: 'failed-to-create-card-renewal-payment',
       message: 'Failed to create card renewal payment',
-      source: (e as Error),
+      source: e as Error,
     })
   }
 }
 
-export const savePaymentFiltersAdmin = async(
+export const savePaymentFiltersAdmin = async (
   paymentFilter: PaymentFilter[]
 ): Promise<PaymentFilter[]> => {
   checkBackendUrlExists()
@@ -372,7 +474,7 @@ export const savePaymentFiltersAdmin = async(
     throw new ExperienceFailure({
       code: 'failed-to-save-payment-filter',
       message: 'failed to save payment filter(s)',
-      source: (e as Error),
+      source: e as Error,
     })
   }
 }
