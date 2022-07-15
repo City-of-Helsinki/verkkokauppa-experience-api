@@ -65,6 +65,16 @@ export class SetCustomerToOrderFailure extends ExperienceFailure {
   }
 }
 
+export class SetInvoiceToOrderFailure extends ExperienceFailure {
+  constructor(source: Error) {
+    super({
+      code: 'failed-to-set-order-invoice',
+      message: 'Failed to set order invoice details',
+      source,
+    })
+  }
+}
+
 export class AddItemsToOrderFailure extends ExperienceFailure {
   constructor(source: Error) {
     super({

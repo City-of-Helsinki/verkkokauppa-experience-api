@@ -7,7 +7,10 @@ import {
 } from '@verkkokauppa/core'
 import type { Response } from 'express'
 import { createOrder, createOrderWithItems } from '@verkkokauppa/order-backend'
-import { savePaymentFiltersAdmin } from '@verkkokauppa/payment-backend'
+import {
+  ReferenceType,
+  savePaymentFiltersAdmin,
+} from '@verkkokauppa/payment-backend'
 import {
   customerSchema,
   itemsSchema,
@@ -55,6 +58,10 @@ export class CreateController extends AbstractController<typeof requestSchema> {
 
     let paymentFiltersData = undefined
     if (!!paymentFilters && paymentFilters.length > 0) {
+      paymentFilters.forEach((filter: any) => {
+        filter.referenceId = orderData.orderId
+        filter.referenceType = ReferenceType.ORDER
+      })
       paymentFiltersData = await savePaymentFiltersAdmin(paymentFilters)
     }
     const dto = new Data({

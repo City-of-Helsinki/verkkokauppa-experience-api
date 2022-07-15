@@ -42,6 +42,26 @@ export interface OrderCustomer {
   phone: string
 }
 
+export interface OrderInvoice {
+  businessId: string
+  name: string
+  address: string
+  postcode: string
+  city: string
+  ovtId?: string
+}
+
+export interface OrderInvoiceRequest {
+  orderId: string
+  userId: string
+  businessId: string
+  name: string
+  address: string
+  postcode: string
+  city: string
+  ovtId?: string
+}
+
 export type OrderType = 'subscription' | 'order'
 
 export interface Order {
@@ -58,6 +78,7 @@ export interface Order {
   receiptUrl?: string
   loggedInCheckoutUrl?: string
   customer?: OrderCustomer
+  invoice?: OrderInvoice
   status?: string
   subscriptionId?: string
   type: OrderType
@@ -75,6 +96,7 @@ export interface OrderBackendResponse {
   status?: string
   type: OrderType
   subscriptionId?: string
+  invoice?: OrderInvoice
 }
 
 export type OrderWithItemsBackendResponse = {

@@ -209,8 +209,9 @@ export const getPaymentMethodList = async (parameters: {
   namespace: string
   totalPrice: number
   currency?: string
-  order: Order
+  order: Order & { merchantId?: string }
 }): Promise<PaymentMethod[]> => {
+  const { merchantId } = parameters.order
   const [
     onlineMethods,
     offlineMethods,
@@ -220,12 +221,16 @@ export const getPaymentMethodList = async (parameters: {
     getOnlinePaymentMethods(parameters),
     getOfflinePaymentMethods(parameters),
     getOrderPaymentFilters(parameters.order),
-    [] as PaymentFilter[], // TODO: get merchant payment filters
+    merchantId ? getMerchantPaymentFilters({ merchantId }) : [],
   ])
   const paymentFilters = orderPaymentFilters.concat(merchantPaymentFilters)
   return onlineMethods.concat(offlineMethods).filter((method) => {
     return !paymentFilters.find((filter) => {
-      return filter.value === method.name
+      const value = filter.value.toLowerCase()
+      return (
+        value === method.name.toLowerCase() ||
+        value === method.code.toLowerCase()
+      )
     })
   })
 }

@@ -4,6 +4,7 @@ import { CreateController } from './api/createController'
 import { CartToOrder } from './api/cartToOrder'
 import { CancelController } from './api/cancelController'
 import { SetCustomerController } from './api/setCustomerController'
+import { SetInvoiceController } from './api/setInvoiceController'
 import { AddItemController } from './api/addItemController'
 import { GetController } from './api/getController'
 import { getSubscriptionController } from './api/getSubscription'
@@ -36,6 +37,7 @@ const confirmAndCreatePaymentController = new (withAuthentication(
   ConfirmAndCreatePayment
 ))()
 const setCustomerController = new (withAuthentication(SetCustomerController))()
+const setInvoiceController = new (withAuthentication(SetInvoiceController))()
 const addItemController = new (withAuthentication(AddItemController))()
 const getController = new (withAuthentication(GetController))()
 const getAdminController = new GetAdminController()
@@ -86,6 +88,9 @@ router.get('/subscription/:id/orders', (req, res) =>
 )
 router.post('/:orderId/customer', (req, res) =>
   setCustomerController.execute(req, res)
+)
+router.post('/:orderId/invoice', (req, res) =>
+  setInvoiceController.execute(req, res)
 )
 router.post('/:orderId/items', (req, res) =>
   addItemController.execute(req, res)

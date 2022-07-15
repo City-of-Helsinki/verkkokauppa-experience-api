@@ -3,7 +3,6 @@ import type {
   OrderItemRequest,
 } from '@verkkokauppa/order-backend'
 import * as yup from 'yup'
-import { ReferenceType } from '@verkkokauppa/payment-backend'
 
 export const itemsSchema = yup.array().of(
   yup.object().shape({
@@ -39,6 +38,15 @@ export const customerSchema = yup.object().shape({
     .ensure(),
 })
 
+export const invoiceSchema = yup.object().shape({
+  businessId: yup.string().required(),
+  name: yup.string().required(),
+  address: yup.string().required(),
+  postcode: yup.string().required(),
+  city: yup.string().required(),
+  ovtId: yup.string().notRequired(),
+})
+
 export const validateCustomer = (p: OrderCustomer): Promise<boolean> => {
   return customerSchema.isValid(p)
 }
@@ -46,11 +54,6 @@ export const validateCustomer = (p: OrderCustomer): Promise<boolean> => {
 export const paymentFiltersSchema = yup.array().of(
   yup.object().shape({
     namespace: yup.string().required(),
-    referenceId: yup.string().required(),
-    referenceType: yup
-      .mixed<ReferenceType>()
-      .oneOf(Object.values(ReferenceType))
-      .required(),
     filterType: yup.string().required(),
     value: yup.string().required(),
   })
