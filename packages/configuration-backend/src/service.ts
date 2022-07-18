@@ -149,7 +149,11 @@ export const createMerchant = async (p: {
   const configurationsDto: Configuration[] = []
 
   Object.entries(p.merchantKeys).forEach(([key, value]) => {
-    configurationsDto.push({ value: value, key: key, restricted: false })
+    configurationsDto.push({
+      value: value || '',
+      key: key || '',
+      restricted: false,
+    })
   })
 
   const createMerchantPayload = {
