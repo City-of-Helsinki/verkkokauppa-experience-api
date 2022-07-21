@@ -141,6 +141,7 @@ services:
       - '8080'
     ports:
       - '8086:8080'
+      - '9231:9229'
     command: yarn workspace @verkkokauppa/merchant-experience-api dev
     environment:
       - SERVICE_NAME=merchant-experience-api
