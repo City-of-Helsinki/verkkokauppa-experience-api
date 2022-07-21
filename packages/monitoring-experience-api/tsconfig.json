@@ -6,9 +6,6 @@
         "composite": true,
         "baseUrl": "./",
         "paths": {
-            "@verkkokauppa/configuration-backend": [
-                "../configuration-backend"
-            ],
             "@verkkokauppa/core": [
                 "../core"
             ]
@@ -18,9 +15,6 @@
         "src/**/*"
     ],
     "references": [
-        {
-            "path": "../configuration-backend"
-        },
         {
             "path": "../core"
         }

@@ -1,6 +1,6 @@
-# Merchant Experience API
+# Monitoring Experience API
 
-Service offers methods to onboard and fetch merchants
+Service offers methods to check health of environments
 
 ## Required Environment configuration
 | Config  | Default value | Example | Description |

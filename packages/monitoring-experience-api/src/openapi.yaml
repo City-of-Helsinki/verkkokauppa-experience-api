@@ -1,9 +1,9 @@
 openapi: 3.0.3
 info:
-  title: Merchant experience API
+  title: Monitoring experience API
   version: 1.0.0
 servers:
-  - url: /v1/merchant
+  - url: /v1/monitoring
 components:
   securitySchemes:
     ApiKey:
@@ -189,7 +189,7 @@ paths:
       description: Get elasticsearch health response
       responses:
         '200':
-          description: An object of merchant configurations
+          description: An object of monitoring configurations
           content:
             application/json:
               schema:
