@@ -150,5 +150,29 @@ services:
     networks:
       - common
 
+  monitoring-experience-api:
+    build:
+      context: ./
+      dockerfile: packages/monitoring-experience-api/Dockerfile
+      target: base
+    volumes:
+      - ./packages/monitoring-experience-api/:/opt/app-root/src/packages/monitoring-experience-api/
+      - ./packages/monitoring-experience-api/nodemon.json:/opt/app-root/src/packages/monitoring-experience-api/nodemon.json
+      - ./packages/configuration-backend/:/opt/app-root/src/packages/configuration-backend/
+      - ./packages/core/:/opt/app-root/src/packages/core/
+    container_name: monitoring-experience-api
+    expose:
+      - '8080'
+    ports:
+      - '8087:8080'
+      - '9232:9229'
+    command: yarn workspace @verkkokauppa/monitoring-experience-api dev
+    environment:
+      - SERVICE_NAME=monitoring-experience-api
+    env_file:
+      - .env.docker
+    networks:
+      - common
+
 networks:
   common:
