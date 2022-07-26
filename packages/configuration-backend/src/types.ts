@@ -12,6 +12,18 @@ export type MerchantConfigurationKeys = {
   merchantPaymentWebhookUrl: string
 }
 
+export type MerchantKeys = {
+  merchantName: string
+  merchantStreet: string
+  merchantZip: string
+  merchantCity: string
+  merchantEmail: string
+  merchantUrl: string
+  merchantTermsOfServiceUrl: string
+  merchantBusinessId: string
+  merchantPhone?: string
+}
+
 export type PublicServiceConfigurationKeys = {
   TERMS_OF_USE_URL: string
   TERMS_OF_USE_EMBEDDABLE_CONTENT: string
@@ -47,4 +59,33 @@ export interface ServiceConfiguration {
     | keyof RestrictedServiceConfigurationKeys
   configurationValue: string
   restricted: boolean
+}
+
+export interface Namespace {
+  namespaceId?: string
+  namespace: string
+  createdAt?: string
+  updatedAt?: string
+  configurations: Configuration[]
+}
+
+export interface Merchant {
+  merchantId?: string
+  namespace: string
+  createdAt?: string
+  updatedAt?: string
+  configurations: Configuration[]
+}
+
+export interface Configuration {
+  key: string
+  value: string
+  restricted: boolean
+  locale?: Locale
+}
+
+export interface Locale {
+  fi: string
+  sv: string
+  en: string
 }

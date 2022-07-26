@@ -67,6 +67,58 @@ components:
           type: string
         merchantRefundWebhookUrl:
           type: string
+    MerchantConfigurations:
+      type: object
+      required:
+        - merchantStreet
+        - merchantZip
+        - merchantCity
+        - merchantEmail
+        - merchantUrl
+        - merchantTermsOfServiceUrl
+        - merchantBusinessId
+      properties:
+        merchantName:
+          type: string
+        merchantStreet:
+          type: string
+        merchantZip:
+          type: string
+        merchantCity:
+          type: string
+        merchantEmail:
+          type: string
+        merchantPhone: #Not required
+          type: string
+        merchantUrl:
+          type: string
+        merchantTermsOfServiceUrl:
+          type: string
+        merchantBusinessId:
+          type: string
+    Merchant:
+      type: object
+      properties:
+        merchantId:
+          type: string
+        namespace:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        configurations:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+              restricted:
+                type: boolean
+
   responses:
     InvalidApiKey:
       description: Invalid api key
@@ -150,6 +202,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Configurations'
+        '400':
+          $ref: '#/components/responses/RequestValidationFailed'
+        '403':
+          $ref: '#/components/responses/InvalidApiKey'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /create/{namespace}:
+    parameters:
+      - name: namespace
+        in: path
+        description: Create new merchant and link it to given namespace
+        required: true
+        schema:
+          type: string
+    post:
+      description: Create new merchant and link it to given namespace
+      security:
+        - ApiKey: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MerchantConfigurations'
+      responses:
+        '201':
+          description: An object of merchant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Merchant'
         '400':
           $ref: '#/components/responses/RequestValidationFailed'
         '403':
