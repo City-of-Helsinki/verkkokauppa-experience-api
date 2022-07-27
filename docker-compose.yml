@@ -21,9 +21,10 @@ services:
     command: yarn workspace @verkkokauppa/product-experience-api dev
     environment:
       - SERVICE_NAME=product-experience-api
-      - PRODUCT_BACKEND_URL=https://ff102df2-94c3-4243-a4a1-6e449f78c633.mock.pstmn.io
-      - PRODUCT_MAPPING_BACKEND_URL=https://9678a076-6612-441d-8970-30ddbc8a84da.mock.pstmn.io
-      - PRICE_BACKEND_URL=https://3d615742-ed93-4415-8972-76c7103c5000.mock.pstmn.io
+    env_file:
+      - .env.local.docker
+    networks:
+      - common
   price-experience-api:
     build:
       context: ./
@@ -42,7 +43,10 @@ services:
     command: yarn workspace @verkkokauppa/price-experience-api dev
     environment:
       - SERVICE_NAME=price-experience-api
-      - PRICE_BACKEND_URL=https://3d615742-ed93-4415-8972-76c7103c5000.mock.pstmn.io
+    env_file:
+      - .env.local.docker
+    networks:
+      - common
   cart-experience-api:
     build:
       context: ./
@@ -63,9 +67,10 @@ services:
     command: yarn workspace @verkkokauppa/cart-experience-api dev
     environment:
       - SERVICE_NAME=cart-experience-api
-      - CART_BACKEND_URL=https://d526e9ec-74bf-4314-b708-f759a9d46958.mock.pstmn.io
-      - PRICE_BACKEND_URL=https://3d615742-ed93-4415-8972-76c7103c5000.mock.pstmn.io
-      - PRODUCT_BACKEND_URL=https://ff102df2-94c3-4243-a4a1-6e449f78c633.mock.pstmn.io
+    env_file:
+      - .env.local.docker
+    networks:
+      - common
   order-experience-api:
     build:
       context: ./
@@ -76,6 +81,8 @@ services:
       - ./packages/order-experience-api/nodemon.json:/opt/app-root/src/packages/order-experience-api/nodemon.json
       - ./packages/order-backend/:/opt/app-root/src/packages/order-backend/
       - ./packages/cart-backend/:/opt/app-root/src/packages/cart-backend/
+      - ./packages/message-backend/:/opt/app-root/src/packages/message-backend/
+      - ./packages/payment-backend/:/opt/app-root/src/packages/payment-backend/
       - ./packages/core/:/opt/app-root/src/packages/core/
       - ./packages/product-backend/:/opt/app-root/src/packages/product-backend/
       - ./packages/price-backend/:/opt/app-root/src/packages/price-backend/
@@ -84,14 +91,14 @@ services:
       - '8080'
     ports:
       - '8084:8080'
+      - '9230:9229'
     command: yarn workspace @verkkokauppa/order-experience-api dev
     environment:
       - SERVICE_NAME=order-experience-api
-      - CART_BACKEND_URL=https://d526e9ec-74bf-4314-b708-f759a9d46958.mock.pstmn.io
-      - PRICE_BACKEND_URL=https://3d615742-ed93-4415-8972-76c7103c5000.mock.pstmn.io
-      - PRODUCT_BACKEND_URL=https://ff102df2-94c3-4243-a4a1-6e449f78c633.mock.pstmn.io
-      - ORDER_BACKEND_URL=https://d04f2785-8b0b-4d0b-b52d-46c1878f6fa9.mock.pstmn.io
-      - CHECKOUT_BASE_URL=https://checkout-test.dev.hel.fi
+    env_file:
+      - .env.local.docker
+    networks:
+      - common
   payment-experience-api:
     build:
       context: ./
@@ -114,15 +121,12 @@ services:
     command: yarn workspace @verkkokauppa/payment-experience-api dev
     environment:
       - SERVICE_NAME=payment-experience-api
-      - PAYMENT_BACKEND_URL=https://e35c9302-ad69-4a59-ace3-208cb5040f6b.mock.pstmn.io
-      - PRICE_BACKEND_URL=https://3d615742-ed93-4415-8972-76c7103c5000.mock.pstmn.io
-      - PRODUCT_BACKEND_URL=https://ff102df2-94c3-4243-a4a1-6e449f78c633.mock.pstmn.io
-      - ORDER_BACKEND_URL=https://d04f2785-8b0b-4d0b-b52d-46c1878f6fa9.mock.pstmn.io
-      - CONFIGURATION_BACKEND_URL=https://d04f2785-8b0b-4d0b-b52d-46c1878f6fa9.mock.pstmn.io
-      - CHECKOUT_BASE_URL=https://checkout-test.dev.hel.fi
       - VISMA_PAY_PRIVATE_KEY=MOCKKEY
       - VISMA_PAY_API_KEY=MOCKKEY
-      - REDIRECT_PAYMENT_URL_BASE=http://localhost:8080/
+    env_file:
+      - .env.local.docker
+    networks:
+      - common
   merchant-experience-api:
     build:
       context: ./
@@ -138,7 +142,38 @@ services:
       - '8080'
     ports:
       - '8086:8080'
+      - '9231:9229'
     command: yarn workspace @verkkokauppa/merchant-experience-api dev
     environment:
       - SERVICE_NAME=merchant-experience-api
-      - CONFIGURATION_BACKEND_URL=
+    env_file:
+      - .env.local.docker
+    networks:
+      - common
+
+  monitoring-experience-api:
+    build:
+      context: ./
+      dockerfile: packages/monitoring-experience-api/Dockerfile
+      target: base
+    volumes:
+      - ./packages/monitoring-experience-api/:/opt/app-root/src/packages/monitoring-experience-api/
+      - ./packages/monitoring-experience-api/nodemon.json:/opt/app-root/src/packages/monitoring-experience-api/nodemon.json
+      - ./packages/configuration-backend/:/opt/app-root/src/packages/configuration-backend/
+      - ./packages/core/:/opt/app-root/src/packages/core/
+    container_name: monitoring-experience-api
+    expose:
+      - '8080'
+    ports:
+      - '8087:8080'
+      - '9232:9229'
+    command: yarn workspace @verkkokauppa/monitoring-experience-api dev
+    environment:
+      - SERVICE_NAME=monitoring-experience-api
+    env_file:
+      - .env.local.docker
+    networks:
+      - common
+
+networks:
+  common:
