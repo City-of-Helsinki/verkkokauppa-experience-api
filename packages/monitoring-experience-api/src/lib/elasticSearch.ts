@@ -9,9 +9,8 @@ const esClient = new Client({
   },
   node: {
     url: new URL(
-      process.env.ELASTICSEARCH_SERVICE_URL
-        ? `https://${process.env.ELASTICSEARCH_SERVICE_URL}`
-        : 'http://host.docker.internal:9200'
+      process.env.EXP_API_ELASTICSEARCH_SERVICE_URL ||
+        'http://host.docker.internal:9200'
     ),
   },
 })
