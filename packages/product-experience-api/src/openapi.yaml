@@ -88,6 +88,10 @@ components:
           type: string
     ProductAccountingRequest:
       type: object
+      required:
+        - vatCode
+        - companyCode
+        - mainLedgerAccount
       properties:
         vatCode:
           type: string
