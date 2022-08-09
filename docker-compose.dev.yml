@@ -82,6 +82,7 @@ services:
       - ./packages/order-backend/:/opt/app-root/src/packages/order-backend/
       - ./packages/cart-backend/:/opt/app-root/src/packages/cart-backend/
       - ./packages/message-backend/:/opt/app-root/src/packages/message-backend/
+      - ./packages/payment-backend/:/opt/app-root/src/packages/payment-backend/
       - ./packages/core/:/opt/app-root/src/packages/core/
       - ./packages/product-backend/:/opt/app-root/src/packages/product-backend/
       - ./packages/price-backend/:/opt/app-root/src/packages/price-backend/
