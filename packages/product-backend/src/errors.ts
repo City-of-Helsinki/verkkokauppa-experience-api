@@ -26,6 +26,17 @@ export class ProductAccountingNotFoundError extends ExperienceError {
   }
 }
 
+export class productAccountingRequestValidationError extends ExperienceError {
+  constructor() {
+    super({
+      code: 'product-accounting-request-validation-failed',
+      message: 'vatCode, companyCode and mainLedgerAccount need to be provided',
+      responseStatus: StatusCode.BadRequest,
+      logLevel: 'info',
+    })
+  }
+}
+
 export class GetProductFailure extends ExperienceFailure {
   constructor(productId: string, source: Error) {
     super({

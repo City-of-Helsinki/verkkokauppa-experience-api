@@ -7,6 +7,7 @@ import {
   CreateProductAccountingFailure,
   GetProductAccountingFailure,
   ProductAccountingNotFoundError,
+  productAccountingRequestValidationError,
 } from './errors'
 
 type ProductBackendResponse = {
@@ -44,6 +45,14 @@ export const createProductAccounting = async (p: {
   const { productAccounting } = p
   if (!process.env.PRODUCT_BACKEND_URL) {
     throw new Error('No product backend URL set')
+  }
+  // These values are required by SAP and need be provided
+  if (
+    !productAccounting.vatCode ||
+    !productAccounting.companyCode ||
+    !productAccounting.mainLedgerAccount
+  ) {
+    throw new productAccountingRequestValidationError()
   }
 
   const url =
