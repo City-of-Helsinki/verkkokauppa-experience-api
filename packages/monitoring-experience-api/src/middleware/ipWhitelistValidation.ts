@@ -1,8 +1,9 @@
-import { IpAddressValidationError } from '../errors'
 import type {
   AbstractController,
   UnknownRequest
 } from '@verkkokauppa/core'
+import ipRangeCheck from 'ip-range-check'
+import { IpAddressValidationError } from '../errors'
 
 export const withIpWhitelistValidation = <
     // eslint-disable-next-line prettier/prettier
@@ -27,14 +28,14 @@ export const withIpWhitelistValidation = <
         requestClientIp = requestClientIp[0]
       }
 
-      if (!!requestClientIp && validIps.includes(requestClientIp)) {
+      if (requestClientIp && ipRangeCheck(requestClientIp, validIps)) {
         return super.validateRequest(req)
-      } else {
-        console.log('IP is not whitelisted: ' + requestClientIp)
-        throw new IpAddressValidationError(
-            'IP is not whitelisted'
-        )
       }
+
+      console.log('IP is not whitelisted: ' + requestClientIp)
+      throw new IpAddressValidationError(
+          'IP is not whitelisted'
+      )
     }
   }
   return IpAddressWhitelistValidationController
