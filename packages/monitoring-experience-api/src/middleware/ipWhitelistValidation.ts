@@ -24,7 +24,7 @@ export const withIpWhitelistValidation = <
         throw new IpAddressValidationError('No IP found to validate')
       }
 
-      if (requestClientIp && Array.isArray(requestClientIp)) {
+      if (Array.isArray(requestClientIp)) {
         requestClientIp = requestClientIp[0]
       }
 
