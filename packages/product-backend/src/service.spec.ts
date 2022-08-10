@@ -43,25 +43,7 @@ describe('Test Create Accounting info', () => {
       })
     ).rejects.toThrow('No product backend URL set')
   })
-  it('Should throw error with empty vatCode, companyCode and mainLedgerAccount', async () => {
-    const productAccounting = {
-      productId: 'productId',
-      vatCode: '',
-      internalOrder: 'internalOrder',
-      profitCenter: 'profitCenter',
-      project: 'project',
-      operationArea: 'operationArea',
-      companyCode: '',
-      mainLedgerAccount: '',
-    }
-    process.env.PRODUCT_BACKEND_URL = 'test.dev.hel'
-    await expect(
-      createProductAccounting({
-        productAccounting,
-      })
-    ).rejects.toThrow('product-accounting-request-validation-failed')
-  })
-  it('Should create accouting info correctly with backend url set', async () => {
+  it('Should create accounting info correctly with backend url set', async () => {
     process.env.PRODUCT_BACKEND_URL = 'test.dev.hel'
     const mockData = { ...productAccounting }
     axiosMock.post.mockResolvedValue({ data: productAccounting })
