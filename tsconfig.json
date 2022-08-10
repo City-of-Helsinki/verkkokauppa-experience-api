@@ -68,6 +68,9 @@
             "path": "packages/message-backend"
         },
         {
+            "path": "packages/monitoring-experience-api"
+        },
+        {
             "path": "packages/order-backend"
         },
         {
