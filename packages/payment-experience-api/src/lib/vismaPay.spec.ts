@@ -55,6 +55,7 @@ const orderMock = {
 
 describe('Test User redirection creation', () => {
   it('Should throw exception if no default redirect url specified', async () => {
+    process.env.REDIRECT_PAYMENT_URL_BASE = ''
     process.env.PAYMENT_BACKEND_URL = 'test.dev.hel'
     await expect(
       createUserRedirectUrl({

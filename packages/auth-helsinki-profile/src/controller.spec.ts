@@ -1,6 +1,8 @@
 const jwksUri = 'TEST_JWKS_URI'
+const audience = 'TEST_AUDIENCE'
 const issuer = 'TEST_ISSUER'
 process.env.HEL_PROFILE_JWKS_URI = jwksUri
+process.env.HEL_PROFILE_AUDIENCE = audience
 process.env.HEL_PROFILE_ISSUER = issuer
 
 jest.mock('jwks-rsa')
@@ -140,6 +142,7 @@ describe('AuthenticationController validateRequest', () => {
     expect(verifyMock.mock.calls[0][0]).toEqual('A')
     expect(verifyMock.mock.calls[0][2]).toEqual({
       algorithms: ['RS256'],
+      audience,
       issuer,
     })
   })

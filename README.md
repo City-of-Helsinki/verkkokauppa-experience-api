@@ -1,6 +1,11 @@
 ## Local development
 
-Build packages locally:
+Build packages locally when using core in docker:
+1. `yarn install`
+2. `yarn build`
+3. `docker compose up`
+
+Build packages locally when using intellij spring boot applications:
 1. `yarn install`
 2. `yarn build`
 3. `docker compose -f docker-compose.dev.yml up`
