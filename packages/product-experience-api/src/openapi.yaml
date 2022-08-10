@@ -1,0 +1,243 @@
+openapi: 3.0.3
+info:
+  title: Product experience API
+  description: Implements public endpoints to manage products mappings
+  version: 1.0.0
+servers:
+  - url: /v1/product
+components:
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      description: Api key for a namespace issued by talpa verkkokauppa
+      in: header
+      name: api-key
+    HelsinkiProfile:
+      type: http
+      description: jwt issued by Helsinki Profile
+      scheme: bearer
+      bearerFormat: jwt
+    UserId:
+      type: apiKey
+      description: Id (e.g. uuid4) to identify anonymous users
+      in: header
+      name: user
+  schemas:
+    ErrorBody:
+      type: object
+      required:
+        - errors
+      properties:
+        errors:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required:
+              - code
+              - message
+            properties:
+              code:
+                type: string
+              message:
+                type: string
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        productId:
+          type: string
+        price:
+          type: string
+        original:
+          type: object
+          properties:
+            productId:
+              type: string
+            netValue:
+              type: string
+            vatPercentage:
+              type: string
+            grossValue:
+              type: string
+            vatValue:
+              type: string
+            id:
+              type: string
+    ProductMappingRequest:
+      type: object
+      required:
+        - namespace
+        - namespaceEntityId
+      properties:
+        namespace:
+          type: string
+        namespaceEntityId:
+          type: string
+    ProductMapping:
+      type: object
+      properties:
+        namespace:
+          type: string
+        namespaceEntityId:
+          type: string
+        productId:
+          type: string
+    ProductAccountingRequest:
+      type: object
+      required:
+        - vatCode
+        - companyCode
+        - mainLedgerAccount
+      properties:
+        vatCode:
+          type: string
+        internalOrder:
+          type: string
+        profitCenter:
+          type: string
+        project:
+          type: string
+        operationArea:
+          type: string
+        companyCode:
+          type: string
+        mainLedgerAccount:
+          type: string
+    ProductAccounting:
+      type: object
+      properties:
+        productId:
+          type: string
+        vatCode:
+          type: string
+        internalOrder:
+          type: string
+        profitCenter:
+          type: string
+        project:
+          type: string
+        operationArea:
+          type: string
+        companyCode:
+          type: string
+        mainLedgerAccount:
+          type: string
+  parameters:
+    Namespace:
+      name: namespace
+      in: header
+      required: true
+      schema:
+        type: string
+    ProductId:
+      name: productId
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    NotFound:
+      description: Entity (e.g. product) not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
+    RequestValidationError:
+      description: Invalid request data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
+paths:
+  /:
+    post:
+      description: 'Create a product mapping for namespace and product'
+      security:
+        - ApiKey: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductMappingRequest'
+      responses:
+        '201':
+          description: 'Created product mapping'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  productMapping:
+                    $ref: '#/components/schemas/ProductMapping'
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /{productId}:
+    get:
+      description: 'Get product and price data with a productId'
+      parameters:
+        - $ref: '#/components/parameters/ProductId'
+      responses:
+        '200':
+          description: 'Fetched product and price data'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /{productId}/mapping:
+    get:
+      description: 'Get product mapping for a productId'
+      parameters:
+        - $ref: '#/components/parameters/ProductId'
+      responses:
+        '200':
+          description: 'Fetched product mapping for given productId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductMapping'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /{productId}/accounting:
+    post:
+      description: 'Create product accounting for a product'
+      security:
+        - ApiKey: [ ]
+      parameters:
+        - $ref: '#/components/parameters/ProductId'
+        - $ref: '#/components/parameters/Namespace'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductAccountingRequest'
+      responses:
+        '201':
+          description: 'Created product accounting'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductAccounting'
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'

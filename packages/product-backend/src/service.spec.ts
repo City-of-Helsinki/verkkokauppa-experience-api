@@ -43,7 +43,7 @@ describe('Test Create Accounting info', () => {
       })
     ).rejects.toThrow('No product backend URL set')
   })
-  it('Should create accouting info correctly with backend url set', async () => {
+  it('Should create accounting info correctly with backend url set', async () => {
     process.env.PRODUCT_BACKEND_URL = 'test.dev.hel'
     const mockData = { ...productAccounting }
     axiosMock.post.mockResolvedValue({ data: productAccounting })

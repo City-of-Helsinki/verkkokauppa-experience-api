@@ -13,7 +13,15 @@ const requestSchema = yup.object().shape({
   params: yup.object().shape({
     productId: yup.string().required(),
   }),
-  body: yup.object(),
+  body: yup.object({
+    vatCode: yup.string().required(),
+    companyCode: yup.string().required(),
+    mainLedgerAccount: yup.string().required(),
+    internalOrder: yup.string().notRequired(),
+    profitCenter: yup.string().notRequired(),
+    project: yup.string().notRequired(),
+    operationArea: yup.string().notRequired(),
+  }),
   headers: yup.object().shape({
     'api-key': yup.string().required(),
     namespace: yup.string().required(),
