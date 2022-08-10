@@ -63,7 +63,7 @@ export class CreateController extends AbstractController<typeof requestSchema> {
 
     const paymentFiltersData =
       !!paymentFilters && paymentFilters.length > 0
-        ? await this.savePaymentFilters(orderData, paymentFilters)
+        ? await this.saveOrderPaymentFilters(orderData, paymentFilters)
         : undefined
 
     const dto = new Data({
@@ -92,7 +92,7 @@ export class CreateController extends AbstractController<typeof requestSchema> {
 
     const paymentFiltersData =
       !!paymentFilters && paymentFilters.length > 0
-        ? await this.savePaymentFilters(orderData, paymentFilters)
+        ? await this.saveOrderPaymentFilters(orderData, paymentFilters)
         : undefined
 
     const dto = new Data({
@@ -102,7 +102,7 @@ export class CreateController extends AbstractController<typeof requestSchema> {
     return this.created<any>(res, dto.serialize())
   }
 
-  private async savePaymentFilters(
+  private async saveOrderPaymentFilters(
     orderData: Order,
     paymentFilters: PaymentFilter[]
   ) {
