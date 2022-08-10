@@ -61,10 +61,10 @@ export class CreateController extends AbstractController<typeof requestSchema> {
     logger.debug(`Create Order for namespace ${namespace} and user ${user}`)
     const orderData = await createOrder({ namespace, user })
 
-    const paymentFiltersData =
-      !!paymentFilters && paymentFilters.length > 0
-        ? await this.saveOrderPaymentFilters(orderData, paymentFilters)
-        : undefined
+    const paymentFiltersData = await this.saveOrderPaymentFilters(
+      orderData,
+      paymentFilters
+    )
 
     const dto = new Data({
       ...orderData,
@@ -90,10 +90,10 @@ export class CreateController extends AbstractController<typeof requestSchema> {
       ...calculateTotalsFromItems({ items }),
     })
 
-    const paymentFiltersData =
-      !!paymentFilters && paymentFilters.length > 0
-        ? await this.saveOrderPaymentFilters(orderData, paymentFilters)
-        : undefined
+    const paymentFiltersData = await this.saveOrderPaymentFilters(
+      orderData,
+      paymentFilters
+    )
 
     const dto = new Data({
       ...orderData,
@@ -106,10 +106,14 @@ export class CreateController extends AbstractController<typeof requestSchema> {
     orderData: Order,
     paymentFilters: PaymentFilter[]
   ) {
-    paymentFilters.forEach((filter: any) => {
-      filter.referenceId = orderData.orderId
-      filter.referenceType = ReferenceType.ORDER
-    })
-    return await savePaymentFiltersAdmin(paymentFilters)
+    if (!!paymentFilters && paymentFilters.length > 0) {
+      paymentFilters.forEach((filter: any) => {
+        filter.referenceId = orderData.orderId
+        filter.referenceType = ReferenceType.ORDER
+      })
+      return await savePaymentFiltersAdmin(paymentFilters)
+    } else {
+      return undefined
+    }
   }
 }
