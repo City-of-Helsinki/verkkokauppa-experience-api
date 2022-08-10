@@ -8,7 +8,7 @@ const router = Router()
 const elasticSearchHealthController = new (withIpWhitelistValidation(
   ElasticSearchHealthController
 ))()
-const healthController = new (withIpWhitelistValidation(Health))()
+const healthController = new Health()
 
 router.get('/health', (req, res) => healthController.execute(req, res))
 router.get('/health/elasticsearch', (req, res) =>
