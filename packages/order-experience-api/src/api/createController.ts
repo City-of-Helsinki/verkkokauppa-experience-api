@@ -68,7 +68,7 @@ export class CreateController extends AbstractController<typeof requestSchema> {
 
     const dto = new Data({
       ...orderData,
-      paymentFilters: paymentFiltersData ? paymentFiltersData : [],
+      paymentFilters: paymentFiltersData,
     })
     return this.created<any>(res, dto.serialize())
   }
@@ -97,7 +97,7 @@ export class CreateController extends AbstractController<typeof requestSchema> {
 
     const dto = new Data({
       ...orderData,
-      paymentFilters: paymentFiltersData ? paymentFiltersData : [],
+      paymentFilters: paymentFiltersData,
     })
     return this.created<any>(res, dto.serialize())
   }
@@ -113,7 +113,7 @@ export class CreateController extends AbstractController<typeof requestSchema> {
       })
       return await savePaymentFiltersAdmin(paymentFilters)
     } else {
-      return undefined
+      return []
     }
   }
 }
