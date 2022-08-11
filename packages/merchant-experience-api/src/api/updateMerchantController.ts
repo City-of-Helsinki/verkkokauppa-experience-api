@@ -10,7 +10,6 @@ import * as yup from 'yup'
 import {
   Configuration,
   getMerchantModels,
-  Merchant,
   MerchantKeys,
   updateMerchant,
   validateApiKey,
@@ -33,6 +32,7 @@ const merchantBackendSchema = merchantCommonSchema.noUnknown()
 const requestSchema = yup.object().shape({
   params: yup.object().shape({
     namespace: yup.string().required(),
+    merchantId: yup.string().required(),
   }),
   body: merchantBackendSchema.required(),
   headers: yup.object().shape({
@@ -40,7 +40,7 @@ const requestSchema = yup.object().shape({
   }),
 })
 
-export class UpdateAllMerchantController extends AbstractController<
+export class UpdateMerchantController extends AbstractController<
   typeof requestSchema
 > {
   protected readonly requestSchema = requestSchema
@@ -50,13 +50,12 @@ export class UpdateAllMerchantController extends AbstractController<
     res: Response
   ) {
     const {
-      params: { namespace },
+      params: { namespace, merchantId },
       body,
       headers: { 'api-key': apiKey },
     } = req
 
     await validateApiKey({ namespace, apiKey })
-
     const configurations = body as MerchantKeys
 
     const merchantsByNamespace = await getMerchantModels(namespace)
@@ -77,23 +76,23 @@ export class UpdateAllMerchantController extends AbstractController<
       })
     })
 
-    const updatedMerchants: Merchant[] = []
+    const merchantToUpdate =
+      merchantsByNamespace.filter(
+        (merchant) => merchant.merchantId === merchantId
+      )[0] || null
 
-    for (const element of merchantsByNamespace) {
-      const index = merchantsByNamespace.indexOf(element)
-      // Casting the element to the type Merchant.
-      let merchantToUpdate = merchantsByNamespace[index] as Merchant
+    if (merchantToUpdate != null) {
       // Merging the configurations.
       merchantToUpdate.configurations = mergeArray(
-        element.configurations,
+        merchantToUpdate.configurations,
         convertedConfigurations,
         'key'
       )
       // Updating the merchant configurations.
       const updatedMerchant = await updateMerchant(merchantToUpdate)
-      updatedMerchants.push(updatedMerchant)
+      return this.created(res, new Data(updatedMerchant).serialize())
     }
 
-    return this.created(res, new Data(updatedMerchants).serialize())
+    return this.created(res, new Data([]).serialize())
   }
 }

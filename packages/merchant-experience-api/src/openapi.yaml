@@ -210,7 +210,7 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
     post:
-      description: Insert merchant configurations
+      description: Insert merchant configurations to service configurations
       security:
         - ApiKey: [ ]
       requestBody:
@@ -232,7 +232,7 @@ paths:
           $ref: '#/components/responses/InvalidApiKey'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  /create/{namespace}:
+  /create/merchant/{namespace}:
     parameters:
       - name: namespace
         in: path
@@ -263,16 +263,79 @@ paths:
           $ref: '#/components/responses/InvalidApiKey'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  /update/all/{namespace}:
+  /update/merchant/{namespace}/{merchantId}:
     parameters:
       - name: namespace
         in: path
-        description: Create new merchant and link it to given namespace
+        description: Merchant namespace
+        required: true
+        schema:
+          type: string
+      - name: merchantId
+        in: path
+        description: Merchant id
         required: true
         schema:
           type: string
     post:
-      description: Create new merchant and link it to given namespace
+      description: Update merchant with given key value pairs
+      security:
+        - ApiKey: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Configurations'
+      responses:
+        '201':
+          description: An object of merchant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Merchant'
+        '400':
+          $ref: '#/components/responses/RequestValidationFailed'
+        '403':
+          $ref: '#/components/responses/InvalidApiKey'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /list/merchants/{namespace}:
+    parameters:
+      - name: namespace
+        in: path
+        description: Merchants namespace
+        required: true
+        schema:
+          type: string
+    get:
+      description: List merchants in given namespace
+      security:
+        - ApiKey: [ ]
+      responses:
+        '201':
+          description: An array of merchants
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Merchants'
+        '400':
+          $ref: '#/components/responses/RequestValidationFailed'
+        '403':
+          $ref: '#/components/responses/InvalidApiKey'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /update/merchants/{namespace}:
+    parameters:
+      - name: namespace
+        in: path
+        description: Merchants namespace
+        required: true
+        schema:
+          type: string
+    post:
+      description: Update values to all merchants in given namespace
       security:
         - ApiKey: [ ]
       requestBody:
