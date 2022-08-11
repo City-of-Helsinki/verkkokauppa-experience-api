@@ -96,6 +96,27 @@ components:
           type: string
         merchantBusinessId:
           type: string
+    MerchantConfigurationsUpdateAll:
+      type: object
+      properties:
+        merchantName:
+          type: string
+        merchantStreet:
+          type: string
+        merchantZip:
+          type: string
+        merchantCity:
+          type: string
+        merchantEmail:
+          type: string
+        merchantPhone:
+          type: string
+        merchantUrl:
+          type: string
+        merchantTermsOfServiceUrl:
+          type: string
+        merchantBusinessId:
+          type: string
     Merchant:
       type: object
       properties:
@@ -118,7 +139,10 @@ components:
                 type: string
               restricted:
                 type: boolean
-
+    Merchants:
+      type: array
+      items:
+        $ref: '#/components/schemas/Merchant'
   responses:
     InvalidApiKey:
       description: Invalid api key
@@ -233,6 +257,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Merchant'
+        '400':
+          $ref: '#/components/responses/RequestValidationFailed'
+        '403':
+          $ref: '#/components/responses/InvalidApiKey'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /update/all/{namespace}:
+    parameters:
+      - name: namespace
+        in: path
+        description: Create new merchant and link it to given namespace
+        required: true
+        schema:
+          type: string
+    post:
+      description: Create new merchant and link it to given namespace
+      security:
+        - ApiKey: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MerchantConfigurationsUpdateAll'
+      responses:
+        '201':
+          description: An array of merchants
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Merchants'
         '400':
           $ref: '#/components/responses/RequestValidationFailed'
         '403':
