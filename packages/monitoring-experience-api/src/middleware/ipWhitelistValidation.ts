@@ -19,16 +19,16 @@ export const withIpWhitelistValidation = <
 
       if (!requestIp) {
         throw new IpAddressValidationError('No IP found to validate')
+      } else {
+        const parsedClientIp = parseClientIpFromXForwardedFromHeader(requestIp)
+
+        if (parsedClientIp && ipRangeCheck(parsedClientIp, validIps)) {
+          return super.validateRequest(req)
+        }
+
+        console.log('IP is not whitelisted: ' + requestIp)
+        throw new IpAddressValidationError('IP is not whitelisted')
       }
-
-      let parsedClientIp = parseClientIpFromXForwardedFromHeader(requestIp)
-
-      if (parsedClientIp && ipRangeCheck(parsedClientIp, validIps)) {
-        return super.validateRequest(req)
-      }
-
-      console.log('IP is not whitelisted: ' + requestIp)
-      throw new IpAddressValidationError('IP is not whitelisted')
     }
   }
   return IpAddressWhitelistValidationController
