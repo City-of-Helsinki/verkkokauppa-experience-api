@@ -1,6 +1,7 @@
 import type { AbstractController, UnknownRequest } from '@verkkokauppa/core'
-import ipRangeCheck from 'ip-range-check'
+const ipRangeCheck = require('ip-range-check')
 import { IpAddressValidationError } from '../errors'
+import { parseClientIpFromXForwardedFromHeader } from '../lib/ipParseUtil'
 
 export const withIpWhitelistValidation = <
   TController extends new (...args: any[]) => AbstractController
@@ -13,29 +14,20 @@ export const withIpWhitelistValidation = <
         ? process.env.ROUTE_PUBLIC_MONITORING_IP_WHITELIST.split(' ')
         : ['127.0.0.1']
 
-      const requestClientIp =
+      const requestIp =
         req.headers['x-forwarded-for'] || req.socket?.remoteAddress
 
-      if (!requestClientIp) {
+      if (!requestIp) {
         throw new IpAddressValidationError('No IP found to validate')
       }
 
-      let parsedClientIp
-      if (Array.isArray(requestClientIp)) {
-        parsedClientIp = requestClientIp[0]
-      } else {
-        parsedClientIp = requestClientIp.split(', ')[0]
-      }
-
-      if (parsedClientIp && parsedClientIp.includes(':')) {
-        parsedClientIp = parsedClientIp.split(':')[0]
-      }
+      let parsedClientIp = parseClientIpFromXForwardedFromHeader(requestIp)
 
       if (parsedClientIp && ipRangeCheck(parsedClientIp, validIps)) {
         return super.validateRequest(req)
       }
 
-      console.log('IP is not whitelisted: ' + requestClientIp)
+      console.log('IP is not whitelisted: ' + requestIp)
       throw new IpAddressValidationError('IP is not whitelisted')
     }
   }
