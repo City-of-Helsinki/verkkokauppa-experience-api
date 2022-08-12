@@ -466,9 +466,7 @@ export const savePaymentFiltersAdmin = async (
 
   const url = `${process.env.PAYMENT_BACKEND_URL}/payment-admin/online/save-payment-filters`
   try {
-    const res = await axios.post<PaymentFilter[]>(url, {
-      params: { paymentFilter },
-    })
+    const res = await axios.post<PaymentFilter[]>(url, paymentFilter)
     return res.data
   } catch (e) {
     throw new ExperienceFailure({

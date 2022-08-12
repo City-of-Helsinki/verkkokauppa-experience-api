@@ -6,10 +6,15 @@ import {
   RequestValidationError,
 } from '@verkkokauppa/core'
 import type { Response } from 'express'
-import { createOrder, createOrderWithItems } from '@verkkokauppa/order-backend'
+import {
+  createOrder,
+  createOrderWithItems,
+  Order,
+} from '@verkkokauppa/order-backend'
 import {
   ReferenceType,
   savePaymentFiltersAdmin,
+  PaymentFilter,
 } from '@verkkokauppa/payment-backend'
 import {
   customerSchema,
@@ -56,17 +61,14 @@ export class CreateController extends AbstractController<typeof requestSchema> {
     logger.debug(`Create Order for namespace ${namespace} and user ${user}`)
     const orderData = await createOrder({ namespace, user })
 
-    let paymentFiltersData = undefined
-    if (!!paymentFilters && paymentFilters.length > 0) {
-      paymentFilters.forEach((filter: any) => {
-        filter.referenceId = orderData.orderId
-        filter.referenceType = ReferenceType.ORDER
-      })
-      paymentFiltersData = await savePaymentFiltersAdmin(paymentFilters)
-    }
+    const paymentFiltersData = await this.saveOrderPaymentFilters(
+      orderData,
+      paymentFilters
+    )
+
     const dto = new Data({
       ...orderData,
-      paymentFilters: paymentFiltersData ? paymentFiltersData : [],
+      paymentFilters: paymentFiltersData,
     })
     return this.created<any>(res, dto.serialize())
   }
@@ -88,14 +90,30 @@ export class CreateController extends AbstractController<typeof requestSchema> {
       ...calculateTotalsFromItems({ items }),
     })
 
-    let paymentFiltersData = undefined
-    if (!!paymentFilters && paymentFilters.length > 0) {
-      paymentFiltersData = await savePaymentFiltersAdmin(paymentFilters)
-    }
+    const paymentFiltersData = await this.saveOrderPaymentFilters(
+      orderData,
+      paymentFilters
+    )
+
     const dto = new Data({
       ...orderData,
-      paymentFilters: paymentFiltersData ? paymentFiltersData : [],
+      paymentFilters: paymentFiltersData,
     })
     return this.created<any>(res, dto.serialize())
+  }
+
+  private async saveOrderPaymentFilters(
+    orderData: Order,
+    paymentFilters: PaymentFilter[]
+  ) {
+    if (!!paymentFilters && paymentFilters.length > 0) {
+      paymentFilters.forEach((filter: any) => {
+        filter.referenceId = orderData.orderId
+        filter.referenceType = ReferenceType.ORDER
+      })
+      return await savePaymentFiltersAdmin(paymentFilters)
+    } else {
+      return []
+    }
   }
 }

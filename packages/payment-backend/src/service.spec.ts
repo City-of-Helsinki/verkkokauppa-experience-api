@@ -316,21 +316,17 @@ describe('Test save payment filters for order', () => {
     expect(axiosMock.post?.mock?.calls[0]![0]).toEqual(
       'test.dev.hel/payment-admin/online/save-payment-filters'
     )
-    expect(axiosMock.post?.mock?.calls[0]![1]).toEqual({
-      params: {
-        paymentFilter: [
-          {
-            filterId: 'faa1a6f9-0f01-4d54-89bb-6ff2e7314124',
-            createdAt: '1619157868',
-            namespace: 'testNameSpace',
-            referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
-            referenceType: ReferenceType.ORDER,
-            filterType: 'banks',
-            value: 'testValue',
-          },
-        ],
+    expect(axiosMock.post?.mock?.calls[0]![1]).toEqual([
+      {
+        filterId: 'faa1a6f9-0f01-4d54-89bb-6ff2e7314124',
+        createdAt: '1619157868',
+        namespace: 'testNameSpace',
+        referenceId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
+        referenceType: ReferenceType.ORDER,
+        filterType: 'banks',
+        value: 'testValue',
       },
-    })
+    ])
     expect(result).toEqual(paymentFiltersMock)
   })
 })
