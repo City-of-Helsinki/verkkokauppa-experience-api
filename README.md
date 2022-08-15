@@ -19,8 +19,8 @@ Before git push
 * [Merchant exp-api swagger](http://localhost:8086/v1/merchant/docs/swagger-ui/)
 * [Order-experience-api swagger](http://localhost:8084/v1/order/docs/swagger-ui/)
 * [Product-experience-api swagger](http://localhost:8081/v1/product/docs/swagger-ui/)
+* [Price-experience-api swagger](http://localhost:8082/v1/price/docs/swagger-ui/)
 
 ### Not yet implemented.
 * [Payment-experience-api swagger](http://localhost:8085/v1/payment/docs/swagger-ui/)
-* [Price-experience-api swagger](http://localhost:8082/v1/price/docs/swagger-ui/)
 * [Cart-experience-api swagger](http://localhost:8083/v1/cart/docs/swagger-ui/)
