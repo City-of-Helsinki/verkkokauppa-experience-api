@@ -1,4 +1,9 @@
-import { AbstractController, Data, ValidatedRequest } from '@verkkokauppa/core'
+import {
+  AbstractController,
+  Data,
+  ValidatedRequest,
+  mergeArray,
+} from '@verkkokauppa/core'
 import type { Response } from 'express'
 import * as yup from 'yup'
 import {
@@ -9,7 +14,6 @@ import {
   validateApiKey,
   getNamespaceModel,
 } from '@verkkokauppa/configuration-backend'
-import { mergeArray } from '@verkkokauppa/core/dist/utils/arrayUtils'
 
 const merchantCommonSchema = yup.object({
   merchantName: yup.string().required(),
@@ -51,13 +55,13 @@ export class CreateMerchantController extends AbstractController<
     } = req
 
     await validateApiKey({ namespace, apiKey })
+    const namespaceModel = await getNamespaceModel(namespace)
 
     const createdMerchant: Merchant = await createMerchant({
       namespace,
       merchantKeys: body as MerchantKeys,
     })
 
-    const namespaceModel = await getNamespaceModel(namespace)
     // Merchant configurations overrides values in namespace configurations
     createdMerchant.configurations = mergeArray(
       namespaceModel.configurations || [],
