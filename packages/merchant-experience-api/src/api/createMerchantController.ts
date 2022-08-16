@@ -60,8 +60,8 @@ export class CreateMerchantController extends AbstractController<
     const namespaceModel = await getNamespaceModel(namespace)
     // Merchant configurations overrides values in namespace configurations
     createdMerchant.configurations = mergeArray(
-      namespaceModel.configurations,
-      createdMerchant.configurations,
+      namespaceModel.configurations || [],
+      createdMerchant.configurations || [],
       'key'
     )
 
