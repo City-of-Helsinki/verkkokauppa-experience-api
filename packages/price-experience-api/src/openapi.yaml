@@ -1,0 +1,97 @@
+openapi: 3.0.3
+info:
+  title: Price experience API
+  description: Implements a public endpoint to get prices for products
+  version: 1.0.0
+servers:
+  - url: /v1/price
+components:
+  parameters:
+    ProductId:
+      name: productId
+      in: path
+      required: true
+      schema:
+        type: string
+  schemas:
+    ErrorBody:
+      type: object
+      required:
+        - errors
+      properties:
+        errors:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required:
+              - code
+              - message
+            properties:
+              code:
+                type: string
+              message:
+                type: string
+    Price:
+      type: object
+      properties:
+        productId:
+          type: string
+        price:
+          type: string
+        original:
+          type: object
+          properties:
+            price:
+              type: object
+              properties:
+                productId:
+                  type: string
+                netValue:
+                  type: string
+                vatPercentage:
+                  type: string
+                grossValue:
+                  type: string
+                namespace:
+                  type: string
+                vatValue:
+                  type: string
+                id:
+                  type: string
+  responses:
+    NotFound:
+      description: Entity (e.g. price) not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
+    RequestValidationError:
+      description: Invalid request data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
+paths:
+  /{productId}:
+    get:
+      description: 'Get product price data with a productId'
+      parameters:
+        - $ref: '#/components/parameters/ProductId'
+      responses:
+        '200':
+          description: 'Fetched price data for given productId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Price'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
