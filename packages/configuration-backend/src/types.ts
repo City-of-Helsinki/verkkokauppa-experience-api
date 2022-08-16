@@ -80,7 +80,7 @@ export interface Merchant {
 export interface Configuration {
   key: string
   value: string
-  restricted: boolean
+  restricted?: boolean
   locale?: Locale
 }
 

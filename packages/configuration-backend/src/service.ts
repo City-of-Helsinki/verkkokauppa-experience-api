@@ -212,6 +212,26 @@ export const getNamespaceModel = async (
   }
 }
 
+export const getMerchantModels = async (
+  namespace: string
+): Promise<Merchant[]> => {
+  if (!process.env.MERCHANT_CONFIGURATION_BACKEND_URL) {
+    throw new Error('No configuration backend URL set')
+  }
+
+  const url = `${process.env.MERCHANT_CONFIGURATION_BACKEND_URL}/merchant/list-by-namespace?namespace=${namespace}`
+  try {
+    const res = await axios.get(url)
+    return res.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-list-merchants-by-namespace',
+      message: 'Failed to get list of merchants by namespace',
+      source: e,
+    })
+  }
+}
+
 const isApiKeyValid = async (p: {
   namespace: string
   apiKey: string
