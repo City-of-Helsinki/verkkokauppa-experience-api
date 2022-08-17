@@ -16,7 +16,6 @@
   "dependencies": {
     "@verkkokauppa/configuration-backend": "^1.0.0",
     "@verkkokauppa/core": "^1.0.0",
-    "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
