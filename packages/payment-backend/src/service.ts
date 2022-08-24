@@ -224,15 +224,26 @@ export const getPaymentMethodList = async (parameters: {
     merchantId ? getMerchantPaymentFilters({ merchantId }) : [],
   ])
   const paymentFilters = orderPaymentFilters.concat(merchantPaymentFilters)
-  return onlineMethods.concat(offlineMethods).filter((method) => {
-    return !paymentFilters.find((filter) => {
-      const value = filter.value.toLowerCase()
-      return (
-        value === method.name.toLowerCase() ||
-        value === method.code.toLowerCase()
-      )
+  let filteredPaymentFilters = onlineMethods
+    .concat(offlineMethods)
+    .filter((method) => {
+      return !paymentFilters.find((filter) => {
+        const value = filter.value.toLowerCase()
+        return (
+          value === method.name.toLowerCase() ||
+          value === method.code.toLowerCase()
+        )
+      })
     })
+
+  const methods = process.env.FILTERED_PAYMENT_METHODS || 'nordeab2b'
+  const globallyFilteredPaymentMethods = methods.split(',')
+
+  filteredPaymentFilters = filteredPaymentFilters.filter((method) => {
+    return !globallyFilteredPaymentMethods.includes(method.code.toLowerCase())
   })
+
+  return filteredPaymentFilters
 }
 
 export const checkVismaReturnUrl = async (p: {
