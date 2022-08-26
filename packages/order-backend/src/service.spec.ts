@@ -35,6 +35,7 @@ const orderBackendCustomerMock = {
 
 const orderBackendInvoiceMock = {
   invoice: {
+    invoiceId: 'invoiceId',
     businessId: 'businessId',
     name: 'name',
     address: 'address',
@@ -55,6 +56,7 @@ const orderCustomerMock = {
 
 const orderInvoiceMock = {
   invoice: {
+    invoiceId: 'invoiceId',
     businessId: 'businessId',
     name: 'name',
     address: 'address',
