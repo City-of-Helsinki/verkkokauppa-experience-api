@@ -66,22 +66,21 @@ components:
         - postcode
         - city
       properties:
-        invoice:
-          type: object
-          properties:
-            businessId:
-              type: string
-            name:
-              type: string
-            address:
-              type: string
-            postcode:
-              type: string
-            city:
-              type: string
-            ovtId:
-              type: string
-
+        invoiceId:
+          type: string
+          readOnly: true
+        businessId:
+          type: string
+        name:
+          type: string
+        address:
+          type: string
+        postcode:
+          type: string
+        city:
+          type: string
+        ovtId:
+          type: string
     Order:
       type: object
       required:
@@ -614,7 +613,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Customer'
+              type: object
+              properties:
+                customer:
+                  $ref: '#/components/schemas/Customer'
       responses:
         '200':
           description: The resulting order
@@ -633,7 +635,7 @@ paths:
 
   /{orderId}/invoice:
     post:
-      description: Set order's invoice
+      description: Set or update order's invoice - UserId authorization is required
       security:
         - UserId: [ ]
         - HelsinkiProfile: [ ]
@@ -644,7 +646,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Invoice'
+              type: object
+              properties:
+                invoice:
+                  $ref: '#/components/schemas/Invoice'
       responses:
         '200':
           description: The resulting order
