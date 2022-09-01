@@ -635,7 +635,7 @@ paths:
 
   /{orderId}/invoice:
     post:
-      description: Set or update order's invoice - UserId authorization is required
+      description: Set or update order's invoice - User info that is provided by UserId or Helsinki Profile authorization is required
       security:
         - UserId: [ ]
         - HelsinkiProfile: [ ]
