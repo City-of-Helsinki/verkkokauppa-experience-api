@@ -43,6 +43,7 @@ export interface OrderCustomer {
 }
 
 export interface OrderInvoice {
+  invoiceId: string
   businessId: string
   name: string
   address: string
