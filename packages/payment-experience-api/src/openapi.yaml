@@ -1,0 +1,352 @@
+openapi: 3.0.3
+info:
+  title: Payment experience API
+  description: Implements public endpoints to handle payments
+  version: 1.0.0
+servers:
+  - url: /v1/payment
+components:
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      description: Api key for a namespace issued by talpa verkkokauppa
+      in: header
+      name: api-key
+    HelsinkiProfile:
+      type: http
+      description: jwt issued by Helsinki Profile
+      scheme: bearer
+      bearerFormat: jwt
+    UserId:
+      type: apiKey
+      description: Id (e.g. uuid4) to identify anonymous users
+      in: header
+      name: user
+  parameters:
+    OrderId:
+      name: orderId
+      in: path
+      required: true
+      schema:
+        type: string
+    Namespace:
+      name: namespace
+      in: header
+      required: true
+      schema:
+        type: string
+    SubscriptionId:
+      name: subscriptionId
+      in: path
+      required: true
+      schema:
+        type: string
+  schemas:
+    ErrorBody:
+      type: object
+      required:
+        - errors
+      properties:
+        errors:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required:
+              - code
+              - message
+            properties:
+              code:
+                type: string
+              message:
+                type: string
+    Payment:
+      type: object
+      properties:
+        paymentId:
+          type: string
+        namespace:
+          type: string
+        orderId:
+          type: string
+        userId:
+          type: string
+        status:
+          type: string
+        paymentMethod:
+          type: string
+        paymentType:
+          type: string
+        totalExclTax:
+          type: number
+        total:
+          type: number
+        taxAmount:
+          type: number
+        description:
+          type: string
+        additionalInfo:
+          type: string
+        token:
+          type: string
+        timestamp:
+          type: string
+        paymentMethodLabel:
+          type: string
+    PaymentMethod:
+      type: object
+      properties:
+        key:
+          type: object
+          properties:
+            name:
+              type: string
+            code:
+              type: string
+            group:
+              type: string
+            img:
+              type: string
+            gateway:
+              type: string
+    PaymentUrl:
+      type: object
+      properties:
+        paymentUrl:
+          type: string
+    PaymentAndUrl:
+      allOf:
+        - $ref: '#/components/schemas/Payment'
+        - $ref: '#/components/schemas/PaymentUrl'
+  responses:
+    NotFound:
+      description: Entity (e.g. order or payment) not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
+    RequestValidationError:
+      description: Invalid request data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
+paths:
+  /{orderId}:
+    get:
+      description: Get payment by orderId
+      security:
+        - UserId: [ ]
+        - HelsinkiProfile: [ ]
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Fetched payment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      description: Create payment from an unpaid order
+      security:
+        - UserId: [ ]
+        - HelsinkiProfile: [ ]
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                paymentMethod:
+                  type: string
+                language:
+                  type: string
+      responses:
+        '200':
+          description: Created payment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentAndUrl'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /admin/{orderId}:
+    get:
+      description: Get payment by orderId and namespace
+      security:
+        - ApiKey: [ ]
+        - UserId: [ ]
+        - HelsinkiProfile: [ ]
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+        - $ref: '#/components/parameters/Namespace'
+      responses:
+        '200':
+          description: Fetched payment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /{orderId}/paymentMethods:
+    get:
+      description: Get available payment methods for order
+      security:
+        - UserId: [ ]
+        - HelsinkiProfile: [ ]
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Fetched payment methods for given order
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PaymentMethod'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /onlinePayment/return:
+    description: Return hook for online payment
+    get:
+      parameters:
+        - in: path
+          name: AUTHCODE
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: RETURN_CODE
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: ORDER_NUMBER
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: SETTLED
+          required: false
+          schema:
+            type: string
+        - in: path
+          name: INCIDENT_ID
+          required: false
+          schema:
+            type: string
+      responses:
+        '302':
+          description: Redirect to location URI
+          headers:
+            Location:
+              description: URI where the client is redirected
+              schema:
+                type: string
+                format: uri
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /onlinePayment/notify:
+    get:
+      description: Return hook for online payment notify
+      parameters:
+        - in: path
+          name: AUTHCODE
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: RETURN_CODE
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: ORDER_NUMBER
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: SETTLED
+          required: false
+          schema:
+            type: string
+        - in: path
+          name: INCIDENT_ID
+          required: false
+          schema:
+            type: string
+      responses:
+        '302':
+          description: Redirect to location URI
+          headers:
+            Location:
+              description: URI where the client is redirected
+              schema:
+                type: string
+                format: uri
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /subscription/{subscriptionId}/tokenize:
+    get:
+      description: Create subscription payment and get payment url
+      security:
+        - UserId: [ ]
+        - HelsinkiProfile: [ ]
+      parameters:
+        - $ref: '#/components/parameters/SubscriptionId'
+      responses:
+        '200':
+          description: Returns payment url
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentUrl'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /send/receipt/{orderId}:
+    get:
+      description: Send receipt of a payment for given order
+      security:
+        - ApiKey: [ ]
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Internally sends a receipt for an order and returns payment data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
