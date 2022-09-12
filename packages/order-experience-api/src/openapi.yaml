@@ -140,6 +140,9 @@ components:
       properties:
         orderItemId:
           type: string
+        merchantId:
+          readOnly: true
+          type: string
         orderId:
           type: string
         productId:
@@ -209,6 +212,7 @@ components:
       type: object
       properties:
         subscriptionId:
+          readOnly: true
           type: string
         status:
           type: string
@@ -970,7 +974,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
+              $ref: '#/components/schemas/Subscription'
       responses:
         '201':
           description: The created subscription

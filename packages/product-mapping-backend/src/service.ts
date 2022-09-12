@@ -8,6 +8,7 @@ import {
 interface ProductMappingRequest {
   namespace: string
   namespaceEntityId: string
+  merchantId: string
 }
 
 type ProductMappingBackendResponse = ProductMappingRequest & {
@@ -44,11 +45,11 @@ export const createProductMapping = async (
 ): Promise<ProductMappingBackendResponse> => {
   checkBackendUrlExists()
 
-  const { namespace, namespaceEntityId } = p
+  const { namespace, namespaceEntityId, merchantId } = p
   const url = `${process.env.PRODUCT_MAPPING_BACKEND_URL}/productmapping/create`
   try {
     const result = await axios.get<ProductMappingBackendResponse>(url, {
-      params: { namespace, namespaceEntityId },
+      params: { namespace, namespaceEntityId, merchantId },
     })
     return result.data
   } catch (e) {

@@ -72,10 +72,13 @@ components:
       required:
         - namespace
         - namespaceEntityId
+        - merchantId
       properties:
         namespace:
           type: string
         namespaceEntityId:
+          type: string
+        merchantId:
           type: string
     ProductMapping:
       type: object
@@ -83,6 +86,8 @@ components:
         namespace:
           type: string
         namespaceEntityId:
+          type: string
+        merchantId:
           type: string
         productId:
           type: string
