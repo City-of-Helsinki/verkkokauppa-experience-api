@@ -88,7 +88,7 @@ export class CreateController extends AbstractController<typeof requestSchema> {
       const productMapping = await getProductMapping({
         productId: item.productId,
       })
-      if (productMapping) item.merchantId = productMapping.merchantId
+      item.merchantId = productMapping ? productMapping.merchantId : null
     }
 
     const orderData = await createOrderWithItems({
