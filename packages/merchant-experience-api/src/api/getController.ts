@@ -1,11 +1,20 @@
-import { AbstractController, Data, ValidatedRequest } from '@verkkokauppa/core'
+import {
+  AbstractController,
+  Data,
+  ExperienceFailure,
+  ValidatedRequest,
+} from '@verkkokauppa/core'
 import * as yup from 'yup'
 import type { Response } from 'express'
-import { getAllPublicServiceConfiguration } from '@verkkokauppa/configuration-backend'
+import {
+  getAllPublicServiceConfiguration,
+  getMerchantModels,
+} from '@verkkokauppa/configuration-backend'
 
 const requestSchema = yup.object().shape({
   params: yup.object().shape({
     namespace: yup.string().required(),
+    merchantId: yup.string().notRequired(),
   }),
 })
 
@@ -35,7 +44,7 @@ export class GetController extends AbstractController<typeof requestSchema> {
     req: ValidatedRequest<typeof requestSchema>,
     res: Response
   ): Promise<any> {
-    const { namespace } = req.params
+    const { namespace, merchantId } = req.params
 
     const configurations = await getAllPublicServiceConfiguration({ namespace })
 
@@ -46,6 +55,65 @@ export class GetController extends AbstractController<typeof requestSchema> {
         acc[key] = cur.configurationValue
         return acc
       }, {} as { [key: string]: string })
+
+    const merchants = await getMerchantModels(namespace)
+
+    if (merchantId && merchantId !== '') {
+      const merchant = merchants.find((x) => x.merchantId === merchantId)
+
+      if (!merchant) {
+        throw new ExperienceFailure({
+          code: 'failed-to-fetch-merchant-configurations',
+          message: 'Failed to fetch - Merchant not found.',
+          source: new Error('merchantsByNamespace.length <= 0'),
+        })
+      }
+
+      const merchantConfigurations = merchant.configurations
+        .filter((c) => keys.includes(c.key))
+        .reduce((acc, cur) => {
+          const key = keyMap[cur.key] ?? cur.key
+          acc[key] = cur.value
+          return acc
+        }, {} as { [key: string]: string })
+
+      const configurationsWithMerchantOverrides = {
+        ...configurationMap,
+        ...merchantConfigurations, // These values overrides data in configurationMap
+      }
+
+      const dto = new Data(configurationsWithMerchantOverrides)
+
+      return this.success(res, dto.serialize())
+    } else if (
+      merchants &&
+      merchants.length === 1 &&
+      merchants[0]?.merchantId
+    ) {
+      const merchantConfigurations = merchants[0].configurations
+        .filter((c) => keys.includes(c.key))
+        .reduce((acc, cur) => {
+          const key = keyMap[cur.key] ?? cur.key
+          acc[key] = cur.value
+          return acc
+        }, {} as { [key: string]: string })
+
+      const configurationsWithMerchantOverrides = {
+        ...configurationMap,
+        ...merchantConfigurations, // These values overrides data in configurationMap
+      }
+
+      const dto = new Data(configurationsWithMerchantOverrides)
+
+      return this.success(res, dto.serialize())
+    } else if (merchants && merchants.length > 1) {
+      throw new ExperienceFailure({
+        code: 'failed-to-fetch-merchant-configurations',
+        message:
+          'Failed to fetch merchant configurations - Could not resolve merchant, multiple found.',
+        source: new Error('merchantsByNamespace.length > 1'),
+      })
+    }
 
     const dto = new Data(configurationMap)
 

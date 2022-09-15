@@ -163,7 +163,7 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorBody'
 paths:
-  /{namespace}:
+  /{namespace}/:
     parameters:
       - name: namespace
         in: path
@@ -232,6 +232,59 @@ paths:
           $ref: '#/components/responses/InvalidApiKey'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /{namespace}/{merchantId}:
+    parameters:
+      - name: namespace
+        in: path
+        description: Merchant namespace
+        required: true
+        schema:
+          type: string
+      - name: merchantId
+        in: path
+        description: Merchant Id
+        required: true
+        schema:
+          type: string
+    get:
+      description: Get merchant configurations
+      responses:
+        '200':
+          description: An object of merchant configurations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  merchantName:
+                    type: string
+                  merchantStreet:
+                    type: string
+                  merchantZip:
+                    type: string
+                  merchantCity:
+                    type: string
+                  merchantEmail:
+                    type: string
+                  merchantPhone:
+                    type: string
+                  merchantUrl:
+                    type: string
+                  merchantTermsOfServiceUrl:
+                    type: string
+                  merchantPaymentWebhookUrl:
+                    type: string
+                  merchantOrderWebhookUrl:
+                    type: string
+                  merchantSubscriptionWebhookUrl:
+                    type: string
+                  merchantBusinessId:
+                    type: string
+                  orderCreatedRedirectUrl:
+                    type: string
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
   /create/merchant/{namespace}:
     parameters:
       - name: namespace
