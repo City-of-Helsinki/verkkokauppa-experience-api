@@ -18,10 +18,15 @@ const listAllMerchantController = new ListAllMerchantController()
 const updateMerchantController = new UpdateMerchantController()
 
 router.get('/health', (req, res) => healthController.execute(req, res))
-router.get('/:namespace', (req, res) => getController.execute(req, res))
+
+// Excludes swagger default path docs to prevent this route to be run when using /v1/docs/namespace/merchantId
+router.get('/:namespace((?!(docs)\\w+))/:merchantId?/', (req, res) =>
+  getController.execute(req, res)
+)
+
 router.post('/:namespace', (req, res) => onboardingController.execute(req, res))
 
-router.post('/create/merchant/:namespace', (req, res) =>
+router.post('/create/merchant/:namespace/', (req, res) =>
   createMerchantController.execute(req, res)
 )
 
