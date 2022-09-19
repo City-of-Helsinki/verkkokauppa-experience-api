@@ -21,6 +21,7 @@ COPY ./packages/product-backend ./packages/product-backend
 COPY ./packages/configuration-backend ./packages/configuration-backend
 COPY ./packages/order-experience-api ./packages/order-experience-api
 COPY ./packages/auth-helsinki-profile ./packages/auth-helsinki-profile
+COPY ./packages/product-mapping-backend ./packages/product-mapping-backend
 
 # Chown to correct user
 USER 0
@@ -37,6 +38,7 @@ RUN yarn workspace @verkkokauppa/order-backend install
 RUN yarn workspace @verkkokauppa/message-backend install
 RUN yarn workspace @verkkokauppa/price-backend install
 RUN yarn workspace @verkkokauppa/product-backend install
+RUN yarn workspace @verkkokauppa/product-mapping-backend install
 RUN yarn workspace @verkkokauppa/payment-backend install
 RUN yarn workspace @verkkokauppa/configuration-backend install
 RUN yarn workspace @verkkokauppa/order-experience-api install
@@ -49,6 +51,7 @@ RUN yarn workspace @verkkokauppa/cart-backend build
 RUN yarn workspace @verkkokauppa/order-backend build
 RUN yarn workspace @verkkokauppa/price-backend build
 RUN yarn workspace @verkkokauppa/product-backend build
+RUN yarn workspace @verkkokauppa/product-mapping-backend build
 RUN yarn workspace @verkkokauppa/payment-backend build
 RUN yarn workspace @verkkokauppa/message-backend build
 RUN yarn workspace @verkkokauppa/configuration-backend build

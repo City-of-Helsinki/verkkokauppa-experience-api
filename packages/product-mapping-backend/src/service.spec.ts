@@ -17,6 +17,7 @@ describe('Test Product Mapping from backend', () => {
       productId: 'test',
       namespace: 'testnamespace',
       namespaceEntityId: '123',
+      merchantId: '321',
     }
     axiosMock.get.mockResolvedValue({ data: mockData })
     const result = await getProductMapping({ productId: 'test' })
@@ -31,6 +32,7 @@ describe('Test Create Product Mapping', () => {
       createProductMapping({
         namespace: 'testnamespace',
         namespaceEntityId: '123',
+        merchantId: '321',
       })
     ).rejects.toThrow('No product mapping backend URL set')
   })
@@ -40,11 +42,13 @@ describe('Test Create Product Mapping', () => {
       productId: 'test',
       namespace: 'testnamespace',
       namespaceEntityId: '123',
+      merchantId: '321',
     }
     axiosMock.get.mockResolvedValue({ data: mockData })
     const result = await createProductMapping({
       namespace: mockData.namespace,
       namespaceEntityId: mockData.namespaceEntityId,
+      merchantId: mockData.merchantId,
     })
     await expect(result).toBe(mockData)
   })

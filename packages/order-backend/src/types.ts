@@ -23,6 +23,7 @@ export interface OrderItemRequest {
 export type OrderItem = OrderItemRequest & {
   orderItemId: string
   orderId: string
+  merchantId: string
 }
 export type OrderItemMeta = {
   orderItemMetaId: string

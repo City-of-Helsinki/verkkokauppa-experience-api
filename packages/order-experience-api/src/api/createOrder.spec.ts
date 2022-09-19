@@ -5,6 +5,7 @@ import { ReferenceType } from '@verkkokauppa/payment-backend'
 
 jest.mock('@verkkokauppa/order-backend')
 jest.mock('@verkkokauppa/payment-backend')
+jest.mock('@verkkokauppa/product-mapping-backend')
 
 const createOrderMock = require('@verkkokauppa/order-backend').createOrder.mockImplementation(
   () => ({})
@@ -15,6 +16,10 @@ const createOrderWithItemsMock = require('@verkkokauppa/order-backend').createOr
 )
 
 const savePaymentFiltersAdminMock = require('@verkkokauppa/payment-backend').savePaymentFiltersAdmin.mockImplementation(
+  () => ({})
+)
+
+const getProductMappingMock = require('@verkkokauppa/product-mapping-backend').getProductMapping.mockImplementation(
   () => ({})
 )
 
@@ -47,6 +52,7 @@ const orderWithItemsMock = {
   items: [
     {
       orderId: orderMock.orderId,
+      merchantId: 'test-merchant-id-123',
       orderItemId: '19699acf-b0a3-440f-818f-e582825fa3a7',
       productId: '30a245ed-5fca-4fcf-8b2a-cdf1ce6fca0d',
       quantity: 2,
@@ -63,6 +69,13 @@ const orderWithItemsMock = {
       vatPercentage: '24',
     },
   ],
+}
+
+const productMappingDataResponseMock = {
+  productId: '30a245ed-5fca-4fcf-8b2a-cdf1ce6fca0d',
+  namespace: 'testNameSpace',
+  namespaceEntityId: 'test-namespace-id-123',
+  merchantId: 'test-merchant-id-123',
 }
 
 const paymentFiltersDataResponseMock = [
@@ -226,6 +239,9 @@ describe('Test CreateController', () => {
   })
 
   it('Should return created order with items and payment filters', async () => {
+    getProductMappingMock.mockImplementation(
+      () => productMappingDataResponseMock
+    )
     createOrderWithItemsMock.mockImplementationOnce(() => orderWithItemsMock)
     savePaymentFiltersAdminMock.mockImplementationOnce(
       () => paymentFiltersDataResponseMock
