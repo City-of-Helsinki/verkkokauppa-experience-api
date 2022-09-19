@@ -16,6 +16,7 @@ import {
   savePaymentFiltersAdmin,
   PaymentFilter,
 } from '@verkkokauppa/payment-backend'
+import { getProductMapping } from '@verkkokauppa/product-mapping-backend'
 import {
   customerSchema,
   itemsSchema,
@@ -81,6 +82,14 @@ export class CreateController extends AbstractController<typeof requestSchema> {
     logger.debug(
       `Create Order with Items for namespace ${namespace} and user ${user}`
     )
+
+    // Set merchant id for items from corresponding product mapping
+    for (const item of items) {
+      const productMapping = await getProductMapping({
+        productId: item.productId,
+      })
+      item.merchantId = productMapping ? productMapping.merchantId : null
+    }
 
     const orderData = await createOrderWithItems({
       namespace,
