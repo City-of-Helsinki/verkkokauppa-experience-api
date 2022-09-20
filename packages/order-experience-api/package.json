@@ -23,6 +23,7 @@
     "@verkkokauppa/payment-backend": "^1.0.0",
     "@verkkokauppa/price-backend": "^1.0.0",
     "@verkkokauppa/product-backend": "^1.0.0",
+    "@verkkokauppa/product-mapping-backend": "^1.0.0",
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "compression": "^1.7.4",
