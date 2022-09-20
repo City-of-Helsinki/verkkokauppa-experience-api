@@ -11,6 +11,7 @@ services:
       - ./packages/product-experience-api/nodemon.json:/opt/app-root/src/packages/product-experience-api/nodemon.json
       - ./packages/product-backend/:/opt/app-root/src/packages/product-backend/
       - ./packages/product-mapping-backend/:/opt/app-root/src/packages/product-mapping-backend/
+      - ./packages/configuration-backend/:/opt/app-root/src/packages/configuration-backend/
       - ./packages/price-backend/:/opt/app-root/src/packages/price-backend/
       - ./packages/core/:/opt/app-root/src/packages/core/
     container_name: product-experience-api
