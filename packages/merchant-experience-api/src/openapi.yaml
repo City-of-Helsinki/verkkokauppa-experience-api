@@ -140,9 +140,11 @@ components:
               restricted:
                 type: boolean
     Merchants:
-      type: array
-      items:
+      type: object
+      description: 'Object of objects containing merchants with index as key starting from 0, value of index "key" is merchant object itself'
+      additionalProperties:
         $ref: '#/components/schemas/Merchant'
+
   responses:
     InvalidApiKey:
       description: Invalid api key
@@ -341,8 +343,8 @@ paths:
             schema:
               $ref: '#/components/schemas/Configurations'
       responses:
-        '201':
-          description: An object of merchant
+        '200':
+          description: An object of updated merchant
           content:
             application/json:
               schema:
@@ -367,7 +369,7 @@ paths:
       security:
         - ApiKey: [ ]
       responses:
-        '201':
+        '200':
           description: An array of merchants
           content:
             application/json:
