@@ -1,6 +1,7 @@
 import type { Logger } from 'winston'
 
 export enum StatusCode {
+  ResourceUpdated = 204,
   BadRequest = 400,
   Unauthorized = 401,
   Forbidden = 403,

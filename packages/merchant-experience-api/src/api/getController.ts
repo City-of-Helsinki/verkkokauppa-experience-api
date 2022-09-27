@@ -1,7 +1,8 @@
 import {
   AbstractController,
   Data,
-  ExperienceFailure,
+  ExperienceError,
+  StatusCode,
   ValidatedRequest,
 } from '@verkkokauppa/core'
 import * as yup from 'yup'
@@ -62,10 +63,12 @@ export class GetController extends AbstractController<typeof requestSchema> {
       const merchant = merchants.find((x) => x.merchantId === merchantId)
 
       if (!merchant) {
-        throw new ExperienceFailure({
+        throw new ExperienceError({
           code: 'failed-to-fetch-merchant-configurations',
-          message: 'Failed to fetch - Merchant not found.',
-          source: new Error('merchantsByNamespace.length <= 0'),
+          message:
+            'Failed to fetch - Merchant not found. merchantsByNamespace.length <= 0',
+          responseStatus: StatusCode.NotFound,
+          logLevel: 'info',
         })
       }
 
@@ -107,11 +110,12 @@ export class GetController extends AbstractController<typeof requestSchema> {
 
       return this.success(res, dto.serialize())
     } else if (merchants && merchants.length > 1) {
-      throw new ExperienceFailure({
+      throw new ExperienceError({
         code: 'failed-to-fetch-merchant-configurations',
         message:
-          'Failed to fetch merchant configurations - Could not resolve merchant, multiple found.',
-        source: new Error('merchantsByNamespace.length > 1'),
+          'Failed to fetch merchant configurations - Could not resolve merchant, multiple found. merchantsByNamespace.length > 1',
+        responseStatus: StatusCode.BadRequest,
+        logLevel: 'info',
       })
     }
 

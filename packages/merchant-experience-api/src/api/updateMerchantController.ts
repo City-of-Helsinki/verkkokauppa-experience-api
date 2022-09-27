@@ -1,9 +1,10 @@
 import {
   AbstractController,
   Data,
-  ExperienceFailure,
-  ValidatedRequest,
+  ExperienceError,
   mergeArray,
+  StatusCode,
+  ValidatedRequest,
 } from '@verkkokauppa/core'
 import type { Response } from 'express'
 import * as yup from 'yup'
@@ -60,11 +61,28 @@ export class UpdateMerchantController extends AbstractController<
 
     const merchantsByNamespace = await getMerchantModels(namespace)
 
+    const merchantToUpdate =
+      merchantsByNamespace.filter(
+        (merchant) => merchant.merchantId === merchantId
+      )[0] || null
+
     if (merchantsByNamespace.length <= 0) {
-      throw new ExperienceFailure({
+      throw new ExperienceError({
         code: 'failed-to-find-merchants-by-namespace',
-        message: 'Failed to find list of merchants by namespace',
-        source: new Error('merchantsByNamespace.length <= 0'),
+        message:
+          'Failed to find list of merchants by namespace. merchantsByNamespace.length <= 0',
+        responseStatus: StatusCode.NotFound,
+        logLevel: 'info',
+      })
+    }
+
+    if (merchantToUpdate == null) {
+      throw new ExperienceError({
+        code: 'failed-to-find-merchant-with-merchant-id',
+        message:
+          'Failed to find merchant with provided merchantId. merchantToUpdate == null',
+        responseStatus: StatusCode.NotFound,
+        logLevel: 'info',
       })
     }
 
@@ -76,23 +94,15 @@ export class UpdateMerchantController extends AbstractController<
       })
     })
 
-    const merchantToUpdate =
-      merchantsByNamespace.filter(
-        (merchant) => merchant.merchantId === merchantId
-      )[0] || null
+    // Merging the configurations.
+    merchantToUpdate.configurations = mergeArray(
+      merchantToUpdate.configurations,
+      convertedConfigurations,
+      'key'
+    )
 
-    if (merchantToUpdate != null) {
-      // Merging the configurations.
-      merchantToUpdate.configurations = mergeArray(
-        merchantToUpdate.configurations,
-        convertedConfigurations,
-        'key'
-      )
-      // Updating the merchant configurations.
-      const updatedMerchant = await updateMerchant(merchantToUpdate)
-      return this.created(res, new Data(updatedMerchant).serialize())
-    }
-
-    return this.created(res, new Data([]).serialize())
+    // Updating the merchant configurations.
+    const updatedMerchant = await updateMerchant(merchantToUpdate)
+    return this.success(res, new Data(updatedMerchant).serialize())
   }
 }

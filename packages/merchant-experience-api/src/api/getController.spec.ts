@@ -1,6 +1,10 @@
 import { GetController } from './getController'
 import type { Request, Response } from 'express'
-import { AbstractController, ExperienceError } from '@verkkokauppa/core'
+import {
+  AbstractController,
+  ExperienceError,
+  StatusCode,
+} from '@verkkokauppa/core'
 
 jest.mock('@verkkokauppa/configuration-backend')
 
@@ -341,9 +345,9 @@ describe('Test getController', () => {
     expect(experienceError.definition).toEqual({
       code: 'failed-to-fetch-merchant-configurations',
       message:
-        'Failed to fetch merchant configurations - Could not resolve merchant, multiple found.',
-      responseStatus: 500,
-      logLevel: 'error',
+        'Failed to fetch merchant configurations - Could not resolve merchant, multiple found. merchantsByNamespace.length > 1',
+      responseStatus: StatusCode.BadRequest,
+      logLevel: 'info',
     })
   })
 
@@ -366,9 +370,10 @@ describe('Test getController', () => {
     const experienceError = error as ExperienceError
     expect(experienceError.definition).toEqual({
       code: 'failed-to-fetch-merchant-configurations',
-      message: 'Failed to fetch - Merchant not found.',
-      responseStatus: 500,
-      logLevel: 'error',
+      message:
+        'Failed to fetch - Merchant not found. merchantsByNamespace.length <= 0',
+      responseStatus: StatusCode.NotFound,
+      logLevel: 'info',
     })
   })
 })
