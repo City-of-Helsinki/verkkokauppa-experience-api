@@ -25,6 +25,7 @@ const merchantCommonSchema = yup.object({
   merchantTermsOfServiceUrl: yup.string().required(),
   merchantBusinessId: yup.string().required(),
   merchantPhone: yup.string(),
+  merchantShopId: yup.string().required(),
 })
 
 const merchantBackendSchema = merchantCommonSchema.noUnknown()
