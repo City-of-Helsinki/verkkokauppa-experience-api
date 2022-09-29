@@ -67,6 +67,8 @@ components:
           type: string
         merchantRefundWebhookUrl:
           type: string
+        merchantShopId:
+          type: string
     MerchantConfigurations:
       type: object
       required:
@@ -77,6 +79,7 @@ components:
         - merchantUrl
         - merchantTermsOfServiceUrl
         - merchantBusinessId
+        - merchantShopId
       properties:
         merchantName:
           type: string
@@ -95,6 +98,8 @@ components:
         merchantTermsOfServiceUrl:
           type: string
         merchantBusinessId:
+          type: string
+        merchantShopId:
           type: string
     MerchantConfigurationsUpdateAll:
       type: object
@@ -116,6 +121,8 @@ components:
         merchantTermsOfServiceUrl:
           type: string
         merchantBusinessId:
+          type: string
+        merchantShopId:
           type: string
     Merchant:
       type: object
@@ -207,6 +214,8 @@ paths:
                     type: string
                   orderCreatedRedirectUrl:
                     type: string
+                  merchantShopId:
+                    type: string
         '500':
           $ref: '#/components/responses/InternalServerError'
     post:
@@ -281,6 +290,8 @@ paths:
                   merchantBusinessId:
                     type: string
                   orderCreatedRedirectUrl:
+                    type: string
+                  merchantShopId:
                     type: string
         '500':
           $ref: '#/components/responses/InternalServerError'
