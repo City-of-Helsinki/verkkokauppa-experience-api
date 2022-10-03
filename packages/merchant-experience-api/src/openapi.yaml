@@ -151,6 +151,65 @@ components:
       description: 'Object of objects containing merchants with index as key starting from 0, value of index "key" is merchant object itself'
       additionalProperties:
         $ref: '#/components/schemas/Merchant'
+    AllConfigurationKeys:
+      type: object
+      properties:
+        namespace:
+          type: array
+          items:
+            type: string
+            example:
+              - "merchantOrderWebhookUrl // Desc: Webhook to the transaction service when the order is created or cancelled. The notification comes with the order id."
+              - "merchantPaymentWebhookUrl // Desc: Webhook to transaction service when paid or payment cancelled. The notification comes with the payment id and the order id."
+              - "merchantRefundWebhookUrl // Desc: TODO"
+              - "merchantSubscriptionWebhookUrl // Desc: webhook to the transaction service when a subscription is created or canceled. The notification includes the subscription id and the order id, as well as the cancellationCause,(CUSTOMER_CANCELLED, EXPIRED, NO_RIGHT_OF_PURCHASE) information."
+              - "merchantTermsOfServiceUrl // Desc: Appears in the summary under Order terms and on the receipt under cancellation instructions and conditions"
+              - "orderCancelRedirectUrl // Desc: If specified, the Kassa-UI will return here if the order is canceled (ie before payment). In the query parameter orderId, the browser is told the ID of the order that was not paid for."
+              - "orderRightOfPurchaseIsActive // Desc: Is the purchase right check on the interface on?"
+              - "orderRightOfPurchaseUrl // Desc: The interface of the transaction service, from which the right to purchase the products of the order is checked, if specified on."
+              - "orderSuccessRedirectUrl // Desc: Not yet in use; meaning that after payment, the receipt page would redirect here instead of merchantUrl (unless specified to return directly to the transaction service)?"
+              - "subscriptionPriceUrl // Desc: The interface of the transaction service, from which the price of the subscription is checked, if value is not null."
+        merchant:
+          type: array
+          items:
+            type: string
+            example:
+              - "merchantCity // Desc: Appears on the receipt under Seller's information"
+              - "merchantEmail // Desc: Appears on the receipt under Seller's information"
+              - "merchantName // Desc: Appears on the receipt under Seller's information"
+              - "merchantPhone // Desc: Appears on the receipt under Seller's information"
+              - "merchantShopId // Desc: TODO"
+              - "merchantStreet // Desc: Appears on the receipt under Seller's information"
+              - "merchantTermsOfServiceUrl // Desc: Overrides namespace value (Read more about usage from namespace description)"
+              - "merchantUrl // Desc: Return address to the transaction service from the cashier of the online store. The receipt page is also returned here"
+              - "merchantZip // Desc: Appears on the receipt under Seller's information"
+              - "orderRightOfPurchaseIsActive // Desc: Overrides namespace value (Read more about usage from namespace description)"
+              - "orderRightOfPurchaseUrl // Desc: Overrides namespace value (Read more about usage from namespace description)"
+              - "subscriptionPriceUrl // Desc: Overrides namespace value (Read more about usage from namespace description)"
+        platform:
+          type: array
+          items:
+            type: string
+            example:
+              - "namespaceApiAccessToken"
+              - "payment_api_key // Sub-merchant's api-key for Visma Pay interface calls from the online store."
+              - "payment_submerchant_id // Sub-merchant information of the Visma Pay contract to which the order is assigned and which appears in the invoicing report."
+              - "payment_api_version"
+              - "payment_currency"
+              - "payment_encryption_key"
+              - "payment_notification_url"
+              - "payment_register_card_token"
+              - "payment_return_url"
+              - "payment_type"
+        merchant-can-override:
+          type: array
+          items:
+            type: string
+            example:
+              - "merchantTermsOfServiceUrl // Desc: Overrides namespace value (Read more about usage from namespace description)"
+              - "orderRightOfPurchaseIsActive // Desc: Overrides namespace value (Read more about usage from namespace description)"
+              - "orderRightOfPurchaseUrl // Desc: Overrides namespace value (Read more about usage from namespace description)"
+              - "subscriptionPriceUrl // Desc: Overrides namespace value (Read more about usage from namespace description)"
 
   responses:
     InvalidApiKey:
@@ -172,6 +231,33 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorBody'
 paths:
+  /config/keys/list/{namespace}:
+    parameters:
+      - name: namespace
+        in: path
+        description: Merchants namespace
+        required: true
+        schema:
+          type: string
+    get:
+      description: List of configuration keys in merchant,namespace and platform
+      security:
+        - ApiKey: [ ]
+      responses:
+        '200':
+          description: An array of merchants
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllConfigurationKeys'
+        '400':
+          $ref: '#/components/responses/RequestValidationFailed'
+        '403':
+          $ref: '#/components/responses/InvalidApiKey'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+
   /{namespace}/:
     parameters:
       - name: namespace
@@ -392,6 +478,7 @@ paths:
           $ref: '#/components/responses/InvalidApiKey'
         '500':
           $ref: '#/components/responses/InternalServerError'
+
   /update/merchants/{namespace}:
     parameters:
       - name: namespace

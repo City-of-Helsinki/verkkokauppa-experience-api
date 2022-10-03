@@ -232,6 +232,25 @@ export const getMerchantModels = async (
   }
 }
 
+export const getAllConfigurationKeys = async (): Promise<Merchant[]> => {
+  if (!process.env.MERCHANT_CONFIGURATION_BACKEND_URL) {
+    throw new Error('No merchant configuration backend URL set')
+  }
+
+  const url = `${process.env.MERCHANT_CONFIGURATION_BACKEND_URL}/config/keys/getAll`
+  try {
+    const res = await axios.get(url)
+    return res.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-list-configuration-keys',
+      message:
+        'Failed to get list of configuration keys for namespace, merchant and platform.',
+      source: e,
+    })
+  }
+}
+
 const isApiKeyValid = async (p: {
   namespace: string
   apiKey: string
