@@ -235,7 +235,7 @@ paths:
     parameters:
       - name: namespace
         in: path
-        description: Merchants namespace
+        description: namespace
         required: true
         schema:
           type: string
@@ -245,7 +245,7 @@ paths:
         - ApiKey: [ ]
       responses:
         '200':
-          description: An array of merchants
+          description: An object of arrays containing configuration keys
           content:
             application/json:
               schema:
