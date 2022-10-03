@@ -194,12 +194,12 @@ components:
               - "namespaceApiAccessToken"
               - "payment_api_key // Sub-merchant's api-key for Visma Pay interface calls from the online store."
               - "payment_submerchant_id // Sub-merchant information of the Visma Pay contract to which the order is assigned and which appears in the invoicing report."
-              - "payment_api_version"
-              - "payment_currency"
-              - "payment_encryption_key"
-              - "payment_notification_url"
+              - "payment_api_version // Visma-api version"
+              - "payment_currency // Payment currency Default (EUR)"
+              - "payment_encryption_key // Sub-merchant's secret key to calculate HMAC."
+              - "payment_notification_url // Webhook URL from Visma Pay to the online store. (Notify/Return Controller:s in payment-api)"
               - "payment_register_card_token"
-              - "payment_return_url"
+              - "payment_return_url // Return address from Visma Pay to the online store in the browser."
               - "payment_type"
         merchant-can-override:
           type: array
