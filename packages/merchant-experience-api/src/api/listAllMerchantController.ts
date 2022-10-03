@@ -1,7 +1,8 @@
 import {
   AbstractController,
   Data,
-  ExperienceFailure,
+  ExperienceError,
+  StatusCode,
   ValidatedRequest,
 } from '@verkkokauppa/core'
 import type { Response } from 'express'
@@ -39,13 +40,15 @@ export class ListAllMerchantController extends AbstractController<
     const merchantsByNamespace = await getMerchantModels(namespace)
 
     if (merchantsByNamespace.length <= 0) {
-      throw new ExperienceFailure({
+      throw new ExperienceError({
         code: 'failed-to-find-merchants-by-namespace',
-        message: 'Failed to find list of merchants by namespace',
-        source: new Error('merchantsByNamespace.length <= 0'),
+        message:
+          'Failed to find list of merchants by namespace. merchantsByNamespace.length <= 0',
+        responseStatus: StatusCode.NotFound,
+        logLevel: 'info',
       })
     }
 
-    return this.created(res, new Data(merchantsByNamespace).serialize())
+    return this.success(res, new Data(merchantsByNamespace).serialize())
   }
 }
