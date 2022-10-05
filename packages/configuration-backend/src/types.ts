@@ -22,6 +22,7 @@ export type MerchantKeys = {
   merchantTermsOfServiceUrl: string
   merchantBusinessId: string
   merchantPhone?: string
+  merchantShopId: string
 }
 
 export type PublicServiceConfigurationKeys = {
