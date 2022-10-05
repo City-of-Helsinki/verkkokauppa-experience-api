@@ -108,6 +108,7 @@ export const getMerchantDetailsForOrder = async (p: { namespace: string }) => {
       k === 'merchantCity' ||
       k === 'merchantEmail' ||
       k === 'merchantPhone' ||
+      k === 'merchantShopId' ||
       k === 'merchantUrl' ||
       k === 'merchantTermsOfServiceUrl' ||
       k === 'merchantBusinessId'
