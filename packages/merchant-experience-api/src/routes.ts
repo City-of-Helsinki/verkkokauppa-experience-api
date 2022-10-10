@@ -6,6 +6,7 @@ import { CreateMerchantController } from './api/createMerchantController'
 import { UpdateAllMerchantController } from './api/updateAllMerchantController'
 import { UpdateMerchantController } from './api/updateMerchantController'
 import { ListAllMerchantController } from './api/listAllMerchantController'
+import { GetAllConfigurationKeysController } from './api/getAllConfigurationKeysController'
 
 const router = Router()
 
@@ -15,9 +16,14 @@ const onboardingController = new Onboarding()
 const createMerchantController = new CreateMerchantController()
 const updateAllMerchantController = new UpdateAllMerchantController()
 const listAllMerchantController = new ListAllMerchantController()
+const getAllConfigurationKeysController = new GetAllConfigurationKeysController()
 const updateMerchantController = new UpdateMerchantController()
 
 router.get('/health', (req, res) => healthController.execute(req, res))
+
+router.get('/config/keys/list/:namespace', (req, res) =>
+  getAllConfigurationKeysController.execute(req, res)
+)
 
 // Excludes swagger default path docs to prevent this route to be run when using /v1/docs/namespace/merchantId
 router.get('/:namespace((?!(docs)\\w+))/:merchantId?/', (req, res) =>
