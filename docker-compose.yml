@@ -87,6 +87,7 @@ services:
       - ./packages/core/:/opt/app-root/src/packages/core/
       - ./packages/product-backend/:/opt/app-root/src/packages/product-backend/
       - ./packages/price-backend/:/opt/app-root/src/packages/price-backend/
+      - ./packages/configuration-backend/:/opt/app-root/src/packages/configuration-backend/
     container_name: order-experience-api
     expose:
       - '8080'

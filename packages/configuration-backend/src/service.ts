@@ -5,6 +5,7 @@ import type {
   MerchantConfigurationKeys,
   MerchantKeys,
   Namespace,
+  OrderItem,
   PublicServiceConfigurationKeys,
   RestrictedServiceConfigurationKeys,
   ServiceConfiguration,
@@ -18,6 +19,7 @@ import {
 import {
   ExperienceError,
   ExperienceFailure,
+  logger,
   StatusCode,
 } from '@verkkokauppa/core'
 
@@ -95,28 +97,59 @@ export const getRestrictedServiceConfiguration = async (p: {
   }
 }
 
-export const getMerchantDetailsForOrder = async (p: { namespace: string }) => {
-  const { namespace } = p
-  const allConfiguration = await getAllPublicServiceConfiguration({ namespace })
+export const getMerchantDetailsForOrder = async (order: {
+  namespace: string
+  items: OrderItem[]
+}) => {
+  const { namespace } = order
+  let merchantId = parseMerchantIdFromFirstOrderItem(order) || ''
+  return getMerchantDetailsWithNamespaceAndMerchantId(namespace, merchantId)
+}
 
-  return allConfiguration.reduce((acc, cur) => {
-    const { configurationKey: k, configurationValue } = cur
-    if (
-      k === 'merchantName' ||
-      k === 'merchantStreet' ||
-      k === 'merchantZip' ||
-      k === 'merchantCity' ||
-      k === 'merchantEmail' ||
-      k === 'merchantPhone' ||
-      k === 'merchantShopId' ||
-      k === 'merchantUrl' ||
-      k === 'merchantTermsOfServiceUrl' ||
-      k === 'merchantBusinessId'
-    ) {
-      acc[k] = configurationValue
+export async function getReducedServiceConfigurationsForNamespace(
+  namespace: string
+) {
+  const allConfiguration =
+    (await getAllPublicServiceConfiguration({ namespace })) || []
+
+  return ((allConfiguration as unknown) as Array<ServiceConfiguration>).reduce(
+    (acc, cur) => {
+      const { configurationKey, configurationValue } = cur
+
+      if (getAllowedKeysToMerchant().includes(configurationKey)) {
+        acc[configurationKey] = configurationValue
+      }
+      return acc
+    },
+    {} as {
+      [Key in
+        | keyof PublicServiceConfigurationKeys
+        | keyof RestrictedServiceConfigurationKeys]: string
     }
-    return acc
-  }, {} as { [Key in keyof MerchantConfigurationKeys]: string })
+  )
+}
+
+export const getMerchantDetailsWithNamespaceAndMerchantId = async (
+  namespace: string,
+  merchantId: string
+) => {
+  const reducedServiceConfigurations = await getReducedServiceConfigurationsForNamespace(
+    namespace
+  )
+  let reducedMerchantConfigurations: MerchantKeys = {}
+  try {
+    reducedMerchantConfigurations = await getMerchantValues(
+      namespace,
+      merchantId
+    )
+  } catch (e) {
+    logger.log(e)
+  }
+
+  return {
+    ...reducedServiceConfigurations,
+    ...reducedMerchantConfigurations, // Overrides values in service configurations
+  }
 }
 
 export const createPublicServiceConfigurations = async (p: {
@@ -233,6 +266,62 @@ export const getMerchantModels = async (
   }
 }
 
+function getAllowedKeysToMerchant() {
+  return [
+    'merchantName',
+    'merchantStreet',
+    'merchantZip',
+    'merchantCity',
+    'merchantEmail',
+    'merchantPhone',
+    'merchantUrl',
+    'merchantTermsOfServiceUrl',
+    'merchantBusinessId',
+  ]
+}
+
+export const getMerchantValues = async (
+  namespace: string,
+  merchantId: string | null
+): Promise<MerchantKeys> => {
+  if (!process.env.MERCHANT_EXPERIENCE_URL) {
+    throw new Error('No merchant experience URL set')
+  }
+
+  if (!merchantId) {
+    throw new Error('Merchant was null/empty')
+  }
+
+  if (!namespace) {
+    throw new Error('Namespace was null/empty')
+  }
+
+  const url = `${process.env.MERCHANT_EXPERIENCE_URL}/merchant/${namespace}/${merchantId}`
+
+  try {
+    const res = await axios.get<ServiceConfiguration>(url)
+    if (res.data) {
+      return (Object.entries(res.data) as Array<
+        [keyof MerchantConfigurationKeys, string]
+      >).reduce((acc, [configurationKey, configurationValue]) => {
+        if (getAllowedKeysToMerchant().includes(configurationKey)) {
+          acc[configurationKey] = configurationValue
+        }
+        return acc
+      }, {} as { [Key in keyof MerchantConfigurationKeys]: string })
+    }
+    return {}
+  } catch (e) {
+    console.log(e)
+    throw new ExperienceFailure({
+      code: 'failed-to-get-merchant-by-namespace-and-merchant-id',
+      message:
+        'Failed to get list of merchant values by namespace and merchant id',
+      source: e,
+    })
+  }
+}
+
 export const getAllConfigurationKeys = async (): Promise<Merchant[]> => {
   if (!process.env.MERCHANT_CONFIGURATION_BACKEND_URL) {
     throw new Error('No merchant configuration backend URL set')
@@ -317,4 +406,20 @@ export const getSubscriptionTermsOfServiceBinary = async (p: {
       source: e,
     })
   }
+}
+
+export const parseMerchantIdFromFirstOrderItem = (order: {
+  namespace: string
+  items: OrderItem[]
+}) => {
+  let merchantId = null
+  if (
+    order !== undefined &&
+    Array.isArray(order.items) &&
+    order.items[0] !== undefined &&
+    order.items[0].merchantId != undefined
+  ) {
+    merchantId = order?.items[0]?.merchantId || null
+  }
+  return merchantId
 }
