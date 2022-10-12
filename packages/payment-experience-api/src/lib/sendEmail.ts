@@ -18,7 +18,7 @@ export const sendReceipt = async (order: Order) => {
       'Tilausvahvistus ja kuitti / Order confirmation and receipt / Beställningsbekräftelse och kvitto',
     sendTo: orderWithPayments?.customer?.email || '',
   })
-  if (email.error !== '' || email.error !== undefined) {
+  if (email.error !== '' && email.error !== undefined) {
     throw new ExperienceFailure({
       code: 'failed-to-send-order-confirmation-email',
       message: `Cannot send order confirmation email to customer`,
