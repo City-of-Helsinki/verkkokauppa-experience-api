@@ -21,6 +21,7 @@ const orderMock = {
       orderId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
       orderItemId: '19699acf-b0a3-440f-818f-e582825fa3a7',
       productId: '30a245ed-5fca-4fcf-8b2a-cdf1ce6fca0d',
+      merchantId: '30a245ed-5fca-4fcf-8b2a-cdf1ce6fca0d',
       quantity: 1,
       productName: 'Product Name',
       unit: 'pcs',

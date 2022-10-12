@@ -17,6 +17,7 @@ export interface OrderItemRequest {
 export type OrderItem = OrderItemRequest & {
   orderItemId: string
   orderId: string
+  merchantId?: string
 }
 
 export interface OrderCustomer {
@@ -40,6 +41,7 @@ export interface Order {
 }
 
 export interface PaymentMethod {
+  gateway: string
   name: string
   code: string
   group: string

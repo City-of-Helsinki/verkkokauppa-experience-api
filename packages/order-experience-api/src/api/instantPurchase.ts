@@ -4,6 +4,7 @@ import * as yup from 'yup'
 import {
   addItemsToOrder,
   createOrder,
+  getOrder,
   setOrderTotals,
 } from '@verkkokauppa/order-backend'
 import { getProduct } from '@verkkokauppa/product-backend'
@@ -83,8 +84,11 @@ export class InstantPurchase extends AbstractController<typeof requestSchema> {
       items: orderItems,
     })
 
+    const fetchOrder = await getOrder({ orderId, user: body.user })
+
     const merchant = await getMerchantDetailsForOrder({
       namespace: body.namespace,
+      items: fetchOrder?.items || [],
     })
 
     const order = await setOrderTotals({
