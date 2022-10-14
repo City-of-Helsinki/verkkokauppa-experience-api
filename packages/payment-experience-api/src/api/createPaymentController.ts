@@ -8,7 +8,7 @@ import {
 } from '@verkkokauppa/payment-backend'
 import { DEFAULT_LANGUAGE } from '../constants'
 import * as yup from 'yup'
-import { parseMerchantIdFromFirstOrderItem } from '@verkkokauppa/order-backend/src/lib/orderItemUtils'
+import { parseMerchantIdFromFirstOrderItem } from '@verkkokauppa/configuration-backend'
 
 const requestSchema = yup.object().shape({
   body: yup.object().shape({

@@ -5,6 +5,7 @@ import type {
   MerchantConfigurationKeys,
   MerchantKeys,
   Namespace,
+  OrderItem,
   PublicServiceConfigurationKeys,
   RestrictedServiceConfigurationKeys,
   ServiceConfiguration,
@@ -317,4 +318,20 @@ export const getSubscriptionTermsOfServiceBinary = async (p: {
       source: e,
     })
   }
+}
+
+export const parseMerchantIdFromFirstOrderItem = (order: {
+  namespace: string
+  items: OrderItem[]
+}) => {
+  let merchantId = null
+  if (
+    order !== undefined &&
+    Array.isArray(order.items) &&
+    order.items[0] !== undefined &&
+    order.items[0].merchantId != undefined
+  ) {
+    merchantId = order?.items[0]?.merchantId || null
+  }
+  return merchantId
 }
