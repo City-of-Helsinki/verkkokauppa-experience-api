@@ -8,7 +8,7 @@ import {
 } from '@verkkokauppa/payment-backend'
 import * as yup from 'yup'
 import { calculateTotalsFromItems } from '../lib/totals'
-import { parseMerchantIdFromFirstOrderItem } from '@verkkokauppa/order-backend/src/lib/orderItemUtils'
+import { parseMerchantIdFromFirstOrderItem } from '@verkkokauppa/configuration-backend'
 
 const requestSchema = yup.object().shape({
   params: yup.object().shape({

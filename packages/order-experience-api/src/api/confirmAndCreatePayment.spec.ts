@@ -123,6 +123,7 @@ describe('Test confirmAndCreatePayment', () => {
       user: 'testUser',
     })
     expect(getPaymentMethodListMock.mock.calls[0][0]).toEqual({
+      merchantId: null,
       order: orderMock,
       namespace: orderMock.namespace,
       totalPrice: 310,

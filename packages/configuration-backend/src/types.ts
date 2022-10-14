@@ -91,3 +91,80 @@ export interface Locale {
   sv: string
   en: string
 }
+
+export interface OrderItemRequest {
+  productId: string
+  productName: string
+  productLabel?: string
+  productDescription?: string
+  quantity: number
+  unit: string
+  rowPriceNet: string
+  rowPriceVat: string
+  rowPriceTotal: string
+  startDate?: Date
+  periodUnit?: string
+  periodFrequency?: number
+  priceNet: string
+  priceGross: string
+  priceVat: string
+  vatPercentage: string
+  originalPriceNet?: string
+  originalPriceVat?: string
+  originalPriceGross?: string
+}
+
+export type OrderItem = OrderItemRequest & {
+  orderItemId: string
+  orderId: string
+  merchantId?: string
+}
+export type OrderItemMeta = {
+  orderItemMetaId: string
+  orderItemId: string
+  orderId: string
+  key: string
+  value: string
+  label?: string
+  visibleInCheckout?: string
+  ordinal?: string
+}
+
+export interface OrderCustomer {
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+}
+
+export interface OrderInvoice {
+  invoiceId: string
+  businessId: string
+  name: string
+  address: string
+  postcode: string
+  city: string
+  ovtId?: string
+}
+
+export type OrderType = 'subscription' | 'order'
+
+export interface Order {
+  orderId: string
+  namespace: string
+  user: string
+  createdAt: string
+  items: OrderItem[]
+  meta: OrderItemMeta[]
+  priceNet?: string
+  priceVat?: string
+  priceTotal?: string
+  checkoutUrl?: string
+  receiptUrl?: string
+  loggedInCheckoutUrl?: string
+  customer?: OrderCustomer
+  invoice?: OrderInvoice
+  status?: string
+  subscriptionId?: string
+  type: OrderType
+}

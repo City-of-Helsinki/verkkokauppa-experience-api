@@ -3,7 +3,7 @@ import type { Response } from 'express'
 import { getOrder, OrderItem } from '@verkkokauppa/order-backend'
 import { getPaymentMethodList } from '@verkkokauppa/payment-backend'
 import * as yup from 'yup'
-import { parseMerchantIdFromFirstOrderItem } from '@verkkokauppa/order-backend/src/lib/orderItemUtils'
+import { parseMerchantIdFromFirstOrderItem } from '@verkkokauppa/configuration-backend'
 
 const requestSchema = yup.object().shape({
   params: yup.object().shape({
