@@ -106,9 +106,9 @@ export const getMerchantDetailsForOrder = async (order: {
   return getMerchantDetailsWithNamespaceAndMerchantId(namespace, merchantId)
 }
 
-export async function getReducedServiceConfigurationsForNamespace(
+export const getReducedServiceConfigurationsForNamespace = async (
   namespace: string
-) {
+) => {
   const allConfiguration =
     (await getAllPublicServiceConfiguration({ namespace })) || []
 
@@ -266,19 +266,18 @@ export const getMerchantModels = async (
   }
 }
 
-function getAllowedKeysToMerchant() {
-  return [
-    'merchantName',
-    'merchantStreet',
-    'merchantZip',
-    'merchantCity',
-    'merchantEmail',
-    'merchantPhone',
-    'merchantUrl',
-    'merchantTermsOfServiceUrl',
-    'merchantBusinessId',
-  ]
-}
+const getAllowedKeysToMerchant = () => [
+  'merchantName',
+  'merchantStreet',
+  'merchantZip',
+  'merchantCity',
+  'merchantEmail',
+  'merchantPhone',
+  'merchantUrl',
+  'merchantTermsOfServiceUrl',
+  'merchantBusinessId',
+  'merchantShopId',
+]
 
 export const getMerchantValues = async (
   namespace: string,
@@ -312,7 +311,6 @@ export const getMerchantValues = async (
     }
     return {}
   } catch (e) {
-    console.log(e)
     throw new ExperienceFailure({
       code: 'failed-to-get-merchant-by-namespace-and-merchant-id',
       message:
