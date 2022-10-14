@@ -3,6 +3,7 @@ import type { Response } from 'express'
 import { getOrder, OrderItem } from '@verkkokauppa/order-backend'
 import { getPaymentMethodList } from '@verkkokauppa/payment-backend'
 import * as yup from 'yup'
+import { parseMerchantIdFromFirstOrderItem } from '@verkkokauppa/order-backend/src/lib/orderItemUtils'
 
 const requestSchema = yup.object().shape({
   params: yup.object().shape({
@@ -27,6 +28,7 @@ export class GetPaymentMethodListController extends AbstractController<
     } = request
 
     const order = await getOrder({ orderId, user })
+    const merchantId = parseMerchantIdFromFirstOrderItem(order)
     const dto = new Data(
       await getPaymentMethodList({
         order,
@@ -34,6 +36,7 @@ export class GetPaymentMethodListController extends AbstractController<
         totalPrice: order.priceTotal
           ? parseFloat(order.priceTotal)
           : calculateTotalPrice(order.items),
+        merchantId,
       })
     )
 
