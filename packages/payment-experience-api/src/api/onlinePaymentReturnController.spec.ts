@@ -53,6 +53,7 @@ describe('Test receipt send', () => {
     process.env.CONFIGURATION_BACKEND_URL = 'https://test.dev.hel'
     process.env.MESSAGE_BACKEND_URL = 'https://test.dev.hel'
     process.env.PAYMENT_BACKEND_URL = 'https://test.dev.hel'
+    process.env.MERCHANT_EXPERIENCE_URL = 'https://test.dev.hel'
 
     const configMock = {
       configurationId: '2f815a93-4c5c-442f-ba09-f294ecc12679',
@@ -95,12 +96,16 @@ describe('Test receipt send', () => {
       if (url.includes(`/public/getAll`)) {
         return Promise.resolve({ data: [configMock, merchantConfigMock] })
       }
+      if (url.includes(`/merchant/test`)) {
+        return Promise.resolve({ data: [configMock, merchantConfigMock] })
+      }
       if (url.includes(`/public/get`)) {
         return Promise.resolve({ data: configMock })
       }
       if (url.includes(`/payment/online/get`)) {
         return Promise.resolve({ data: paymentMock })
       }
+      console.log(url)
       return Promise.resolve({})
     })
 

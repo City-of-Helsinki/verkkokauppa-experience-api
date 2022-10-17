@@ -406,6 +406,9 @@ components:
           $ref: '#/components/schemas/FilterType'
         value:
           type: string
+          description: "This can be paymentMethod name, code, group or gateway which will be removed from available payment methods
+           Example, if you want to filter out all banks, value=banks and filterType=banks 
+           (Supported values can be found from FilterType enum)"
     ReferenceType:
       type: string
       enum:
@@ -418,6 +421,9 @@ components:
         - banks
         - creditcards
         - wallets
+        - online
+        - online-paytrail
+
   parameters:
     Namespace:
       name: namespace

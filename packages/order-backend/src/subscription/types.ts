@@ -1,6 +1,7 @@
 export interface Subscription {
   id: string
   subscriptionId: string
+  merchantId: string
   status: string
   namespace: string
   merchantName: string
