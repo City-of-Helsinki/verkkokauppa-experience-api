@@ -136,19 +136,24 @@ export const getMerchantDetailsWithNamespaceAndMerchantId = async (
   const reducedServiceConfigurations = await getReducedServiceConfigurationsForNamespace(
     namespace
   )
-  let reducedMerchantConfigurations: MerchantKeys = {}
+
   try {
-    reducedMerchantConfigurations = await getMerchantValues(
+    const reducedMerchantConfigurations: MerchantKeys | null = await getMerchantValues(
       namespace,
       merchantId
     )
+    if (reducedMerchantConfigurations) {
+      return {
+        ...reducedServiceConfigurations,
+        ...reducedMerchantConfigurations, // Overrides values in service configurations
+      }
+    }
   } catch (e) {
     logger.log(e)
   }
 
   return {
     ...reducedServiceConfigurations,
-    ...reducedMerchantConfigurations, // Overrides values in service configurations
   }
 }
 
@@ -282,7 +287,7 @@ const getAllowedKeysToMerchant = () => [
 export const getMerchantValues = async (
   namespace: string,
   merchantId: string | null
-): Promise<MerchantKeys> => {
+): Promise<MerchantKeys | null> => {
   if (!process.env.MERCHANT_EXPERIENCE_URL) {
     throw new Error('No merchant experience URL set')
   }
@@ -309,7 +314,7 @@ export const getMerchantValues = async (
         return acc
       }, {} as { [Key in keyof MerchantConfigurationKeys]: string })
     }
-    return {}
+    return null
   } catch (e) {
     throw new ExperienceFailure({
       code: 'failed-to-get-merchant-by-namespace-and-merchant-id',
