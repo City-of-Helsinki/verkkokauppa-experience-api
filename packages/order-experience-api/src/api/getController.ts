@@ -30,9 +30,9 @@ export class GetController extends AbstractController<typeof requestSchema> {
       params: { orderId },
       headers: { user },
     } = req
-
     logger.debug(`Fetch order ${orderId}`)
     const order = await getOrder({ orderId, user })
+
     const [merchant, orderIsPaid] = await Promise.all([
       getMerchantDetailsForOrder(order),
       paidPaymentExists(order),

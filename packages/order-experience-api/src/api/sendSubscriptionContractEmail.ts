@@ -1,20 +1,20 @@
 import {
   AbstractController,
-  ValidatedRequest,
   parseTimestamp,
+  ValidatedRequest,
 } from '@verkkokauppa/core'
 import * as yup from 'yup'
 import type { Response } from 'express'
 import {
   createEmailTemplate,
   createSubscriptionContractBinary,
-  sendEmail,
   createSubscriptionTermsOfServiceBinary,
+  sendEmail,
 } from '@verkkokauppa/message-backend'
 import { getSubscriptionAdmin } from '@verkkokauppa/order-backend'
 import { getPaymentForOrder } from '@verkkokauppa/payment-backend'
 import {
-  getMerchantDetailsForOrder,
+  getMerchantDetailsWithNamespaceAndMerchantId,
   getSubscriptionTermsOfServiceBinary,
   validateAdminApiKey,
 } from '@verkkokauppa/configuration-backend'
@@ -44,9 +44,13 @@ export class SendSubscriptionContractEmail extends AbstractController<
     await validateAdminApiKey({ apiKey })
     // Assumption: subscription is currently on its first order
     const subscription = await getSubscriptionAdmin({ id })
+
     const [payment, merchant, merchantTosPdf] = await Promise.all([
       getPaymentForOrder(subscription),
-      getMerchantDetailsForOrder(subscription),
+      getMerchantDetailsWithNamespaceAndMerchantId(
+        subscription.namespace,
+        subscription?.merchantId || ''
+      ),
       getSubscriptionTermsOfServiceBinary(subscription),
     ])
 

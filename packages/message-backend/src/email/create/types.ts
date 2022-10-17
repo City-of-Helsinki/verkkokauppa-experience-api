@@ -34,15 +34,15 @@ export type OrderCustomer = {
 }
 
 export type OrderMerchant = {
-  merchantName: string
-  merchantStreet: string
-  merchantZip: string
-  merchantCity: string
+  merchantName?: string
+  merchantStreet?: string
+  merchantZip?: string
+  merchantCity?: string
   merchantBusinessId?: string
-  merchantEmail: string
-  merchantPhone: string
-  merchantUrl: string
-  merchantTermsOfServiceUrl: string
+  merchantEmail?: string
+  merchantPhone?: string
+  merchantUrl?: string
+  merchantTermsOfServiceUrl?: string
 }
 
 export interface OrderItemRequest {
@@ -72,6 +72,7 @@ export type OrderType = 'subscription' | 'order'
 export type OrderItem = OrderItemRequest & {
   orderItemId: string
   orderId: string
+  merchantId?: string
 } & {
   meta?: OrderItemMeta[]
 }
