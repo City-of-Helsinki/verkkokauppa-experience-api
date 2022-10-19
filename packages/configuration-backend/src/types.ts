@@ -14,16 +14,17 @@ export type MerchantConfigurationKeys = {
 }
 
 export type MerchantKeys = {
-  merchantName: string
-  merchantStreet: string
-  merchantZip: string
-  merchantCity: string
-  merchantEmail: string
-  merchantUrl: string
-  merchantTermsOfServiceUrl: string
-  merchantBusinessId: string
+  merchantName?: string
+  merchantStreet?: string
+  merchantZip?: string
+  merchantCity?: string
+  merchantEmail?: string
+  merchantUrl?: string
+  merchantTermsOfServiceUrl?: string
+  merchantBusinessId?: string
   merchantPhone?: string
   merchantShopId?: string
+  [key: string]: any // 👈️ variable keys
 }
 
 export type PublicServiceConfigurationKeys = {

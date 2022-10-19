@@ -233,7 +233,9 @@ export const getPaymentMethodList = async (parameters: {
         const value = filter.value.toLowerCase()
         return (
           value === method.name.toLowerCase() ||
-          value === method.code.toLowerCase()
+          value === method.code.toLowerCase() ||
+          value === method.group.toLowerCase() ||
+          value === method.gateway.toLocaleLowerCase()
         )
       })
     })
