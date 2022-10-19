@@ -2,8 +2,8 @@ import {
   AbstractController,
   Data,
   logger,
-  ValidatedRequest,
   RequestValidationError,
+  ValidatedRequest,
 } from '@verkkokauppa/core'
 import type { Response } from 'express'
 import {
@@ -12,9 +12,9 @@ import {
   Order,
 } from '@verkkokauppa/order-backend'
 import {
+  PaymentFilter,
   ReferenceType,
   savePaymentFiltersAdmin,
-  PaymentFilter,
 } from '@verkkokauppa/payment-backend'
 import { getProductMapping } from '@verkkokauppa/product-mapping-backend'
 import {

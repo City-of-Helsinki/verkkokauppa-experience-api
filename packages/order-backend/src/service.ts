@@ -275,7 +275,9 @@ export const getOrderAdmin = async (p: { orderId: string }): Promise<Order> => {
   }
 }
 
-const transFormBackendOrder = (p: OrderWithItemsBackendResponse): Order => {
+export const transFormBackendOrder = (
+  p: OrderWithItemsBackendResponse
+): Order => {
   const {
     order: {
       orderId,
