@@ -8,6 +8,7 @@ import {
 } from '@verkkokauppa/payment-backend'
 import * as yup from 'yup'
 import { calculateTotalsFromItems } from '../lib/totals'
+import { parseMerchantIdFromFirstOrderItem } from '@verkkokauppa/configuration-backend'
 
 const requestSchema = yup.object().shape({
   params: yup.object().shape({
@@ -39,10 +40,13 @@ export class ConfirmAndCreatePayment extends AbstractController<
 
     const order = await confirmOrder({ orderId, user })
     const orderTotals = calculateTotalsFromItems(order)
+    const merchantId = parseMerchantIdFromFirstOrderItem(order)
+
     const availablePaymentMethods = await getPaymentMethodList({
       order,
       namespace: order.namespace,
       totalPrice: parseFloat(orderTotals.priceTotal),
+      merchantId,
     })
     const currentPaymentMethod = availablePaymentMethods.find(
       (availableMethod) => availableMethod.code === paymentMethod

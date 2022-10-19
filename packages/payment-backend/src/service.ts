@@ -107,6 +107,7 @@ export const getOnlinePaymentMethods = async (parameters: {
   totalPrice: number
   currency?: string
   order: Order
+  merchantId: string | null
 }): Promise<PaymentMethod[]> => {
   const {
     order: { items, ...orderDto },
@@ -209,9 +210,10 @@ export const getPaymentMethodList = async (parameters: {
   namespace: string
   totalPrice: number
   currency?: string
-  order: Order & { merchantId?: string }
+  order: Order
+  merchantId: string | null
 }): Promise<PaymentMethod[]> => {
-  const { merchantId } = parameters.order
+  const { merchantId } = parameters
   const [
     onlineMethods,
     offlineMethods,
