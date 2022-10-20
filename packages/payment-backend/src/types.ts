@@ -58,6 +58,14 @@ export type VismaStatus = {
   paymentType: string
 }
 
+export type PaytrailStatus = {
+  paymentPaid: boolean
+  canRetry: boolean
+  valid: boolean
+  authorized?: boolean
+  paymentType: string
+}
+
 export type VismaPayResponse = {
   result: number
 }
