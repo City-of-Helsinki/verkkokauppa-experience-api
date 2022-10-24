@@ -2,7 +2,7 @@ import { sendOrderConfirmationEmailToCustomer } from '@verkkokauppa/message-back
 import { getPaymentForOrder, Order } from '@verkkokauppa/payment-backend'
 import { ExperienceFailure, logger } from '@verkkokauppa/core'
 import { getMerchantDetailsForOrder } from '@verkkokauppa/configuration-backend'
-import { isCardRenewal } from './vismaPay'
+import { isCardRenewal } from './paymentReturnService'
 
 export const sendReceipt = async (order: Order) => {
   const payments = await getPaymentForOrder(order)
