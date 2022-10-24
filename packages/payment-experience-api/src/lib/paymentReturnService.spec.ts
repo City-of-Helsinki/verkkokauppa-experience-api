@@ -189,7 +189,7 @@ describe('Test User redirection creation', () => {
       order: orderMock,
       paymentReturnStatus: {
         canRetry: false,
-        paymentPaid: false,
+        paymentPaid: true,
         valid: true,
         paymentType: PaymentType.CREDIT_CARDS,
       },
@@ -256,7 +256,7 @@ describe('Test User redirection creation', () => {
       order: orderMock,
       paymentReturnStatus: {
         canRetry: false,
-        paymentPaid: false,
+        paymentPaid: true,
         valid: true,
         paymentType: PaymentType.CREDIT_CARDS,
       },
@@ -282,7 +282,7 @@ describe('Test User redirection creation', () => {
       order: orderMock,
       paymentReturnStatus: {
         canRetry: false,
-        paymentPaid: false,
+        paymentPaid: true,
         valid: false,
         paymentType: PaymentType.CREDIT_CARDS,
       },
@@ -308,7 +308,7 @@ describe('Test User redirection creation', () => {
     }
 
     let mockVismaStatus = {
-      paymentPaid: false,
+      paymentPaid: true,
       canRetry: false,
       valid: true,
       authorized: true,
