@@ -53,7 +53,7 @@ describe('Test receipt send', () => {
     process.env.CONFIGURATION_BACKEND_URL = 'https://test.dev.hel'
     process.env.MESSAGE_BACKEND_URL = 'https://test.dev.hel'
     process.env.PAYMENT_BACKEND_URL = 'https://test.dev.hel'
-    process.env.MERCHANT_EXPERIENCE_URL = 'https://test.dev.hel'
+    process.env.MERCHANT_API_URL = 'https://test.dev.hel'
 
     const configMock = {
       configurationId: '2f815a93-4c5c-442f-ba09-f294ecc12679',
