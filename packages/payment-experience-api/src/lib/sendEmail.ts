@@ -29,12 +29,12 @@ export const sendReceipt = async (order: Order) => {
 }
 
 export const sendReceiptToCustomer = async (
-  vismaStatus: any,
+  paymentReturnStatus: any,
   orderId: string,
   order: any
 ) => {
   // Send email only when payment is paid and not an card renewal.
-  if (vismaStatus.paymentPaid && !isCardRenewal(vismaStatus)) {
+  if (paymentReturnStatus.paymentPaid && !isCardRenewal(paymentReturnStatus)) {
     logger.info(`Send receipt for order ${orderId}`)
     try {
       await sendReceipt(order)

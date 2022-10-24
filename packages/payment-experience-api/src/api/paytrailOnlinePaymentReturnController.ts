@@ -1,21 +1,21 @@
 import { AbstractController, logger } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
-import {
-  createUserRedirectUrl,
-  isAuthorized,
-  isCardRenewal,
-  parseOrderIdFromRedirect,
-} from '../lib/vismaPay'
 import { URL } from 'url'
 import { getOrderAdmin } from '@verkkokauppa/order-backend'
 import {
   cancelPaymentAdmin,
-  checkVismaReturnUrl,
+  checkPaytrailReturnUrl,
   getPaymentsForOrderAdmin,
   Order,
   PaymentStatus,
 } from '@verkkokauppa/payment-backend'
 import { sendReceiptToCustomer } from '../lib/sendEmail'
+import { parseOrderIdFromPaytrailRedirect } from '../lib/paytrail'
+import {
+  createUserRedirectUrl,
+  isAuthorized,
+  isCardRenewal,
+} from '../lib/paymentReturnService'
 
 export class PaytrailOnlinePaymentReturnController extends AbstractController {
   protected readonly requestSchema = null
@@ -25,44 +25,46 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
     result: Response
   ): Promise<any> {
     const { query } = request
-    if (!process.env.REDIRECT_PAYMENT_URL_BASE) {
-      throw new Error('No default redirect url specified')
-    }
-    const orderId = parseOrderIdFromRedirect({ query })
+    // Validates that base redirect url is set
+    PaytrailOnlinePaymentReturnController.checkAndCreateRedirectUrl()
+    const orderId = parseOrderIdFromPaytrailRedirect({ query })
 
     if (!orderId) {
-      logger.error('No orderId specified redirect to general failure url')
+      logger.error(
+        'No orderId specified redirect to paytrail general failure url'
+      )
       return result.redirect(
         302,
-        PaytrailOnlinePaymentReturnController.getFailureRedirectUrl().toString()
+        PaytrailOnlinePaymentReturnController.getFailureRedirectUrl()
       )
     }
 
     try {
-      const vismaStatus = await checkVismaReturnUrl({ params: query })
+      const paytrailStatus = await checkPaytrailReturnUrl({ params: query })
       logger.debug(
-        `VismaStatus for order ${orderId}: ${JSON.stringify(vismaStatus)}`
+        `PaytrailStatus for order ${orderId}: ${JSON.stringify(paytrailStatus)}`
       )
-      if (!vismaStatus.valid) {
+      if (!paytrailStatus.valid) {
         logger.debug(
-          `VismaStatus is not valid for ${orderId}, redirect to failure url`
+          `PaytrailStatus is not valid for ${orderId}, redirect to failure url`
         )
         return result.redirect(
           302,
-          PaytrailOnlinePaymentReturnController.getFailureRedirectUrl().toString()
+          PaytrailOnlinePaymentReturnController.getFailureRedirectUrl()
         )
       }
 
       const order = await getOrderAdmin({ orderId })
       const redirectUrl = await createUserRedirectUrl({
         order,
-        vismaStatus,
+        paymentReturnStatus: paytrailStatus,
+        redirectPaymentUrlBase: PaytrailOnlinePaymentReturnController.getRedirectUrl(),
       })
       // Function contains internal checks when to send receipt.
-      await sendReceiptToCustomer(vismaStatus, orderId, order)
+      await sendReceiptToCustomer(paytrailStatus, orderId, order)
 
       // Only cancel authorized card renewals.
-      if (isAuthorized(vismaStatus) && isCardRenewal(vismaStatus)) {
+      if (isAuthorized(paytrailStatus) && isCardRenewal(paytrailStatus)) {
         const cancelled = await this.cancelAuthorizationPayments(order)
         // Error count more than 0
         let cancelledCount = cancelled[1]
@@ -97,10 +99,17 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
   }
 
   public static checkAndCreateRedirectUrl() {
-    if (!process.env.REDIRECT_PAYMENT_URL_BASE) {
-      throw new Error('No default redirect url specified')
+    if (!process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE) {
+      throw new Error('No default paytrail redirect url specified')
     }
-    return new URL(process.env.REDIRECT_PAYMENT_URL_BASE)
+    return new URL(process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE)
+  }
+
+  public static getRedirectUrl() {
+    if (!process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE) {
+      throw new Error('No default paytrail redirect url specified')
+    }
+    return process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE
   }
 
   private static getCardRenewalFailureRedirectUrl(orderId: string) {
