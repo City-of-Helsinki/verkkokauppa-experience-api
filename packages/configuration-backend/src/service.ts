@@ -19,7 +19,6 @@ import {
 import {
   ExperienceError,
   ExperienceFailure,
-  logger,
   StatusCode,
 } from '@verkkokauppa/core'
 
@@ -149,7 +148,7 @@ export const getMerchantDetailsWithNamespaceAndMerchantId = async (
       }
     }
   } catch (e) {
-    logger.log(e)
+    console.log(e)
   }
 
   return {
@@ -288,7 +287,7 @@ export const getMerchantValues = async (
   namespace: string,
   merchantId: string | null
 ): Promise<MerchantKeys | null> => {
-  if (!process.env.MERCHANT_EXPERIENCE_URL) {
+  if (!process.env.MERCHANT_API_URL) {
     throw new Error('No merchant experience URL set')
   }
 
@@ -300,7 +299,7 @@ export const getMerchantValues = async (
     throw new Error('Namespace was null/empty')
   }
 
-  const url = `${process.env.MERCHANT_EXPERIENCE_URL}/merchant/${namespace}/${merchantId}`
+  const url = `${process.env.MERCHANT_API_URL}merchant/${namespace}/${merchantId}`
 
   try {
     const res = await axios.get<ServiceConfiguration>(url)
