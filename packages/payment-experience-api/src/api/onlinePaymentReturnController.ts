@@ -1,11 +1,6 @@
 import { AbstractController, logger } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
-import {
-  createUserRedirectUrl,
-  isAuthorized,
-  isCardRenewal,
-  parseOrderIdFromRedirect,
-} from '../lib/vismaPay'
+import { parseOrderIdFromRedirect } from '../lib/vismaPay'
 import { URL } from 'url'
 import { getOrderAdmin } from '@verkkokauppa/order-backend'
 import {
@@ -16,6 +11,11 @@ import {
   PaymentStatus,
 } from '@verkkokauppa/payment-backend'
 import { sendReceiptToCustomer } from '../lib/sendEmail'
+import {
+  createUserRedirectUrl,
+  isAuthorized,
+  isCardRenewal,
+} from '../lib/paymentReturnService'
 
 export class OnlinePaymentReturnController extends AbstractController {
   protected readonly requestSchema = null
@@ -56,7 +56,8 @@ export class OnlinePaymentReturnController extends AbstractController {
       const order = await getOrderAdmin({ orderId })
       const redirectUrl = await createUserRedirectUrl({
         order,
-        vismaStatus,
+        paymentReturnStatus: vismaStatus,
+        redirectPaymentUrlBase: OnlinePaymentReturnController.getRedirectUrl(),
       })
       // Function contains internal checks when to send receipt.
       await sendReceiptToCustomer(vismaStatus, orderId, order)
@@ -91,7 +92,7 @@ export class OnlinePaymentReturnController extends AbstractController {
 
   private static getFailureRedirectUrl() {
     if (!process.env.REDIRECT_PAYMENT_URL_BASE) {
-      throw new Error('No default redirect url specified')
+      throw new Error('No default visma redirect url specified')
     }
     const redirectUrl = new URL(process.env.REDIRECT_PAYMENT_URL_BASE)
     redirectUrl.pathname = 'failure'
@@ -100,13 +101,24 @@ export class OnlinePaymentReturnController extends AbstractController {
   }
 
   private static getCardRenewalFailureRedirectUrl(orderId: string) {
-    if (!process.env.REDIRECT_PAYMENT_URL_BASE) {
-      throw new Error('No default redirect url specified')
-    }
-    const redirectUrl = new URL(process.env.REDIRECT_PAYMENT_URL_BASE)
+    const redirectUrl = this.checkAndCreateRedirectUrl()
     redirectUrl.pathname = `${orderId}/card-update-failed`
 
     return redirectUrl.toString()
+  }
+
+  private static checkAndCreateRedirectUrl() {
+    if (!process.env.REDIRECT_PAYMENT_URL_BASE) {
+      throw new Error('No default visma redirect url specified')
+    }
+    return new URL(process.env.REDIRECT_PAYMENT_URL_BASE)
+  }
+
+  public static getRedirectUrl() {
+    if (!process.env.REDIRECT_PAYMENT_URL_BASE) {
+      throw new Error('No default visma redirect url specified')
+    }
+    return process.env.REDIRECT_PAYMENT_URL_BASE
   }
 
   public async cancelAuthorizationPayments(order: Order) {
