@@ -26,27 +26,7 @@ import {
 import { ExperienceFailure } from '@verkkokauppa/core'
 import { ReferenceType } from './enums'
 
-const PAYMENT_METHOD_MAP = new Map()
-  .set('invoice', 'billing')
-  .set('visma-pay', 'online')
-  .set('nordea', 'online')
-  .set('handelsbanken', 'online')
-  .set('osuuspankki', 'online')
-  .set('danskebank', 'online')
-  .set('spankki', 'online')
-  .set('saastopankki', 'online')
-  .set('paikallisosuuspankki', 'online')
-  .set('aktia', 'online')
-  .set('alandsbanken', 'online')
-  .set('omasaastopankki', 'online')
-  .set('masterpass', 'online')
-  .set('mobilepay', 'online')
-  .set('pivo', 'online')
-  .set('siirto', 'online')
-  .set('fellowfinance', 'online')
-  .set('joustoraha', 'online')
-  .set('laskuyritykselle', 'online')
-  .set('creditcards', 'online')
+const allowedPaymentGateways = ['online-paytrail', 'online', 'offline']
 
 const checkBackendUrlExists = () => {
   if (!process.env.PAYMENT_BACKEND_URL) {
@@ -54,25 +34,48 @@ const checkBackendUrlExists = () => {
   }
 }
 
+const createPaymentMethodPartFromGateway = (gateway: string) => {
+  let paymentMethodPart = ''
+
+  switch (gateway) {
+    case 'online-paytrail':
+      paymentMethodPart = 'paytrail'
+      break
+    case 'online':
+      paymentMethodPart = 'online'
+      break
+    case 'offline':
+      paymentMethodPart = 'invoice'
+      break
+  }
+  return paymentMethodPart
+}
+
 export const createPaymentFromOrder = async (parameters: {
   order: Order
   paymentMethod: string
+  gateway: string
   paymentMethodLabel?: string
   language: string
 }): Promise<Payment> => {
-  const { order, paymentMethod, paymentMethodLabel, language } = parameters
+  const {
+    order,
+    paymentMethod,
+    paymentMethodLabel,
+    language,
+    gateway,
+  } = parameters
   if (!process.env.PAYMENT_BACKEND_URL) {
     throw new Error('No payment API backend URL set')
   }
 
-  // TODO: move validation outside, change PAYMENT_METHOD_MAP to be an object, use keyof typeof PAYMENT_METHOD_MAP in function signature
-  if (!PAYMENT_METHOD_MAP.has(paymentMethod)) {
+  if (!allowedPaymentGateways.includes(gateway)) {
     throw new PaymentValidationError(
       'payment-method-validation-failed',
-      'paymentMethod must be one of allowed payment methods'
+      'paymentMethod must be one of allowed payment gateways'
     )
   }
-  const paymentMethodPart = PAYMENT_METHOD_MAP.get(paymentMethod)
+  let paymentMethodPart = createPaymentMethodPartFromGateway(gateway)
 
   const url = `${process.env.PAYMENT_BACKEND_URL}/payment/${paymentMethodPart}/createFromOrder`
   const dto = {
@@ -453,6 +456,7 @@ export const paidPaymentExists = async (p: {
 export const createPaymentFromUnpaidOrder = async (p: {
   order: Order
   paymentMethod: string
+  gateway: string
   paymentMethodLabel?: string
   language: string
 }): Promise<Payment> => {
