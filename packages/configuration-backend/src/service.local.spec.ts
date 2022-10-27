@@ -19,7 +19,7 @@ describe('Locally test merchant values (Skipped in CI/CD)', () => {
       return
     }
     // Allows easier testing to
-    process.env.MERCHANT_EXPERIENCE_URL = 'http://host.docker.internal:8086/v1'
+    process.env.MERCHANT_API_URL = 'http://host.docker.internal:8086/v1/'
     process.env.CONFIGURATION_BACKEND_URL =
       'http://host.docker.internal:8187/serviceconfiguration'
     const res = await getMerchantValues(
@@ -31,9 +31,54 @@ describe('Locally test merchant values (Skipped in CI/CD)', () => {
 
     const orderId = 'dd8e429e-ef50-311e-ad7f-3938df96a73d'
     const orderWithNewMerchantConfigurations = await axios.get(
-      'http://localhost:8084/v1/order/' + orderId
+      'http://localhost:8084/v1/order/' + orderId,
+      {
+        headers: {
+          user: 'dummy_user',
+        },
+      }
     )
-    console.log(JSON.stringify(orderWithNewMerchantConfigurations))
+
+    console.log(
+      JSON.stringify(orderWithNewMerchantConfigurations.data.merchant)
+    )
+
+    expect(orderWithNewMerchantConfigurations.data.merchant).toEqual({
+      merchantName: 'updated',
+      merchantStreet: 'OVERRIDE:Konepajankuja 3',
+      merchantZip: 'OVERRIDE:00510',
+      merchantCity: 'OVERRIDE:Helsinki',
+      merchantEmail: 'OVERRIDE:venepaikkavaraukset@hel.fi',
+      merchantPhone: 'OVERRIDE:09 310 87900',
+      merchantBusinessId: 'OVERRIDE:0201256-6',
+      merchantUrl: 'OVERRIDE:https://venepaikka.test.kuva.hel.ninja/fi/',
+      merchantTermsOfServiceUrl:
+        'OVERRIDE:https://venepaikka.test.kuva.hel.ninja/traileriehdot',
+    })
+
+    const orderWithNewMerchantAdmin = await axios.get(
+      'http://localhost:8084/v1/order/admin' + orderId,
+      {
+        headers: {
+          user: 'dummy_user',
+        },
+      }
+    )
+
+    console.log(JSON.stringify(orderWithNewMerchantAdmin.data.merchant))
+
+    expect(orderWithNewMerchantAdmin.data.merchant).toEqual({
+      merchantName: 'updated',
+      merchantStreet: 'OVERRIDE:Konepajankuja 3',
+      merchantZip: 'OVERRIDE:00510',
+      merchantCity: 'OVERRIDE:Helsinki',
+      merchantEmail: 'OVERRIDE:venepaikkavaraukset@hel.fi',
+      merchantPhone: 'OVERRIDE:09 310 87900',
+      merchantBusinessId: 'OVERRIDE:0201256-6',
+      merchantUrl: 'OVERRIDE:https://venepaikka.test.kuva.hel.ninja/fi/',
+      merchantTermsOfServiceUrl:
+        'OVERRIDE:https://venepaikka.test.kuva.hel.ninja/traileriehdot',
+    })
   })
 
   it('Should get service configurations for namespace', async () => {
@@ -46,7 +91,7 @@ describe('Locally test merchant values (Skipped in CI/CD)', () => {
       )
       return
     }
-    process.env.MERCHANT_EXPERIENCE_URL = 'http://host.docker.internal:8086/v1'
+    process.env.MERCHANT_API_URL = 'http://host.docker.internal:8086/v1/'
     process.env.CONFIGURATION_BACKEND_URL =
       'http://host.docker.internal:8187/serviceconfiguration'
 
