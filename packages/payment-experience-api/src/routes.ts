@@ -10,6 +10,7 @@ import { GetPaymentAdminController } from './api/getPaymentAdminController'
 import { withAuthentication } from '@verkkokauppa/auth-helsinki-profile'
 import { SubscriptionTokenizeController } from './api/subscriptionTokenizeController'
 import { SendReceiptPaymentAdminInternalController } from './api/sendReceiptPaymentAdminInternalController'
+import { PaytrailOnlinePaymentReturnController } from './api/paytrailOnlinePaymentReturnController'
 
 const createPaymentController = new (withAuthentication(
   CreatePaymentController
@@ -18,6 +19,7 @@ const getPaymentMethodListCtrl = new (withAuthentication(
   GetPaymentMethodListController
 ))()
 const onlinePaymentReturnController = new OnlinePaymentReturnController()
+const paytrailOnlinePaymentReturnController = new PaytrailOnlinePaymentReturnController()
 const sendReceiptPaymentAdminInternalController = new SendReceiptPaymentAdminInternalController()
 const onlinePaymentNotifyController = new OnlinePaymentNotifyController()
 const getPaymentController = new (withAuthentication(GetPaymentController))()
@@ -39,6 +41,9 @@ router.get('/:orderId/paymentMethods', (req, res) =>
 )
 router.get('/onlinePayment/return', (req, res) =>
   onlinePaymentReturnController.execute(req, res)
+)
+router.get('/onlinePayment/paytrail/:status', (req, res) =>
+  paytrailOnlinePaymentReturnController.execute(req, res)
 )
 router.get('/onlinePayment/notify', (req, res) =>
   onlinePaymentNotifyController.execute(req, res)
