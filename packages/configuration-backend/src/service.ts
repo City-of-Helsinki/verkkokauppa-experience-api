@@ -298,8 +298,8 @@ export const getMerchantValues = async (
   if (!namespace) {
     throw new Error('Namespace was null/empty')
   }
-
-  const url = `${process.env.MERCHANT_API_URL}merchant/${namespace}/${merchantId}`
+  // Route is /merchant/:namespace/:merchantId
+  const url = `${process.env.MERCHANT_API_URL}${namespace}/${merchantId}`
 
   try {
     const res = await axios.get<ServiceConfiguration>(url)
