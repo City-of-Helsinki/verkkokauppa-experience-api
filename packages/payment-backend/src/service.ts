@@ -283,7 +283,7 @@ export const checkPaytrailReturnUrl = async (p: {
     throw new Error('No payment API backend URL set')
   }
 
-  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/online/paytrail/check-return-url`
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/paytrail/check-return-url`
 
   try {
     const result = await axios.get<PaytrailStatus>(url, {

@@ -42,7 +42,7 @@ router.get('/:orderId/paymentMethods', (req, res) =>
 router.get('/onlinePayment/return', (req, res) =>
   onlinePaymentReturnController.execute(req, res)
 )
-router.get('/onlinePayment/paytrail/:status', (req, res) =>
+router.get('/paytrailOnlinePayment/paytrail/:status', (req, res) =>
   paytrailOnlinePaymentReturnController.execute(req, res)
 )
 router.get('/onlinePayment/notify', (req, res) =>
