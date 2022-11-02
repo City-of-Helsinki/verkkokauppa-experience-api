@@ -4,11 +4,13 @@ import type {
   Payment,
   PaymentFilter,
   PaymentMethod,
+  PaytrailStatus,
   VismaPayResponse,
   VismaStatus,
 } from './types'
 import type { ParsedQs } from 'qs'
 import {
+  CheckPaytrailReturnUrlFailure,
   CheckVismaReturnUrlFailure,
   CreatePaymentFromOrderFailure,
   GetPaymentForOrderFailure,
@@ -270,6 +272,26 @@ export const checkVismaReturnUrl = async (p: {
     return result.data
   } catch (e) {
     throw new CheckVismaReturnUrlFailure(e)
+  }
+}
+
+export const checkPaytrailReturnUrl = async (p: {
+  params: ParsedQs
+}): Promise<PaytrailStatus> => {
+  const { params } = p
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/paytrail/check-return-url`
+
+  try {
+    const result = await axios.get<PaytrailStatus>(url, {
+      params,
+    })
+    return result.data
+  } catch (e) {
+    throw new CheckPaytrailReturnUrlFailure(e)
   }
 }
 
