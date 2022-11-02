@@ -2,7 +2,7 @@ import { sendOrderConfirmationEmailToCustomer } from '@verkkokauppa/message-back
 import { getPaymentForOrder, Order } from '@verkkokauppa/payment-backend'
 import { ExperienceFailure, logger } from '@verkkokauppa/core'
 import { getMerchantDetailsForOrder } from '@verkkokauppa/configuration-backend'
-import { isCardRenewal } from './vismaPay'
+import { isCardRenewal } from './paymentReturnService'
 
 export const sendReceipt = async (order: Order) => {
   const payments = await getPaymentForOrder(order)
@@ -29,12 +29,12 @@ export const sendReceipt = async (order: Order) => {
 }
 
 export const sendReceiptToCustomer = async (
-  vismaStatus: any,
+  paymentReturnStatus: any,
   orderId: string,
   order: any
 ) => {
   // Send email only when payment is paid and not an card renewal.
-  if (vismaStatus.paymentPaid && !isCardRenewal(vismaStatus)) {
+  if (paymentReturnStatus.paymentPaid && !isCardRenewal(paymentReturnStatus)) {
     logger.info(`Send receipt for order ${orderId}`)
     try {
       await sendReceipt(order)

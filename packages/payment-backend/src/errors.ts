@@ -56,6 +56,16 @@ export class CheckVismaReturnUrlFailure extends ExperienceFailure {
   }
 }
 
+export class CheckPaytrailReturnUrlFailure extends ExperienceFailure {
+  constructor(source: Error) {
+    super({
+      code: 'failed-to-check-paytrail-return-url',
+      message: 'Failed to check paytrail return url',
+      source,
+    })
+  }
+}
+
 export class GetPaymentUrlFailure extends ExperienceFailure {
   constructor(source: Error) {
     super({
