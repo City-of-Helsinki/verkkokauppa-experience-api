@@ -28,7 +28,7 @@ export class PaytrailOnlinePaymentNotifyController extends AbstractController {
     logger.info('Paytrail online payment notify controller called')
 
     if (!orderId) {
-      logger.error('No orderId specified')
+      logger.error('Paytrail: No orderId specified')
       throw new OrderNotFoundError()
     }
     logger.debug(
@@ -36,15 +36,15 @@ export class PaytrailOnlinePaymentNotifyController extends AbstractController {
         paytrailStatus
       )}`
     )
-    logger.info(`Load order ${orderId} from payment callback`)
+    logger.info(`Load paytrail order ${orderId} from payment callback`)
     const order = await getOrderAdmin({ orderId })
-    logger.info(`Load product accountings for order ${orderId}`)
+    logger.info(`Load paytrail product accountings for order ${orderId}`)
     const productAccountings = await getProductAccountingBatch({
       productIds: order.items.map((item) => item.productId),
     })
     if (paytrailStatus.paymentPaid) {
       logger.info(
-        `Create accounting entry for order ${orderId} with accountings ${JSON.stringify(
+        `Create accounting entry for paytrail order ${orderId} with accountings ${JSON.stringify(
           productAccountings
         )}`
       )
