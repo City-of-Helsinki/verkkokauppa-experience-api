@@ -84,6 +84,7 @@ export interface Order {
   status?: string
   subscriptionId?: string
   type: OrderType
+  lastValidPurchaseDateTime?: Date
 }
 
 export interface OrderBackendResponse {
@@ -99,6 +100,7 @@ export interface OrderBackendResponse {
   type: OrderType
   subscriptionId?: string
   invoice?: OrderInvoice
+  lastValidPurchaseDateTime?: Date
 }
 
 export type OrderWithItemsBackendResponse = {
