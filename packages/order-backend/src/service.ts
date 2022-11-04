@@ -30,8 +30,9 @@ import { ExperienceFailure } from '@verkkokauppa/core'
 export const createOrder = async (p: {
   namespace: string
   user: string
+  lastValidPurchaseDateTime?: Date
 }): Promise<Order> => {
-  const { namespace, user } = p
+  const { namespace, user, lastValidPurchaseDateTime } = p
   if (!process.env.ORDER_BACKEND_URL) {
     throw new Error('No order backend URL set')
   }
@@ -41,6 +42,7 @@ export const createOrder = async (p: {
       params: {
         namespace,
         user,
+        lastValidPurchaseDateTime,
       },
     })
     return transFormBackendOrder(result.data)
@@ -57,8 +59,18 @@ export const createOrderWithItems = async (p: {
   priceTotal: string
   items: OrderItemRequest[]
   customer: OrderCustomer
+  lastValidPurchaseDateTime?: Date
 }): Promise<Order> => {
-  const { namespace, user, customer, items, priceNet, priceVat, priceTotal } = p
+  const {
+    namespace,
+    user,
+    customer,
+    items,
+    priceNet,
+    priceVat,
+    priceTotal,
+    lastValidPurchaseDateTime,
+  } = p
   if (!process.env.ORDER_BACKEND_URL) {
     throw new Error('No order backend URL set')
   }
@@ -73,6 +85,7 @@ export const createOrderWithItems = async (p: {
       priceNet: priceNet.toString(),
       priceVat: priceVat.toString(),
       priceTotal: priceTotal.toString(),
+      lastValidPurchaseDateTime,
     },
     items,
   }
@@ -295,6 +308,7 @@ export const transFormBackendOrder = (
       type,
       subscriptionId,
       invoice,
+      lastValidPurchaseDateTime,
     },
     items,
   } = p
@@ -323,6 +337,7 @@ export const transFormBackendOrder = (
     receiptUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}/receipt?user=${user}`,
     loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${orderId}`,
     updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}/update-card?user=${user}`,
+    lastValidPurchaseDateTime,
   }
   if (priceNet && priceVat && priceTotal) {
     data = {
