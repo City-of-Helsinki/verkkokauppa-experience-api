@@ -3,7 +3,6 @@ import type { Response } from 'express'
 import {
   checkLastValidPurchaseDateTime,
   confirmOrder,
-  getOrder,
 } from '@verkkokauppa/order-backend'
 import {
   createPaymentFromUnpaidOrder,
@@ -42,10 +41,8 @@ export class ConfirmAndCreatePayment extends AbstractController<
       headers: { user },
     } = req
 
-    const orderForCheck = await getOrder({ orderId, user })
-    checkLastValidPurchaseDateTime(orderForCheck.lastValidPurchaseDateTime)
-
     const order = await confirmOrder({ orderId, user })
+    checkLastValidPurchaseDateTime(order.lastValidPurchaseDateTime)
     const orderTotals = calculateTotalsFromItems(order)
     const merchantId = parseMerchantIdFromFirstOrderItem(order)
 
