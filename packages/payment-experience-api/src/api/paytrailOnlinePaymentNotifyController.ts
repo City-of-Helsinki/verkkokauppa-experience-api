@@ -35,11 +35,16 @@ export class PaytrailOnlinePaymentNotifyController extends AbstractController {
 
     if (!merchantId) {
       logger.error('Paytrail: No merchantId found from order')
-      throw new OrderNotFoundError()
+      throw new ExperienceError({
+        code: 'merchant-id-not-found',
+        message: 'No merchantId found from order.',
+        responseStatus: StatusCode.NotFound,
+        logLevel: 'info',
+      })
     }
     const paytrailStatus = await checkPaytrailReturnUrl({
       params: query,
-      merchantId,
+      merchantId: merchantId,
     })
 
     logger.info('Paytrail online payment notify controller called')
