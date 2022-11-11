@@ -164,6 +164,17 @@ describe('Test Create Order', () => {
       loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
     })
   })
+  it('Should throw error with given expired lastValidPurchaseDateTime', async () => {
+    process.env.ORDER_BACKEND_URL = 'test.dev.hel'
+    process.env.CHECKOUT_BASE_URL = 'https://checkout.dev.hel/'
+    await expect(
+      createOrder({
+        namespace: 'testNameSpace',
+        user: 'test@test.dev.hel',
+        lastValidPurchaseDateTime: new Date('2020-10-10T15:15:30.001Z'),
+      })
+    ).rejects.toThrow('forbidden-request')
+  })
 })
 
 describe('Test Cancel Order', () => {
