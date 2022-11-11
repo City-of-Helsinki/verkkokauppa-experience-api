@@ -1,4 +1,9 @@
-import { AbstractController, logger } from '@verkkokauppa/core'
+import {
+  AbstractController,
+  ExperienceError,
+  logger,
+  StatusCode,
+} from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
 import { URL } from 'url'
 import { getOrderAdmin } from '@verkkokauppa/order-backend'
@@ -16,6 +21,7 @@ import {
   isAuthorized,
   isCardRenewal,
 } from '../lib/paymentReturnService'
+import { parseMerchantIdFromFirstOrderItem } from '@verkkokauppa/configuration-backend'
 
 export class PaytrailOnlinePaymentReturnController extends AbstractController {
   protected readonly requestSchema = null
@@ -39,8 +45,24 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
       )
     }
 
+    const order = await getOrderAdmin({ orderId })
+    const merchantId = parseMerchantIdFromFirstOrderItem(order)
+
+    if (!merchantId) {
+      logger.error('Paytrail: No merchantId found from order')
+      throw new ExperienceError({
+        code: 'merchant-id-not-found',
+        message: 'No merchantId found from order.',
+        responseStatus: StatusCode.NotFound,
+        logLevel: 'info',
+      })
+    }
+
     try {
-      const paytrailStatus = await checkPaytrailReturnUrl({ params: query })
+      const paytrailStatus = await checkPaytrailReturnUrl({
+        params: query,
+        merchantId: merchantId,
+      })
       logger.debug(
         `PaytrailStatus for order ${orderId}: ${JSON.stringify(paytrailStatus)}`
       )
@@ -54,7 +76,6 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
         )
       }
 
-      const order = await getOrderAdmin({ orderId })
       const redirectUrl = await createUserRedirectUrl({
         order,
         paymentReturnStatus: paytrailStatus,
