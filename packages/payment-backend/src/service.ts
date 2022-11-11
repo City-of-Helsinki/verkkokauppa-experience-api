@@ -277,8 +277,9 @@ export const checkVismaReturnUrl = async (p: {
 
 export const checkPaytrailReturnUrl = async (p: {
   params: ParsedQs
+  merchantId: string
 }): Promise<PaytrailStatus> => {
-  const { params } = p
+  const { params, merchantId } = p
   if (!process.env.PAYMENT_BACKEND_URL) {
     throw new Error('No payment API backend URL set')
   }
@@ -287,7 +288,10 @@ export const checkPaytrailReturnUrl = async (p: {
 
   try {
     const result = await axios.get<PaytrailStatus>(url, {
-      params,
+      params: {
+        ...params,
+        merchantId,
+      },
     })
     return result.data
   } catch (e) {
