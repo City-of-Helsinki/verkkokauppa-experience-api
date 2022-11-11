@@ -25,7 +25,7 @@ import {
   SetOrderTotalsFailure,
   SubscriptionNotFoundError,
 } from './errors'
-import { ExperienceFailure } from '@verkkokauppa/core'
+import { ExperienceFailure, ForbiddenError } from '@verkkokauppa/core'
 
 export const createOrder = async (p: {
   namespace: string
@@ -36,6 +36,9 @@ export const createOrder = async (p: {
   if (!process.env.ORDER_BACKEND_URL) {
     throw new Error('No order backend URL set')
   }
+
+  checkLastValidPurchaseDateTime(lastValidPurchaseDateTime)
+
   const url = `${process.env.ORDER_BACKEND_URL}/order/create`
   try {
     const result = await axios.get<OrderWithItemsBackendResponse>(url, {
@@ -447,5 +450,18 @@ export const getOrdersByUserAdmin = async (p: {
       message: `Failed to get orders for user ${userId}`,
       source: e,
     })
+  }
+}
+
+export const checkLastValidPurchaseDateTime = (
+  lastValidPurchaseDateTime: Date | undefined
+): void => {
+  let currentDateTime = new Date()
+
+  if (
+    lastValidPurchaseDateTime !== undefined &&
+    lastValidPurchaseDateTime < currentDateTime
+  ) {
+    throw new ForbiddenError('Optional lastValidPurchaseDateTime is expired')
   }
 }

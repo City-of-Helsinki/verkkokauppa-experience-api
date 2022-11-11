@@ -1,11 +1,10 @@
-import {
-  AbstractController,
-  Data,
-  ForbiddenError,
-  ValidatedRequest,
-} from '@verkkokauppa/core'
+import { AbstractController, Data, ValidatedRequest } from '@verkkokauppa/core'
 import type { Response } from 'express'
-import { getOrder, OrderItemRequest } from '@verkkokauppa/order-backend'
+import {
+  checkLastValidPurchaseDateTime,
+  getOrder,
+  OrderItemRequest,
+} from '@verkkokauppa/order-backend'
 import {
   createPaymentFromUnpaidOrder,
   getPaymentMethodList,
@@ -45,16 +44,7 @@ export class CreatePaymentController extends AbstractController<
 
     const order = await getOrder({ orderId, user })
 
-    let currentDateTime = new Date()
-
-    if (
-      order.lastValidPurchaseDateTime !== undefined &&
-      order.lastValidPurchaseDateTime < currentDateTime
-    ) {
-      throw new ForbiddenError(
-        'Cannot create payment as lastValidPurchaseDateTime has expired'
-      )
-    }
+    checkLastValidPurchaseDateTime(order.lastValidPurchaseDateTime)
 
     const orderTotal = this.calculateOrderTotal(order)
     const merchantId = parseMerchantIdFromFirstOrderItem(order)

@@ -1,6 +1,10 @@
 import { AbstractController, Data, ValidatedRequest } from '@verkkokauppa/core'
 import type { Response } from 'express'
-import { confirmOrder } from '@verkkokauppa/order-backend'
+import {
+  checkLastValidPurchaseDateTime,
+  confirmOrder,
+  getOrder,
+} from '@verkkokauppa/order-backend'
 import {
   createPaymentFromUnpaidOrder,
   getPaymentMethodList,
@@ -37,6 +41,9 @@ export class ConfirmAndCreatePayment extends AbstractController<
       body: { paymentMethod, language },
       headers: { user },
     } = req
+
+    const orderForCheck = await getOrder({ orderId, user })
+    checkLastValidPurchaseDateTime(orderForCheck.lastValidPurchaseDateTime)
 
     const order = await confirmOrder({ orderId, user })
     const orderTotals = calculateTotalsFromItems(order)

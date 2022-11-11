@@ -7,6 +7,7 @@ import {
 } from '@verkkokauppa/core'
 import type { Response } from 'express'
 import {
+  checkLastValidPurchaseDateTime,
   createOrder,
   createOrderWithItems,
   Order,
@@ -44,16 +45,8 @@ export class CreateController extends AbstractController<typeof requestSchema> {
     res: Response
   ): Promise<any> {
     const { items, customer, lastValidPurchaseDateTime } = req.body
-    let currentDateTime = new Date()
 
-    if (
-      lastValidPurchaseDateTime !== undefined &&
-      lastValidPurchaseDateTime < currentDateTime
-    ) {
-      throw new RequestValidationError(
-        'body.lastValidPurchaseDateTime cannot be earlier than current time'
-      )
-    }
+    checkLastValidPurchaseDateTime(lastValidPurchaseDateTime)
 
     if (items && items.length > 0) {
       if (customer === undefined) {
