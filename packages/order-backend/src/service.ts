@@ -455,7 +455,7 @@ export const getOrdersByUserAdmin = async (p: {
 
 export const checkLastValidPurchaseDateTime = (
   lastValidPurchaseDateTime: Date | undefined
-): void => {
+): Date => {
   let currentDateTime = new Date()
 
   if (
@@ -464,4 +464,5 @@ export const checkLastValidPurchaseDateTime = (
   ) {
     throw new ForbiddenError('Optional lastValidPurchaseDateTime is expired')
   }
+  return currentDateTime
 }

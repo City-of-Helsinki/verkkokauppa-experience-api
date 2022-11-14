@@ -8,11 +8,27 @@ import {
   setOrderTotals,
   createAccountingEntryForOrder,
   setInvoiceToOrder,
+  checkLastValidPurchaseDateTime,
 } from './index'
 import axios from 'axios'
-
+import { ExperienceError } from '@verkkokauppa/core'
+import type { MockDateSetup } from './test/test-utils'
+import { setupMockDate } from './test/test-utils'
+const timezonedDate = require('timezoned-date')
 jest.mock('axios')
 const axiosMock = axios as jest.Mocked<typeof axios>
+
+class NoErrorThrownError extends Error {}
+
+const getError = async <TError>(call: () => unknown): Promise<TError> => {
+  try {
+    await call()
+
+    throw new NoErrorThrownError()
+  } catch (error: unknown) {
+    return error as TError
+  }
+}
 
 const orderMock = {
   orderId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
@@ -64,6 +80,35 @@ const orderInvoiceMock = {
     city: 'city',
     ovtId: 'ovtId',
   },
+}
+
+let mockDate: MockDateSetup
+
+beforeEach(() => {
+  mockDate = setupMockDate()
+})
+
+afterEach(() => {
+  mockDate.reset()
+})
+
+/**
+ * @param timeZoneMultiplier
+ * @param isoDate
+ */
+function getDateWithTimeZoneOffset(
+  timeZoneMultiplier: number,
+  isoDate: string
+) {
+  const beforeMock = new Date()
+  console.log(`before UTC${beforeMock.getTimezoneOffset() / 60}`)
+  mockDate.set({
+    offset: 60 * timeZoneMultiplier,
+    isoDate: isoDate,
+  })
+  const dateUTC0 = new Date()
+  console.log(`after UTC${dateUTC0.getTimezoneOffset() / 60}`)
+  return dateUTC0
 }
 
 describe('Test Create Order', () => {
@@ -164,16 +209,96 @@ describe('Test Create Order', () => {
       loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
     })
   })
-  it('Should throw error with given expired lastValidPurchaseDateTime', async () => {
+  it('Should throw error with given expired lastValidPurchaseDateTime on order creation', async () => {
     process.env.ORDER_BACKEND_URL = 'test.dev.hel'
     process.env.CHECKOUT_BASE_URL = 'https://checkout.dev.hel/'
+    const lastValidPurchaseDate = new Date()
+    const minusDays = 5
+    lastValidPurchaseDate.setDate(lastValidPurchaseDate.getDate() - minusDays)
+
     await expect(
       createOrder({
         namespace: 'testNameSpace',
         user: 'test@test.dev.hel',
-        lastValidPurchaseDateTime: new Date('2020-10-10T15:15:30.001Z'),
+        lastValidPurchaseDateTime: lastValidPurchaseDate,
       })
     ).rejects.toThrow('forbidden-request')
+  })
+
+  it('Should throw error with given expired lastValidPurchaseDateTime on checkLastValidPurchaseDateTime function call', async () => {
+    process.env.ORDER_BACKEND_URL = 'test.dev.hel'
+    process.env.CHECKOUT_BASE_URL = 'https://checkout.dev.hel/'
+    const lastValidPurchaseDate = new Date()
+    const minusDays = 5
+    lastValidPurchaseDate.setDate(lastValidPurchaseDate.getDate() - minusDays)
+
+    const error = await getError(async () =>
+      checkLastValidPurchaseDateTime(lastValidPurchaseDate)
+    )
+
+    // check that the returned error wasn't that no error was thrown
+    expect(error).not.toBeInstanceOf(NoErrorThrownError)
+    expect(error).toBeInstanceOf(ExperienceError)
+
+    expect(error).toHaveProperty('definition', {
+      code: 'forbidden-request',
+      message: 'Optional lastValidPurchaseDateTime is expired',
+      responseStatus: 403,
+      logLevel: 'debug',
+    })
+  })
+
+  it('Should not to throw error with given expired lastValidPurchaseDateTime on checkLastValidPurchaseDateTime function call', async () => {
+    const lastValidPurchaseDate = new Date()
+    console.log('Time now %s', JSON.stringify(lastValidPurchaseDate))
+    const plusDays = 1
+    lastValidPurchaseDate.setDate(lastValidPurchaseDate.getDate() + plusDays)
+    console.log('Time plus days %s', JSON.stringify(lastValidPurchaseDate))
+    const checkDateTime = checkLastValidPurchaseDateTime(lastValidPurchaseDate)
+    console.log('checkDateTime %s', JSON.stringify(checkDateTime))
+    expect(lastValidPurchaseDate > checkDateTime).toBe(true)
+  })
+
+  it('Should not to throw error if lastValidPurchaseDateTime is undefined', async () => {
+    const startCheckTime = new Date()
+    const minusSeconds = 1
+    startCheckTime.setSeconds(startCheckTime.getSeconds() - minusSeconds)
+    const checkDateTime = checkLastValidPurchaseDateTime(undefined)
+    console.log('startCheckTime %s', JSON.stringify(startCheckTime))
+    console.log('checkDateTime %s', JSON.stringify(checkDateTime))
+    expect(checkDateTime > startCheckTime).toBe(true)
+  })
+
+  it('Timezone tests', async () => {
+    const startCheckTime = new Date()
+    const minusSeconds = 1
+    startCheckTime.setSeconds(startCheckTime.getSeconds() - minusSeconds)
+    const checkDateTime = checkLastValidPurchaseDateTime(undefined)
+    console.log('startCheckTime %s', JSON.stringify(startCheckTime))
+    console.log('checkDateTime %s', JSON.stringify(checkDateTime))
+
+    console.log(`Current UTC${startCheckTime.getTimezoneOffset() / 60}`)
+    // UTC-0
+    const timeZone = 0
+    const dateUTC0 = getDateWithTimeZoneOffset(
+      timeZone,
+      '2022-08-10T08:10:20.123Z'
+    )
+
+    console.log('dateUTC0 as ISO %s', JSON.stringify(dateUTC0.toISOString()))
+
+    console.log(
+      'dateUTC0 as ISO %s',
+      dateUTC0.toLocaleString('en-US', {
+        timeZoneName: 'long',
+      })
+    )
+    // UTC-2
+    expect(startCheckTime.getTimezoneOffset()).toBe(-120)
+    // UTC-10
+    expect(dateUTC0.getTimezoneOffset()).toBe(0)
+
+    expect(checkDateTime > startCheckTime).toBe(true)
   })
 })
 
