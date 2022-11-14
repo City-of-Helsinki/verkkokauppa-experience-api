@@ -269,7 +269,7 @@ describe('Test Create Order', () => {
     expect(checkDateTime > startCheckTime).toBe(true)
   })
 
-  it('Timezone tests', async () => {
+  it('Timezone tests (TODO what does mikko want to test?)', async () => {
     const startCheckTime = new Date()
     const minusSeconds = 1
     startCheckTime.setSeconds(startCheckTime.getSeconds() - minusSeconds)
