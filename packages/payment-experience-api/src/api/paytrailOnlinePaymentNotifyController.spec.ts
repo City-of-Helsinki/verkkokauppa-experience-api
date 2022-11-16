@@ -35,6 +35,7 @@ const orderBackendResponseMock = {
   items: [
     {
       orderId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
+      merchantId: 'merchantId',
       orderItemId: '19699acf-b0a3-440f-818f-e582825fa3a7',
       productId: 'dummy-product',
       quantity: 1,
@@ -183,6 +184,7 @@ describe('Test paytrail notify controller', () => {
         'checkout-provider': 'nordea',
         signature:
           'b2d3ecdda2c04563a4638fcade3d4e77dfdc58829b429ad2c2cb422d0fc64080',
+        merchantId: 'merchantId',
       },
       httpVersion: 'HTTP/:1.1',
     } as any
@@ -343,6 +345,7 @@ describe('Test paytrail notify controller', () => {
         'checkout-provider': 'nordea',
         signature:
           'b2d3ecdda2c04563a4638fcade3d4e77dfdc58829b429ad2c2cb422d0fc64080',
+        merchantId: 'merchantId',
       },
       httpVersion: 'HTTP/:1.1',
     } as any
