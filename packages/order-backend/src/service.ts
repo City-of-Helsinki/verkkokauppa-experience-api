@@ -340,7 +340,8 @@ export const transFormBackendOrder = (
     receiptUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}/receipt?user=${user}`,
     loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${orderId}`,
     updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}/update-card?user=${user}`,
-    lastValidPurchaseDateTime,
+    // converts received Java localDateTime formatted string to compatible coordinated universal time
+    lastValidPurchaseDateTime: new Date(`${lastValidPurchaseDateTime}`),
   }
   if (priceNet && priceVat && priceTotal) {
     data = {
