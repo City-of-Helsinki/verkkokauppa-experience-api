@@ -207,7 +207,7 @@ describe('Test Create Payment for Order', () => {
       paymentMethod: 'nordea',
       paymentMethodLabel: 'Nordea',
       gateway: 'online-paytrail',
-      merchantId: '',
+      merchantId: 'merchantId',
     })
     expect(axiosMock.post).toHaveBeenCalledTimes(1)
     expect(axiosMock.post?.mock?.calls[0]![0]).toEqual(
@@ -217,6 +217,7 @@ describe('Test Create Payment for Order', () => {
       paymentMethod: 'nordea',
       paymentMethodLabel: 'Nordea',
       language: 'fi',
+      merchantId: 'merchantId',
       order: {
         order: {
           orderId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
