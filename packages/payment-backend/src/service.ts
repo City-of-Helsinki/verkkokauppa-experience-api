@@ -317,12 +317,12 @@ export const getPaymentUrl = async (p: {
   user: string
   gateway: string
 }): Promise<string> => {
-  const { namespace, orderId, user: userId } = p
+  const { namespace, orderId, user: userId, gateway } = p
   if (!process.env.PAYMENT_BACKEND_URL) {
     throw new Error('No payment API backend URL set')
   }
 
-  let paymentMethodPart = createPaymentMethodPartFromGateway(p.gateway)
+  let paymentMethodPart = createPaymentMethodPartFromGateway(gateway)
   const url = `${process.env.PAYMENT_BACKEND_URL}/payment/${paymentMethodPart}/url`
   try {
     const result = await axios.get<string>(url, {
