@@ -24,9 +24,13 @@ import {
   PaymentValidationError,
 } from './errors'
 import { ExperienceFailure } from '@verkkokauppa/core'
-import { ReferenceType } from './enums'
+import { PaymentGateway, ReferenceType } from './enums'
 
-const allowedPaymentGateways = ['online-paytrail', 'online', 'offline']
+const allowedPaymentGateways = [
+  PaymentGateway.PAYTRAIL.toString(),
+  PaymentGateway.VISMA.toString(),
+  PaymentGateway.INVOICE.toString(),
+]
 
 const checkBackendUrlExists = () => {
   if (!process.env.PAYMENT_BACKEND_URL) {
@@ -34,7 +38,7 @@ const checkBackendUrlExists = () => {
   }
 }
 
-const createPaymentMethodPartFromGateway = (gateway: string) => {
+export const createPaymentMethodPartFromGateway = (gateway: string) => {
   let paymentMethodPart = ''
 
   switch (gateway) {
@@ -57,6 +61,7 @@ export const createPaymentFromOrder = async (parameters: {
   gateway: string
   paymentMethodLabel?: string
   language: string
+  merchantId: string | null
 }): Promise<Payment> => {
   const {
     order,
@@ -64,6 +69,7 @@ export const createPaymentFromOrder = async (parameters: {
     paymentMethodLabel,
     language,
     gateway,
+    merchantId,
   } = parameters
   if (!process.env.PAYMENT_BACKEND_URL) {
     throw new Error('No payment API backend URL set')
@@ -91,6 +97,7 @@ export const createPaymentFromOrder = async (parameters: {
       },
       items: order.items,
     },
+    merchantId,
   }
   try {
     const result = await axios.post<Payment>(url, dto)
@@ -247,9 +254,18 @@ export const getPaymentMethodList = async (parameters: {
 
   const methods = process.env.FILTERED_PAYMENT_METHODS || 'nordeab2b'
   const globallyFilteredPaymentMethods = methods.split(',')
+  // TODO remove Paytrail filter when we are disabling payments via visma pay
+  const gateways =
+    process.env.FILTERED_PAYMENT_GATEWAYS ||
+    `${PaymentGateway.PAYTRAIL},${PaymentGateway.INVOICE}`
+
+  const globallyFilteredPaymentGateways = gateways.split(',')
 
   filteredPaymentFilters = filteredPaymentFilters.filter((method) => {
-    return !globallyFilteredPaymentMethods.includes(method.code.toLowerCase())
+    return (
+      !globallyFilteredPaymentMethods.includes(method.code.toLowerCase()) ||
+      !globallyFilteredPaymentGateways.includes(method.gateway.toLowerCase())
+    )
   })
 
   return filteredPaymentFilters
@@ -299,14 +315,15 @@ export const getPaymentUrl = async (p: {
   namespace: string
   orderId: string
   user: string
+  gateway: string
 }): Promise<string> => {
   const { namespace, orderId, user: userId } = p
   if (!process.env.PAYMENT_BACKEND_URL) {
     throw new Error('No payment API backend URL set')
   }
 
-  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/online/url`
-
+  let paymentMethodPart = createPaymentMethodPartFromGateway(p.gateway)
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/${paymentMethodPart}/url`
   try {
     const result = await axios.get<string>(url, {
       params: { namespace, orderId, userId },
@@ -459,6 +476,7 @@ export const createPaymentFromUnpaidOrder = async (p: {
   gateway: string
   paymentMethodLabel?: string
   language: string
+  merchantId: string | null
 }): Promise<Payment> => {
   if (await paidPaymentExists(p.order)) {
     throw new PaymentValidationError(

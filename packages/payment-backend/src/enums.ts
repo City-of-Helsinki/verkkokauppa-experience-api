@@ -14,3 +14,9 @@ export enum ReferenceType {
   ORDER = 'order',
   MERCHANT = 'merchant',
 }
+
+export enum PaymentGateway {
+  PAYTRAIL = 'online-paytrail',
+  INVOICE = 'offline',
+  VISMA = 'online',
+}
