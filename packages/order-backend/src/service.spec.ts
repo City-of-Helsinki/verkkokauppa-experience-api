@@ -14,7 +14,6 @@ import axios from 'axios'
 import { ExperienceError } from '@verkkokauppa/core'
 import type { MockDateSetup } from './test/test-utils'
 import { setupMockDate } from './test/test-utils'
-const timezonedDate = require('timezoned-date')
 jest.mock('axios')
 const axiosMock = axios as jest.Mocked<typeof axios>
 
@@ -101,14 +100,14 @@ function getDateWithTimeZoneOffset(
   isoDate: string
 ) {
   const beforeMock = new Date()
-  console.log(`before UTC${beforeMock.getTimezoneOffset() / 60}`)
+  console.log(`before mock${beforeMock.getTimezoneOffset() / 60}`)
   mockDate.set({
     offset: 60 * timeZoneMultiplier,
     isoDate: isoDate,
   })
-  const dateUTC0 = new Date()
-  console.log(`after UTC${dateUTC0.getTimezoneOffset() / 60}`)
-  return dateUTC0
+  const afterMock = new Date()
+  console.log(`after mock${afterMock.getTimezoneOffset() / 60}`)
+  return afterMock
 }
 
 describe('Test Create Order', () => {
@@ -248,7 +247,7 @@ describe('Test Create Order', () => {
     })
   })
 
-  it('Should not to throw error with given expired lastValidPurchaseDateTime on checkLastValidPurchaseDateTime function call', async () => {
+  it('Should not throw error with given expired lastValidPurchaseDateTime on checkLastValidPurchaseDateTime function call', async () => {
     const lastValidPurchaseDate = new Date()
     console.log('Time now %s', JSON.stringify(lastValidPurchaseDate))
     const plusDays = 1
@@ -259,7 +258,7 @@ describe('Test Create Order', () => {
     expect(lastValidPurchaseDate > checkDateTime).toBe(true)
   })
 
-  it('Should not to throw error if lastValidPurchaseDateTime is undefined', async () => {
+  it('Should not throw error if lastValidPurchaseDateTime is undefined', async () => {
     const startCheckTime = new Date()
     const minusSeconds = 1
     startCheckTime.setSeconds(startCheckTime.getSeconds() - minusSeconds)
@@ -269,36 +268,30 @@ describe('Test Create Order', () => {
     expect(checkDateTime > startCheckTime).toBe(true)
   })
 
-  it('Timezone tests (TODO what does mikko want to test?)', async () => {
-    const startCheckTime = new Date()
-    const minusSeconds = 1
-    startCheckTime.setSeconds(startCheckTime.getSeconds() - minusSeconds)
-    const checkDateTime = checkLastValidPurchaseDateTime(undefined)
-    console.log('startCheckTime %s', JSON.stringify(startCheckTime))
-    console.log('checkDateTime %s', JSON.stringify(checkDateTime))
+  it('Should not affect check what LastValidPurchaseDateTime offset is used', async () => {
+    const starCheckDateTime = new Date()
+    const plusSeconds = 15
+    starCheckDateTime.setSeconds(starCheckDateTime.getSeconds() + plusSeconds)
 
-    console.log(`Current UTC${startCheckTime.getTimezoneOffset() / 60}`)
-    // UTC-0
-    const timeZone = 0
+    // starCheckDateTime to UTC-0 offset and test
+    const timeZoneOffset0 = 0
     const dateUTC0 = getDateWithTimeZoneOffset(
-      timeZone,
-      '2022-08-10T08:10:20.123Z'
+      timeZoneOffset0,
+      starCheckDateTime.toString()
     )
-
-    console.log('dateUTC0 as ISO %s', JSON.stringify(dateUTC0.toISOString()))
-
-    console.log(
-      'dateUTC0 as ISO %s',
-      dateUTC0.toLocaleString('en-US', {
-        timeZoneName: 'long',
-      })
-    )
-    // UTC-2
-    expect(startCheckTime.getTimezoneOffset()).toBe(-120)
-    // UTC-10
     expect(dateUTC0.getTimezoneOffset()).toBe(0)
+    const checkDateTimeWith0 = checkLastValidPurchaseDateTime(dateUTC0)
+    expect(starCheckDateTime > checkDateTimeWith0).toBe(true)
 
-    expect(checkDateTime > startCheckTime).toBe(true)
+    // starCheckDateTime to UTC+2 offset and test
+    const timeZoneOffset2 = 2
+    const dateUTC2 = getDateWithTimeZoneOffset(
+      timeZoneOffset2,
+      starCheckDateTime.toString()
+    )
+    expect(dateUTC2.getTimezoneOffset()).toBe(-120)
+    const checkDateTimeWith2 = checkLastValidPurchaseDateTime(dateUTC2)
+    expect(starCheckDateTime > checkDateTimeWith2).toBe(true)
   })
 })
 
