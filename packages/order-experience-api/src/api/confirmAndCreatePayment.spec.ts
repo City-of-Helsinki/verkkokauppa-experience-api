@@ -20,6 +20,7 @@ const getPaymentUrlMock = require('@verkkokauppa/payment-backend').getPaymentUrl
 const orderMock = {
   orderId: 'test123',
   namespace: 'n1',
+  merchantId: null,
   items: [
     {
       productId: 'pid1',
@@ -133,6 +134,8 @@ describe('Test confirmAndCreatePayment', () => {
       paymentMethod: requestBody.paymentMethod,
       paymentMethodLabel: paymentMethodListMock[0]?.name,
       language: requestBody.language,
+      gateway: undefined,
+      merchantId: null,
     })
     expect(getPaymentUrlMock.mock.calls[0][0]).toEqual(orderMock)
   })
