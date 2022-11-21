@@ -81,7 +81,7 @@ export const createPaymentFromOrder = async (parameters: {
       'paymentMethod must be one of allowed payment gateways'
     )
   }
-  let paymentMethodPart = createPaymentMethodPartFromGateway(gateway)
+  const paymentMethodPart = createPaymentMethodPartFromGateway(gateway)
 
   const url = `${process.env.PAYMENT_BACKEND_URL}/payment/${paymentMethodPart}/createFromOrder`
   const dto = {
