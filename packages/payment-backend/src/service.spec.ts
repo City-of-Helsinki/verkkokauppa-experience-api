@@ -1,13 +1,14 @@
 import axios from 'axios'
 import {
   createPaymentFromOrder,
+  createPaymentMethodPartFromGateway,
   getPaymentForOrder,
   getPaymentStatus,
   getPaymentUrl,
   paidPaymentExists,
   savePaymentFiltersAdmin,
 } from './service'
-import { ReferenceType } from './enums'
+import { PaymentGateway, ReferenceType } from './enums'
 
 jest.mock('axios')
 const axiosMock = axios as jest.Mocked<typeof axios>
@@ -68,6 +69,7 @@ describe('Test Create Payment for Order', () => {
         paymentMethod: '',
         paymentMethodLabel: '',
         gateway: '',
+        merchantId: '',
       })
     ).rejects.toThrow('No payment API backend URL set')
   })
@@ -80,6 +82,7 @@ describe('Test Create Payment for Order', () => {
         paymentMethod: '',
         paymentMethodLabel: '',
         gateway: '',
+        merchantId: '',
       })
     ).rejects.toThrow()
   })
@@ -92,6 +95,7 @@ describe('Test Create Payment for Order', () => {
         paymentMethod: 'asd',
         paymentMethodLabel: 'Asd',
         gateway: '',
+        merchantId: '',
       })
     ).rejects.toThrow()
   })
@@ -118,6 +122,7 @@ describe('Test Create Payment for Order', () => {
       paymentMethod: 'nordea',
       paymentMethodLabel: 'Nordea',
       gateway: 'online',
+      merchantId: 'merchantId',
     })
     expect(axiosMock.post).toHaveBeenCalledTimes(1)
     expect(axiosMock.post?.mock?.calls[0]![0]).toEqual(
@@ -126,6 +131,7 @@ describe('Test Create Payment for Order', () => {
     expect(axiosMock.post?.mock?.calls[0]![1]).toEqual({
       paymentMethod: 'nordea',
       paymentMethodLabel: 'Nordea',
+      merchantId: 'merchantId',
       language: 'fi',
       order: {
         order: {
@@ -201,6 +207,7 @@ describe('Test Create Payment for Order', () => {
       paymentMethod: 'nordea',
       paymentMethodLabel: 'Nordea',
       gateway: 'online-paytrail',
+      merchantId: 'merchantId',
     })
     expect(axiosMock.post).toHaveBeenCalledTimes(1)
     expect(axiosMock.post?.mock?.calls[0]![0]).toEqual(
@@ -210,6 +217,7 @@ describe('Test Create Payment for Order', () => {
       paymentMethod: 'nordea',
       paymentMethodLabel: 'Nordea',
       language: 'fi',
+      merchantId: 'merchantId',
       order: {
         order: {
           orderId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
@@ -270,10 +278,11 @@ describe('Test Get Payment Url', () => {
         namespace: '',
         orderId: '',
         user: '',
+        gateway: '',
       })
     ).rejects.toThrow('No payment API backend URL set')
   })
-  it('Should get payment url correctly', async () => {
+  it('Should get visma payment url correctly', async () => {
     process.env.PAYMENT_BACKEND_URL = 'test.dev.hel'
     const paymentUrl = 'https://test.dev.hel/token/123'
     axiosMock.get.mockResolvedValue({ data: paymentUrl })
@@ -281,8 +290,68 @@ describe('Test Get Payment Url', () => {
       namespace: 'test',
       orderId: 'test',
       user: 'test',
+      gateway: PaymentGateway.VISMA,
     })
     expect(result).toEqual(paymentUrl)
+  })
+  it('Should get paytrail payment url correctly', async () => {
+    process.env.PAYMENT_BACKEND_URL = 'test.dev.hel'
+    const paymentUrl = 'https://pay.paytrail.com/payments/orderId'
+    // axiosMock.get.mockResolvedValue({ data: paymentUrl })
+    axiosMock.get.mockImplementation((url, data?: any) => {
+      expect(url).toContain(`/payment/paytrail/url`)
+
+      console.log(url)
+      console.log(data)
+      return Promise.resolve({ data: paymentUrl })
+    })
+
+    const result = await getPaymentUrl({
+      namespace: 'test',
+      orderId: 'test',
+      user: 'test',
+      gateway: PaymentGateway.PAYTRAIL,
+    })
+    expect(result).toEqual(paymentUrl)
+  })
+
+  it('Should get invoice payment url correctly', async () => {
+    process.env.PAYMENT_BACKEND_URL = 'test.dev.hel'
+    const paymentUrl = 'test.dev.hel/invoice'
+    // axiosMock.get.mockResolvedValue({ data: paymentUrl })
+    axiosMock.get.mockImplementation((url, data?: any) => {
+      expect(url).toContain(`/payment/invoice/url`)
+
+      console.log(url)
+      console.log(data)
+      return Promise.resolve({ data: paymentUrl })
+    })
+
+    const result = await getPaymentUrl({
+      namespace: 'test',
+      orderId: 'test',
+      user: 'test',
+      gateway: PaymentGateway.INVOICE,
+    })
+    expect(result).toEqual(paymentUrl)
+  })
+
+  it('Should create createPaymentMethodPartFromGateway correctly', async () => {
+    const vismaResult = createPaymentMethodPartFromGateway(PaymentGateway.VISMA)
+    expect(vismaResult).toEqual('online')
+
+    const paytrailResult = createPaymentMethodPartFromGateway(
+      PaymentGateway.PAYTRAIL
+    )
+    expect(paytrailResult).toEqual('paytrail')
+
+    const invoiceResult = createPaymentMethodPartFromGateway(
+      PaymentGateway.INVOICE
+    )
+    expect(invoiceResult).toEqual('invoice')
+
+    const invalidResult = createPaymentMethodPartFromGateway('not-set')
+    expect(invalidResult).toEqual('')
   })
 })
 describe('Test Get Payment Status', () => {

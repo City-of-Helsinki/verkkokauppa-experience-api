@@ -49,7 +49,9 @@ export class CreatePaymentController extends AbstractController<
       merchantId,
     })
     const currentPaymentMethod = availablePaymentMethods.find(
-      (availableMethod) => availableMethod.code === paymentMethod
+      (availableMethod) =>
+        availableMethod.code === paymentMethod &&
+        availableMethod.gateway === paymentMethodGateway
     )
     const payment = await createPaymentFromUnpaidOrder({
       order,
@@ -57,8 +59,12 @@ export class CreatePaymentController extends AbstractController<
       gateway: paymentMethodGateway,
       paymentMethodLabel: currentPaymentMethod?.name || paymentMethod,
       language,
+      merchantId,
     })
-    const paymentUrl = await getPaymentUrl(order)
+    const paymentUrl = await getPaymentUrl({
+      ...order,
+      gateway: paymentMethodGateway,
+    })
     const dto = new Data({ ...payment, paymentUrl })
 
     return this.created<any>(result, dto.serialize())
