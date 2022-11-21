@@ -50,17 +50,21 @@ export class ConfirmAndCreatePayment extends AbstractController<
       merchantId,
     })
     const currentPaymentMethod = availablePaymentMethods.find(
-      (availableMethod) => availableMethod.code === paymentMethod
+      (availableMethod) =>
+        availableMethod.code === paymentMethod &&
+        availableMethod.gateway === gateway
     )
+
     const payment = await createPaymentFromUnpaidOrder({
       order,
       paymentMethod,
       paymentMethodLabel: currentPaymentMethod?.name || paymentMethod,
       gateway,
       language,
+      merchantId,
     })
 
-    const paymentUrl = await getPaymentUrl(order)
+    const paymentUrl = await getPaymentUrl({ ...order, gateway })
 
     return this.created(
       res,
