@@ -483,7 +483,10 @@ components:
 paths:
   /:
     post:
-      description: 'Create a new order. The resulting order type depends on the input: if periodUnit and periodFrequency are present, the order is of type subscription'
+      description: |
+        Create a new order. The resulting order type depends on the input: if periodUnit and periodFrequency are present, the order is of type subscription
+        
+        Optional lastValidPurchaseDateTime can be set that determines the timeframe in which the order must be purchased. Given in ISO 8601 date time -format.
       requestBody:
         required: true
         content:
@@ -499,6 +502,10 @@ paths:
                       type: string
                     namespace:
                       type: string
+                    lastValidPurchaseDateTime:
+                      type: string
+                      format: date-time
+                      description: ISO 8601 date time format with offset from UTC
                     paymentFilters:
                       type: array
                       items:
@@ -544,7 +551,8 @@ paths:
                             $ref: '#/components/schemas/FilterType'
                           value:
                             type: string
-
+                    lastValidPurchaseDateTime:
+                      type: string
       responses:
         '201':
           description: The created order
