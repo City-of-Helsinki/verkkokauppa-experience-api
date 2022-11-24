@@ -1,4 +1,6 @@
-export const parseOrderIdFromPaytrailRedirect = (p: { query: any }) => {
+export const parseUuidFromPaytrailRedirectCheckoutStamp = (p: {
+  query: any
+}) => {
   const { query } = p
 
   const result = query['checkout-stamp']?.toString().split('_')

@@ -10,6 +10,7 @@ import type {
 } from './types'
 import type { ParsedQs } from 'qs'
 import {
+  CheckPaytrailRefundCallbackUrlFailure,
   CheckPaytrailReturnUrlFailure,
   CheckVismaReturnUrlFailure,
   CreatePaymentFromOrderFailure,
@@ -312,6 +313,30 @@ export const checkPaytrailReturnUrl = async (p: {
     return result.data
   } catch (e) {
     throw new CheckPaytrailReturnUrlFailure(e)
+  }
+}
+
+export const checkPaytrailRefundCallbackUrl = async (p: {
+  params: ParsedQs
+  merchantId: string
+}): Promise<PaytrailStatus> => {
+  const { params, merchantId } = p
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/refund/paytrail/check-refund-callback-url`
+
+  try {
+    const result = await axios.get<PaytrailStatus>(url, {
+      params: {
+        ...params,
+        merchantId,
+      },
+    })
+    return result.data
+  } catch (e) {
+    throw new CheckPaytrailRefundCallbackUrlFailure(e)
   }
 }
 

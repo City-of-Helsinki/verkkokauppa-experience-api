@@ -6,24 +6,24 @@ import {
 } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
 import { URL } from 'url'
-import { getOrderAdmin } from '@verkkokauppa/order-backend'
+import { getOrderAdmin, getRefundAdmin } from '@verkkokauppa/order-backend'
 import {
   cancelPaymentAdmin,
-  checkPaytrailReturnUrl,
+  checkPaytrailRefundCallbackUrl,
   getPaymentsForOrderAdmin,
   Order,
   PaymentStatus,
 } from '@verkkokauppa/payment-backend'
 import { sendReceiptToCustomer } from '../lib/sendEmail'
-import { parseUuidFromPaytrailRedirectCheckoutStamp } from '../lib/paytrail'
 import {
   createUserRedirectUrl,
   isAuthorized,
   isCardRenewal,
 } from '../lib/paymentReturnService'
+import { parseUuidFromPaytrailRedirectCheckoutStamp } from '../lib/paytrail'
 import { parseMerchantIdFromFirstOrderItem } from '@verkkokauppa/configuration-backend'
 
-export class PaytrailOnlinePaymentReturnController extends AbstractController {
+export class PaytrailOnlineRefundPaymentSuccessController extends AbstractController {
   protected readonly requestSchema = null
 
   protected async implementation(
@@ -32,19 +32,22 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
   ): Promise<any> {
     const { query } = request
     // Validates that base redirect url is set
-    PaytrailOnlinePaymentReturnController.checkAndCreateRedirectUrl()
-    const orderId = parseUuidFromPaytrailRedirectCheckoutStamp({ query })
+    process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'http://localhost:3000'
+    PaytrailOnlineRefundPaymentSuccessController.checkAndCreateRedirectUrl()
+    const refundId = parseUuidFromPaytrailRedirectCheckoutStamp({ query })
 
-    if (!orderId) {
+    if (!refundId) {
       logger.error(
-        'No orderId specified redirect to paytrail general failure url'
+        'No refundId specified redirect to paytrail general failure url'
       )
       return result.redirect(
         302,
-        PaytrailOnlinePaymentReturnController.getFailureRedirectUrl()
+        PaytrailOnlineRefundPaymentSuccessController.getFailureRedirectUrl()
       )
     }
 
+    const refund = await getRefundAdmin({ refundId })
+    const orderId = refund.refund.orderId
     const order = await getOrderAdmin({ orderId })
     const merchantId = parseMerchantIdFromFirstOrderItem(order)
 
@@ -59,7 +62,7 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
     }
 
     try {
-      const paytrailStatus = await checkPaytrailReturnUrl({
+      const paytrailStatus = await checkPaytrailRefundCallbackUrl({
         params: query,
         merchantId: merchantId,
       })
@@ -72,14 +75,14 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
         )
         return result.redirect(
           302,
-          PaytrailOnlinePaymentReturnController.getFailureRedirectUrl()
+          PaytrailOnlineRefundPaymentSuccessController.getFailureRedirectUrl()
         )
       }
 
       const redirectUrl = await createUserRedirectUrl({
         order,
         paymentReturnStatus: paytrailStatus,
-        redirectPaymentUrlBase: PaytrailOnlinePaymentReturnController.getRedirectUrl(),
+        redirectPaymentUrlBase: PaytrailOnlineRefundPaymentSuccessController.getRedirectUrl(),
       })
       // Function contains internal checks when to send receipt.
       await sendReceiptToCustomer(paytrailStatus, orderId, order)
@@ -92,7 +95,7 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
         if (cancelledCount != 0) {
           return result.redirect(
             302,
-            PaytrailOnlinePaymentReturnController.getCardRenewalFailureRedirectUrl(
+            PaytrailOnlineRefundPaymentSuccessController.getCardRenewalFailureRedirectUrl(
               order.orderId
             ).toString()
           )
@@ -107,7 +110,7 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
       )
       return result.redirect(
         302,
-        PaytrailOnlinePaymentReturnController.getFailureRedirectUrl().toString()
+        PaytrailOnlineRefundPaymentSuccessController.getFailureRedirectUrl().toString()
       )
     }
   }

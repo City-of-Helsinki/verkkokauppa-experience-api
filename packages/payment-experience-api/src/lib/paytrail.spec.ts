@@ -1,4 +1,4 @@
-import { parseOrderIdFromPaytrailRedirect } from './paytrail'
+import { parseUuidFromPaytrailRedirectCheckoutStamp } from './paytrail'
 
 describe('Test parse orderId from paytrail redirect', () => {
   it('Should return correct orderId from paytrail redirectUrl', () => {
@@ -6,7 +6,7 @@ describe('Test parse orderId from paytrail redirect', () => {
       'checkout-stamp': 'f9ab55be-dbfe-3b39-bb38-60306d6958f3_at_20210824-0635',
     }
 
-    expect(parseOrderIdFromPaytrailRedirect({ query })).toBe(
+    expect(parseUuidFromPaytrailRedirectCheckoutStamp({ query })).toBe(
       'f9ab55be-dbfe-3b39-bb38-60306d6958f3'
     )
   })
