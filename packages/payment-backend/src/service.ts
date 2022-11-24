@@ -24,7 +24,7 @@ import {
   PaymentValidationError,
 } from './errors'
 import { ExperienceFailure } from '@verkkokauppa/core'
-import { PaymentGateway, ReferenceType } from './enums'
+import { PaymentGateway, PaymentStatus, ReferenceType } from './enums'
 
 const allowedPaymentGateways = [
   PaymentGateway.PAYTRAIL.toString(),
@@ -38,7 +38,7 @@ const checkBackendUrlExists = () => {
   }
 }
 
-export const createPaymentMethodPartFromGateway = (gateway: string) => {
+export const createMethodPartFromGateway = (gateway: string) => {
   let paymentMethodPart = ''
 
   switch (gateway) {
@@ -81,7 +81,7 @@ export const createPaymentFromOrder = async (parameters: {
       'paymentMethod must be one of allowed payment gateways'
     )
   }
-  const paymentMethodPart = createPaymentMethodPartFromGateway(gateway)
+  const paymentMethodPart = createMethodPartFromGateway(gateway)
 
   const url = `${process.env.PAYMENT_BACKEND_URL}/payment/${paymentMethodPart}/createFromOrder`
   const dto = {
@@ -326,7 +326,7 @@ export const getPaymentUrl = async (p: {
     throw new Error('No payment API backend URL set')
   }
 
-  let paymentMethodPart = createPaymentMethodPartFromGateway(gateway)
+  let paymentMethodPart = createMethodPartFromGateway(gateway)
   const url = `${process.env.PAYMENT_BACKEND_URL}/payment/${paymentMethodPart}/url`
   try {
     const result = await axios.get<string>(url, {
@@ -469,6 +469,23 @@ export const paidPaymentExists = async (p: {
   } catch (e) {
     if (e instanceof PaymentNotFound) {
       return false
+    }
+    throw e
+  }
+}
+
+export const getPaidPaymentAdmin = async (p: {
+  orderId: string
+}): Promise<Payment | null> => {
+  try {
+    const payment = await getPaymentForOrderAdmin(p)
+    if (payment.status !== PaymentStatus.PAID_ONLINE.toString()) {
+      return null
+    }
+    return payment
+  } catch (e) {
+    if (e instanceof PaymentNotFound) {
+      return null
     }
     throw e
   }

@@ -20,3 +20,7 @@ export enum PaymentGateway {
   INVOICE = 'offline',
   VISMA = 'online',
 }
+
+export enum RefundGateway {
+  PAYTRAIL = 'online-paytrail',
+}
