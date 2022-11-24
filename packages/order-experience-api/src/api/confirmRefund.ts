@@ -14,6 +14,11 @@ import {
   getRefundsByOrderAdmin,
   RefundItem,
 } from '@verkkokauppa/order-backend'
+import {
+  createRefundPaymentFromRefund,
+  getPaidPaymentAdmin,
+  RefundGateway,
+} from '@verkkokauppa/payment-backend'
 
 const requestSchema = yup.object().shape({
   params: yup.object().shape({
@@ -74,6 +79,33 @@ export class ConfirmRefundController extends AbstractController<
 
     const confirmedRefund = await confirmRefundAdmin(refund.refund)
 
-    return this.success(res, new Data({ refund: confirmedRefund }).serialize())
+    const payment = await getPaidPaymentAdmin({
+      orderId: order.orderId,
+    })
+
+    if (!payment) {
+      throw new RequestValidationError(
+        `cannot create refund without paid payment `
+      )
+    }
+
+    const refundPayment = await createRefundPaymentFromRefund({
+      order,
+      refund: {
+        refund: confirmedRefund,
+        items: refund.items,
+      },
+      payment,
+      gateway: RefundGateway.PAYTRAIL.toString(),
+      merchantId: refund.items[0]?.merchantId || '',
+    })
+
+    return this.success(
+      res,
+      new Data({
+        refund: confirmedRefund,
+        payment: refundPayment,
+      }).serialize()
+    )
   }
 }

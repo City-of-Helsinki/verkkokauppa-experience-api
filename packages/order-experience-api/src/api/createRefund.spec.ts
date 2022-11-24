@@ -552,7 +552,7 @@ describe('Test CreateRefundController', () => {
         {
           refundId: 'rid1',
           items: [],
-          confirmationUrl: 'test.com/refund/rid1/confirmAndCreatePayment',
+          confirmationUrl: 'test.com/refund/rid1/confirm',
         },
       ],
     })
