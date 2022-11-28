@@ -14,7 +14,6 @@ import {
   Order,
   PaymentStatus,
 } from '@verkkokauppa/payment-backend'
-import { sendReceiptToCustomer } from '../lib/sendEmail'
 import {
   createUserRedirectUrl,
   isAuthorized,
@@ -67,11 +66,13 @@ export class PaytrailOnlineRefundPaymentSuccessController extends AbstractContro
         merchantId: merchantId,
       })
       logger.debug(
-        `PaytrailStatus for order ${orderId}: ${JSON.stringify(paytrailStatus)}`
+        `PaytrailStatus for refund ${refundId}: ${JSON.stringify(
+          paytrailStatus
+        )}`
       )
       if (!paytrailStatus.valid) {
         logger.debug(
-          `PaytrailStatus is not valid for ${orderId}, redirect to failure url`
+          `PaytrailStatus is not valid for refund ${refundId}, redirect to failure url`
         )
         return result.redirect(
           302,
@@ -84,8 +85,9 @@ export class PaytrailOnlineRefundPaymentSuccessController extends AbstractContro
         paymentReturnStatus: paytrailStatus,
         redirectPaymentUrlBase: PaytrailOnlineRefundPaymentSuccessController.getRedirectUrl(),
       })
+      // TODO: Make changes that sends email from refund
       // Function contains internal checks when to send receipt.
-      await sendReceiptToCustomer(paytrailStatus, orderId, order)
+      // await sendReceiptToCustomer(paytrailStatus, orderId, order)
 
       // Only cancel authorized card renewals.
       if (isAuthorized(paytrailStatus) && isCardRenewal(paytrailStatus)) {
