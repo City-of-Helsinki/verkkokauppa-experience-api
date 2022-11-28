@@ -31,7 +31,6 @@ export class PaytrailOnlineRefundPaymentSuccessController extends AbstractContro
   ): Promise<any> {
     const { query } = request
     // Validates that base redirect url is set
-    process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'http://localhost:3000'
     PaytrailOnlineRefundPaymentSuccessController.checkAndCreateRedirectUrl()
     const refundId = parseUuidFromPaytrailRedirectCheckoutStamp({ query })
 
