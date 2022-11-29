@@ -12,7 +12,7 @@ import {
 } from '@verkkokauppa/order-backend'
 import { getProductAccountingBatch } from '@verkkokauppa/product-backend'
 import { checkPaytrailReturnUrl } from '@verkkokauppa/payment-backend'
-import { parseUuidFromPaytrailRedirectCheckoutStamp } from '../lib/paytrail'
+import { parseOrderIdFromPaytrailRedirect } from '../lib/paytrail'
 import { parseMerchantIdFromFirstOrderItem } from '@verkkokauppa/configuration-backend'
 
 export class PaytrailOnlinePaymentNotifyController extends AbstractController {
@@ -24,7 +24,7 @@ export class PaytrailOnlinePaymentNotifyController extends AbstractController {
   ): Promise<any> {
     const { query } = request
 
-    const orderId = parseUuidFromPaytrailRedirectCheckoutStamp({ query })
+    const orderId = parseOrderIdFromPaytrailRedirect({ query })
     if (!orderId) {
       logger.error('Paytrail: No orderId specified')
       throw new OrderNotFoundError()
