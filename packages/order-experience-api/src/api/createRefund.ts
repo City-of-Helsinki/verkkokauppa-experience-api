@@ -1,23 +1,28 @@
 import {
   AbstractController,
-  ValidatedRequest,
-  ExperienceError,
-  UnexpectedError,
   Data,
+  ExperienceError,
   RequestValidationError,
+  UnexpectedError,
+  ValidatedRequest,
 } from '@verkkokauppa/core'
 import * as yup from 'yup'
 import type { Response } from 'express'
 import { validateApiKey } from '@verkkokauppa/configuration-backend'
 import {
-  getOrderAdmin,
+  confirmRefundAdmin,
   createRefund,
+  getOrderAdmin,
   getRefundsByOrderAdmin,
   Refund,
   RefundItem,
-  confirmRefundAdmin,
 } from '@verkkokauppa/order-backend'
-import { paidPaymentExists } from '@verkkokauppa/payment-backend'
+import {
+  createRefundPaymentFromRefund,
+  getPaidPaymentAdmin,
+  paidPaymentExists,
+  RefundGateway,
+} from '@verkkokauppa/payment-backend'
 import { calculateTotalsFromItems } from '../lib/totals'
 
 const requestSchema = yup.object().shape({
@@ -155,18 +160,37 @@ export class CreateRefundController extends AbstractController<
               items: refundItems,
               confirmationUrl: `${req.get('host')}/refund/${
                 refund.refundId
-              }/confirmAndCreatePayment`,
+              }/confirm`,
             })
           }
 
           const confirmedRefund = await confirmRefundAdmin(refund)
 
-          // TODO: create payment
+          const payment = await getPaidPaymentAdmin({
+            orderId: order.orderId,
+          })
+
+          if (!payment) {
+            throw new RequestValidationError(
+              `cannot create refund without paid payment `
+            )
+          }
+
+          const refundPayment = await createRefundPaymentFromRefund({
+            order,
+            refund: {
+              refund: confirmedRefund,
+              items: refundItems,
+            },
+            payment,
+            gateway: RefundGateway.PAYTRAIL.toString(),
+            merchantId: refundItems[0]?.merchantId || '',
+          })
 
           return refunds.push({
             ...confirmedRefund,
             items: refundItems,
-            payment: undefined,
+            payment: refundPayment,
           })
         } catch (e) {
           if (e instanceof ExperienceError) {
