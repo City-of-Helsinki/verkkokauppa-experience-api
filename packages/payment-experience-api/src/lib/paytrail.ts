@@ -1,3 +1,13 @@
+export const parseOrderIdFromPaytrailRedirect = (p: { query: any }) => {
+  return parseUuidFromPaytrailRedirectCheckoutStamp(p)
+}
+
+export const parseRefundIdFromPaytrailRefundCallbackUrl = (p: {
+  query: any
+}) => {
+  return parseUuidFromPaytrailRedirectCheckoutStamp(p)
+}
+
 export const parseUuidFromPaytrailRedirectCheckoutStamp = (p: {
   query: any
 }) => {

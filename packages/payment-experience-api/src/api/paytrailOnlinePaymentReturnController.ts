@@ -15,7 +15,7 @@ import {
   PaymentStatus,
 } from '@verkkokauppa/payment-backend'
 import { sendReceiptToCustomer } from '../lib/sendEmail'
-import { parseUuidFromPaytrailRedirectCheckoutStamp } from '../lib/paytrail'
+import { parseOrderIdFromPaytrailRedirect } from '../lib/paytrail'
 import {
   createUserRedirectUrl,
   isAuthorized,
@@ -33,7 +33,7 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
     const { query } = request
     // Validates that base redirect url is set
     PaytrailOnlinePaymentReturnController.checkAndCreateRedirectUrl()
-    const orderId = parseUuidFromPaytrailRedirectCheckoutStamp({ query })
+    const orderId = parseOrderIdFromPaytrailRedirect({ query })
 
     if (!orderId) {
       logger.error(

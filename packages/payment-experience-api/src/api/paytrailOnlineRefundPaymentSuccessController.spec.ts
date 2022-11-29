@@ -138,16 +138,6 @@ describe('Test paytrail refund payment success controller', () => {
       paymentMethodLabel: 'paymentMethodLabel',
     }
 
-    const emailMock = {
-      id: 'dummy_mail',
-      messageText: 'Message text',
-      sendTo: 'send.to@dummy.com',
-      from: 'from.to@dummy.com',
-      header: 'header',
-      identifierValue: 'identifier',
-      messageType: 'EMAIL',
-    }
-
     const mockPaytrailStatus = {
       paymentPaid: true,
       valid: true,
@@ -180,15 +170,6 @@ describe('Test paytrail refund payment success controller', () => {
         return Promise.resolve({ data: refundBackendResponseMock })
       }
 
-      console.log(url)
-      console.log(data)
-      return Promise.resolve({})
-    })
-
-    axiosMock.post.mockImplementation((url, data?: any) => {
-      if (url.includes(`/message/send/email`)) {
-        return Promise.resolve({ data: emailMock })
-      }
       console.log(url)
       console.log(data)
       return Promise.resolve({})
@@ -290,16 +271,6 @@ describe('Test paytrail refund payment success controller', () => {
       paymentMethodLabel: 'paymentMethodLabel',
     }
 
-    const emailMock = {
-      id: 'dummy_mail',
-      messageText: 'Message text',
-      sendTo: 'send.to@dummy.com',
-      from: 'from.to@dummy.com',
-      header: 'header',
-      identifierValue: 'identifier',
-      messageType: 'EMAIL',
-    }
-
     const mockPaytrailStatus = {
       paymentPaid: true,
       valid: false,
@@ -332,15 +303,6 @@ describe('Test paytrail refund payment success controller', () => {
         return Promise.resolve({ data: refundBackendResponseMock })
       }
 
-      console.log(url)
-      console.log(data)
-      return Promise.resolve({})
-    })
-
-    axiosMock.post.mockImplementation((url, data?: any) => {
-      if (url.includes(`/message/send/email`)) {
-        return Promise.resolve({ data: emailMock })
-      }
       console.log(url)
       console.log(data)
       return Promise.resolve({})

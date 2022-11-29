@@ -7,19 +7,9 @@ import {
 import type { Request, Response } from 'express'
 import { URL } from 'url'
 import { getOrderAdmin, getRefundAdmin } from '@verkkokauppa/order-backend'
-import {
-  cancelPaymentAdmin,
-  checkPaytrailRefundCallbackUrl,
-  getPaymentsForOrderAdmin,
-  Order,
-  PaymentStatus,
-} from '@verkkokauppa/payment-backend'
-import {
-  createUserRedirectUrl,
-  isAuthorized,
-  isCardRenewal,
-} from '../lib/paymentReturnService'
-import { parseUuidFromPaytrailRedirectCheckoutStamp } from '../lib/paytrail'
+import { checkPaytrailRefundCallbackUrl } from '@verkkokauppa/payment-backend'
+import { createUserRefundRedirectUrl } from '../lib/refundCallbackService'
+import { parseRefundIdFromPaytrailRefundCallbackUrl } from '../lib/paytrail'
 import { parseMerchantIdFromFirstOrderItem } from '@verkkokauppa/configuration-backend'
 
 export class PaytrailOnlineRefundPaymentSuccessController extends AbstractController {
@@ -32,7 +22,7 @@ export class PaytrailOnlineRefundPaymentSuccessController extends AbstractContro
     const { query } = request
     // Validates that base redirect url is set
     PaytrailOnlineRefundPaymentSuccessController.checkAndCreateRedirectUrl()
-    const refundId = parseUuidFromPaytrailRedirectCheckoutStamp({ query })
+    const refundId = parseRefundIdFromPaytrailRefundCallbackUrl({ query })
 
     if (!refundId) {
       logger.error(
@@ -79,35 +69,20 @@ export class PaytrailOnlineRefundPaymentSuccessController extends AbstractContro
         )
       }
 
-      const redirectUrl = await createUserRedirectUrl({
+      const redirectUrl = await createUserRefundRedirectUrl({
         order,
-        paymentReturnStatus: paytrailStatus,
-        redirectPaymentUrlBase: PaytrailOnlineRefundPaymentSuccessController.getRedirectUrl(),
+        refundPaymentStatus: paytrailStatus,
+        redirectPaymentUrlBase: PaytrailOnlineRefundPaymentSuccessController.getRefundRedirectUrl(),
       })
       // TODO: Make changes that sends email from refund
       // Function contains internal checks when to send receipt.
       // await sendReceiptToCustomer(paytrailStatus, orderId, order)
 
-      // Only cancel authorized card renewals.
-      if (isAuthorized(paytrailStatus) && isCardRenewal(paytrailStatus)) {
-        const cancelled = await this.cancelAuthorizationPayments(order)
-        // Error count more than 0
-        let cancelledCount = cancelled[1]
-        if (cancelledCount != 0) {
-          return result.redirect(
-            302,
-            PaytrailOnlineRefundPaymentSuccessController.getCardRenewalFailureRedirectUrl(
-              order.orderId
-            ).toString()
-          )
-        }
-      }
-
       return result.redirect(302, redirectUrl.toString())
     } catch (error) {
       logger.error(error)
       logger.debug(
-        `Error occurred, redirect user to failure url for order ${orderId}`
+        `Error occurred, redirect user to failure url for refund ${refundId}`
       )
       return result.redirect(
         302,
@@ -130,41 +105,10 @@ export class PaytrailOnlineRefundPaymentSuccessController extends AbstractContro
     return new URL(process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE)
   }
 
-  public static getRedirectUrl() {
-    if (!process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE) {
-      throw new Error('No default paytrail redirect url specified')
-    }
-    return process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE
-  }
-
-  private static getCardRenewalFailureRedirectUrl(orderId: string) {
+  private static getRefundRedirectUrl() {
     const redirectUrl = this.checkAndCreateRedirectUrl()
-    redirectUrl.pathname = `${orderId}/card-update-failed`
+    redirectUrl.pathname = `refund`
 
     return redirectUrl.toString()
-  }
-
-  public async cancelAuthorizationPayments(order: Order) {
-    let failCount = 0
-    let successCount = 0
-    const cancellablePayments = await getPaymentsForOrderAdmin(
-      order,
-      PaymentStatus.AUTHORIZED
-    )
-    for (const [, payment] of Object.entries(cancellablePayments)) {
-      const result = await cancelPaymentAdmin(payment.paymentId)
-      if (result.result === 0) {
-        logger.info(
-          `Payment cancellation successfully with payment id : ${payment.paymentId} `
-        )
-        successCount++
-      } else {
-        logger.info(
-          `Payment cancellation with payment id : ${payment.paymentId} failed`
-        )
-        failCount++
-      }
-    }
-    return [successCount, failCount]
   }
 }
