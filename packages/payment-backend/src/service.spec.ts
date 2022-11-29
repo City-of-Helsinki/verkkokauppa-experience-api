@@ -1,7 +1,7 @@
 import axios from 'axios'
 import {
   createPaymentFromOrder,
-  createPaymentMethodPartFromGateway,
+  createMethodPartFromGateway,
   getPaymentForOrder,
   getPaymentStatus,
   getPaymentUrl,
@@ -337,20 +337,16 @@ describe('Test Get Payment Url', () => {
   })
 
   it('Should create createPaymentMethodPartFromGateway correctly', async () => {
-    const vismaResult = createPaymentMethodPartFromGateway(PaymentGateway.VISMA)
+    const vismaResult = createMethodPartFromGateway(PaymentGateway.VISMA)
     expect(vismaResult).toEqual('online')
 
-    const paytrailResult = createPaymentMethodPartFromGateway(
-      PaymentGateway.PAYTRAIL
-    )
+    const paytrailResult = createMethodPartFromGateway(PaymentGateway.PAYTRAIL)
     expect(paytrailResult).toEqual('paytrail')
 
-    const invoiceResult = createPaymentMethodPartFromGateway(
-      PaymentGateway.INVOICE
-    )
+    const invoiceResult = createMethodPartFromGateway(PaymentGateway.INVOICE)
     expect(invoiceResult).toEqual('invoice')
 
-    const invalidResult = createPaymentMethodPartFromGateway('not-set')
+    const invalidResult = createMethodPartFromGateway('not-set')
     expect(invalidResult).toEqual('')
   })
 })
