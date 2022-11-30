@@ -55,7 +55,7 @@ const getServiceSpecificRefundRedirectUrl = async (p: {
   try {
     const paymentReturnUrlConfiguration = await getPublicServiceConfiguration({
       namespace: order.namespace,
-      key: 'REFUND_SUCCESS_REDIRECT_URL',
+      key: 'refundSuccessRedirectUrl',
     })
     if (
       paymentReturnUrlConfiguration.configurationValue &&
