@@ -101,7 +101,7 @@ export const createRefundRedirectUrlFromRefundPaymentStatus = (
     redirectUrl.pathname = `${orderId}/success`
   } else if (canRetryRefundPayment(refundPaymentStatus)) {
     redirectUrl.pathname = `${orderId}/summary`
-    redirectUrl.searchParams.append('paymentPaid', 'false')
+    redirectUrl.searchParams.append('refundPaid', 'false')
   } else {
     redirectUrl.pathname = `${orderId}/failure`
   }
