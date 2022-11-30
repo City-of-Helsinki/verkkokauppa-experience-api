@@ -109,7 +109,7 @@ describe('Test paytrail refund payment success controller', () => {
     const configMock = {
       configurationId: '2f815a93-4c5c-442f-ba09-f294ecc12679',
       namespace: 'test',
-      configurationKey: 'ORDER_CREATED_REDIRECT_URL',
+      configurationKey: 'refundSuccessRedirectUrl',
       configurationValue: 'https://service.dev.hel',
       restricted: false,
     }
@@ -242,7 +242,7 @@ describe('Test paytrail refund payment success controller', () => {
     const configMock = {
       configurationId: '2f815a93-4c5c-442f-ba09-f294ecc12679',
       namespace: 'test',
-      configurationKey: 'ORDER_CREATED_REDIRECT_URL',
+      configurationKey: 'refundSuccessRedirectUrl',
       configurationValue: 'https://service.dev.hel',
       restricted: false,
     }
