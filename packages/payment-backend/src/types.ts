@@ -76,6 +76,7 @@ export interface Payment {
   orderId: string
   status: string
   paymentMethod: string
+  paymentGateway: string
   paymentType: string
   totalExclTax: number
   total: number
@@ -84,6 +85,22 @@ export interface Payment {
   additionalInfo: string
   token: string
   timestamp: string
+  paytrailProvider?: PaytrailProvider
+}
+
+export interface PaytrailProvider {
+  url?: string
+  icon?: string
+  svg?: string
+  group?: string
+  name?: string
+  id?: string
+  parameters?: PaytrailProviderParameter[]
+}
+
+export interface PaytrailProviderParameter {
+  name?: string
+  value?: string
 }
 
 export interface PaymentFilter {
