@@ -219,6 +219,24 @@ export const getOrderPaymentFilters = (p: { orderId: string }) => {
   })
 }
 
+export const filterPaymentMethodByGateway = (
+  filteredPaymentFilters: any[],
+  globallyFilteredPaymentGateways: string[]
+) =>
+  filteredPaymentFilters.filter((method) => {
+    return !globallyFilteredPaymentGateways.includes(
+      method.gateway.toLowerCase()
+    )
+  })
+
+export const filterPaymentMethodsByCode = (
+  filteredPaymentFilters: any[],
+  globallyFilteredPaymentMethods: string[]
+) =>
+  filteredPaymentFilters.filter((method) => {
+    return !globallyFilteredPaymentMethods.includes(method.code.toLowerCase())
+  })
+
 export const getPaymentMethodList = async (parameters: {
   namespace: string
   totalPrice: number
@@ -262,12 +280,15 @@ export const getPaymentMethodList = async (parameters: {
 
   const globallyFilteredPaymentGateways = gateways.split(',')
 
-  filteredPaymentFilters = filteredPaymentFilters.filter((method) => {
-    return (
-      !globallyFilteredPaymentMethods.includes(method.code.toLowerCase()) ||
-      !globallyFilteredPaymentGateways.includes(method.gateway.toLowerCase())
-    )
-  })
+  filteredPaymentFilters = filterPaymentMethodByGateway(
+    filteredPaymentFilters,
+    globallyFilteredPaymentGateways
+  )
+
+  filteredPaymentFilters = filterPaymentMethodsByCode(
+    filteredPaymentFilters,
+    globallyFilteredPaymentMethods
+  )
 
   return filteredPaymentFilters
 }
