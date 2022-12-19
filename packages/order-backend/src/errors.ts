@@ -85,6 +85,16 @@ export class AddItemsToOrderFailure extends ExperienceFailure {
   }
 }
 
+export class AddFlowStepsToOrderFailure extends ExperienceFailure {
+  constructor(source: Error) {
+    super({
+      code: 'failed-to-add-flow-steps-to-order',
+      message: 'Failed to add flow steps to order',
+      source,
+    })
+  }
+}
+
 export class GetOrderFailure extends ExperienceFailure {
   constructor(source: Error) {
     super({
