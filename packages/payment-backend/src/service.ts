@@ -10,6 +10,7 @@ import type {
 } from './types'
 import type { ParsedQs } from 'qs'
 import {
+  CheckPaytrailRefundCallbackUrlFailure,
   CheckPaytrailReturnUrlFailure,
   CheckVismaReturnUrlFailure,
   CreatePaymentFromOrderFailure,
@@ -24,7 +25,7 @@ import {
   PaymentValidationError,
 } from './errors'
 import { ExperienceFailure } from '@verkkokauppa/core'
-import { PaymentGateway, ReferenceType } from './enums'
+import { PaymentGateway, PaymentStatus, ReferenceType } from './enums'
 
 const allowedPaymentGateways = [
   PaymentGateway.PAYTRAIL.toString(),
@@ -38,7 +39,7 @@ const checkBackendUrlExists = () => {
   }
 }
 
-export const createPaymentMethodPartFromGateway = (gateway: string) => {
+export const createMethodPartFromGateway = (gateway: string) => {
   let paymentMethodPart = ''
 
   switch (gateway) {
@@ -81,7 +82,7 @@ export const createPaymentFromOrder = async (parameters: {
       'paymentMethod must be one of allowed payment gateways'
     )
   }
-  const paymentMethodPart = createPaymentMethodPartFromGateway(gateway)
+  const paymentMethodPart = createMethodPartFromGateway(gateway)
 
   const url = `${process.env.PAYMENT_BACKEND_URL}/payment/${paymentMethodPart}/createFromOrder`
   const dto = {
@@ -218,6 +219,24 @@ export const getOrderPaymentFilters = (p: { orderId: string }) => {
   })
 }
 
+export const filterPaymentMethodByGateway = (
+  filteredPaymentFilters: any[],
+  globallyFilteredPaymentGateways: string[]
+) =>
+  filteredPaymentFilters.filter((method) => {
+    return !globallyFilteredPaymentGateways.includes(
+      method.gateway.toLowerCase()
+    )
+  })
+
+export const filterPaymentMethodsByCode = (
+  filteredPaymentFilters: any[],
+  globallyFilteredPaymentMethods: string[]
+) =>
+  filteredPaymentFilters.filter((method) => {
+    return !globallyFilteredPaymentMethods.includes(method.code.toLowerCase())
+  })
+
 export const getPaymentMethodList = async (parameters: {
   namespace: string
   totalPrice: number
@@ -261,12 +280,15 @@ export const getPaymentMethodList = async (parameters: {
 
   const globallyFilteredPaymentGateways = gateways.split(',')
 
-  filteredPaymentFilters = filteredPaymentFilters.filter((method) => {
-    return (
-      !globallyFilteredPaymentMethods.includes(method.code.toLowerCase()) ||
-      !globallyFilteredPaymentGateways.includes(method.gateway.toLowerCase())
-    )
-  })
+  filteredPaymentFilters = filterPaymentMethodByGateway(
+    filteredPaymentFilters,
+    globallyFilteredPaymentGateways
+  )
+
+  filteredPaymentFilters = filterPaymentMethodsByCode(
+    filteredPaymentFilters,
+    globallyFilteredPaymentMethods
+  )
 
   return filteredPaymentFilters
 }
@@ -293,8 +315,9 @@ export const checkVismaReturnUrl = async (p: {
 
 export const checkPaytrailReturnUrl = async (p: {
   params: ParsedQs
+  merchantId: string
 }): Promise<PaytrailStatus> => {
-  const { params } = p
+  const { params, merchantId } = p
   if (!process.env.PAYMENT_BACKEND_URL) {
     throw new Error('No payment API backend URL set')
   }
@@ -303,11 +326,38 @@ export const checkPaytrailReturnUrl = async (p: {
 
   try {
     const result = await axios.get<PaytrailStatus>(url, {
-      params,
+      params: {
+        ...params,
+        merchantId,
+      },
     })
     return result.data
   } catch (e) {
     throw new CheckPaytrailReturnUrlFailure(e)
+  }
+}
+
+export const checkPaytrailRefundCallbackUrl = async (p: {
+  params: ParsedQs
+  merchantId: string
+}): Promise<PaytrailStatus> => {
+  const { params, merchantId } = p
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/refund/paytrail/check-refund-callback-url`
+
+  try {
+    const result = await axios.get<PaytrailStatus>(url, {
+      params: {
+        ...params,
+        merchantId,
+      },
+    })
+    return result.data
+  } catch (e) {
+    throw new CheckPaytrailRefundCallbackUrlFailure(e)
   }
 }
 
@@ -322,7 +372,7 @@ export const getPaymentUrl = async (p: {
     throw new Error('No payment API backend URL set')
   }
 
-  let paymentMethodPart = createPaymentMethodPartFromGateway(gateway)
+  let paymentMethodPart = createMethodPartFromGateway(gateway)
   const url = `${process.env.PAYMENT_BACKEND_URL}/payment/${paymentMethodPart}/url`
   try {
     const result = await axios.get<string>(url, {
@@ -465,6 +515,23 @@ export const paidPaymentExists = async (p: {
   } catch (e) {
     if (e instanceof PaymentNotFound) {
       return false
+    }
+    throw e
+  }
+}
+
+export const getPaidPaymentAdmin = async (p: {
+  orderId: string
+}): Promise<Payment | null> => {
+  try {
+    const payment = await getPaymentForOrderAdmin(p)
+    if (payment.status !== PaymentStatus.PAID_ONLINE.toString()) {
+      return null
+    }
+    return payment
+  } catch (e) {
+    if (e instanceof PaymentNotFound) {
+      return null
     }
     throw e
   }

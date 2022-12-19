@@ -1,12 +1,14 @@
 import axios from 'axios'
 import {
   createPaymentFromOrder,
-  createPaymentMethodPartFromGateway,
+  createMethodPartFromGateway,
   getPaymentForOrder,
   getPaymentStatus,
   getPaymentUrl,
   paidPaymentExists,
   savePaymentFiltersAdmin,
+  filterPaymentMethodByGateway,
+  filterPaymentMethodsByCode,
 } from './service'
 import { PaymentGateway, ReferenceType } from './enums'
 
@@ -337,20 +339,16 @@ describe('Test Get Payment Url', () => {
   })
 
   it('Should create createPaymentMethodPartFromGateway correctly', async () => {
-    const vismaResult = createPaymentMethodPartFromGateway(PaymentGateway.VISMA)
+    const vismaResult = createMethodPartFromGateway(PaymentGateway.VISMA)
     expect(vismaResult).toEqual('online')
 
-    const paytrailResult = createPaymentMethodPartFromGateway(
-      PaymentGateway.PAYTRAIL
-    )
+    const paytrailResult = createMethodPartFromGateway(PaymentGateway.PAYTRAIL)
     expect(paytrailResult).toEqual('paytrail')
 
-    const invoiceResult = createPaymentMethodPartFromGateway(
-      PaymentGateway.INVOICE
-    )
+    const invoiceResult = createMethodPartFromGateway(PaymentGateway.INVOICE)
     expect(invoiceResult).toEqual('invoice')
 
-    const invalidResult = createPaymentMethodPartFromGateway('not-set')
+    const invalidResult = createMethodPartFromGateway('not-set')
     expect(invalidResult).toEqual('')
   })
 })
@@ -484,5 +482,73 @@ describe('Test save payment filters for order', () => {
       },
     ])
     expect(result).toEqual(paymentFiltersMock)
+  })
+})
+
+describe('Test global payment filtering', () => {
+  it('Should filter out payment methods with gateway filtering', async () => {
+    const vismaNordeaB2BPaymentMethod = {
+      name: 'visma',
+      code: 'nordeab2b',
+      group: 'group',
+      img: 'img',
+      gateway: PaymentGateway.VISMA.toString(),
+    }
+    const paytrailNordeaPaymentMethod = {
+      name: 'paytrail',
+      code: 'nordea',
+      group: 'group-2',
+      img: 'img-2',
+      gateway: PaymentGateway.PAYTRAIL.toString(),
+    }
+    const paymentMethods = [
+      vismaNordeaB2BPaymentMethod,
+      paytrailNordeaPaymentMethod,
+    ]
+    const gateways = `${PaymentGateway.PAYTRAIL},${PaymentGateway.INVOICE}`
+
+    const globallyFilteredPaymentGateways = gateways.split(',')
+
+    expect(
+      filterPaymentMethodByGateway(
+        paymentMethods,
+        globallyFilteredPaymentGateways
+      )
+    ).toEqual([vismaNordeaB2BPaymentMethod])
+  })
+
+  it('Should filter out payment methods with gateway and code filtering', async () => {
+    const vismaNordeaB2BPaymentMethod = {
+      name: 'visma',
+      code: 'nordeab2b',
+      group: 'group',
+      img: 'img',
+      gateway: PaymentGateway.VISMA.toString(),
+    }
+    const paytrailNordeaPaymentMethod = {
+      name: 'paytrail',
+      code: 'nordea',
+      group: 'group-2',
+      img: 'img-2',
+      gateway: PaymentGateway.PAYTRAIL.toString(),
+    }
+    const paymentMethods = [
+      vismaNordeaB2BPaymentMethod,
+      paytrailNordeaPaymentMethod,
+    ]
+    const gateways = `${PaymentGateway.PAYTRAIL},${PaymentGateway.INVOICE}`
+    const globallyFilteredPaymentGateways = gateways.split(',')
+
+    const methods = 'nordeab2b'
+    const globallyFilteredPaymentMethods = methods.split(',')
+
+    let actual = filterPaymentMethodByGateway(
+      paymentMethods,
+      globallyFilteredPaymentGateways
+    )
+
+    actual = filterPaymentMethodsByCode(actual, globallyFilteredPaymentMethods)
+
+    expect(actual).toEqual([])
   })
 })

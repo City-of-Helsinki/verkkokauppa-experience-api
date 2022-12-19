@@ -12,6 +12,7 @@ import { SubscriptionTokenizeController } from './api/subscriptionTokenizeContro
 import { SendReceiptPaymentAdminInternalController } from './api/sendReceiptPaymentAdminInternalController'
 import { PaytrailOnlinePaymentReturnController } from './api/paytrailOnlinePaymentReturnController'
 import { PaytrailOnlinePaymentNotifyController } from './api/paytrailOnlinePaymentNotifyController'
+import { PaytrailOnlineRefundPaymentSuccessController } from './api/paytrailOnlineRefundPaymentSuccessController'
 
 const createPaymentController = new (withAuthentication(
   CreatePaymentController
@@ -24,6 +25,7 @@ const paytrailOnlinePaymentReturnController = new PaytrailOnlinePaymentReturnCon
 const sendReceiptPaymentAdminInternalController = new SendReceiptPaymentAdminInternalController()
 const onlinePaymentNotifyController = new OnlinePaymentNotifyController()
 const paytrailOnlinePaymentNotifyController = new PaytrailOnlinePaymentNotifyController()
+const paytrailOnlineRefundPaymentSuccessController = new PaytrailOnlineRefundPaymentSuccessController()
 const getPaymentController = new (withAuthentication(GetPaymentController))()
 const getPaymentAdminController = new GetPaymentAdminController()
 const healthController = new Health()
@@ -44,7 +46,7 @@ router.get('/:orderId/paymentMethods', (req, res) =>
 router.get('/onlinePayment/return', (req, res) =>
   onlinePaymentReturnController.execute(req, res)
 )
-router.get('/paytrailOnlinePayment/paytrail/:status', (req, res) =>
+router.get('/paytrailOnlinePayment/return/:status', (req, res) =>
   paytrailOnlinePaymentReturnController.execute(req, res)
 )
 router.get('/onlinePayment/notify', (req, res) =>
@@ -52,6 +54,9 @@ router.get('/onlinePayment/notify', (req, res) =>
 )
 router.get('/paytrailOnlinePayment/notify/:status', (req, res) =>
   paytrailOnlinePaymentNotifyController.execute(req, res)
+)
+router.get('/paytrailOnlineRefund/success', (req, res) =>
+  paytrailOnlineRefundPaymentSuccessController.execute(req, res)
 )
 router.get('/subscription/:subscriptionId/tokenize', (req, res) =>
   subscriptionTokenizeController.execute(req, res)

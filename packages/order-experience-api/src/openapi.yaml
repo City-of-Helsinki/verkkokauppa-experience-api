@@ -385,6 +385,37 @@ components:
                 type: string
               originalPriceGross:
                 type: string
+
+    RefundPayment:
+      type: object
+      properties:
+        refundPaymentId:
+          type: string
+          description: 'refundId (Refund model id) + timestamp (Like creating paymentId)'
+        orderId:
+          type: string
+        userId:
+          type: string
+        status:
+          type: string
+          description: 'Check RefundPaymentStatus in core'
+        refundMethod:
+          type: string
+        refundType:
+          type: string
+          description: 'order or subscription'
+        refundGateway:
+          type: string
+          description: 'Check RefundGateway in core'
+        totalExclTax:
+          type: number
+        total:
+          type: number
+        taxAmount:
+          type: number
+        refundTransactionId:
+          type: string
+
     PaymentFilter:
       type: object
       required:
@@ -507,7 +538,10 @@ components:
 paths:
   /:
     post:
-      description: 'Create a new order. The resulting order type depends on the input: if periodUnit and periodFrequency are present, the order is of type subscription'
+      description: |
+        Create a new order. The resulting order type depends on the input: if periodUnit and periodFrequency are present, the order is of type subscription
+        
+        Optional lastValidPurchaseDateTime can be set that determines the timeframe in which the order must be purchased. Given in ISO 8601 date time -format.
       requestBody:
         required: true
         content:
@@ -523,6 +557,10 @@ paths:
                       type: string
                     namespace:
                       type: string
+                    lastValidPurchaseDateTime:
+                      type: string
+                      format: date-time
+                      description: ISO 8601 date time format with offset from UTC
                     paymentFilters:
                       type: array
                       items:
@@ -568,7 +606,8 @@ paths:
                             $ref: '#/components/schemas/FilterType'
                           value:
                             type: string
-
+                    lastValidPurchaseDateTime:
+                      type: string
       responses:
         '201':
           description: The created order
@@ -1413,7 +1452,7 @@ paths:
                           format: int32
       responses:
         '200':
-          description: The created refunds and errors. Both the arrays preserve ordering of the request body. In case of errors, the first missing refund would be the first element in errors etc. There is exactly one error for each failed refund.
+          description: The created refunds and errors. Both the arrays preserve ordering of the request body. In case of errors, the first missing refund would be the first element in errors etc. There is exactly one error for each failed refund. Creates refund payments too and returns them on payment field
           content:
             application/json:
               schema:
@@ -1432,7 +1471,7 @@ paths:
                             - payment
                           properties:
                             payment:
-                              type: object
+                              $ref: '#/components/schemas/RefundPayment'
                   errors:
                     type: array
                     items:
@@ -1453,7 +1492,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
   /refund/{refundId}/confirm:
     post:
-      description: Confirm refund
+      description: Confirm refund and creates refund payment and return them on payment field in response
       security:
         - ApiKey: [ ]
       parameters:
@@ -1468,9 +1507,12 @@ paths:
                 type: object
                 required:
                   - refund
+                  - payment
                 properties:
                   refund:
                     $ref: '#/components/schemas/Refund'
+                  payment:
+                    $ref: '#/components/schemas/RefundPayment'
         '400':
           $ref: '#/components/responses/RequestValidationError'
         '403':

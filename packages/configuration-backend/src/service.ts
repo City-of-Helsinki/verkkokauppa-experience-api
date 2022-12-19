@@ -411,7 +411,6 @@ export const getSubscriptionTermsOfServiceBinary = async (p: {
 }
 
 export const parseMerchantIdFromFirstOrderItem = (order: {
-  namespace: string
   items: OrderItem[]
 }) => {
   let merchantId = null

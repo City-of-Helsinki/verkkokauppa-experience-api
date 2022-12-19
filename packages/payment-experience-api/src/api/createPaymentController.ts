@@ -1,6 +1,10 @@
 import { AbstractController, Data, ValidatedRequest } from '@verkkokauppa/core'
 import type { Response } from 'express'
-import { getOrder, OrderItemRequest } from '@verkkokauppa/order-backend'
+import {
+  checkLastValidPurchaseDateTime,
+  getOrder,
+  OrderItemRequest,
+} from '@verkkokauppa/order-backend'
 import {
   createPaymentFromUnpaidOrder,
   getPaymentMethodList,
@@ -40,6 +44,9 @@ export class CreatePaymentController extends AbstractController<
     } = request
 
     const order = await getOrder({ orderId, user })
+
+    checkLastValidPurchaseDateTime(order.lastValidPurchaseDateTime)
+
     const orderTotal = this.calculateOrderTotal(order)
     const merchantId = parseMerchantIdFromFirstOrderItem(order)
     const availablePaymentMethods = await getPaymentMethodList({

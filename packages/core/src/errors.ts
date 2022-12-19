@@ -11,6 +11,17 @@ export class RequestValidationError extends ExperienceError {
   }
 }
 
+export class ForbiddenError extends ExperienceError {
+  constructor(cannotProcessErrors: string) {
+    super({
+      code: 'forbidden-request',
+      message: cannotProcessErrors,
+      responseStatus: StatusCode.Forbidden,
+      logLevel: 'debug',
+    })
+  }
+}
+
 export class UnexpectedError extends ExperienceFailure {
   constructor(source: Error) {
     super({

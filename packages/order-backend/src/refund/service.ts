@@ -41,6 +41,7 @@ export const createRefund = async (p: {
           ({
             orderItemId: i.orderItemId,
             orderId: i.orderId,
+            merchantId: i.merchantId,
             productId: i.productId,
             productName: i.productName,
             productLabel: i.productLabel,
