@@ -85,6 +85,7 @@ export interface Order {
   subscriptionId?: string
   type: OrderType
   lastValidPurchaseDateTime?: Date
+  flowSteps?: FlowStep
 }
 
 export interface OrderBackendResponse {
@@ -110,6 +111,7 @@ export type OrderWithItemsBackendResponse = {
     priceTotal?: string
   }
   items: OrderItem[]
+  flowSteps?: FlowStep
 }
 
 export interface ProductAccounting {
