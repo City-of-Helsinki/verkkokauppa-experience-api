@@ -13,6 +13,7 @@ import {
 import { getProductAccountingBatch } from '@verkkokauppa/product-backend'
 import { checkPaytrailReturnUrl } from '@verkkokauppa/payment-backend'
 import { parseOrderIdFromPaytrailRedirect } from '../lib/paytrail'
+import { parseMerchantIdFromFirstOrderItem } from '@verkkokauppa/configuration-backend'
 
 export class PaytrailOnlinePaymentNotifyController extends AbstractController {
   protected readonly requestSchema = null
@@ -22,22 +23,38 @@ export class PaytrailOnlinePaymentNotifyController extends AbstractController {
     response: Response
   ): Promise<any> {
     const { query } = request
-    const paytrailStatus = await checkPaytrailReturnUrl({ params: query })
+
     const orderId = parseOrderIdFromPaytrailRedirect({ query })
-
-    logger.info('Paytrail online payment notify controller called')
-
     if (!orderId) {
       logger.error('Paytrail: No orderId specified')
       throw new OrderNotFoundError()
     }
+    logger.info(`Load paytrail order ${orderId} from payment callback`)
+    const order = await getOrderAdmin({ orderId })
+    const merchantId = parseMerchantIdFromFirstOrderItem(order)
+
+    if (!merchantId) {
+      logger.error('Paytrail: No merchantId found from order')
+      throw new ExperienceError({
+        code: 'merchant-id-not-found',
+        message: 'No merchantId found from order.',
+        responseStatus: StatusCode.NotFound,
+        logLevel: 'info',
+      })
+    }
+    const paytrailStatus = await checkPaytrailReturnUrl({
+      params: query,
+      merchantId: merchantId,
+    })
+
+    logger.info('Paytrail online payment notify controller called')
+
     logger.debug(
       `PaytrailStatus callback for order ${orderId}: ${JSON.stringify(
         paytrailStatus
       )}`
     )
-    logger.info(`Load paytrail order ${orderId} from payment callback`)
-    const order = await getOrderAdmin({ orderId })
+
     logger.info(`Load paytrail product accountings for order ${orderId}`)
     const productAccountings = await getProductAccountingBatch({
       productIds: order.items.map((item) => item.productId),

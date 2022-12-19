@@ -125,6 +125,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorBody'
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
     BadRequest:
       description: Bad request
       content:
@@ -164,7 +170,10 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
     post:
-      description: Create payment from an unpaid order
+      description: |
+        Create payment from an unpaid order.
+        
+        If optional lastValidPurchaseDateTime has been set on order and this has run out, 403 error is returned.
       security:
         - UserId: [ ]
         - HelsinkiProfile: [ ]
@@ -190,6 +199,8 @@ paths:
                 $ref: '#/components/schemas/PaymentAndUrl'
         '400':
           $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /admin/{orderId}:

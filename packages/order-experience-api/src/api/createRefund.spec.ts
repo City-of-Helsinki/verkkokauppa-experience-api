@@ -22,6 +22,52 @@ const paidPaymentExistsMock = require('@verkkokauppa/payment-backend').paidPayme
   () => true
 )
 
+const getPaidPaymentAdmin = require('@verkkokauppa/payment-backend').getPaidPaymentAdmin.mockImplementation(
+  () => true
+)
+
+const confirmRefundAdminDataMock = {
+  refundId: 'c6c2cec5-d1a8-4a91-8341-9c3eae0b441a',
+  orderId: 'f1fe0aba-f6a7-3366-bfcf-d3f480db956f',
+  namespace: 'venepaikat',
+  user: 'dummy_user',
+  status: 'confirmed',
+  customerFirstName: 'dummy_firstname',
+  customerLastName: 'dummy_lastname',
+  customerEmail: 'test@ambientia.fi',
+  customerPhone: '',
+  priceNet: '100',
+  priceVat: '100',
+  priceTotal: '100',
+}
+
+const confirmRefundAdmin = require('@verkkokauppa/order-backend').confirmRefundAdmin.mockImplementation(
+  () => confirmRefundAdminDataMock
+)
+const mockRefundPayment = {
+  refundPaymentId: 'c6c2cec5-d1a8-4a91-8341-9c3eae0b441a_at_20221124-172600',
+  refundTransactionId: '6223e29e-6c0c-11ed-9373-dffeb4b88b35',
+  namespace: 'venepaikat',
+  orderId: 'f1fe0aba-f6a7-3366-bfcf-d3f480db956f',
+  userId: 'dummy_user',
+  status: 'refund_created',
+  refundMethod: 'nordea',
+  refundType: 'order',
+  refundGateway: 'paytrail',
+  totalExclTax: 100,
+  total: 100,
+  taxAmount: 100,
+  timestamp: '20221124-172706',
+  createdAt: '2022-11-24T17:27:06.5045602',
+  updatedAt: null,
+}
+
+const createRefundPaymentFromRefund = require('@verkkokauppa/payment-backend').createRefundPaymentFromRefund.mockImplementation(
+  () => {
+    return mockRefundPayment
+  }
+)
+
 const validateApiKeyMock = require('@verkkokauppa/configuration-backend').validateApiKey.mockImplementation(
   () => undefined
 )
@@ -33,6 +79,14 @@ const controller = new (class extends CreateRefundController {
 
   respond = jest.fn()
 })({ confirmAndCreatePayment: false })
+
+const controllerConfirmAndCreate = new (class extends CreateRefundController {
+  implementation(req: ValidatedRequest<any>, res: Response): Promise<any> {
+    return super.implementation(req, res)
+  }
+
+  respond = jest.fn()
+})({ confirmAndCreatePayment: true })
 
 const headers = { 'api-key': 'ak1', namespace: 'ns1' }
 
@@ -270,6 +324,127 @@ describe('Test CreateRefundController', () => {
       },
     })
   })
+
+  it('should create refund with refund payment', async () => {
+    getOrderAdminMock.mockImplementationOnce(() => ({
+      orderId: 'oid1',
+      namespace: 'ns2',
+      priceNet: '111',
+      priceVat: '222',
+      priceTotal: '333',
+      items: [
+        {
+          orderItemId: 'ooid1',
+          productId: 'pid1',
+          quantity: 10,
+          priceNet: '11',
+          priceVat: '22',
+          priceGross: '33',
+          rowPriceNet: '111',
+          rowPriceVat: '222',
+          rowPriceTotal: '333',
+        },
+      ],
+    }))
+
+    createRefundMock.mockImplementationOnce(() => ({
+      orderId: 'oid1',
+      namespace: 'ns2',
+      priceNet: '111',
+      priceVat: '222',
+      priceTotal: '333',
+      items: [
+        {
+          orderItemId: 'ooid1',
+          productId: 'pid1',
+          quantity: 10,
+          priceNet: '11',
+          priceVat: '22',
+          priceGross: '33',
+          rowPriceNet: '111',
+          rowPriceVat: '222',
+          rowPriceTotal: '333',
+          merchantId: '333',
+        },
+      ],
+    }))
+
+    await controllerConfirmAndCreate.implementation(
+      {
+        body: [
+          {
+            orderId: 'oid1',
+            items: [{ orderItemId: 'ooid1', quantity: 2 }],
+          },
+        ],
+        headers,
+      },
+      responseMock
+    )
+
+    expect(createRefundMock).toHaveBeenCalledTimes(1)
+    //expect(createRefundPaymentFromRefund).toHaveBeenCalledTimes(1)
+    expect(createRefundPaymentFromRefund.mock.calls[0][0]).toEqual({
+      gateway: 'online-paytrail',
+      merchantId: '333',
+      order: {
+        items: [
+          {
+            orderItemId: 'ooid1',
+            priceGross: '33',
+            priceNet: '11',
+            priceVat: '22',
+            productId: 'pid1',
+            quantity: 10,
+            rowPriceNet: '111',
+            rowPriceTotal: '333',
+            rowPriceVat: '222',
+          },
+        ],
+        namespace: 'ns2',
+        orderId: 'oid1',
+        priceNet: '111',
+        priceTotal: '333',
+        priceVat: '222',
+      },
+      payment: true,
+      // This is refundAggregateDto
+      refund: {
+        items: [
+          {
+            merchantId: '333',
+            orderItemId: 'ooid1',
+            priceGross: '33',
+            priceNet: '11',
+            priceVat: '22',
+            productId: 'pid1',
+            quantity: 10,
+            rowPriceNet: '111',
+            rowPriceTotal: '333',
+            rowPriceVat: '222',
+          },
+        ],
+        refund: {
+          customerEmail: 'test@ambientia.fi',
+          customerFirstName: 'dummy_firstname',
+          customerLastName: 'dummy_lastname',
+          customerPhone: '',
+          namespace: 'venepaikat',
+          orderId: 'f1fe0aba-f6a7-3366-bfcf-d3f480db956f',
+          priceNet: '100',
+          priceTotal: '100',
+          priceVat: '100',
+          refundId: 'c6c2cec5-d1a8-4a91-8341-9c3eae0b441a',
+          status: 'confirmed',
+          user: 'dummy_user',
+        },
+      },
+    })
+
+    expect(confirmRefundAdmin).toHaveBeenCalledTimes(1)
+
+    expect(getPaidPaymentAdmin).toHaveBeenCalledTimes(1)
+  })
   it('should return created refund with confirmation url', async () => {
     getOrderAdminMock.mockImplementationOnce(() => ({
       orderId: 'oid1',
@@ -317,7 +492,7 @@ describe('Test CreateRefundController', () => {
               refundItemId: 'riid1',
             },
           ],
-          confirmationUrl: 'test.com/refund/rid1/confirmAndCreatePayment',
+          confirmationUrl: 'test.com/refund/rid1/confirm',
         },
       ],
     })
@@ -377,7 +552,7 @@ describe('Test CreateRefundController', () => {
         {
           refundId: 'rid1',
           items: [],
-          confirmationUrl: 'test.com/refund/rid1/confirmAndCreatePayment',
+          confirmationUrl: 'test.com/refund/rid1/confirm',
         },
       ],
     })

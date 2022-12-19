@@ -66,6 +66,16 @@ export class CheckPaytrailReturnUrlFailure extends ExperienceFailure {
   }
 }
 
+export class CheckPaytrailRefundCallbackUrlFailure extends ExperienceFailure {
+  constructor(source: Error) {
+    super({
+      code: 'failed-to-check-paytrail-refund-callback-url',
+      message: 'Failed to check paytrail refund callback url',
+      source,
+    })
+  }
+}
+
 export class GetPaymentUrlFailure extends ExperienceFailure {
   constructor(source: Error) {
     super({

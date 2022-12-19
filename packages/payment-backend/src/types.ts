@@ -83,8 +83,8 @@ export interface Payment {
   taxAmount: number
   description: string | null
   additionalInfo: string
-  token: string
   timestamp: string
+  token: string
   paytrailProvider?: PaytrailProvider
 }
 

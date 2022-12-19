@@ -7,6 +7,7 @@ import {
 } from '@verkkokauppa/core'
 import type { Response } from 'express'
 import {
+  checkLastValidPurchaseDateTime,
   createOrder,
   createOrderWithItems,
   Order,
@@ -32,6 +33,7 @@ const requestSchema = yup.object().shape({
     items: itemsSchema.notRequired(),
     customer: customerSchema.notRequired().default(undefined),
     paymentFilters: paymentFiltersSchema.notRequired(),
+    lastValidPurchaseDateTime: yup.date().notRequired().default(undefined),
   }),
 })
 
@@ -42,7 +44,9 @@ export class CreateController extends AbstractController<typeof requestSchema> {
     req: ValidatedRequest<typeof requestSchema>,
     res: Response
   ): Promise<any> {
-    const { items, customer } = req.body
+    const { items, customer, lastValidPurchaseDateTime } = req.body
+
+    checkLastValidPurchaseDateTime(lastValidPurchaseDateTime)
 
     if (items && items.length > 0) {
       if (customer === undefined) {
@@ -58,9 +62,18 @@ export class CreateController extends AbstractController<typeof requestSchema> {
     req: ValidatedRequest<typeof requestSchema>,
     res: Response
   ): Promise<any> {
-    const { namespace, user, paymentFilters } = req.body
+    const {
+      namespace,
+      user,
+      paymentFilters,
+      lastValidPurchaseDateTime,
+    } = req.body
     logger.debug(`Create Order for namespace ${namespace} and user ${user}`)
-    const orderData = await createOrder({ namespace, user })
+    const orderData = await createOrder({
+      namespace,
+      user,
+      lastValidPurchaseDateTime,
+    })
 
     const paymentFiltersData = await this.saveOrderPaymentFilters(
       orderData,
@@ -78,7 +91,14 @@ export class CreateController extends AbstractController<typeof requestSchema> {
     req: ValidatedRequest<typeof requestSchema>,
     res: Response
   ): Promise<any> {
-    const { namespace, user, items, customer, paymentFilters } = req.body
+    const {
+      namespace,
+      user,
+      items,
+      customer,
+      paymentFilters,
+      lastValidPurchaseDateTime,
+    } = req.body
     logger.debug(
       `Create Order with Items for namespace ${namespace} and user ${user}`
     )
@@ -97,6 +117,7 @@ export class CreateController extends AbstractController<typeof requestSchema> {
       items,
       customer,
       ...calculateTotalsFromItems({ items }),
+      lastValidPurchaseDateTime,
     })
 
     const paymentFiltersData = await this.saveOrderPaymentFilters(
