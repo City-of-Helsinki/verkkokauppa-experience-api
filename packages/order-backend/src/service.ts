@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { stringify } from 'qs'
 import type {
+  FlowStep,
   Order,
   OrderAccounting,
   OrderAccountingRequest,
@@ -11,6 +12,7 @@ import type {
   OrderWithItemsBackendResponse,
 } from './types'
 import {
+  AddFlowStepsToOrderFailure,
   AddItemsToOrderFailure,
   CancelOrderFailure,
   ConfirmOrderFailure,
@@ -247,6 +249,32 @@ export const addItemsToOrder = async (p: {
       throw new OrderNotFoundError()
     }
     throw new AddItemsToOrderFailure(e)
+  }
+}
+
+export const addFlowStepsToOrder = async (p: {
+  orderId: string
+  activeStep: number
+  totalSteps: number
+}): Promise<FlowStep> => {
+  const { orderId, activeStep, totalSteps } = p
+
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+  const dto = {
+    activeStep,
+    totalSteps,
+  }
+  const url = `${process.env.ORDER_BACKEND_URL}/order/${orderId}/flowSteps`
+  try {
+    const result = await axios.post<FlowStep>(url, dto)
+    return result.data
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new OrderNotFoundError()
+    }
+    throw new AddFlowStepsToOrderFailure(e)
   }
 }
 

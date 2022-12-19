@@ -143,3 +143,10 @@ export interface OrderAccountingRequest {
   orderId: string
   dtos: OrderAccountingItemRequest[]
 }
+
+export interface FlowStep {
+  flowStepId: string
+  orderId: string
+  activeStep: number
+  totalSteps: number
+}
