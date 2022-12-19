@@ -342,6 +342,7 @@ export const transFormBackendOrder = (
       lastValidPurchaseDateTime,
     },
     items,
+    flowSteps,
   } = p
   let customer
   if (customerFirstName && customerLastName && customerEmail) {
@@ -368,6 +369,7 @@ export const transFormBackendOrder = (
     receiptUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}/receipt?user=${user}`,
     loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${orderId}`,
     updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}/update-card?user=${user}`,
+    flowSteps,
   }
   if (lastValidPurchaseDateTime) {
     data = {
