@@ -2,6 +2,7 @@ import axios from 'axios'
 import { stringify } from 'qs'
 import type {
   FlowStep,
+  FlowStepRequest,
   Order,
   OrderAccounting,
   OrderAccountingRequest,
@@ -254,18 +255,14 @@ export const addItemsToOrder = async (p: {
 
 export const addFlowStepsToOrder = async (p: {
   orderId: string
-  activeStep: number
-  totalSteps: number
+  dto: FlowStepRequest
 }): Promise<FlowStep> => {
-  const { orderId, activeStep, totalSteps } = p
+  const { orderId, dto } = p
 
   if (!process.env.ORDER_BACKEND_URL) {
     throw new Error('No order backend URL set')
   }
-  const dto = {
-    activeStep,
-    totalSteps,
-  }
+
   const url = `${process.env.ORDER_BACKEND_URL}/order/${orderId}/flowSteps`
   try {
     const result = await axios.post<FlowStep>(url, dto)

@@ -31,7 +31,7 @@ export class CreateFlowStepController extends AbstractController<
   ): Promise<any> {
     const {
       params: { orderId },
-      body: { activeStep, totalSteps },
+      body,
     } = req
 
     logger.debug(`Add flow steps to order ${orderId}`)
@@ -39,8 +39,7 @@ export class CreateFlowStepController extends AbstractController<
     const dto = new Data(
       await addFlowStepsToOrder({
         orderId,
-        activeStep,
-        totalSteps,
+        dto: body,
       })
     )
 
