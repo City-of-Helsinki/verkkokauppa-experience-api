@@ -1,6 +1,8 @@
 import axios from 'axios'
 import { stringify } from 'qs'
 import type {
+  FlowStep,
+  FlowStepRequest,
   Order,
   OrderAccounting,
   OrderAccountingRequest,
@@ -11,6 +13,7 @@ import type {
   OrderWithItemsBackendResponse,
 } from './types'
 import {
+  AddFlowStepsToOrderFailure,
   AddItemsToOrderFailure,
   CancelOrderFailure,
   ConfirmOrderFailure,
@@ -250,6 +253,28 @@ export const addItemsToOrder = async (p: {
   }
 }
 
+export const addFlowStepsToOrder = async (p: {
+  orderId: string
+  dto: FlowStepRequest
+}): Promise<FlowStep> => {
+  const { orderId, dto } = p
+
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+
+  const url = `${process.env.ORDER_BACKEND_URL}/order/${orderId}/flowSteps`
+  try {
+    const result = await axios.post<FlowStep>(url, dto)
+    return result.data
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new OrderNotFoundError()
+    }
+    throw new AddFlowStepsToOrderFailure(e)
+  }
+}
+
 export const getOrder = async (p: {
   orderId: string
   user: string
@@ -314,6 +339,7 @@ export const transFormBackendOrder = (
       lastValidPurchaseDateTime,
     },
     items,
+    flowSteps,
   } = p
   let customer
   if (customerFirstName && customerLastName && customerEmail) {
@@ -340,6 +366,7 @@ export const transFormBackendOrder = (
     receiptUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}/receipt?user=${user}`,
     loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${orderId}`,
     updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}/update-card?user=${user}`,
+    flowSteps,
   }
   if (lastValidPurchaseDateTime) {
     data = {

@@ -208,6 +208,22 @@ components:
       enum:
         - subscription
         - order
+    FlowStep:
+      type: object
+      required:
+        - activeStep
+        - totalSteps
+      properties:
+        flowStepId:
+          type: string
+          readOnly: true
+        orderId:
+          type: string
+          readOnly: true
+        activeStep:
+          type: number
+        totalSteps:
+          type: number
     Subscription:
       type: object
       properties:
@@ -747,6 +763,37 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
+
+  /{orderId}/flowSteps:
+    post:
+      description: Set order's flow steps
+      security:
+        - UserId: [ ]
+        - HelsinkiProfile: [ ]
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlowStep'
+      responses:
+        '200':
+          description: The resulting flow step
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowStep'
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '403':
+          $ref: '#/components/responses/AuthenticationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
   /{orderId}/cancel:
     post:
       description: Cancel order
