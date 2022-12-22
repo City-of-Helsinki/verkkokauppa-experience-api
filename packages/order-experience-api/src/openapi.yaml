@@ -874,6 +874,7 @@ paths:
                             type: string
                           paymentGateway:
                             type: string
+                            readOnly: true
                             example: "online-paytrail (paytrail), online (visma), offline (invoice)"
                           paytrailProvider:
                             $ref: '#/components/schemas/PaytrailProvider'
