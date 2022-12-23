@@ -470,6 +470,30 @@ components:
         - wallets
         - online
         - online-paytrail
+    PaytrailProvider:
+      type: object
+      properties:
+        url:
+          type: string
+        icon:
+          type: string
+        svg:
+          type: string
+        group:
+          type: string
+        name:
+          type: string
+        id:
+          type: string
+        parameters:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              value:
+                type: string
 
   parameters:
     Namespace:
@@ -895,6 +919,12 @@ paths:
                             type: string
                           paymentUrl:
                             type: string
+                          paymentGateway:
+                            type: string
+                            readOnly: true
+                            example: "online-paytrail (paytrail), online (visma), offline (invoice)"
+                          paytrailProvider:
+                            $ref: '#/components/schemas/PaytrailProvider'
         '400':
           $ref: '#/components/responses/RequestValidationError'
         '403':
