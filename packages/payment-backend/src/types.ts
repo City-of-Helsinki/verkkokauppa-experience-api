@@ -112,3 +112,11 @@ export interface PaymentFilter {
   filterType: string
   value: string
 }
+
+export interface OrderPaymentMethod {
+  name: string
+  code: string
+  group: string
+  img: string
+  gateway: string
+}
