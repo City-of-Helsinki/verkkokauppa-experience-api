@@ -10,6 +10,7 @@ import type {
   OrderInvoice,
   OrderInvoiceRequest,
   OrderItemRequest,
+  OrderPaymentMethod,
   OrderWithItemsBackendResponse,
 } from './types'
 import {
@@ -29,6 +30,14 @@ import {
   SubscriptionNotFoundError,
 } from './errors'
 import { ExperienceFailure, ForbiddenError } from '@verkkokauppa/core'
+
+const getBackendUrl = () => {
+  const url = process.env.ORDER_BACKEND_URL
+  if (!url) {
+    throw new Error('No order backend URL set')
+  }
+  return url
+}
 
 export const createOrder = async (p: {
   namespace: string
@@ -340,6 +349,7 @@ export const transFormBackendOrder = (
     },
     items,
     flowSteps,
+    paymentMethod,
   } = p
   let customer
   if (customerFirstName && customerLastName && customerEmail) {
@@ -367,6 +377,7 @@ export const transFormBackendOrder = (
     loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${orderId}`,
     updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}/update-card?user=${user}`,
     flowSteps,
+    paymentMethod,
   }
   if (lastValidPurchaseDateTime) {
     data = {
@@ -498,4 +509,27 @@ export const checkLastValidPurchaseDateTime = (
     throw new ForbiddenError('Optional lastValidPurchaseDateTime is expired')
   }
   return currentDateTime
+}
+
+export const setOrderPaymentMethod = async (p: {
+  orderId: string
+  user: string
+  paymentMethod: OrderPaymentMethod
+}): Promise<OrderPaymentMethod> => {
+  const { orderId, user: userId, paymentMethod } = p
+  const url = `${getBackendUrl()}/order/setPaymentMethod`
+  try {
+    const res = await axios.post(url, {
+      ...paymentMethod,
+      orderId,
+      userId,
+    })
+    return res.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-set-order-payment-method',
+      message: `failed to set order payment method (${JSON.stringify(p)})`,
+      source: e as Error,
+    })
+  }
 }

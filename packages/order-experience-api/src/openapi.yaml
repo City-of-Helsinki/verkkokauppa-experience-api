@@ -81,6 +81,25 @@ components:
           type: string
         ovtId:
           type: string
+    PaymentMethod:
+      type: object
+      required:
+        - name
+        - code
+        - group
+        - img
+        - gateway
+      properties:
+        name:
+          type: string
+        code:
+          type: string
+        group:
+          type: string
+        img:
+          type: string
+        gateway:
+          type: string
     Order:
       type: object
       required:
@@ -123,6 +142,8 @@ components:
           type: string
         type:
           $ref: '#/components/schemas/OrderType'
+        paymentMethod:
+          $ref: '#/components/schemas/PaymentMethod'
     OrderItem:
       type: object
       required:
@@ -454,7 +475,7 @@ components:
         value:
           type: string
           description: "This can be paymentMethod name, code, group or gateway which will be removed from available payment methods
-           Example, if you want to filter out all banks, value=banks and filterType=banks 
+           Example, if you want to filter out all banks, value=banks and filterType=banks
            (Supported values can be found from FilterType enum)"
     ReferenceType:
       type: string
@@ -556,7 +577,7 @@ paths:
     post:
       description: |
         Create a new order. The resulting order type depends on the input: if periodUnit and periodFrequency are present, the order is of type subscription
-        
+
         Optional lastValidPurchaseDateTime can be set that determines the timeframe in which the order must be purchased. Given in ISO 8601 date time -format.
       requestBody:
         required: true
@@ -752,6 +773,32 @@ paths:
           $ref: '#/components/responses/AuthenticationError'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /{orderId}/paymentMethod:
+    post:
+      description: Set or update order's payment method
+      security:
+        - UserId: [ ]
+        - HelsinkiProfile: [ ]
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                paymentMethod:
+                  $ref: '#/components/schemas/PaymentMethod'
+      responses:
+        '200':
+          description: The payment method
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentMethod'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
