@@ -86,6 +86,7 @@ export interface Order {
   type: OrderType
   lastValidPurchaseDateTime?: Date
   flowSteps?: FlowStep
+  paymentMethod?: OrderPaymentMethod
 }
 
 export interface OrderBackendResponse {
@@ -112,6 +113,7 @@ export type OrderWithItemsBackendResponse = {
   }
   items: OrderItem[]
   flowSteps?: FlowStep
+  paymentMethod?: OrderPaymentMethod
 }
 
 export interface ProductAccounting {
@@ -156,4 +158,12 @@ export interface FlowStep {
   orderId: string
   activeStep: number
   totalSteps: number
+}
+
+export interface OrderPaymentMethod {
+  name: string
+  code: string
+  group: string
+  img: string
+  gateway: string
 }
