@@ -1,10 +1,8 @@
 import * as yup from 'yup'
 import { AbstractController, Data, ValidatedRequest } from '@verkkokauppa/core'
 import type { Response } from 'express'
-import {
-  PaymentGateway,
-  setPaymentMethodToOrder,
-} from '@verkkokauppa/payment-backend'
+import { PaymentGateway } from '@verkkokauppa/payment-backend'
+import { setOrderPaymentMethod } from '@verkkokauppa/order-backend'
 
 const requestSchema = yup.object().shape({
   body: yup.object().shape({
@@ -45,7 +43,7 @@ export class SetPaymentMethodController extends AbstractController<
       headers: { user },
     } = req
     const dto = new Data(
-      await setPaymentMethodToOrder({
+      await setOrderPaymentMethod({
         orderId,
         user,
         paymentMethod,

@@ -142,6 +142,8 @@ components:
           type: string
         type:
           $ref: '#/components/schemas/OrderType'
+        paymentMethod:
+          $ref: '#/components/schemas/PaymentMethod'
     OrderItem:
       type: object
       required:

@@ -1,7 +1,6 @@
 import axios from 'axios'
 import type {
   Order,
-  OrderPaymentMethod,
   Payment,
   PaymentFilter,
   PaymentMethod,
@@ -38,14 +37,6 @@ const checkBackendUrlExists = () => {
   if (!process.env.PAYMENT_BACKEND_URL) {
     throw new Error('No payment API backend URL set')
   }
-}
-
-const getBackendUrl = () => {
-  const url = process.env.PAYMENT_BACKEND_URL
-  if (!url) {
-    throw new Error('No payment API backend URL set')
-  }
-  return url
 }
 
 export const createMethodPartFromGateway = (gateway: string) => {
@@ -607,29 +598,6 @@ export const savePaymentFiltersAdmin = async (
     throw new ExperienceFailure({
       code: 'failed-to-save-payment-filter',
       message: 'failed to save payment filter(s)',
-      source: e as Error,
-    })
-  }
-}
-
-export const setPaymentMethodToOrder = async (p: {
-  orderId: string
-  user: string
-  paymentMethod: OrderPaymentMethod
-}): Promise<OrderPaymentMethod> => {
-  const { orderId, user: userId, paymentMethod } = p
-  const url = `${getBackendUrl()}/paymentmethod/order/setPaymentMethod`
-  try {
-    const res = await axios.post(url, {
-      ...paymentMethod,
-      orderId,
-      userId,
-    })
-    return res.data
-  } catch (e) {
-    throw new ExperienceFailure({
-      code: 'failed-to-set-order-payment-method',
-      message: `failed to set order payment method (${JSON.stringify(p)})`,
       source: e as Error,
     })
   }
