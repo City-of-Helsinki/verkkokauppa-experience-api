@@ -1020,7 +1020,6 @@ paths:
                             example: "online-paytrail (paytrail), online (visma), offline (invoice)"
                           paytrailProvider:
                             $ref: '#/components/schemas/PaytrailProvider'
-
         '400':
           $ref: '#/components/responses/RequestValidationError'
         '403':
