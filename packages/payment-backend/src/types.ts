@@ -112,3 +112,17 @@ export interface PaymentFilter {
   filterType: string
   value: string
 }
+
+export interface PaytrailCardFormParameters {
+  'checkout-account': number
+  'checkout-algorithm': string
+  'checkout-method': string
+  'checkout-nonce': string
+  'checkout-timestamp': string
+  'checkout-redirect-success-url': string
+  'checkout-redirect-cancel-url': string
+  signature: string
+  'checkout-callback-success-url': string
+  'checkout-callback-cancel-url': string
+  language: string
+}
