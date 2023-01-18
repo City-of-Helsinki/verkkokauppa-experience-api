@@ -24,7 +24,7 @@ import {
   PaymentsNotFound,
   PaymentValidationError,
 } from './errors'
-import { ExperienceFailure } from '@verkkokauppa/core'
+import { ExperienceFailure, removeItem } from '@verkkokauppa/core'
 import { PaymentGateway, PaymentStatus, ReferenceType } from './enums'
 
 const allowedPaymentGateways = [
@@ -244,7 +244,7 @@ export const getPaymentMethodList = async (parameters: {
   order: Order
   merchantId: string | null
 }): Promise<PaymentMethod[]> => {
-  const { merchantId } = parameters
+  const { merchantId, order } = parameters
   const [
     onlineMethods,
     offlineMethods,
@@ -278,7 +278,22 @@ export const getPaymentMethodList = async (parameters: {
     process.env.FILTERED_PAYMENT_GATEWAYS ||
     `${PaymentGateway.PAYTRAIL},${PaymentGateway.INVOICE}`
 
-  const globallyFilteredPaymentGateways = gateways.split(',')
+  let globallyFilteredPaymentGateways = gateways.split(',')
+
+  const paytrailActivatedProductIds =
+    process.env.PAYTRAIL_ACTIVATED_PRODUCT_IDS ||
+    '5670e008-5357-3c63-a9c2-f85e624fd7b8'
+
+  const globallyActivatedProductIds = paytrailActivatedProductIds.split(',')
+
+  order.items.map((item) => {
+    if (globallyActivatedProductIds.includes(item.productId)) {
+      globallyFilteredPaymentGateways = removeItem(
+        globallyFilteredPaymentGateways,
+        PaymentGateway.PAYTRAIL
+      )
+    }
+  })
 
   filteredPaymentFilters = filterPaymentMethodByGateway(
     filteredPaymentFilters,
