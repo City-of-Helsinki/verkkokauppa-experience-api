@@ -7,6 +7,7 @@ import type {
   PaytrailStatus,
   VismaPayResponse,
   VismaStatus,
+  PaytrailCardFormParameters,
 } from './types'
 import type { ParsedQs } from 'qs'
 import {
@@ -598,6 +599,28 @@ export const savePaymentFiltersAdmin = async (
     throw new ExperienceFailure({
       code: 'failed-to-save-payment-filter',
       message: 'failed to save payment filter(s)',
+      source: e as Error,
+    })
+  }
+}
+
+export const getPaytrailPaymenCardFormParams = async (p: {
+  namespace: string
+  merchantId: string
+}): Promise<PaytrailCardFormParameters> => {
+  checkBackendUrlExists()
+
+  const { namespace, merchantId } = p
+  const url = `${process.env.PAYMENT_BACKEND_URL}/subscription/get/card-form-parameters`
+  try {
+    const res = await axios.get<PaytrailCardFormParameters>(url, {
+      params: { namespace, merchantId },
+    })
+    return res.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-get-card-form-parameters',
+      message: 'failed to get card form parameters',
       source: e as Error,
     })
   }

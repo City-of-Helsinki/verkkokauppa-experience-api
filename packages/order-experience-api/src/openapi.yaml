@@ -515,7 +515,31 @@ components:
                 type: string
               value:
                 type: string
-
+    PaytrailCardFormParameters:
+      type: object
+      properties:
+        checkout-account:
+          type: number
+        checkout-algorithm:
+          type: string
+        checkout-method:
+          type: string
+        checkout-nonce:
+          type: string
+        checkout-timestamp:
+          type: string
+        checkout-redirect-success-url:
+          type: string
+        checkout-redirect-cancel-url:
+          type: string
+        signature:
+          type: string
+        checkout-callback-success-url:
+          type: string
+        checkout-callback-cancel-url:
+          type: string
+        language:
+          type: string
   parameters:
     Namespace:
       name: namespace
@@ -865,6 +889,30 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
+  /{orderId}/cardFormParameters:
+    get:
+      description: Get card form parameters for subscription order
+      security:
+        - UserId: [ ]
+        - HelsinkiProfile: [ ]
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Returns the card form parameters for subscription order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaytrailCardFormParameters'
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '403':
+          $ref: '#/components/responses/AuthenticationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
   /{orderId}/cancel:
     post:
       description: Cancel order
@@ -972,6 +1020,7 @@ paths:
                             example: "online-paytrail (paytrail), online (visma), offline (invoice)"
                           paytrailProvider:
                             $ref: '#/components/schemas/PaytrailProvider'
+
         '400':
           $ref: '#/components/responses/RequestValidationError'
         '403':
