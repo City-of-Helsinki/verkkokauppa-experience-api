@@ -118,7 +118,38 @@ components:
       allOf:
         - $ref: '#/components/schemas/Payment'
         - $ref: '#/components/schemas/PaymentUrl'
+    PaytrailCardFormParameters:
+      type: object
+      properties:
+        checkout-account:
+          type: number
+        checkout-algorithm:
+          type: string
+        checkout-method:
+          type: string
+        checkout-nonce:
+          type: string
+        checkout-timestamp:
+          type: string
+        checkout-redirect-success-url:
+          type: string
+        checkout-redirect-cancel-url:
+          type: string
+        signature:
+          type: string
+        checkout-callback-success-url:
+          type: string
+        checkout-callback-cancel-url:
+          type: string
+        language:
+          type: string
   responses:
+    AuthenticationError:
+      description: Authentication failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
     NotFound:
       description: Entity (e.g. order or payment) not found
       content:
@@ -241,6 +272,29 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/PaymentMethod'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /{orderId}/cardFormParameters:
+    get:
+      description: Get card form parameters for subscription order
+      security:
+        - UserId: [ ]
+        - HelsinkiProfile: [ ]
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Returns the card form parameters for subscription order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaytrailCardFormParameters'
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '403':
+          $ref: '#/components/responses/AuthenticationError'
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
