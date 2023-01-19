@@ -141,6 +141,7 @@ describe('Test instantPurchase', () => {
       user: 'user1',
       items: [
         {
+          merchantId: '',
           productId: 'pid1',
           productName: 'n1',
           quantity: 1,
@@ -163,6 +164,7 @@ describe('Test instantPurchase', () => {
           ],
         },
         {
+          merchantId: '',
           productId: 'pid2',
           productName: 'n2',
           quantity: 2,
