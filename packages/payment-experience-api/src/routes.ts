@@ -13,12 +13,16 @@ import { SendReceiptPaymentAdminInternalController } from './api/sendReceiptPaym
 import { PaytrailOnlinePaymentReturnController } from './api/paytrailOnlinePaymentReturnController'
 import { PaytrailOnlinePaymentNotifyController } from './api/paytrailOnlinePaymentNotifyController'
 import { PaytrailOnlineRefundPaymentSuccessController } from './api/paytrailOnlineRefundPaymentSuccessController'
+import { GetCardFormParametersController } from './api/getCardFormParametersController'
 
 const createPaymentController = new (withAuthentication(
   CreatePaymentController
 ))()
 const getPaymentMethodListCtrl = new (withAuthentication(
   GetPaymentMethodListController
+))()
+const getCardFormParametersController = new (withAuthentication(
+  GetCardFormParametersController
 ))()
 const onlinePaymentReturnController = new OnlinePaymentReturnController()
 const paytrailOnlinePaymentReturnController = new PaytrailOnlinePaymentReturnController()
@@ -42,6 +46,9 @@ router.post('/:orderId', (req, res) =>
 )
 router.get('/:orderId/paymentMethods', (req, res) =>
   getPaymentMethodListCtrl.execute(req, res)
+)
+router.get('/:orderId/cardFormParameters', (req, res) =>
+  getCardFormParametersController.execute(req, res)
 )
 router.get('/onlinePayment/return', (req, res) =>
   onlinePaymentReturnController.execute(req, res)

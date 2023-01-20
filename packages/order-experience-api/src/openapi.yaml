@@ -515,7 +515,6 @@ components:
                 type: string
               value:
                 type: string
-
   parameters:
     Namespace:
       name: namespace
