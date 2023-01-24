@@ -132,6 +132,10 @@ components:
           type: string
         loggedInCheckoutUrl:
           type: string
+        updateCardUrl:
+          type: string
+        isValidForCheckout:
+          type: boolean
         customer:
           $ref: '#/components/schemas/Customer'
         invoice:
@@ -144,6 +148,36 @@ components:
           $ref: '#/components/schemas/OrderType'
         paymentMethod:
           $ref: '#/components/schemas/PaymentMethod'
+    OrderAdmin:
+      allOf:
+        - $ref: '#/components/schemas/Order'
+      type: object
+      properties:
+        merchant:
+          $ref: '#/components/schemas/MerchantDetails'
+    MerchantDetails:
+      type: object
+      properties:
+        merchantName:
+          type: string
+        merchantStreet:
+          type: string
+        merchantZip:
+          type: string
+        merchantCity:
+          type: string
+        merchantEmail:
+          type: string
+        merchantUrl:
+          type: string
+        merchantTermsOfServiceUrl:
+          type: string
+        merchantBusinessId:
+          type: string
+        merchantPhone:
+          type: string
+        merchantShopId:
+          type: string
     OrderItem:
       type: object
       required:
@@ -701,7 +735,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Order'
+                $ref: '#/components/schemas/OrderAdmin'
         '403':
           $ref: '#/components/responses/InvalidApiKey'
         '404':
