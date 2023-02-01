@@ -26,7 +26,7 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
     }
     let redirectUrl = new URL(globalRedirectUrl)
     try {
-      const orderId = req.params['orderId']
+      const { orderId } = req.params
 
       if (!orderId) {
         return res.redirect(
