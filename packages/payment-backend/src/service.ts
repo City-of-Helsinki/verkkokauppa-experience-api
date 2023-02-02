@@ -40,6 +40,14 @@ const checkBackendUrlExists = () => {
   }
 }
 
+const getBackendUrl = () => {
+  const url = process.env.PAYMENT_BACKEND_URL
+  if (!url) {
+    throw new Error('No payment API backend URL set')
+  }
+  return url
+}
+
 export const createMethodPartFromGateway = (gateway: string) => {
   let paymentMethodPart = ''
 
@@ -353,6 +361,29 @@ export const checkPaytrailReturnUrl = async (p: {
   }
 }
 
+export const checkPaytrailCardReturnUrl = async (p: {
+  params: ParsedQs
+  order: Order
+}): Promise<Payment> => {
+  const { params, order } = p
+  const url = `${getBackendUrl()}/payment/paytrail/check-card-return-url`
+  try {
+    const res = await axios.get(url, {
+      params: {
+        ...params,
+        orderId: order.orderId,
+      },
+    })
+    return res.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-check-paytrail-card-return-url',
+      message: 'Failed to check paytrail card return url',
+      source: e,
+    })
+  }
+}
+
 export const checkPaytrailRefundCallbackUrl = async (p: {
   params: ParsedQs
   merchantId: string
@@ -622,14 +653,15 @@ export const savePaymentFiltersAdmin = async (
 export const getPaytrailPaymenCardFormParams = async (p: {
   namespace: string
   merchantId: string
+  orderId: string
 }): Promise<PaytrailCardFormParameters> => {
   checkBackendUrlExists()
 
-  const { namespace, merchantId } = p
+  const { namespace, merchantId, orderId } = p
   const url = `${process.env.PAYMENT_BACKEND_URL}/subscription/get/card-form-parameters`
   try {
     const res = await axios.get<PaytrailCardFormParameters>(url, {
-      params: { namespace, merchantId },
+      params: { namespace, merchantId, orderId },
     })
     return res.data
   } catch (e) {
