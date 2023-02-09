@@ -1,9 +1,19 @@
-import { AbstractController, logger } from '@verkkokauppa/core'
+import {
+  AbstractController,
+  ExperienceError,
+  logger,
+  StatusCode,
+} from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
-import { getOrderAdmin } from '@verkkokauppa/order-backend'
+import {
+  createAccountingEntryForOrder,
+  getOrderAdmin,
+} from '@verkkokauppa/order-backend'
 import { URL } from 'url'
 import { getPublicServiceConfiguration } from '@verkkokauppa/configuration-backend'
 import { checkPaytrailCardReturnUrl } from '@verkkokauppa/payment-backend'
+import { sendReceiptToCustomer } from '../lib/sendEmail'
+import { getProductAccountingBatch } from '@verkkokauppa/product-backend'
 
 export class PaytrailCardRedirectSuccessController extends AbstractController {
   protected readonly requestSchema = null
@@ -61,6 +71,40 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
           PaytrailCardRedirectSuccessController.fault(redirectUrl).toString()
         )
       }
+
+      logger.info(`Load paytrail product accountings for order ${orderId}`)
+      const productAccountings = await getProductAccountingBatch({
+        productIds: order.items.map((item) => item.productId),
+      })
+
+      logger.info(
+        `Create accounting entry for paytrail order ${orderId} with accountings ${JSON.stringify(
+          productAccountings
+        )}`
+      )
+
+      await createAccountingEntryForOrder({
+        orderId,
+        dtos: order.items.map((item) => {
+          const productAccounting = productAccountings.find(
+            (accountingData) => accountingData.productId === item.productId
+          )
+          if (!productAccounting) {
+            throw new ExperienceError({
+              code: 'failed-to-create-order-accounting-entry',
+              message: `No accounting entry found for product ${item.productId}`,
+              responseStatus: StatusCode.BadRequest,
+              logLevel: 'error',
+            })
+          }
+          return {
+            ...item,
+            ...productAccounting,
+          }
+        }),
+      })
+
+      await sendReceiptToCustomer(payment, orderId, order)
 
       return res.redirect(
         302,
