@@ -91,10 +91,9 @@ const payment = {
     'https://www.vismapay.com/pbwapi/token/427a38b2607b105de58c7dbda2d8ce2f6fcb31d6cc52f77b8818c0b5dcd503f5',
 }
 
-const createdAt = '2023-02-08T07:56:57.599811'
 const orderMock = {
   orderId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
-  createdAt: createdAt,
+  createdAt: '2023-02-08T07:56:57.599811',
   namespace: 'ns1',
   user: 'test@test.dev.hel',
   type: 'order',
@@ -247,7 +246,6 @@ function mockAxiosPostMailAndAccounting() {
 }
 
 const orderId = orderMock.orderId
-const globalUrl = 'https://test.dev.hel'
 
 const controller = new (class extends PaytrailCardRedirectSuccessController {
   implementation(req: Request, res: Response): Promise<any> {
@@ -269,9 +267,8 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     expect(mockRedirect).toHaveBeenCalledTimes(1)
     expect(mockRedirect.mock.calls[0][0]).toEqual(302)
     expect(mockRedirect.mock.calls[0][1]).toEqual(
-      `${baseUrl || globalUrl}/summary?paymentPaid=false`
+      `${baseUrl || 'https://test.dev.hel'}/summary?paymentPaid=false`
     )
-    //expect(sendReceiptToCustomerMock).toBeCalledTimes(1)
   }
 
   it('should throw for missing REDIRECT_PAYTRAIL_PAYMENT_URL_BASE', async () => {
@@ -280,7 +277,7 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     }).rejects.toThrow('No default paytrail redirect url defined')
   })
   it('should redirect to summary if orderId is missing', async () => {
-    process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = globalUrl
+    process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
     await controller.implementation(
       { params: { }, query: { } } as any,
       mockResponse
@@ -289,7 +286,7 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     expect(axiosMock.post).toHaveBeenCalledTimes(0)
   })
   it('should redirect to summary if order cannot be fetched', async () => {
-    process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = globalUrl
+    process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
     getOrderAdminMock.mockImplementationOnce(() => {
       throw new Error()
     })
@@ -301,7 +298,7 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     expect(axiosMock.post).toHaveBeenCalledTimes(0)
   })
   it('should redirect to summary if getPublicServiceConfiguration fails', async () => {
-    process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = globalUrl
+    process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
     getPublicServiceConfigurationMock.mockImplementationOnce(() => {
       throw new Error()
     })
@@ -313,7 +310,7 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     expect(axiosMock.post).toHaveBeenCalledTimes(0)
   })
   it('should redirect to summary if checkPaytrailCardReturnUrl fails', async () => {
-    process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = globalUrl
+    process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
     checkPaytrailCardReturnUrlMock.mockImplementationOnce(() => {
       throw new Error()
     })
@@ -325,7 +322,7 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     expect(axiosMock.post).toHaveBeenCalledTimes(0)
   })
   it('should redirect to summary if payment status is not payment_paid_online', async () => {
-    process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = globalUrl
+    process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
     checkPaytrailCardReturnUrlMock.mockImplementationOnce(() => ({
       status: 'payment_paid'
     }))
@@ -336,8 +333,8 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     expectSummaryRedirect()
   })
   it('should redirect to success', async () => {
-    process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = globalUrl
-    process.env.PRODUCT_BACKEND_URL = globalUrl
+    process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
+    process.env.PRODUCT_BACKEND_URL = 'https://test.dev.hel'
     process.env.MESSAGE_BACKEND_URL = 'http://localhost:8181'
     process.env.ORDER_BACKEND_URL = 'http://localhost:8183'
 
@@ -361,12 +358,12 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     expect(axiosMock.post).toHaveBeenCalledTimes(2)
     expect(mockRedirect.mock.calls[0][0]).toEqual(302)
     expect(mockRedirect.mock.calls[0][1]).toEqual(
-      `${globalUrl}/success`
+      `https://test.dev.hel/success`
     )
   })
   it('should redirect to service specific success if service redirect url is present', async () => {
-    process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = globalUrl
-    process.env.PRODUCT_BACKEND_URL = globalUrl
+    process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
+    process.env.PRODUCT_BACKEND_URL = 'https://test.dev.hel'
     process.env.MESSAGE_BACKEND_URL = 'http://localhost:8181'
     process.env.ORDER_BACKEND_URL = 'http://localhost:8183'
     const serviceUrl = 'https://testservice.dev.hel'
@@ -401,7 +398,7 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     )
   })
   it('should redirect to service specific summary if service redirect url is present', async () => {
-    process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = globalUrl
+    process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
     const serviceUrl = 'https://testservice.dev.hel'
     getPublicServiceConfigurationMock.mockImplementationOnce(() => ({
       configurationValue: serviceUrl
@@ -417,7 +414,7 @@ describe('Test paytrailCardRedirectSuccessController', () => {
   })
 
   it('should not call axios posts if product accounting is not received', async () => {
-    process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = globalUrl
+    process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
     process.env.MESSAGE_BACKEND_URL = 'http://localhost:8181'
     process.env.ORDER_BACKEND_URL = 'http://localhost:8183'
     getProductAccountingBatchMock.mockImplementationOnce(() => null)
@@ -438,12 +435,12 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     expect(axiosMock.post).toHaveBeenCalledTimes(0)
     expect(mockRedirect.mock.calls[0][0]).toEqual(302)
     expect(mockRedirect.mock.calls[0][1]).toEqual(
-      `${globalUrl}/summary?paymentPaid=false`
+      `https://test.dev.hel/summary?paymentPaid=false`
     )
   })
 
   it('should not call axios posts if product accounting does not have product', async () => {
-    process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = globalUrl
+    process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
     process.env.MESSAGE_BACKEND_URL = 'http://localhost:8181'
     process.env.ORDER_BACKEND_URL = 'http://localhost:8183'
     getProductAccountingBatchMock.mockImplementationOnce(() => [
@@ -475,7 +472,7 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     expect(axiosMock.post).toHaveBeenCalledTimes(0)
     expect(mockRedirect.mock.calls[0][0]).toEqual(302)
     expect(mockRedirect.mock.calls[0][1]).toEqual(
-      `${globalUrl}/summary?paymentPaid=false`
+      `https://test.dev.hel/summary?paymentPaid=false`
     )
   })
 })
