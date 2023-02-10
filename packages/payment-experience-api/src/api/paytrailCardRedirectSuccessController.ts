@@ -72,6 +72,9 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
         )
       }
 
+      // send email receipt. Method does not throw exceptions
+      await sendReceiptToCustomer(payment, orderId, order)
+
       logger.info(`Load paytrail product accountings for order ${orderId}`)
       const productAccountings = await getProductAccountingBatch({
         productIds: order.items.map((item) => item.productId),
@@ -103,8 +106,6 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
           }
         }),
       })
-
-      await sendReceiptToCustomer(payment, orderId, order)
 
       return res.redirect(
         302,
