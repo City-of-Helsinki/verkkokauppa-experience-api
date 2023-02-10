@@ -419,6 +419,10 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     process.env.ORDER_BACKEND_URL = 'http://localhost:8183'
     getProductAccountingBatchMock.mockImplementationOnce(() => null)
 
+    // mocks axios post and checks data sent to */message/send/email
+    // and /order/accounting/create urls
+    mockAxiosPostMailAndAccounting()
+
     axiosMock.get.mockImplementation((url) => {
       if (url.includes(`/product/accounting/list`)) {
         return Promise.resolve({ data: mockProductAccounting})
@@ -432,7 +436,7 @@ describe('Test paytrailCardRedirectSuccessController', () => {
       mockResponse
     )
     expect(mockRedirect).toHaveBeenCalledTimes(1)
-    expect(axiosMock.post).toHaveBeenCalledTimes(0)
+    expect(axiosMock.post).toHaveBeenCalledTimes(1)
     expect(mockRedirect.mock.calls[0][0]).toEqual(302)
     expect(mockRedirect.mock.calls[0][1]).toEqual(
       `https://test.dev.hel/summary?paymentPaid=false`
@@ -456,6 +460,10 @@ describe('Test paytrailCardRedirectSuccessController', () => {
       },
     ])
 
+    // mocks axios post and checks data sent to */message/send/email
+    // and /order/accounting/create urls
+    mockAxiosPostMailAndAccounting()
+
     axiosMock.get.mockImplementation((url) => {
       if (url.includes(`/product/accounting/list`)) {
         return Promise.resolve({ data: mockProductAccounting})
@@ -469,7 +477,7 @@ describe('Test paytrailCardRedirectSuccessController', () => {
       mockResponse
     )
     expect(mockRedirect).toHaveBeenCalledTimes(1)
-    expect(axiosMock.post).toHaveBeenCalledTimes(0)
+    expect(axiosMock.post).toHaveBeenCalledTimes(1)
     expect(mockRedirect.mock.calls[0][0]).toEqual(302)
     expect(mockRedirect.mock.calls[0][1]).toEqual(
       `https://test.dev.hel/summary?paymentPaid=false`
