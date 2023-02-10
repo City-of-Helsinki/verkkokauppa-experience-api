@@ -19,6 +19,9 @@ jest.mock('@verkkokauppa/order-backend', () => {
     getOrderAdmin: jest.fn(() => []),
     // lastly override w/ any of the module's functions that
     // we want to use the *real* implementations for
+
+    // createAccountingEntryForOrder not mocked so axios post mock gets called
+    // with real implementation
     createAccountingEntryForOrder: actual.createAccountingEntryForOrder,
   }
 })
@@ -49,41 +52,6 @@ const getProductAccountingBatchMock = require('@verkkokauppa/product-backend').g
 )
 
 const axiosMock = axios as jest.Mocked<typeof axios>
-axiosMock.post.mockImplementation((url, data?: any) => {
-    if (url.includes(`message/send/email`)) {
-      expect(url).toEqual(
-        `${process.env.MESSAGE_BACKEND_URL}/message/send/email`
-      )
-      expect(data.header).toEqual(
-        'Tilausvahvistus ja kuitti / Order confirmation and receipt / Beställningsbekräftelse och kvitto'
-      )
-      expect(data.id).toEqual('145d8829-07b7-4b03-ab0e-24063958ab9b')
-      expect(data.receiver).toEqual('essi.esimerkki@gmail.com')
-      return Promise.resolve({ data: mockAxiosData })
-    }
-
-    if (url.includes(`order/accounting/create`)) {
-      expect(url).toEqual(
-        `${process.env.ORDER_BACKEND_URL}/order/accounting/create`
-      )
-      expect(data.orderId).toEqual(orderMock.orderId)
-      return Promise.resolve({ data: mockProductAccounting })
-    }
-
-    return Promise.resolve({})
-  })
-
-  axiosMock.get.mockImplementation((url) => {
-    if (url.includes(`/product/accounting/list`)) {
-      return Promise.resolve({ data: mockProductAccounting})
-    }
-    console.log(url)
-    return Promise.resolve({})
-  })
-
-const globalUrl = 'https://test.dev.hel'
-
-
 
 const paytrailstatus = {
   status: 'payment_paid_online',
@@ -124,7 +92,6 @@ const payment = {
 }
 
 const createdAt = '2023-02-08T07:56:57.599811'
-
 const orderMock = {
   orderId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
   createdAt: createdAt,
@@ -252,8 +219,35 @@ const mockAxiosData = {
   ],
 };
 
-const orderId = orderMock.orderId
+// mock axios post calls and check data they receive
+function mockAxiosPostMailAndAccounting() {
+  axiosMock.post.mockImplementation((url, data?: any) => {
+    if (url.includes(`message/send/email`)) {
+      expect(url).toEqual(
+        `${process.env.MESSAGE_BACKEND_URL}/message/send/email`
+      )
+      expect(data.header).toEqual(
+        'Tilausvahvistus ja kuitti / Order confirmation and receipt / Beställningsbekräftelse och kvitto'
+      )
+      expect(data.id).toEqual('145d8829-07b7-4b03-ab0e-24063958ab9b')
+      expect(data.receiver).toEqual('essi.esimerkki@gmail.com')
+      return Promise.resolve({ data: mockAxiosData })
+    }
 
+    if (url.includes(`order/accounting/create`)) {
+      expect(url).toEqual(
+        `${process.env.ORDER_BACKEND_URL}/order/accounting/create`
+      )
+      expect(data.orderId).toEqual(orderMock.orderId)
+      return Promise.resolve({ data: mockProductAccounting })
+    }
+
+    return Promise.resolve({})
+  })
+}
+
+const orderId = orderMock.orderId
+const globalUrl = 'https://test.dev.hel'
 
 const controller = new (class extends PaytrailCardRedirectSuccessController {
   implementation(req: Request, res: Response): Promise<any> {
@@ -347,6 +341,18 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     process.env.MESSAGE_BACKEND_URL = 'http://localhost:8181'
     process.env.ORDER_BACKEND_URL = 'http://localhost:8183'
 
+    // mocks axios post and checks data sent to */message/send/email
+    // and /order/accounting/create urls
+    mockAxiosPostMailAndAccounting()
+
+    axiosMock.get.mockImplementation((url) => {
+      if (url.includes(`/product/accounting/list`)) {
+        return Promise.resolve({ data: mockProductAccounting})
+      }
+      console.log(url)
+      return Promise.resolve({})
+    })
+
     await controller.implementation(
       { params: { orderId }, query: { } } as any,
       mockResponse
@@ -364,6 +370,18 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     process.env.MESSAGE_BACKEND_URL = 'http://localhost:8181'
     process.env.ORDER_BACKEND_URL = 'http://localhost:8183'
     const serviceUrl = 'https://testservice.dev.hel'
+
+    // mocks axios post and checks data sent to */message/send/email
+    // and /order/accounting/create urls
+    mockAxiosPostMailAndAccounting()
+
+    axiosMock.get.mockImplementation((url) => {
+      if (url.includes(`/product/accounting/list`)) {
+        return Promise.resolve({ data: mockProductAccounting})
+      }
+      console.log(url)
+      return Promise.resolve({})
+    })
 
     getPublicServiceConfigurationMock.mockImplementationOnce(() => ({
       configurationValue: serviceUrl
@@ -404,6 +422,14 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     process.env.ORDER_BACKEND_URL = 'http://localhost:8183'
     getProductAccountingBatchMock.mockImplementationOnce(() => null)
 
+    axiosMock.get.mockImplementation((url) => {
+      if (url.includes(`/product/accounting/list`)) {
+        return Promise.resolve({ data: mockProductAccounting})
+      }
+      console.log(url)
+      return Promise.resolve({})
+    })
+
     await controller.implementation(
       { params: { orderId }, query: { } } as any,
       mockResponse
@@ -432,6 +458,14 @@ describe('Test paytrailCardRedirectSuccessController', () => {
         mainLedgerAccount: 'mainLedgerAccount',
       },
     ])
+
+    axiosMock.get.mockImplementation((url) => {
+      if (url.includes(`/product/accounting/list`)) {
+        return Promise.resolve({ data: mockProductAccounting})
+      }
+      console.log(url)
+      return Promise.resolve({})
+    })
 
     await controller.implementation(
       { params: { orderId }, query: { } } as any,
