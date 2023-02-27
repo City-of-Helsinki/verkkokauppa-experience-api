@@ -14,7 +14,7 @@ import { PaytrailOnlinePaymentReturnController } from './api/paytrailOnlinePayme
 import { PaytrailOnlinePaymentNotifyController } from './api/paytrailOnlinePaymentNotifyController'
 import { PaytrailOnlineRefundPaymentSuccessController } from './api/paytrailOnlineRefundPaymentSuccessController'
 import { GetCardFormParametersController } from './api/getCardFormParametersController'
-import { CreateRefundController } from './api/createRefundController'
+import { InstantRefundController } from './api/instantRefundController'
 
 const createPaymentController = new (withAuthentication(
   CreatePaymentController
@@ -35,9 +35,7 @@ const getPaymentController = new (withAuthentication(GetPaymentController))()
 const getPaymentAdminController = new GetPaymentAdminController()
 const healthController = new Health()
 const subscriptionTokenizeController = new SubscriptionTokenizeController()
-const instantRefundController = new CreateRefundController({
-  confirmAndCreatePayment: true,
-})
+const instantRefundController = new InstantRefundController()
 
 const router = Router()
 router.get('/health', (req, res) => healthController.execute(req, res))
