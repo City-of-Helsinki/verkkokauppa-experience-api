@@ -36,16 +36,12 @@ const requestSchema = yup.object().shape({
   }),
 })
 
-export class CreateRefundController extends AbstractController<
+export class InstantRefundController extends AbstractController<
   typeof requestSchema
 > {
   protected readonly requestSchema = requestSchema
 
-  constructor(
-    private readonly opts: {
-      confirmAndCreatePayment: boolean
-    }
-  ) {
+  constructor() {
     super()
   }
 
@@ -118,44 +114,34 @@ export class CreateRefundController extends AbstractController<
         },
       })
 
-      if (!this.opts.confirmAndCreatePayment) {
-        refunds.push({
-          ...refund,
-          items: refundItems,
-          confirmationUrl: `${req.get('host')}/refund/${
-            refund.refundId
-          }/confirm`,
-        })
-      } else {
-        const confirmedRefund = await confirmRefundAdmin(refund)
+      const confirmedRefund = await confirmRefundAdmin(refund)
 
-        const payment = await getPaidPaymentAdmin({
-          orderId: order.orderId,
-        })
+      const payment = await getPaidPaymentAdmin({
+        orderId: order.orderId,
+      })
 
-        if (!payment) {
-          throw new RequestValidationError(
-            `cannot create refund without paid payment `
-          )
-        }
-
-        const refundPayment = await createRefundPaymentFromRefund({
-          order,
-          refund: {
-            refund: confirmedRefund,
-            items: refundItems,
-          },
-          payment,
-          gateway: RefundGateway.PAYTRAIL.toString(),
-          merchantId: refundItems[0]?.merchantId || '',
-        })
-
-        refunds.push({
-          ...confirmedRefund,
-          items: refundItems,
-          payment: refundPayment,
-        })
+      if (!payment) {
+        throw new RequestValidationError(
+          `cannot create refund without paid payment `
+        )
       }
+
+      const refundPayment = await createRefundPaymentFromRefund({
+        order,
+        refund: {
+          refund: confirmedRefund,
+          items: refundItems,
+        },
+        payment,
+        gateway: RefundGateway.PAYTRAIL.toString(),
+        merchantId: refundItems[0]?.merchantId || '',
+      })
+
+      refunds.push({
+        ...confirmedRefund,
+        items: refundItems,
+        payment: refundPayment,
+      })
     } catch (e) {
       if (e instanceof ExperienceError) {
         errors.push(e)
