@@ -4,6 +4,7 @@ import {
   checkLastValidPurchaseDateTime,
   confirmOrder,
   getOrderAdmin,
+  calculateTotalsFromItems,
 } from '@verkkokauppa/order-backend'
 import {
   createPaymentFromUnpaidOrder,
@@ -11,7 +12,6 @@ import {
   getPaymentUrl,
 } from '@verkkokauppa/payment-backend'
 import * as yup from 'yup'
-import { calculateTotalsFromItems } from '../lib/totals'
 import { parseMerchantIdFromFirstOrderItem } from '@verkkokauppa/configuration-backend'
 
 const requestSchema = yup.object().shape({
