@@ -85,6 +85,7 @@ export class GetCardFormParametersController extends AbstractController<
       await getPaytrailPaymenCardFormParams({
         namespace: order.namespace,
         merchantId,
+        orderId,
       })
     )
 
