@@ -14,6 +14,7 @@ import {
   createRefund,
   getOrderAdmin,
   getRefundsByOrderAdmin,
+  calculateTotalsFromItems,
   OrderItem,
   Refund,
   RefundItem,
@@ -24,7 +25,6 @@ import {
   paidPaymentExists,
   RefundGateway,
 } from '@verkkokauppa/payment-backend'
-import { calculateTotalsFromItems } from '../../../order-experience-api/dist/lib/totals'
 
 const requestSchema = yup.object().shape({
   params: yup.object().shape({

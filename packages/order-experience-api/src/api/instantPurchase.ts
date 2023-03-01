@@ -11,10 +11,10 @@ import {
   createOrder,
   getOrder,
   setOrderTotals,
+  calculateTotalsFromItems,
 } from '@verkkokauppa/order-backend'
 import { getProduct } from '@verkkokauppa/product-backend'
 import { getPrice } from '@verkkokauppa/price-backend'
-import { calculateTotalsFromItems } from '../lib/totals'
 import {
   getMerchantDetailsForOrder,
   getMerchantModels,

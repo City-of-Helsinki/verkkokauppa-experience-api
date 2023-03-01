@@ -5,11 +5,13 @@ import {
   ValidatedRequest,
 } from '@verkkokauppa/core'
 import type { Response } from 'express'
-import { createOrderWithItems } from '@verkkokauppa/order-backend'
+import {
+  createOrderWithItems,
+  calculateTotalsFromItems,
+} from '@verkkokauppa/order-backend'
 import { getCart } from '@verkkokauppa/cart-backend'
 import { getPrice } from '@verkkokauppa/price-backend'
 import { getProduct } from '@verkkokauppa/product-backend'
-import { calculateTotalsFromItems } from '../lib/totals'
 import * as yup from 'yup'
 import { customerSchema } from '../lib/validation'
 
