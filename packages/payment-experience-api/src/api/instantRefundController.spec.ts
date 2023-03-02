@@ -1,10 +1,10 @@
 import type { Response } from 'express'
 import type { ValidatedRequest } from '@verkkokauppa/core'
-import { CreateRefundController } from './createRefund'
+import { InstantRefundController } from './instantRefundController'
 
+jest.mock('@verkkokauppa/configuration-backend')
 jest.mock('@verkkokauppa/order-backend')
 jest.mock('@verkkokauppa/payment-backend')
-jest.mock('@verkkokauppa/configuration-backend')
 
 const getOrderAdminMock = require('@verkkokauppa/order-backend').getOrderAdmin.mockImplementation(
   () => ({})
@@ -18,10 +18,6 @@ const getRefundsByOrderAdminMock = require('@verkkokauppa/order-backend').getRef
   () => []
 )
 
-const calculateTotalsFromItemsMock = require('@verkkokauppa/order-backend').calculateTotalsFromItems.mockImplementation(
-  () => ({})
-)
-
 const paidPaymentExistsMock = require('@verkkokauppa/payment-backend').paidPaymentExists.mockImplementation(
   () => true
 )
@@ -30,9 +26,11 @@ const getPaidPaymentAdmin = require('@verkkokauppa/payment-backend').getPaidPaym
   () => true
 )
 
+const orderId = 'f1fe0aba-f6a7-3366-bfcf-d3f480db956f'
+
 const confirmRefundAdminDataMock = {
   refundId: 'c6c2cec5-d1a8-4a91-8341-9c3eae0b441a',
-  orderId: 'f1fe0aba-f6a7-3366-bfcf-d3f480db956f',
+  orderId: orderId,
   namespace: 'venepaikat',
   user: 'dummy_user',
   status: 'confirmed',
@@ -48,11 +46,12 @@ const confirmRefundAdminDataMock = {
 const confirmRefundAdmin = require('@verkkokauppa/order-backend').confirmRefundAdmin.mockImplementation(
   () => confirmRefundAdminDataMock
 )
+
 const mockRefundPayment = {
   refundPaymentId: 'c6c2cec5-d1a8-4a91-8341-9c3eae0b441a_at_20221124-172600',
   refundTransactionId: '6223e29e-6c0c-11ed-9373-dffeb4b88b35',
   namespace: 'venepaikat',
-  orderId: 'f1fe0aba-f6a7-3366-bfcf-d3f480db956f',
+  orderId: orderId,
   userId: 'dummy_user',
   status: 'refund_created',
   refundMethod: 'nordea',
@@ -76,23 +75,22 @@ const validateApiKeyMock = require('@verkkokauppa/configuration-backend').valida
   () => undefined
 )
 
-const controller = new (class extends CreateRefundController {
+const controller = new (class extends InstantRefundController {
   implementation(req: ValidatedRequest<any>, res: Response): Promise<any> {
     return super.implementation(req, res)
   }
-
   respond = jest.fn()
-})({ confirmAndCreatePayment: false })
+})()
 
-const controllerConfirmAndCreate = new (class extends CreateRefundController {
+const controllerConfirmAndCreate = new (class extends InstantRefundController {
   implementation(req: ValidatedRequest<any>, res: Response): Promise<any> {
     return super.implementation(req, res)
   }
-
   respond = jest.fn()
-})({ confirmAndCreatePayment: true })
+})()
 
 const headers = { 'api-key': 'ak1', namespace: 'ns1' }
+const params = { orderId }
 
 const responseMock = {} as any
 
@@ -100,76 +98,22 @@ beforeEach(() => {
   jest.clearAllMocks()
 })
 
-describe('Test CreateRefundController', () => {
+describe('Test InstantRefundController', () => {
   it('should validate api key', async () => {
-    await controller.implementation({ body: [], headers }, responseMock)
+    await controller.implementation({ body: [], headers, params }, responseMock)
     expect(validateApiKeyMock).toHaveBeenCalledTimes(1)
     expect(validateApiKeyMock.mock.calls[0][0]).toEqual({
       apiKey: 'ak1',
       namespace: 'ns1',
     })
   })
-  it('should respond 200 ok with refunds and errors in body', async () => {
-    await controller.implementation({ body: [], headers }, responseMock)
-    expect(controller.respond).toHaveBeenCalledTimes(1)
-    expect(controller.respond.mock.calls[0][0]).toBe(responseMock)
-    expect(controller.respond.mock.calls[0][1]).toEqual(200)
-    expect(controller.respond.mock.calls[0][2]).toEqual({
-      refunds: [],
-      errors: [],
-    })
-  })
-  it('should error if body contains duplicate orderIds', async () => {
-    await controller.implementation(
-      { body: [{ orderId: 'oid1' }, { orderId: 'oid1' }], headers },
-      responseMock
-    )
-    expect(controller.respond.mock.calls[0][2]).toMatchObject({
-      errors: [
-        {
-          code: 'request-validation-failed',
-          message: 'body contains duplicate orderId oid1',
-        },
-        {
-          code: 'request-validation-failed',
-          message: 'body contains duplicate orderId oid1',
-        },
-      ],
-    })
-  })
-  it('should error if items contain duplicate orderItemIds', async () => {
-    await controller.implementation(
-      {
-        body: [
-          {
-            orderId: 'oid1',
-            items: [{ orderItemId: 'ooid1' }, { orderItemId: 'ooid1' }],
-          },
-        ],
-        headers,
-      },
-      responseMock
-    )
-    expect(controller.respond.mock.calls[0][2]).toMatchObject({
-      errors: [
-        {
-          code: 'request-validation-failed',
-          message: 'body[0].items contains duplicate orderItemId ooid1',
-        },
-      ],
-    })
-  })
-  it('should error if order has not been paid', async () => {
+  it('should throw error if order has not been paid', async () => {
     paidPaymentExistsMock.mockImplementationOnce(() => false)
     await controller.implementation(
       {
-        body: [
-          {
-            orderId: 'oid1',
-            items: [{ orderItemId: 'ooid1' }],
-          },
-        ],
+        body: [],
         headers,
+        params,
       },
       responseMock
     )
@@ -177,68 +121,34 @@ describe('Test CreateRefundController', () => {
       errors: [
         {
           code: 'request-validation-failed',
-          message: 'order oid1 must be paid first',
+          message: `order ${orderId} must be paid first`,
         },
       ],
     })
   })
-  it('should error if order has no orderItem with specified orderItemId', async () => {
-    getOrderAdminMock.mockImplementationOnce(() => ({ items: [] }))
-    await controller.implementation(
-      {
-        body: [
-          {
-            orderId: 'oid1',
-            items: [{ orderItemId: 'ooid1' }],
-          },
-        ],
-        headers,
-      },
-      responseMock
-    )
-    expect(controller.respond.mock.calls[0][2]).toMatchObject({
-      errors: [
-        {
-          code: 'request-validation-failed',
-          message: 'order oid1 does not contain orderItem ooid1',
-        },
-      ],
-    })
-  })
-  it('should error if item quantity exceeds order item quantity', async () => {
+  it('should throw error if order has previously refunded items', async () => {
     getOrderAdminMock.mockImplementationOnce(() => ({
-      items: [{ orderItemId: 'ooid1', quantity: 1 }],
+      orderId: 'oid1',
+      items: [
+        {
+          orderItemId: 'ooid1',
+          quantity: 10,
+          priceNet: '11',
+          priceVat: '22',
+          priceGross: '33',
+        },
+      ],
     }))
-    await controller.implementation(
-      {
-        body: [
-          {
-            orderId: 'oid1',
-            items: [{ orderItemId: 'ooid1', quantity: 2 }],
-          },
-        ],
-        headers,
+    createRefundMock.mockImplementationOnce(() => ({
+      refund: {
+        refundId: 'rid1',
       },
-      responseMock
-    )
-    expect(controller.respond.mock.calls[0][2]).toMatchObject({
-      errors: [
-        {
-          code: 'request-validation-failed',
-          message:
-            'refunded quantity (now: 2, previously: 0) cannot exceed orderItem ooid1 quantity 1',
-        },
-      ],
-    })
-  })
-  it('should error if item quantity with refunded quantity exceeds order item quantity', async () => {
-    getOrderAdminMock.mockImplementationOnce(() => ({
-      items: [{ orderItemId: 'ooid1', quantity: 10 }],
+      items: [],
     }))
     getRefundsByOrderAdminMock.mockImplementationOnce(() => [
       {
         items: [
-          { orderItemId: 'ooid2', quantity: 200 },
+          { orderItemId: 'ooid2', quantity: 2 },
           { orderItemId: 'ooid1', quantity: 3 },
         ],
       },
@@ -251,33 +161,31 @@ describe('Test CreateRefundController', () => {
     ])
     await controller.implementation(
       {
-        body: [
-          {
-            orderId: 'oid1',
-            items: [{ orderItemId: 'ooid1', quantity: 2 }],
-          },
-        ],
+        body: [],
         headers,
+        params,
+        get: () => 'test.com',
       },
       responseMock
     )
-    expect(controller.respond.mock.calls[0][2]).toMatchObject({
+    expect(controller.respond.mock.calls[0][2]).toEqual({
       errors: [
         {
           code: 'request-validation-failed',
           message:
-            'refunded quantity (now: 2, previously: 9) cannot exceed orderItem ooid1 quantity 10',
+            'refunded quantity (now: 10, previously: 9) cannot exceed orderItem ooid1 quantity 10',
         },
       ],
+      refunds: [],
     })
   })
   it('should create refund', async () => {
     getOrderAdminMock.mockImplementationOnce(() => ({
       orderId: 'oid1',
       namespace: 'ns2',
-      priceNet: '111',
-      priceVat: '222',
-      priceTotal: '333',
+      priceNet: '110',
+      priceVat: '220',
+      priceTotal: '330',
       items: [
         {
           orderItemId: 'ooid1',
@@ -286,26 +194,21 @@ describe('Test CreateRefundController', () => {
           priceNet: '11',
           priceVat: '22',
           priceGross: '33',
-          rowPriceNet: '111',
-          rowPriceVat: '222',
-          rowPriceTotal: '333',
+          rowPriceNet: '110',
+          rowPriceVat: '220',
+          rowPriceTotal: '330',
         },
       ],
-    }))
-    calculateTotalsFromItemsMock.mockImplementationOnce(() => ({
-      priceNet: '22',
-      priceTotal: '66',
-      priceVat: '44',
     }))
     await controller.implementation(
       {
         body: [
           {
             orderId: 'oid1',
-            items: [{ orderItemId: 'ooid1', quantity: 2 }],
           },
         ],
         headers,
+        params,
       },
       responseMock
     )
@@ -314,26 +217,25 @@ describe('Test CreateRefundController', () => {
       order: {
         orderId: 'oid1',
         namespace: 'ns2',
-        priceNet: '22',
-        priceVat: '44',
-        priceTotal: '66',
+        priceNet: '110',
+        priceVat: '220',
+        priceTotal: '330',
         items: [
           {
             orderItemId: 'ooid1',
             productId: 'pid1',
-            quantity: 2,
+            quantity: 10,
             priceNet: '11',
             priceVat: '22',
             priceGross: '33',
-            rowPriceNet: '22',
-            rowPriceVat: '44',
-            rowPriceTotal: '66',
+            rowPriceNet: '110',
+            rowPriceVat: '220',
+            rowPriceTotal: '330',
           },
         ],
       },
     })
   })
-
   it('should create refund with refund payment', async () => {
     getOrderAdminMock.mockImplementationOnce(() => ({
       orderId: 'oid1',
@@ -387,12 +289,12 @@ describe('Test CreateRefundController', () => {
           },
         ],
         headers,
+        params,
       },
       responseMock
     )
 
     expect(createRefundMock).toHaveBeenCalledTimes(1)
-    //expect(createRefundPaymentFromRefund).toHaveBeenCalledTimes(1)
     expect(createRefundPaymentFromRefund.mock.calls[0][0]).toEqual({
       gateway: 'online-paytrail',
       merchantId: '333',
@@ -454,118 +356,6 @@ describe('Test CreateRefundController', () => {
 
     expect(getPaidPaymentAdmin).toHaveBeenCalledTimes(1)
   })
-  it('should return created refund with confirmation url', async () => {
-    getOrderAdminMock.mockImplementationOnce(() => ({
-      orderId: 'oid1',
-      items: [
-        {
-          orderItemId: 'ooid1',
-          quantity: 10,
-          priceNet: '11',
-          priceVat: '22',
-          priceGross: '33',
-        },
-      ],
-    }))
-    createRefundMock.mockImplementationOnce(() => ({
-      refund: {
-        refundId: 'rid1',
-      },
-      items: [
-        {
-          refundItemId: 'riid1',
-          refundId: 'rid1',
-        },
-      ],
-    }))
-    await controller.implementation(
-      {
-        body: [
-          {
-            orderId: 'oid1',
-            items: [{ orderItemId: 'ooid1', quantity: 1 }],
-          },
-        ],
-        headers,
-        get: () => 'test.com',
-      },
-      responseMock
-    )
-    expect(controller.respond.mock.calls[0][2]).toMatchObject({
-      refunds: [
-        {
-          refundId: 'rid1',
-          items: [
-            {
-              refundId: 'rid1',
-              refundItemId: 'riid1',
-            },
-          ],
-          confirmationUrl: 'test.com/refund/rid1/confirm',
-        },
-      ],
-    })
-  })
-  it('should return refunds and errors alongside', async () => {
-    getOrderAdminMock.mockImplementationOnce(() => ({
-      orderId: 'oid1',
-      items: [
-        {
-          orderItemId: 'ooid1',
-          quantity: 10,
-          priceNet: '11',
-          priceVat: '22',
-          priceGross: '33',
-        },
-      ],
-    }))
-    createRefundMock.mockImplementationOnce(() => ({
-      refund: {
-        refundId: 'rid1',
-      },
-      items: [],
-    }))
-    await controller.implementation(
-      {
-        body: [
-          {
-            orderId: 'oid2',
-            items: [{ orderItemId: 'ooid2', quantity: 1 }],
-          },
-          {
-            orderId: 'oid1',
-            items: [{ orderItemId: 'ooid1', quantity: 1 }],
-          },
-          {
-            orderId: 'oid2',
-            items: [{ orderItemId: 'ooid3', quantity: 1 }],
-          },
-        ],
-        headers,
-        get: () => 'test.com',
-      },
-      responseMock
-    )
-    expect(controller.respond.mock.calls[0][2]).toEqual({
-      errors: [
-        {
-          code: 'request-validation-failed',
-          message: 'body contains duplicate orderId oid2',
-        },
-        {
-          code: 'request-validation-failed',
-          message: 'body contains duplicate orderId oid2',
-        },
-      ],
-      refunds: [
-        {
-          refundId: 'rid1',
-          items: [],
-          confirmationUrl: 'test.com/refund/rid1/confirm',
-        },
-      ],
-    })
-  })
   it('should use order.items in refund if request items are undefined', async () => {
     getOrderAdminMock.mockImplementationOnce(() => ({
       orderId: 'oid1',
@@ -584,6 +374,7 @@ describe('Test CreateRefundController', () => {
           },
         ],
         headers,
+        params,
       },
       responseMock
     )

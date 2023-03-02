@@ -1,4 +1,4 @@
-import type { OrderItemRequest } from '@verkkokauppa/order-backend'
+import type { OrderItemRequest } from './types'
 
 export const calculateTotalsFromItems = (p: {
   items: OrderItemRequest[]
