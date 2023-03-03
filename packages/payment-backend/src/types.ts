@@ -26,6 +26,8 @@ export interface OrderCustomer {
   email: string
 }
 
+export type OrderType = 'subscription' | 'order'
+
 export interface Order {
   orderId: string
   namespace: string
@@ -38,6 +40,7 @@ export interface Order {
   priceNet?: string
   priceVat?: string
   priceTotal?: string
+  type: OrderType
 }
 
 export interface PaymentMethod {
