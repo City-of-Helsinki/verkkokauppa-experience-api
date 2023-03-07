@@ -21,7 +21,7 @@ const orderMock = {
   namespace: 'test',
   user: 'test@test.dev.hel',
   createdAt: '1619157868',
-  type: 'order',
+  type: 'order' as const,
   items: [
     {
       orderId: '145d8829-07b7-4b03-ab0e-24063958ab9b',

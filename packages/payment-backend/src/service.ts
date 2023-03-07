@@ -279,6 +279,12 @@ export const getPaymentMethodList = async (parameters: {
         )
       })
     })
+    .filter((method) => {
+      return (
+        order.type !== 'subscription' ||
+        method.group.toLowerCase().startsWith('creditcard')
+      )
+    })
 
   const methods = process.env.FILTERED_PAYMENT_METHODS || 'nordeab2b'
   const globallyFilteredPaymentMethods = methods.split(',')
