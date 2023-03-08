@@ -285,7 +285,6 @@ describe('Test InstantRefundController', () => {
         body: [
           {
             orderId: 'oid1',
-            items: [{ orderItemId: 'ooid1', quantity: 2 }],
           },
         ],
         headers,
