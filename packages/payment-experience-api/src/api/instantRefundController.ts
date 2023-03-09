@@ -58,7 +58,6 @@ export class InstantRefundController extends AbstractController<
 
     const refunds: (Refund & {
       items: RefundItem[]
-      confirmationUrl?: string
       payment?: unknown
     })[] = []
 
