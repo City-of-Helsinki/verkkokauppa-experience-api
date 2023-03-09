@@ -554,14 +554,14 @@ paths:
           $ref: '#/components/responses/NotFound'
   /refund/instant/{orderId}:
     get:
-      description: Create a refund for single order, confirm it and create a payment - refunds all order items.
+      description: Create a refund for single order, confirm it and create a refund payment - refunds all order items.
       security:
         - ApiKey: [ ]
       parameters:
         - $ref: '#/components/parameters/OrderId'
       responses:
         '200':
-          description: Creates a refund for given order and all of its orderItems, confirms it and creates payment.
+          description: Creates a refund for given order and all of its orderItems, confirms it and creates a refund payment.
           content:
             application/json:
               schema:
