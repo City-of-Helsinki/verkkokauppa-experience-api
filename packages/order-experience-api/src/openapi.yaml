@@ -951,6 +951,8 @@ paths:
                   type: string
                 language:
                   type: string
+                gateway:
+                  type: string
       responses:
         '201':
           description: The confirmed order and its created payment
