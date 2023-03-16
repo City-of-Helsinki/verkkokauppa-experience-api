@@ -224,6 +224,19 @@ describe('Test Create Order', () => {
     ).rejects.toThrow('forbidden-request')
   })
 
+  it('Should throw error with given expired lastValidPurchaseDateTime on order creation 2', async () => {
+    process.env.ORDER_BACKEND_URL = 'test.dev.hel'
+    process.env.CHECKOUT_BASE_URL = 'https://checkout.dev.hel/'
+
+    await expect(
+      createOrder({
+        namespace: 'testNameSpace',
+        user: 'test@test.dev.hel',
+        lastValidPurchaseDateTime: '2023-03-15T07:59:00.0Z',
+      })
+    ).rejects.toThrow('forbidden-request')
+  })
+
   it('Should throw error with given expired lastValidPurchaseDateTime on checkLastValidPurchaseDateTime function call', async () => {
     process.env.ORDER_BACKEND_URL = 'test.dev.hel'
     process.env.CHECKOUT_BASE_URL = 'https://checkout.dev.hel/'
