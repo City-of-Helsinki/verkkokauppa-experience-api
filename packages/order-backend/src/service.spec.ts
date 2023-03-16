@@ -1,19 +1,21 @@
 import {
+  addItemsToOrder,
   cancelOrder,
+  checkLastValidPurchaseDateTime,
+  createAccountingEntryForOrder,
   createOrder,
   createOrderWithItems,
-  addItemsToOrder,
-  setCustomerToOrder,
   getOrder,
-  setOrderTotals,
-  createAccountingEntryForOrder,
+  setCustomerToOrder,
   setInvoiceToOrder,
-  checkLastValidPurchaseDateTime,
+  setOrderTotals,
 } from './index'
 import axios from 'axios'
 import { ExperienceError } from '@verkkokauppa/core'
 import type { MockDateSetup } from './test/test-utils'
 import { setupMockDate } from './test/test-utils'
+import { formatToTimeZone, parseFromTimeZone } from 'date-fns-timezone'
+
 jest.mock('axios')
 const axiosMock = axios as jest.Mocked<typeof axios>
 
@@ -91,25 +93,6 @@ afterEach(() => {
   mockDate.reset()
 })
 
-/**
- * @param timeZoneMultiplier
- * @param isoDate
- */
-function getDateWithTimeZoneOffset(
-  timeZoneMultiplier: number,
-  isoDate: string
-) {
-  const beforeMock = new Date()
-  console.log(`before mock${beforeMock.getTimezoneOffset() / 60}`)
-  mockDate.set({
-    offset: 60 * timeZoneMultiplier,
-    isoDate: isoDate,
-  })
-  const afterMock = new Date()
-  console.log(`after mock${afterMock.getTimezoneOffset() / 60}`)
-  return afterMock
-}
-
 describe('Test Create Order', () => {
   it('Should throw error with no backend url set', async () => {
     process.env.ORDER_BACKEND_URL = ''
@@ -133,7 +116,7 @@ describe('Test Create Order', () => {
       ...orderMock,
       items: [],
       updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
-      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
+      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}?user=${mockData.order.user}`,
       receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
       loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
     })
@@ -203,7 +186,7 @@ describe('Test Create Order', () => {
       priceTotal: '124',
       items: mockData.items,
       updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
-      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
+      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}?user=${mockData.order.user}`,
       receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
       loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
     })
@@ -262,7 +245,14 @@ describe('Test Create Order', () => {
 
   it('Should not throw error with given expired lastValidPurchaseDateTime on checkLastValidPurchaseDateTime function call', async () => {
     const lastValidPurchaseDate = new Date()
-    console.log('Time now %s', JSON.stringify(lastValidPurchaseDate))
+
+    console.log('Time now timezone %s', JSON.stringify(lastValidPurchaseDate))
+
+    const utcDate = parseFromTimeZone(lastValidPurchaseDate.toISOString(), {
+      timeZone: 'Europe/Helsinki',
+    })
+    console.log('Time now timezone %s', JSON.stringify(utcDate))
+
     const plusDays = 1
     lastValidPurchaseDate.setDate(lastValidPurchaseDate.getDate() + plusDays)
     console.log('Time plus days %s', JSON.stringify(lastValidPurchaseDate))
@@ -281,30 +271,49 @@ describe('Test Create Order', () => {
     expect(checkDateTime > startCheckTime).toBe(true)
   })
 
-  it('Should not affect check what LastValidPurchaseDateTime offset is used', async () => {
+  it('Should work if given utc+2 time', async () => {
     const starCheckDateTime = new Date()
     const plusSeconds = 15
     starCheckDateTime.setSeconds(starCheckDateTime.getSeconds() + plusSeconds)
 
-    // starCheckDateTime to UTC-0 offset and test
-    const timeZoneOffset0 = 0
-    const dateUTC0 = getDateWithTimeZoneOffset(
-      timeZoneOffset0,
-      starCheckDateTime.toString()
-    )
-    expect(dateUTC0.getTimezoneOffset()).toBe(0)
-    const checkDateTimeWith0 = checkLastValidPurchaseDateTime(dateUTC0)
-    expect(starCheckDateTime > checkDateTimeWith0).toBe(true)
+    const format = 'YYYY-MM-DDTHH:mm:ss.SSS'
+    const output =
+      formatToTimeZone(starCheckDateTime, format, {
+        timeZone: 'Europe/Helsinki',
+      }) + 'Z'
+    const dateWithEuropeTimeZone = new Date(output)
 
-    // starCheckDateTime to UTC+2 offset and test
-    const timeZoneOffset2 = 2
-    const dateUTC2 = getDateWithTimeZoneOffset(
-      timeZoneOffset2,
-      starCheckDateTime.toString()
+    const checkDateTimeWith2 = checkLastValidPurchaseDateTime(
+      dateWithEuropeTimeZone
     )
-    expect(dateUTC2.getTimezoneOffset()).toBe(-120)
-    const checkDateTimeWith2 = checkLastValidPurchaseDateTime(dateUTC2)
-    expect(starCheckDateTime > checkDateTimeWith2).toBe(true)
+    expect(dateWithEuropeTimeZone > checkDateTimeWith2).toBe(true)
+
+    const starCheckDateTimeMinus20Secs = new Date()
+    const minusSeconds = 15
+    starCheckDateTimeMinus20Secs.setSeconds(
+      starCheckDateTimeMinus20Secs.getSeconds() - minusSeconds
+    )
+
+    const dateWithEuropeTimezoneMinus20Secs = new Date(
+      formatToTimeZone(starCheckDateTimeMinus20Secs, format, {
+        timeZone: 'Europe/Helsinki',
+      }) + 'Z'
+    )
+
+    const error = await getError(async () =>
+      checkLastValidPurchaseDateTime(dateWithEuropeTimezoneMinus20Secs)
+    )
+
+    // check that the returned error wasn't that no error was thrown
+    expect(error).not.toBeInstanceOf(NoErrorThrownError)
+    expect(error).toBeInstanceOf(ExperienceError)
+
+    expect(error).toHaveProperty('definition', {
+      code: 'forbidden-request',
+      message: 'Optional lastValidPurchaseDateTime is expired',
+      responseStatus: 403,
+      logLevel: 'debug',
+    })
   })
 })
 
@@ -351,7 +360,7 @@ describe('Test Cancel Order', () => {
       status: 'cancelled',
       items: mockData.items,
       updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
-      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
+      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}?user=${mockData.order.user}`,
       receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
       loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
     })
@@ -424,7 +433,7 @@ describe('Test Add items to order', () => {
       ...orderCustomerMock,
       items: mockData.items,
       updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
-      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
+      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}?user=${mockData.order.user}`,
       receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
       loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
     })
@@ -463,7 +472,7 @@ describe('Test Set Customer To Order', () => {
       ...orderCustomerMock,
       items: [],
       updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
-      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
+      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}?user=${mockData.order.user}`,
       receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
       loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
     })
@@ -501,7 +510,7 @@ describe('Test Set Customer To Order', () => {
       ...orderCustomerMock,
       items: mockData.items,
       updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
-      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
+      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}?user=${mockData.order.user}`,
       receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
       loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
     })
@@ -540,7 +549,7 @@ describe('Test Set Invoice To Order', () => {
       ...orderInvoiceMock,
       items: [],
       updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
-      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
+      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}?user=${mockData.order.user}`,
       receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
       loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
     })
@@ -579,7 +588,7 @@ describe('Test Set Invoice To Order', () => {
       ...orderInvoiceMock,
       items: mockData.items,
       updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
-      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
+      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}?user=${mockData.order.user}`,
       receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
       loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
     })
@@ -613,7 +622,7 @@ describe('Test Get Order', () => {
       ...orderCustomerMock,
       items: [],
       updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
-      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
+      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}?user=${mockData.order.user}`,
       receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
       loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
     })
@@ -652,7 +661,7 @@ describe('Test Get Order', () => {
       ...orderCustomerMock,
       items: mockData.items,
       updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
-      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
+      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}?user=${mockData.order.user}`,
       receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
       loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
     })
@@ -695,7 +704,7 @@ describe('Test Get Order', () => {
       items: mockData.items,
       subscriptionId: mockData.order.subscriptionId,
       updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
-      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
+      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}?user=${mockData.order.user}`,
       receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
       loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
     })
@@ -744,7 +753,7 @@ describe('Test Calculate Totals for Order', () => {
       priceVat: '0',
       priceTotal: '0',
       updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
-      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
+      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}?user=${mockData.order.user}`,
       receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
       loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
     })
@@ -792,7 +801,7 @@ describe('Test Calculate Totals for Order', () => {
       priceVat: '24',
       priceTotal: '124',
       updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/update-card?user=${mockData.order.user}`,
-      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}`,
+      checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}?user=${mockData.order.user}`,
       receiptUrl: `${process.env.CHECKOUT_BASE_URL}${mockData.order.orderId}/receipt?user=${mockData.order.user}`,
       loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${mockData.order.orderId}`,
     })
