@@ -30,6 +30,7 @@ import {
   SubscriptionNotFoundError,
 } from './errors'
 import { ExperienceFailure, ForbiddenError } from '@verkkokauppa/core'
+import { formatToTimeZone } from 'date-fns-timezone'
 
 const getBackendUrl = () => {
   const url = process.env.ORDER_BACKEND_URL
@@ -372,7 +373,7 @@ export const transFormBackendOrder = (
     type,
     subscriptionId,
     invoice,
-    checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}`,
+    checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}?user=${user}`,
     receiptUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}/receipt?user=${user}`,
     loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${orderId}`,
     updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}/update-card?user=${user}`,
@@ -497,10 +498,17 @@ export const getOrdersByUserAdmin = async (p: {
   }
 }
 
+export const currentDateTimeInHelsinkiTimezone = () =>
+  new Date(
+    formatToTimeZone(new Date(), 'YYYY-MM-DDTHH:mm:ss.SSS', {
+      timeZone: 'Europe/Helsinki',
+    }) + 'Z'
+  )
+
 export const checkLastValidPurchaseDateTime = (
   lastValidPurchaseDateTime: Date | undefined | string
 ): Date => {
-  let currentDateTime = new Date()
+  const dateWithEuropeTimeZone = currentDateTimeInHelsinkiTimezone()
   let lastValidPurchaseDateTimeAsdate = lastValidPurchaseDateTime
 
   // If parameter is string convert it to Date
@@ -512,11 +520,11 @@ export const checkLastValidPurchaseDateTime = (
 
   if (
     lastValidPurchaseDateTimeAsdate !== undefined &&
-    lastValidPurchaseDateTimeAsdate < currentDateTime
+    lastValidPurchaseDateTimeAsdate < dateWithEuropeTimeZone
   ) {
     throw new ForbiddenError('Optional lastValidPurchaseDateTime is expired')
   }
-  return currentDateTime
+  return dateWithEuropeTimeZone
 }
 
 export const setOrderPaymentMethod = async (p: {

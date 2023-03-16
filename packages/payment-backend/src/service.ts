@@ -290,7 +290,8 @@ export const getPaymentMethodList = async (parameters: {
   const globallyFilteredPaymentMethods = methods.split(',')
   // TODO remove Paytrail filter when we are disabling payments via visma pay
   const gateways =
-    process.env.FILTERED_PAYMENT_GATEWAYS || `${PaymentGateway.INVOICE}`
+    process.env.FILTERED_PAYMENT_GATEWAYS ||
+    `${PaymentGateway.VISMA},${PaymentGateway.INVOICE}`
 
   let globallyFilteredPaymentGateways = gateways.split(',')
 
