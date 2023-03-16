@@ -42,7 +42,7 @@ const getBackendUrl = () => {
 export const createOrder = async (p: {
   namespace: string
   user: string
-  lastValidPurchaseDateTime?: Date
+  lastValidPurchaseDateTime?: Date | string
 }): Promise<Order> => {
   const { namespace, user, lastValidPurchaseDateTime } = p
   if (!process.env.ORDER_BACKEND_URL) {
@@ -498,13 +498,21 @@ export const getOrdersByUserAdmin = async (p: {
 }
 
 export const checkLastValidPurchaseDateTime = (
-  lastValidPurchaseDateTime: Date | undefined
+  lastValidPurchaseDateTime: Date | undefined | string
 ): Date => {
   let currentDateTime = new Date()
+  let lastValidPurchaseDateTimeAsdate = lastValidPurchaseDateTime
+
+  // If parameter is string convert it to Date
+  if (typeof lastValidPurchaseDateTime === 'string') {
+    lastValidPurchaseDateTimeAsdate = new Date(
+      lastValidPurchaseDateTime as string
+    )
+  }
 
   if (
-    lastValidPurchaseDateTime !== undefined &&
-    lastValidPurchaseDateTime < currentDateTime
+    lastValidPurchaseDateTimeAsdate !== undefined &&
+    lastValidPurchaseDateTimeAsdate < currentDateTime
   ) {
     throw new ForbiddenError('Optional lastValidPurchaseDateTime is expired')
   }
