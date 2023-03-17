@@ -7,7 +7,10 @@ import {
 import type { Request, Response } from 'express'
 import { URL } from 'url'
 import { getOrderAdmin, getRefundAdmin } from '@verkkokauppa/order-backend'
-import { checkPaytrailRefundCallbackUrl } from '@verkkokauppa/payment-backend'
+import {
+  checkPaytrailRefundCallbackUrl,
+  getPaidRefundPaymentAdmin,
+} from '@verkkokauppa/payment-backend'
 import { createUserRefundRedirectUrl } from '../lib/refundCallbackService'
 import { parseRefundIdFromPaytrailRefundCallbackUrl } from '../lib/paytrail'
 import { parseMerchantIdFromFirstOrderItem } from '@verkkokauppa/configuration-backend'
@@ -47,6 +50,18 @@ export class PaytrailOnlineRefundPaymentSuccessController extends AbstractContro
         responseStatus: StatusCode.NotFound,
         logLevel: 'info',
       })
+    }
+
+    const refundPayment = await getPaidRefundPaymentAdmin({
+      orderId: orderId,
+    })
+
+    // Already found refundPayment paid, return early to prevent multiple events happening
+    if (refundPayment != null) {
+      return result.redirect(
+        200,
+        PaytrailOnlineRefundPaymentSuccessController.getFailureRedirectUrl()
+      )
     }
 
     try {

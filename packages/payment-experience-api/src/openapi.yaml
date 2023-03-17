@@ -599,3 +599,23 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
+
+  /admin/refund-payment/{orderId}:
+    get:
+      description: Get refund payment by orderId
+      security:
+        - ApiKey: [ ]
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+        - $ref: '#/components/parameters/Namespace'
+      responses:
+        '200':
+          description: Fetched refund payment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefundPayment'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'

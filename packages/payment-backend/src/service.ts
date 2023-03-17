@@ -20,13 +20,21 @@ import {
   GetPaymentsForOrderFailure,
   GetPaymentStatusFailure,
   GetPaymentUrlFailure,
+  GetRefundPaymentForOrderFailure,
   PaymentMethodsNotFound,
   PaymentNotFound,
   PaymentsNotFound,
   PaymentValidationError,
+  RefundPaymentNotFound,
 } from './errors'
 import { ExperienceFailure, removeItem } from '@verkkokauppa/core'
-import { PaymentGateway, PaymentStatus, ReferenceType } from './enums'
+import {
+  PaymentGateway,
+  PaymentStatus,
+  ReferenceType,
+  RefundPaymentStatus,
+} from './enums'
+import type { RefundPayment } from './refund/types'
 
 const allowedPaymentGateways = [
   PaymentGateway.PAYTRAIL.toString(),
@@ -512,6 +520,28 @@ export const getPaymentForOrderAdmin = async (p: {
   }
 }
 
+export const getRefundPaymentForOrderAdmin = async (p: {
+  orderId: string
+}): Promise<RefundPayment> => {
+  const { orderId } = p
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/refund-admin/refund-payment/get`
+  try {
+    const res = await axios.get(url, {
+      params: { orderId },
+    })
+    return res.data
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new RefundPaymentNotFound()
+    }
+    throw new GetRefundPaymentForOrderFailure(e)
+  }
+}
+
 export const getPaymentsForOrderAdmin = async (
   p: {
     orderId: string
@@ -584,6 +614,23 @@ export const getPaidPaymentAdmin = async (p: {
     return payment
   } catch (e) {
     if (e instanceof PaymentNotFound) {
+      return null
+    }
+    throw e
+  }
+}
+
+export const getPaidRefundPaymentAdmin = async (p: {
+  orderId: string
+}): Promise<RefundPayment | null> => {
+  try {
+    const refundPayment = await getRefundPaymentForOrderAdmin(p)
+    if (refundPayment.status !== RefundPaymentStatus.PAID_ONLINE.toString()) {
+      return null
+    }
+    return refundPayment
+  } catch (e) {
+    if (e instanceof RefundPaymentNotFound) {
       return null
     }
     throw e
