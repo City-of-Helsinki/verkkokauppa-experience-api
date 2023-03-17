@@ -611,7 +611,7 @@ paths:
       description: |
         Create a new order. The resulting order type depends on the input: if periodUnit and periodFrequency are present, the order is of type subscription
 
-        Optional lastValidPurchaseDateTime can be set that determines the timeframe in which the order must be purchased. Given in ISO 8601 date time -format.
+        Optional lastValidPurchaseDateTime can be set that determines the timeframe in which the order must be purchased. Given in ISO 8601 date time -format and in Europe/Helsinki timezone.
       requestBody:
         required: true
         content:
