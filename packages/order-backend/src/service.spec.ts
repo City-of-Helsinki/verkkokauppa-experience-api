@@ -248,10 +248,16 @@ describe('Test Create Order', () => {
 
     console.log('Time now timezone %s', JSON.stringify(lastValidPurchaseDate))
 
-    const utcDate = parseFromTimeZone(lastValidPurchaseDate.toISOString(), {
-      timeZone: 'Europe/Helsinki',
-    })
-    console.log('Time now timezone %s', JSON.stringify(utcDate))
+    const dateTimeInHelsinkiTimezone = parseFromTimeZone(
+      lastValidPurchaseDate.toISOString(),
+      {
+        timeZone: 'Europe/Helsinki',
+      }
+    )
+    console.log(
+      'Time now dateTimeInHelsinkiTimezone %s',
+      JSON.stringify(dateTimeInHelsinkiTimezone)
+    )
 
     const plusDays = 1
     lastValidPurchaseDate.setDate(lastValidPurchaseDate.getDate() + plusDays)
