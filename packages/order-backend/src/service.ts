@@ -508,7 +508,7 @@ export const currentDateTimeInHelsinkiTimezone = () =>
 export const checkLastValidPurchaseDateTime = (
   lastValidPurchaseDateTime: Date | undefined | string
 ): Date => {
-  const dateWithEuropeTimeZone = currentDateTimeInHelsinkiTimezone()
+  const dateTimeInHelsinkiTimezone = currentDateTimeInHelsinkiTimezone()
   let lastValidPurchaseDateTimeAsdate = lastValidPurchaseDateTime
 
   // If parameter is string convert it to Date
@@ -520,11 +520,11 @@ export const checkLastValidPurchaseDateTime = (
 
   if (
     lastValidPurchaseDateTimeAsdate !== undefined &&
-    lastValidPurchaseDateTimeAsdate < dateWithEuropeTimeZone
+    lastValidPurchaseDateTimeAsdate < dateTimeInHelsinkiTimezone
   ) {
     throw new ForbiddenError('Optional lastValidPurchaseDateTime is expired')
   }
-  return dateWithEuropeTimeZone
+  return dateTimeInHelsinkiTimezone
 }
 
 export const setOrderPaymentMethod = async (p: {
