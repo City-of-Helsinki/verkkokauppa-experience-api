@@ -5,7 +5,10 @@ import {
   ValidatedRequest,
 } from '@verkkokauppa/core'
 import type { Response } from 'express'
-import { getOrderAdmin } from '@verkkokauppa/order-backend'
+import {
+  checkLastValidPurchaseDateTime,
+  getOrderAdmin,
+} from '@verkkokauppa/order-backend'
 import * as yup from 'yup'
 import {
   getMerchantDetailsForOrder,
@@ -44,9 +47,19 @@ export class GetAdminController extends AbstractController {
       paidPaymentExists(order),
     ])
 
+    let isValidPurchaseDateTime = true
+
+    if (order != undefined) {
+      try {
+        checkLastValidPurchaseDateTime(order.lastValidPurchaseDateTime)
+      } catch (e) {
+        isValidPurchaseDateTime = false
+      }
+    }
+
     const dto = new Data({
       ...order,
-      isValidForCheckout: !orderIsPaid,
+      isValidForCheckout: !orderIsPaid && isValidPurchaseDateTime,
       merchant,
     })
 
