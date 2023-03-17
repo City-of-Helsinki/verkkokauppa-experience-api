@@ -118,7 +118,7 @@ dist
 # IntelliJ IDEA
 .idea
 
-# generated https certs
+# Https config
 packages/payment-experience-api/src/config/ca.crt
 packages/payment-experience-api/src/config/ca.key
 packages/payment-experience-api/src/config/cert.crt
