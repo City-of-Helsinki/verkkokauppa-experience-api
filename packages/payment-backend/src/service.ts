@@ -305,7 +305,7 @@ export const getPaymentMethodList = async (parameters: {
 
   const paytrailActivatedProductIds =
     process.env.PAYTRAIL_ACTIVATED_PRODUCT_IDS ||
-    '5670e008-5357-3c63-a9c2-f85e624fd7b8'
+    'b86337e8-68a0-3599-a18cdb-754ffae53f5a'
 
   const globallyActivatedProductIds = paytrailActivatedProductIds.split(',')
 
