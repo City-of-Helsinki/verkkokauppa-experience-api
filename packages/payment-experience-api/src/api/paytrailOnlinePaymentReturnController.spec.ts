@@ -1,7 +1,7 @@
 import axios from 'axios'
-import { PaytrailOnlineRefundPaymentSuccessController } from './paytrailOnlineRefundPaymentSuccessController'
 import type { PaytrailStatus } from '@verkkokauppa/payment-backend'
 import type { Response } from 'express'
+import { PaytrailOnlinePaymentReturnController } from './paytrailOnlinePaymentReturnController'
 
 jest.mock('axios')
 
@@ -13,13 +13,15 @@ jest.mock('@verkkokauppa/payment-backend', () => {
   return {
     __esModules: true,
     // first start with all of the module's functions auto-mocked
-    getPaidRefundPaymentAdmin: jest.fn(() => null),
+    getPaidPaymentAdmin: jest.fn(() => null),
     // lastly override w/ any of the module's functions that
     // we want to use the *real* implementations for
 
     // checkPaytrailRefundCallbackUrl not mocked so axios post mock gets called
     // with real implementation
-    checkPaytrailRefundCallbackUrl: actual.checkPaytrailRefundCallbackUrl,
+    checkPaytrailReturnUrl: actual.checkPaytrailReturnUrl,
+    // Payment type has to be actual one
+    PaymentType: actual.PaymentType,
   }
 })
 const axiosMock = axios as jest.Mocked<typeof axios>
@@ -159,10 +161,11 @@ describe('Test paytrail refund payment success controller', () => {
     const mockPaytrailStatus = {
       paymentPaid: true,
       valid: true,
+      paymentType: 'creditcards',
     } as PaytrailStatus
 
     axiosMock.get.mockImplementation((url, data?: any) => {
-      if (url.includes(`/refund/paytrail/check-refund-callback-url`)) {
+      if (url.includes(`/payment/paytrail/check-return-url`)) {
         // eslint-disable-next-line jest/no-conditional-expect
         expect(data.params).toEqual(mockRequest.query)
         return Promise.resolve({
@@ -193,7 +196,7 @@ describe('Test paytrail refund payment success controller', () => {
       return Promise.resolve({})
     })
 
-    const paytrailOnlineRefundPaymentSuccessController = new PaytrailOnlineRefundPaymentSuccessController()
+    const paytrailOnlineRefundPaymentSuccessController = new PaytrailOnlinePaymentReturnController()
 
     const refundId = refundBackendResponseMock.refund.refundId
     const mockRequest = {
@@ -249,7 +252,7 @@ describe('Test paytrail refund payment success controller', () => {
     )
   })
 
-  it('Check refund payment success controller redirects to failure url if paid refund payment is found to prevent multiple triggerings', async () => {
+  it('Check payment success controller redirects to failure url if paid refund payment is found to prevent multiple triggerings', async () => {
     process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
     process.env.CONFIGURATION_BACKEND_URL = 'https://test.dev.hel'
     process.env.MESSAGE_BACKEND_URL = 'https://test.dev.hel'
@@ -295,7 +298,7 @@ describe('Test paytrail refund payment success controller', () => {
     } as PaytrailStatus
 
     axiosMock.get.mockImplementation((url, data?: any) => {
-      if (url.includes(`/refund/paytrail/check-refund-callback-url`)) {
+      if (url.includes(`/payment/paytrail/check-return-url`)) {
         // eslint-disable-next-line jest/no-conditional-expect
         expect(data.params).toEqual(mockRequest.query)
         return Promise.resolve({
@@ -325,16 +328,16 @@ describe('Test paytrail refund payment success controller', () => {
       console.log(data)
       return Promise.resolve({})
     })
-    const mockGetPaidRefundPaymentAdmin = jest.requireMock(
+    const mockGetPaidPaymentAdmin = jest.requireMock(
       '@verkkokauppa/payment-backend'
-    ).getPaidRefundPaymentAdmin
+    ).getPaidPaymentAdmin
 
-    mockGetPaidRefundPaymentAdmin.mockImplementationOnce(() => {
+    mockGetPaidPaymentAdmin.mockImplementationOnce(() => {
       return {
-        refundPayment: 'refundPayment',
+        payment: 'payment',
       }
     })
-    const paytrailOnlineRefundPaymentSuccessController = new PaytrailOnlineRefundPaymentSuccessController()
+    const paytrailOnlineRefundPaymentSuccessController = new PaytrailOnlinePaymentReturnController()
 
     const refundId = refundBackendResponseMock.refund.refundId
     const mockRequest = {
@@ -390,7 +393,7 @@ describe('Test paytrail refund payment success controller', () => {
     )
   })
 
-  it('Check refund payment success controller redirects with failure redirect url when PaytrailStatus is not valid', async () => {
+  it('Check payment success controller redirects with failure redirect url when PaytrailStatus is not valid', async () => {
     process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
     process.env.CONFIGURATION_BACKEND_URL = 'https://test.dev.hel'
     process.env.MESSAGE_BACKEND_URL = 'https://test.dev.hel'
@@ -436,7 +439,7 @@ describe('Test paytrail refund payment success controller', () => {
     } as PaytrailStatus
 
     axiosMock.get.mockImplementation((url, data?: any) => {
-      if (url.includes(`/refund/paytrail/check-refund-callback-url`)) {
+      if (url.includes(`/payment/paytrail/check-return-url`)) {
         // eslint-disable-next-line jest/no-conditional-expect
         expect(data.params).toEqual(mockRequest.query)
         return Promise.resolve({
@@ -467,7 +470,7 @@ describe('Test paytrail refund payment success controller', () => {
       return Promise.resolve({})
     })
 
-    const paytrailOnlineRefundPaymentSuccessController = new PaytrailOnlineRefundPaymentSuccessController()
+    const paytrailOnlineRefundPaymentSuccessController = new PaytrailOnlinePaymentReturnController()
 
     const refundId = refundBackendResponseMock.refund.refundId
     const mockRequest = {
