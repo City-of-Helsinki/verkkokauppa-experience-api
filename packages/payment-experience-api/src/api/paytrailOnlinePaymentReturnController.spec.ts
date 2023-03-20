@@ -1,7 +1,7 @@
 import axios from 'axios'
-import { PaytrailOnlineRefundPaymentSuccessController } from './paytrailOnlineRefundPaymentSuccessController'
 import type { PaytrailStatus } from '@verkkokauppa/payment-backend'
 import type { Response } from 'express'
+import { PaytrailOnlinePaymentReturnController } from './paytrailOnlinePaymentReturnController'
 
 jest.mock('axios')
 
@@ -13,17 +13,45 @@ jest.mock('@verkkokauppa/payment-backend', () => {
   return {
     __esModules: true,
     // first start with all of the module's functions auto-mocked
-    getPaidRefundPaymentAdmin: jest.fn(() => null),
+    getPaidPaymentAdmin: jest.fn(() => null),
+    getPaymentForOrder: jest.fn(() => null),
+    sendReceiptToCustomer: jest.fn(() => null),
     // lastly override w/ any of the module's functions that
     // we want to use the *real* implementations for
 
     // checkPaytrailRefundCallbackUrl not mocked so axios post mock gets called
     // with real implementation
-    checkPaytrailRefundCallbackUrl: actual.checkPaytrailRefundCallbackUrl,
+    checkPaytrailReturnUrl: actual.checkPaytrailReturnUrl,
+    // Payment type has to be actual one
+    PaymentType: actual.PaymentType,
   }
 })
+
+jest.mock('@verkkokauppa/message-backend', () => {
+  // grab all the *real* implementations of the module's functions
+  // in an object
+  // const actual = jest.requireActual('@verkkokauppa/message-backend')
+  // return a new module implementation
+  return {
+    __esModules: true,
+    // first start with all of the module's functions auto-mocked
+    sendOrderConfirmationEmailToCustomer: jest.fn(() => null),
+    // lastly override w/ any of the module's functions that
+    // we want to use the *real* implementations for
+
+    // with real implementation
+  }
+})
+
+const mockSendOrderConfirmationEmailToCustomer = jest.requireMock(
+  '@verkkokauppa/message-backend'
+).sendOrderConfirmationEmailToCustomer
+
 const axiosMock = axios as jest.Mocked<typeof axios>
 
+beforeEach(() => {
+  jest.clearAllMocks()
+})
 const orderBackendResponseMock = {
   order: {
     orderId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
@@ -72,49 +100,6 @@ const orderBackendResponseMock = {
   ],
 }
 
-const refundBackendResponseMock = {
-  refund: {
-    refundId: 'f8487662-993f-45d9-90ed-d9618cf64dfa',
-    orderId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
-    namespace: 'test',
-    user: 'dummy_user',
-    createdAt: '2022-11-24T11:14:26.440',
-    status: 'draft',
-    customerFirstName: 'dummy_firstname',
-    customerLastName: 'dummy_lastname',
-    customerEmail: 'f117c93e-426c-4dcc-8b86-f7ff65cacde4@ambientia.fi',
-    customerPhone: '0404123456',
-    refundReason: 'Palautuksen syy',
-    priceNet: '100',
-    priceVat: '100',
-    priceTotal: '100',
-  },
-  items: [
-    {
-      refundItemId: '610df10c-85d6-4e94-8a4a-b1a2fd86ae3a',
-      refundId: 'f8487662-993f-45d9-90ed-d9618cf64dfa',
-      orderItemId: '19699acf-b0a3-440f-818f-e582825fa3a7',
-      orderId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
-      productId: 'dummy-product',
-      productName: 'Product Name',
-      productLabel: 'productLabel',
-      productDescription: 'productDescription',
-      unit: 'pcs',
-      quantity: 1,
-      rowPriceNet: '100',
-      rowPriceVat: '24',
-      rowPriceTotal: '124',
-      priceVat: '24',
-      priceNet: '100',
-      priceGross: '124',
-      vatPercentage: '24',
-      originalPriceNet: '100',
-      originalPriceVat: '24',
-      originalPriceGross: '124',
-    },
-  ],
-}
-
 describe('Test paytrail refund payment success controller', () => {
   it('Check refund payment success controller redirects with user success redirect url when PaytrailStatus is valid', async () => {
     process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
@@ -159,10 +144,11 @@ describe('Test paytrail refund payment success controller', () => {
     const mockPaytrailStatus = {
       paymentPaid: true,
       valid: true,
+      paymentType: 'creditcards',
     } as PaytrailStatus
 
     axiosMock.get.mockImplementation((url, data?: any) => {
-      if (url.includes(`/refund/paytrail/check-refund-callback-url`)) {
+      if (url.includes(`/payment/paytrail/check-return-url`)) {
         // eslint-disable-next-line jest/no-conditional-expect
         expect(data.params).toEqual(mockRequest.query)
         return Promise.resolve({
@@ -184,24 +170,21 @@ describe('Test paytrail refund payment success controller', () => {
       if (url.includes(`/order-admin/get`)) {
         return Promise.resolve({ data: orderBackendResponseMock })
       }
-      if (url.includes(`/refund-admin/get-by-refund-id`)) {
-        return Promise.resolve({ data: refundBackendResponseMock })
-      }
 
       console.log(url)
       console.log(data)
       return Promise.resolve({})
     })
 
-    const paytrailOnlineRefundPaymentSuccessController = new PaytrailOnlineRefundPaymentSuccessController()
+    const paytrailOnlinePaymentReturnController = new PaytrailOnlinePaymentReturnController()
 
-    const refundId = refundBackendResponseMock.refund.refundId
     const mockRequest = {
       query: {
         'checkout-account': '375917',
         'checkout-algorithm': 'sha256',
         'checkout-amount': '124',
-        'checkout-stamp': refundId + '_at_yyyyMMdd-HHmmss',
+        'checkout-stamp':
+          orderBackendResponseMock.order.orderId + '_at_yyyyMMdd-HHmmss',
         'checkout-reference': '145d8829-07b7-4b03-ab0e-24063958ab9b',
         'checkout-transaction-id': '4b300af6-9a22-11e8-9184-abb6de7fd2d0',
         'checkout-status': 'ok',
@@ -238,10 +221,9 @@ describe('Test paytrail refund payment success controller', () => {
     res.status = jest.fn().mockReturnValue(res)
     res.json = jest.fn().mockReturnValue(res)
 
-    await paytrailOnlineRefundPaymentSuccessController.execute(
-      mockRequest as any,
-      res
-    )
+    await paytrailOnlinePaymentReturnController.execute(mockRequest as any, res)
+
+    expect(mockSendOrderConfirmationEmailToCustomer).toBeCalledTimes(1)
     expect(res.redirect).toBeCalledTimes(1)
     expect(res.redirect).toHaveBeenCalledWith(
       302,
@@ -249,7 +231,7 @@ describe('Test paytrail refund payment success controller', () => {
     )
   })
 
-  it('Check refund payment success controller redirects to failure url if paid refund payment is found to prevent multiple triggerings', async () => {
+  it('Check payment success controller redirects to failure url if paid refund payment is found to prevent multiple triggerings', async () => {
     process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
     process.env.CONFIGURATION_BACKEND_URL = 'https://test.dev.hel'
     process.env.MESSAGE_BACKEND_URL = 'https://test.dev.hel'
@@ -295,7 +277,7 @@ describe('Test paytrail refund payment success controller', () => {
     } as PaytrailStatus
 
     axiosMock.get.mockImplementation((url, data?: any) => {
-      if (url.includes(`/refund/paytrail/check-refund-callback-url`)) {
+      if (url.includes(`/payment/paytrail/check-return-url`)) {
         // eslint-disable-next-line jest/no-conditional-expect
         expect(data.params).toEqual(mockRequest.query)
         return Promise.resolve({
@@ -317,32 +299,31 @@ describe('Test paytrail refund payment success controller', () => {
       if (url.includes(`/order-admin/get`)) {
         return Promise.resolve({ data: orderBackendResponseMock })
       }
-      if (url.includes(`/refund-admin/get-by-refund-id`)) {
-        return Promise.resolve({ data: refundBackendResponseMock })
-      }
 
       console.log(url)
       console.log(data)
       return Promise.resolve({})
     })
-    const mockGetPaidRefundPaymentAdmin = jest.requireMock(
+    const mockGetPaidPaymentAdmin = jest.requireMock(
       '@verkkokauppa/payment-backend'
-    ).getPaidRefundPaymentAdmin
+    ).getPaidPaymentAdmin
 
-    mockGetPaidRefundPaymentAdmin.mockImplementationOnce(() => {
+    mockGetPaidPaymentAdmin.mockImplementationOnce(() => {
       return {
-        refundPayment: 'refundPayment',
+        paymentId: 'dummy-payment',
+        orderId: 'dummy-order',
+        status: 'payment_paid_online',
       }
     })
-    const paytrailOnlineRefundPaymentSuccessController = new PaytrailOnlineRefundPaymentSuccessController()
+    const paytrailOnlinePaymentReturnController = new PaytrailOnlinePaymentReturnController()
 
-    const refundId = refundBackendResponseMock.refund.refundId
     const mockRequest = {
       query: {
         'checkout-account': '375917',
         'checkout-algorithm': 'sha256',
         'checkout-amount': '124',
-        'checkout-stamp': refundId + '_at_yyyyMMdd-HHmmss',
+        'checkout-stamp':
+          orderBackendResponseMock.order.orderId + '_at_yyyyMMdd-HHmmss',
         'checkout-reference': '145d8829-07b7-4b03-ab0e-24063958ab9b',
         'checkout-transaction-id': '4b300af6-9a22-11e8-9184-abb6de7fd2d0',
         'checkout-status': 'ok',
@@ -379,10 +360,9 @@ describe('Test paytrail refund payment success controller', () => {
     res.status = jest.fn().mockReturnValue(res)
     res.json = jest.fn().mockReturnValue(res)
 
-    await paytrailOnlineRefundPaymentSuccessController.execute(
-      mockRequest as any,
-      res
-    )
+    await paytrailOnlinePaymentReturnController.execute(mockRequest as any, res)
+
+    expect(mockSendOrderConfirmationEmailToCustomer).toBeCalledTimes(0)
     expect(res.redirect).toBeCalledTimes(1)
     expect(res.redirect).toHaveBeenCalledWith(
       200,
@@ -390,7 +370,7 @@ describe('Test paytrail refund payment success controller', () => {
     )
   })
 
-  it('Check refund payment success controller redirects with failure redirect url when PaytrailStatus is not valid', async () => {
+  it('Check payment success controller redirects with failure redirect url when PaytrailStatus is not valid', async () => {
     process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
     process.env.CONFIGURATION_BACKEND_URL = 'https://test.dev.hel'
     process.env.MESSAGE_BACKEND_URL = 'https://test.dev.hel'
@@ -436,7 +416,7 @@ describe('Test paytrail refund payment success controller', () => {
     } as PaytrailStatus
 
     axiosMock.get.mockImplementation((url, data?: any) => {
-      if (url.includes(`/refund/paytrail/check-refund-callback-url`)) {
+      if (url.includes(`/payment/paytrail/check-return-url`)) {
         // eslint-disable-next-line jest/no-conditional-expect
         expect(data.params).toEqual(mockRequest.query)
         return Promise.resolve({
@@ -458,24 +438,21 @@ describe('Test paytrail refund payment success controller', () => {
       if (url.includes(`/order-admin/get`)) {
         return Promise.resolve({ data: orderBackendResponseMock })
       }
-      if (url.includes(`/refund-admin/get-by-refund-id`)) {
-        return Promise.resolve({ data: refundBackendResponseMock })
-      }
 
       console.log(url)
       console.log(data)
       return Promise.resolve({})
     })
 
-    const paytrailOnlineRefundPaymentSuccessController = new PaytrailOnlineRefundPaymentSuccessController()
+    const paytrailOnlinePaymentReturnController = new PaytrailOnlinePaymentReturnController()
 
-    const refundId = refundBackendResponseMock.refund.refundId
     const mockRequest = {
       query: {
         'checkout-account': '375917',
         'checkout-algorithm': 'sha256',
         'checkout-amount': '124',
-        'checkout-stamp': refundId + '_at_yyyyMMdd-HHmmss',
+        'checkout-stamp':
+          orderBackendResponseMock.order.orderId + '_at_yyyyMMdd-HHmmss',
         'checkout-reference': '145d8829-07b7-4b03-ab0e-24063958ab9b',
         'checkout-transaction-id': '4b300af6-9a22-11e8-9184-abb6de7fd2d0',
         'checkout-status': 'ok',
@@ -512,10 +489,9 @@ describe('Test paytrail refund payment success controller', () => {
     res.status = jest.fn().mockReturnValue(res)
     res.json = jest.fn().mockReturnValue(res)
 
-    await paytrailOnlineRefundPaymentSuccessController.execute(
-      mockRequest as any,
-      res
-    )
+    await paytrailOnlinePaymentReturnController.execute(mockRequest as any, res)
+
+    expect(mockSendOrderConfirmationEmailToCustomer).toBeCalledTimes(0)
     expect(res.redirect).toBeCalledTimes(1)
     expect(res.redirect).toHaveBeenCalledWith(
       302,

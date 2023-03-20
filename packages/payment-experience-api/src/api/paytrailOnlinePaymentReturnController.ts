@@ -10,6 +10,7 @@ import { getOrderAdmin } from '@verkkokauppa/order-backend'
 import {
   cancelPaymentAdmin,
   checkPaytrailReturnUrl,
+  getPaidPaymentAdmin,
   getPaymentsForOrderAdmin,
   Order,
   PaymentStatus,
@@ -34,6 +35,18 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
     // Validates that base redirect url is set
     PaytrailOnlinePaymentReturnController.checkAndCreateRedirectUrl()
     const orderId = parseOrderIdFromPaytrailRedirect({ query })
+
+    const payment = await getPaidPaymentAdmin({
+      orderId: orderId,
+    })
+
+    // Already found payment paid, return early to prevent multiple events happening
+    if (payment != null) {
+      return result.redirect(
+        200,
+        PaytrailOnlinePaymentReturnController.getFailureRedirectUrl()
+      )
+    }
 
     if (!orderId) {
       logger.error(
