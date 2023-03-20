@@ -16,6 +16,7 @@ import { PaytrailOnlineRefundPaymentSuccessController } from './api/paytrailOnli
 import { GetCardFormParametersController } from './api/getCardFormParametersController'
 import { PaytrailCardRedirectSuccessController } from './api/paytrailCardRedirectSuccessController'
 import { InstantRefundController } from './api/instantRefundController'
+import { GetRefundPaymentAdminController } from './api/getRefundPaymentAdminController'
 
 const createPaymentController = new (withAuthentication(
   CreatePaymentController
@@ -34,6 +35,7 @@ const paytrailOnlinePaymentNotifyController = new PaytrailOnlinePaymentNotifyCon
 const paytrailOnlineRefundPaymentSuccessController = new PaytrailOnlineRefundPaymentSuccessController()
 const getPaymentController = new (withAuthentication(GetPaymentController))()
 const getPaymentAdminController = new GetPaymentAdminController()
+const getRefundPaymentAdminController = new GetRefundPaymentAdminController()
 const healthController = new Health()
 const subscriptionTokenizeController = new SubscriptionTokenizeController()
 const paytrailCardRedirectSuccessController = new PaytrailCardRedirectSuccessController()
@@ -82,6 +84,10 @@ router.get('/paytrailCard/redirect/success/:orderId', (req, res) =>
 
 router.post('/refund/instant/:orderId', (req, res) =>
   instantRefundController.execute(req, res)
+)
+
+router.get('/admin/refund-payment/:orderId', (req, res) =>
+  getRefundPaymentAdminController.execute(req, res)
 )
 
 export default router

@@ -6,6 +6,10 @@ import routes from './routes'
 import * as swaggerUi from 'swagger-ui-express'
 import * as yaml from 'yamljs'
 import * as path from 'path'
+// Importing the fs and https modules -------------- STEP 1
+import https from 'https'
+import fs from 'fs'
+
 const openapiDocument = yaml.load(path.join(__dirname, `/openapi.yaml`))
 
 const app = express()
@@ -20,5 +24,27 @@ app.use(
   swaggerUi.serve,
   swaggerUi.setup(openapiDocument)
 )
+
+// Read the certificate and the private key for the https server options
+// ------------------- STEP 2
+// Create the https server by initializing it with 'options'
+// -------------------- STEP 3
+// NODE_ENV=development
+if (
+  process?.env?.NODE_ENV === 'development' && // yarn dev sets this.
+  process?.env?.USE_HTTPS_SERVER === 'true'
+) {
+  https
+    .createServer(
+      {
+        key: fs.readFileSync(path.join(__dirname, `/config/cert.key`)),
+        cert: fs.readFileSync(path.join(__dirname, `/config/cert.crt`)),
+      },
+      app
+    )
+    .listen(8081, () => {
+      console.log(`HTTPS server started on port 8081`)
+    })
+}
 
 export default app

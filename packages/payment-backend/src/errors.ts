@@ -108,6 +108,18 @@ export class PaymentNotFound extends ExperienceError {
   }
 }
 
+export class RefundPaymentNotFound extends ExperienceError {
+  constructor() {
+    super({
+      code: 'refund-payment-not-found',
+      message: 'Refund payment not found',
+      logLevel: 'info',
+      responseStatus: StatusCode.NotFound,
+    })
+    Object.setPrototypeOf(this, RefundPaymentNotFound.prototype)
+  }
+}
+
 export class PaymentsNotFound extends ExperienceError {
   constructor() {
     super({
@@ -125,6 +137,15 @@ export class GetPaymentForOrderFailure extends ExperienceFailure {
     super({
       code: 'failed-to-get-payment-for-order',
       message: 'Failed to get payment for order',
+      source,
+    })
+  }
+}
+export class GetRefundPaymentForOrderFailure extends ExperienceFailure {
+  constructor(source: Error) {
+    super({
+      code: 'failed-to-get-refund-payment-for-order',
+      message: 'Failed to get refund payment for order',
       source,
     })
   }
