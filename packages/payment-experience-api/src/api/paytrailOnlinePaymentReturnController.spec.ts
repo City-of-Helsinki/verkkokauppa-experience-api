@@ -176,7 +176,7 @@ describe('Test paytrail refund payment success controller', () => {
       return Promise.resolve({})
     })
 
-    const paytrailOnlinePaymentSuccessController = new PaytrailOnlinePaymentReturnController()
+    const paytrailOnlinePaymentReturnController = new PaytrailOnlinePaymentReturnController()
 
     const mockRequest = {
       query: {
@@ -221,10 +221,7 @@ describe('Test paytrail refund payment success controller', () => {
     res.status = jest.fn().mockReturnValue(res)
     res.json = jest.fn().mockReturnValue(res)
 
-    await paytrailOnlinePaymentSuccessController.execute(
-      mockRequest as any,
-      res
-    )
+    await paytrailOnlinePaymentReturnController.execute(mockRequest as any, res)
 
     expect(mockSendOrderConfirmationEmailToCustomer).toBeCalledTimes(1)
     expect(res.redirect).toBeCalledTimes(1)
@@ -318,7 +315,7 @@ describe('Test paytrail refund payment success controller', () => {
         status: 'payment_paid_online',
       }
     })
-    const paytrailOnlinePaymentSuccessController = new PaytrailOnlinePaymentReturnController()
+    const paytrailOnlinePaymentReturnController = new PaytrailOnlinePaymentReturnController()
 
     const mockRequest = {
       query: {
@@ -363,10 +360,7 @@ describe('Test paytrail refund payment success controller', () => {
     res.status = jest.fn().mockReturnValue(res)
     res.json = jest.fn().mockReturnValue(res)
 
-    await paytrailOnlinePaymentSuccessController.execute(
-      mockRequest as any,
-      res
-    )
+    await paytrailOnlinePaymentReturnController.execute(mockRequest as any, res)
 
     expect(mockSendOrderConfirmationEmailToCustomer).toBeCalledTimes(0)
     expect(res.redirect).toBeCalledTimes(1)
@@ -450,7 +444,7 @@ describe('Test paytrail refund payment success controller', () => {
       return Promise.resolve({})
     })
 
-    const paytrailOnlinePaymentSuccessController = new PaytrailOnlinePaymentReturnController()
+    const paytrailOnlinePaymentReturnController = new PaytrailOnlinePaymentReturnController()
 
     const mockRequest = {
       query: {
@@ -495,10 +489,7 @@ describe('Test paytrail refund payment success controller', () => {
     res.status = jest.fn().mockReturnValue(res)
     res.json = jest.fn().mockReturnValue(res)
 
-    await paytrailOnlinePaymentSuccessController.execute(
-      mockRequest as any,
-      res
-    )
+    await paytrailOnlinePaymentReturnController.execute(mockRequest as any, res)
 
     expect(mockSendOrderConfirmationEmailToCustomer).toBeCalledTimes(0)
     expect(res.redirect).toBeCalledTimes(1)
