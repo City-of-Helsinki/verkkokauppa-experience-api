@@ -299,21 +299,21 @@ export const getPaymentMethodList = async (parameters: {
   // TODO remove Paytrail filter when we are disabling payments via visma pay
   const gateways =
     process.env.FILTERED_PAYMENT_GATEWAYS ||
-    `${PaymentGateway.PAYTRAIL},${PaymentGateway.INVOICE}`
+    `${PaymentGateway.VISMA},${PaymentGateway.INVOICE}`
 
   let globallyFilteredPaymentGateways = gateways.split(',')
 
-  const paytrailActivatedProductIds =
+  const vismaActivatedProductIds =
     process.env.PAYTRAIL_ACTIVATED_PRODUCT_IDS ||
     'b86337e8-68a0-3599-a18cdb-754ffae53f5a'
 
-  const globallyActivatedProductIds = paytrailActivatedProductIds.split(',')
+  const globallyActivatedProductIds = vismaActivatedProductIds.split(',')
 
   order.items.map((item) => {
     if (globallyActivatedProductIds.includes(item.productId)) {
       globallyFilteredPaymentGateways = removeItem(
         globallyFilteredPaymentGateways,
-        PaymentGateway.PAYTRAIL
+        PaymentGateway.VISMA
       )
     }
   })
