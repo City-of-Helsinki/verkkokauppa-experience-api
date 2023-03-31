@@ -25,6 +25,15 @@ export interface OrderCustomer {
   lastName: string
   email: string
 }
+export interface OrderPaymentMethod {
+  paymentMethodId?: string
+  orderId?: string
+  userId?: string
+  name?: string
+  code?: string
+  group?: string
+  img?: string
+}
 
 export type OrderType = 'subscription' | 'order'
 
@@ -36,6 +45,7 @@ export interface Order {
   items: OrderItem[]
   checkoutUrl?: string
   customer?: OrderCustomer
+  paymentMethod?: OrderPaymentMethod
   status?: string
   priceNet?: string
   priceVat?: string
