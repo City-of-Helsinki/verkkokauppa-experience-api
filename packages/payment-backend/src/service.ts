@@ -35,6 +35,7 @@ import {
   RefundPaymentStatus,
 } from './enums'
 import type { RefundPayment } from './refund/types'
+import { parseMerchantIdFromFirstOrderItem } from '@verkkokauppa/configuration-backend'
 
 const allowedPaymentGateways = [
   PaymentGateway.PAYTRAIL.toString(),
@@ -381,8 +382,22 @@ export const checkPaytrailCardReturnUrl = async (p: {
 }): Promise<Payment> => {
   const { params, order } = p
   const url = `${getBackendUrl()}/payment/paytrail/check-card-return-url`
+  const dto = {
+    order: {
+      order: {
+        ...order,
+        customerFirstName: order.customer?.firstName,
+        customerLastName: order.customer?.lastName,
+        customerEmail: order.customer?.email,
+      },
+      items: order.items,
+    },
+    paymentMethod: order?.paymentMethod?.name,
+    merchantId: parseMerchantIdFromFirstOrderItem(order),
+  }
+
   try {
-    const res = await axios.get(url, {
+    const res = await axios.post(url, dto, {
       params: {
         ...params,
         orderId: order.orderId,
