@@ -17,6 +17,7 @@ jest.mock('@verkkokauppa/order-backend', () => {
     __esModules: true,
     // first start with all of the module's functions auto-mocked
     getOrderAdmin: jest.fn(() => []),
+    confirmOrder: jest.fn(() => []),
     // lastly override w/ any of the module's functions that
     // we want to use the *real* implementations for
 
@@ -28,6 +29,10 @@ jest.mock('@verkkokauppa/order-backend', () => {
 jest.mock('axios')
 
 const getOrderAdminMock = require('@verkkokauppa/order-backend').getOrderAdmin.mockImplementation(
+  () => orderMock
+)
+
+const confirmOrderMock = require('@verkkokauppa/order-backend').confirmOrder.mockImplementation(
   () => orderMock
 )
 
@@ -267,7 +272,7 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     expect(mockRedirect).toHaveBeenCalledTimes(1)
     expect(mockRedirect.mock.calls[0][0]).toEqual(302)
     expect(mockRedirect.mock.calls[0][1]).toEqual(
-      `${baseUrl || 'https://test.dev.hel'}/summary?paymentPaid=false`
+      `${baseUrl || 'https://test.dev.hel'}/${orderId}/summary?paymentPaid=false`
     )
   }
 
@@ -282,7 +287,11 @@ describe('Test paytrailCardRedirectSuccessController', () => {
       { params: { }, query: { } } as any,
       mockResponse
     )
-    expectSummaryRedirect()
+    expect(mockRedirect).toHaveBeenCalledTimes(1)
+    expect(mockRedirect.mock.calls[0][0]).toEqual(302)
+    expect(mockRedirect.mock.calls[0][1]).toEqual(
+      `https://test.dev.hel/summary?paymentPaid=false`
+    )
     expect(axiosMock.post).toHaveBeenCalledTimes(0)
   })
   it('should redirect to summary if order cannot be fetched', async () => {
@@ -350,6 +359,8 @@ describe('Test paytrailCardRedirectSuccessController', () => {
       return Promise.resolve({})
     })
 
+    confirmOrderMock.mockImplementationOnce(() => orderMock)
+
     await controller.implementation(
       { params: { orderId }, query: { } } as any,
       mockResponse
@@ -358,7 +369,7 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     expect(axiosMock.post).toHaveBeenCalledTimes(2)
     expect(mockRedirect.mock.calls[0][0]).toEqual(302)
     expect(mockRedirect.mock.calls[0][1]).toEqual(
-      `https://test.dev.hel/success`
+      `https://test.dev.hel/${orderId}/success`
     )
   })
   it('should redirect to service specific success if service redirect url is present', async () => {
@@ -394,7 +405,7 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     expect(mockRedirect).toHaveBeenCalledTimes(1)
     expect(mockRedirect.mock.calls[0][0]).toEqual(302)
     expect(mockRedirect.mock.calls[0][1]).toEqual(
-      `${serviceUrl}/success`
+      `${serviceUrl}/${orderId}/success`
     )
   })
   it('should redirect to service specific summary if service redirect url is present', async () => {
@@ -417,7 +428,7 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
     process.env.MESSAGE_BACKEND_URL = 'http://localhost:8181'
     process.env.ORDER_BACKEND_URL = 'http://localhost:8183'
-    getProductAccountingBatchMock.mockImplementationOnce(() => null)
+    getProductAccountingBatchMock.mockImplementationOnce(() => {})
 
     // mocks axios post and checks data sent to */message/send/email
     // and /order/accounting/create urls
@@ -436,10 +447,10 @@ describe('Test paytrailCardRedirectSuccessController', () => {
       mockResponse
     )
     expect(mockRedirect).toHaveBeenCalledTimes(1)
-    expect(axiosMock.post).toHaveBeenCalledTimes(1)
+    expect(axiosMock.post).toHaveBeenCalledTimes(0)
     expect(mockRedirect.mock.calls[0][0]).toEqual(302)
     expect(mockRedirect.mock.calls[0][1]).toEqual(
-      `https://test.dev.hel/summary?paymentPaid=false`
+      `https://test.dev.hel/${orderId}/summary?paymentPaid=false`
     )
   })
 
@@ -477,10 +488,10 @@ describe('Test paytrailCardRedirectSuccessController', () => {
       mockResponse
     )
     expect(mockRedirect).toHaveBeenCalledTimes(1)
-    expect(axiosMock.post).toHaveBeenCalledTimes(1)
+    expect(axiosMock.post).toHaveBeenCalledTimes(0)
     expect(mockRedirect.mock.calls[0][0]).toEqual(302)
     expect(mockRedirect.mock.calls[0][1]).toEqual(
-      `https://test.dev.hel/summary?paymentPaid=false`
+      `https://test.dev.hel/${orderId}/summary?paymentPaid=false`
     )
   })
 })
