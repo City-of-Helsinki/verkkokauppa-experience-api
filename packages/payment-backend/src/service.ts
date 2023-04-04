@@ -4,10 +4,10 @@ import type {
   Payment,
   PaymentFilter,
   PaymentMethod,
+  PaytrailCardFormParameters,
   PaytrailStatus,
   VismaPayResponse,
   VismaStatus,
-  PaytrailCardFormParameters,
 } from './types'
 import type { ParsedQs } from 'qs'
 import {
@@ -35,7 +35,6 @@ import {
   RefundPaymentStatus,
 } from './enums'
 import type { RefundPayment } from './refund/types'
-import { parseMerchantIdFromFirstOrderItem } from '@verkkokauppa/configuration-backend'
 
 const allowedPaymentGateways = [
   PaymentGateway.PAYTRAIL.toString(),
@@ -379,8 +378,9 @@ export const checkPaytrailReturnUrl = async (p: {
 export const checkPaytrailCardReturnUrl = async (p: {
   params: ParsedQs
   order: Order
+  merchantId: string
 }): Promise<Payment> => {
-  const { params, order } = p
+  const { params, order, merchantId } = p
   const url = `${getBackendUrl()}/payment/paytrail/check-card-return-url`
   const dto = {
     order: {
@@ -393,7 +393,7 @@ export const checkPaytrailCardReturnUrl = async (p: {
       items: order.items,
     },
     paymentMethod: order?.paymentMethod?.name,
-    merchantId: parseMerchantIdFromFirstOrderItem(order),
+    merchantId: merchantId,
   }
 
   try {
