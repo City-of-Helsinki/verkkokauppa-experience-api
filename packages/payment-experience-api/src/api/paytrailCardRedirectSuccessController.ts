@@ -11,7 +11,10 @@ import {
   getOrderAdmin,
 } from '@verkkokauppa/order-backend'
 import { URL } from 'url'
-import { getPublicServiceConfiguration } from '@verkkokauppa/configuration-backend'
+import {
+  getPublicServiceConfiguration,
+  parseMerchantIdFromFirstOrderItem,
+} from '@verkkokauppa/configuration-backend'
 import {
   checkPaytrailCardReturnUrl,
   paidPaymentExists,
@@ -103,6 +106,7 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
       const payment = await checkPaytrailCardReturnUrl({
         params: req.query,
         order: confirmedOrder,
+        merchantId: parseMerchantIdFromFirstOrderItem(confirmedOrder) || '',
       })
 
       if (payment.status !== 'payment_paid_online') {
