@@ -17,6 +17,7 @@ import { GetCardFormParametersController } from './api/getCardFormParametersCont
 import { PaytrailCardRedirectSuccessController } from './api/paytrailCardRedirectSuccessController'
 import { InstantRefundController } from './api/instantRefundController'
 import { GetRefundPaymentAdminController } from './api/getRefundPaymentAdminController'
+import { GetUpdateCardFormParametersController } from './api/getUpdateCardFormParametersController'
 
 const createPaymentController = new (withAuthentication(
   CreatePaymentController
@@ -26,6 +27,9 @@ const getPaymentMethodListCtrl = new (withAuthentication(
 ))()
 const getCardFormParametersController = new (withAuthentication(
   GetCardFormParametersController
+))()
+const getUpdateCardFormParametersController = new (withAuthentication(
+  GetUpdateCardFormParametersController
 ))()
 const onlinePaymentReturnController = new OnlinePaymentReturnController()
 const paytrailOnlinePaymentReturnController = new PaytrailOnlinePaymentReturnController()
@@ -55,6 +59,9 @@ router.get('/:orderId/paymentMethods', (req, res) =>
 )
 router.get('/:orderId/cardFormParameters', (req, res) =>
   getCardFormParametersController.execute(req, res)
+)
+router.get('/:orderId/updateCardFormParameters', (req, res) =>
+  getUpdateCardFormParametersController.execute(req, res)
 )
 router.get('/onlinePayment/return', (req, res) =>
   onlinePaymentReturnController.execute(req, res)
