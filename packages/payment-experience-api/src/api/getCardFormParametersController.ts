@@ -12,7 +12,7 @@ import {
   getPaytrailPaymenCardFormParams,
   PaymentGateway,
 } from '@verkkokauppa/payment-backend'
-import { getOrderAdmin } from '@verkkokauppa/order-backend'
+import { getOrder } from '@verkkokauppa/order-backend'
 import { parseMerchantIdFromFirstOrderItem } from '@verkkokauppa/configuration-backend'
 
 const requestSchema = yup.object().shape({
@@ -35,11 +35,12 @@ export class GetCardFormParametersController extends AbstractController<
   ): Promise<any> {
     const {
       params: { orderId },
+      headers: { user },
     } = req
 
     logger.debug(`Fetch cardFormParameters ${orderId}`)
 
-    const order = await getOrderAdmin({ orderId })
+    const order = await getOrder({ orderId, user })
 
     if (order.type !== 'subscription') {
       logger.error(
