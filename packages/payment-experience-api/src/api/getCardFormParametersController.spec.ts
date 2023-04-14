@@ -5,7 +5,7 @@ import { GetCardFormParametersController } from './getCardFormParametersControll
 jest.mock('@verkkokauppa/order-backend')
 jest.mock('@verkkokauppa/payment-backend')
 
-const getOrderAdminMock = require('@verkkokauppa/order-backend').getOrderAdmin.mockImplementation(
+const getOrderMock = require('@verkkokauppa/order-backend').getOrder.mockImplementation(
   () => ({})
 )
 
@@ -118,7 +118,7 @@ const mockRequest = {
 describe('Test getCardFormParametersController', () => {
   it('Should get card form parameters for order', async () => {
     const successSpy = jest.spyOn(AbstractController.prototype, 'success')
-    getOrderAdminMock.mockImplementationOnce(() => orderMock)
+    getOrderMock.mockImplementationOnce(() => orderMock)
     getPaytrailPaymenCardFormParamsMock.mockImplementationOnce(
       () => cardFormParametersMock
     )
@@ -138,7 +138,7 @@ describe('Test getCardFormParametersController', () => {
       ...orderMock,
       type: 'order',
     }
-    getOrderAdminMock.mockImplementationOnce(() => orderNotSubscriptionMock)
+    getOrderMock.mockImplementationOnce(() => orderNotSubscriptionMock)
     getPaytrailPaymenCardFormParamsMock.mockImplementationOnce(
       () => cardFormParametersMock
     )
@@ -158,7 +158,7 @@ describe('Test getCardFormParametersController', () => {
       ...orderMock,
       paymentMethod: paymentMethodWrongGatewayMock,
     }
-    getOrderAdminMock.mockImplementationOnce(() => orderWrongGatewayMock)
+    getOrderMock.mockImplementationOnce(() => orderWrongGatewayMock)
     getPaytrailPaymenCardFormParamsMock.mockImplementationOnce(
       () => cardFormParametersMock
     )
@@ -221,7 +221,7 @@ describe('Test getCardFormParametersController', () => {
       ...orderMock,
       items: itemsWithoutMerchantIdMock,
     }
-    getOrderAdminMock.mockImplementationOnce(() => orderWithoutMerchantIdMock)
+    getOrderMock.mockImplementationOnce(() => orderWithoutMerchantIdMock)
     getPaytrailPaymenCardFormParamsMock.mockImplementationOnce(
       () => cardFormParametersMock
     )
