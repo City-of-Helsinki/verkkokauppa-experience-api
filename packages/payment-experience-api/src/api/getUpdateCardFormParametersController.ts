@@ -9,7 +9,7 @@ import {
 import type { Response } from 'express'
 import * as yup from 'yup'
 import {
-  getPaytrailPaymenCardFormParams,
+  getUpdatePaytrailCardFormParams,
   PaymentGateway,
 } from '@verkkokauppa/payment-backend'
 import { getOrder } from '@verkkokauppa/order-backend'
@@ -24,7 +24,7 @@ const requestSchema = yup.object().shape({
   }),
 })
 
-export class GetCardFormParametersController extends AbstractController<
+export class GetUpdateCardFormParametersController extends AbstractController<
   typeof requestSchema
 > {
   protected readonly requestSchema = requestSchema
@@ -38,34 +38,25 @@ export class GetCardFormParametersController extends AbstractController<
       headers: { user },
     } = req
 
-    logger.debug(`Fetch cardFormParameters ${orderId}`)
+    logger.debug(`Fetch updateCardFormParameters ${orderId}`)
 
     const order = await getOrder({ orderId, user })
 
     if (order.type !== 'subscription') {
-      logger.error(
-        'Order has to be a subscription to fetch card form parameters'
-      )
       throw new ExperienceError({
         code: 'failed-order-is-not-subscription',
         message:
           'Order has to be a subscription to fetch card form parameters.',
-        responseStatus: StatusCode.NotFound,
+        responseStatus: StatusCode.BadRequest,
         logLevel: 'info',
       })
     }
 
-    if (
-      !order.paymentMethod ||
-      order.paymentMethod.gateway !== PaymentGateway.PAYTRAIL
-    ) {
-      logger.error(
-        `Payment gateway has to be ${PaymentGateway.PAYTRAIL} to get card form parameters`
-      )
+    if (order.paymentMethod?.gateway !== PaymentGateway.PAYTRAIL) {
       throw new ExperienceError({
         code: 'failed-gateway-type-is-not-paytrail',
         message: `Payment gateway has to be ${PaymentGateway.PAYTRAIL} to get card form parameters.`,
-        responseStatus: StatusCode.NotFound,
+        responseStatus: StatusCode.BadRequest,
         logLevel: 'info',
       })
     }
@@ -73,7 +64,6 @@ export class GetCardFormParametersController extends AbstractController<
     const merchantId = parseMerchantIdFromFirstOrderItem(order)
 
     if (!merchantId) {
-      logger.error('No merchantId found from order')
       throw new ExperienceError({
         code: 'merchant-id-not-found',
         message: 'No merchantId found from order.',
@@ -83,7 +73,7 @@ export class GetCardFormParametersController extends AbstractController<
     }
 
     const dto = new Data(
-      await getPaytrailPaymenCardFormParams({
+      await getUpdatePaytrailCardFormParams({
         namespace: order.namespace,
         merchantId,
         orderId,

@@ -740,3 +740,26 @@ export const getPaytrailPaymenCardFormParams = async (p: {
     })
   }
 }
+
+export const getUpdatePaytrailCardFormParams = async (p: {
+  namespace: string
+  merchantId: string
+  orderId: string
+}): Promise<PaytrailCardFormParameters> => {
+  checkBackendUrlExists()
+
+  const { namespace, merchantId, orderId } = p
+  const url = `${process.env.PAYMENT_BACKEND_URL}/subscription/get/update-card-form-parameters/`
+  try {
+    const res = await axios.get<PaytrailCardFormParameters>(url, {
+      params: { namespace, merchantId, orderId },
+    })
+    return res.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-get-card-form-parameters',
+      message: 'failed to get card form parameters',
+      source: e as Error,
+    })
+  }
+}

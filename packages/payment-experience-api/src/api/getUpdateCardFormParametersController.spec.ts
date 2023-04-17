@@ -1,6 +1,6 @@
 import { AbstractController, ValidatedRequest } from '@verkkokauppa/core'
 import type { Response } from 'express'
-import { GetCardFormParametersController } from './getCardFormParametersController'
+import { GetUpdateCardFormParametersController } from './getUpdateCardFormParametersController'
 
 jest.mock('@verkkokauppa/order-backend')
 jest.mock('@verkkokauppa/payment-backend')
@@ -9,7 +9,7 @@ const getOrderMock = require('@verkkokauppa/order-backend').getOrder.mockImpleme
   () => ({})
 )
 
-const getPaytrailPaymenCardFormParamsMock = require('@verkkokauppa/payment-backend').getPaytrailPaymenCardFormParams.mockImplementation(
+const getUpdatePaytrailCardFormParamsMock = require('@verkkokauppa/payment-backend').getUpdatePaytrailCardFormParams.mockImplementation(
   () => ({})
 )
 
@@ -89,14 +89,13 @@ const cardFormParametersMock = {
   signature: 'test-signature',
   'checkout-callback-success-url': 'http://localhost:3000/callback/success',
   'checkout-callback-cancel-url': 'http://localhost:3000/callback/cancel',
-  language: 'FI',
 }
 
 beforeEach(() => {
   jest.clearAllMocks()
 })
 
-const getCardFormParametersController = new (class extends GetCardFormParametersController {
+const getUpdateCardFormParametersController = new (class extends GetUpdateCardFormParametersController {
   implementation(req: ValidatedRequest<any>, res: Response): Promise<any> {
     return super.implementation(req, res)
   }
@@ -115,14 +114,14 @@ const mockRequest = {
   headers: requestHeaders,
 } as any
 
-describe('Test getCardFormParametersController', () => {
-  it('Should get card form parameters for order', async () => {
+describe('Test getUpdateCardFormParametersController', () => {
+  it('Should get update card form parameters for order', async () => {
     const successSpy = jest.spyOn(AbstractController.prototype, 'success')
     getOrderMock.mockImplementationOnce(() => orderMock)
-    getPaytrailPaymenCardFormParamsMock.mockImplementationOnce(
+    getUpdatePaytrailCardFormParamsMock.mockImplementationOnce(
       () => cardFormParametersMock
     )
-    const res = await getCardFormParametersController.implementation(
+    const res = await getUpdateCardFormParametersController.implementation(
       mockRequest,
       mockResponse
     )
@@ -133,20 +132,23 @@ describe('Test getCardFormParametersController', () => {
     })
     expect(res).toBe(successSpy.mock.results[0]?.value)
   })
-  it('Should throw 404 when order is not subscription', async () => {
+  it('Should throw 400 when order is not subscription', async () => {
     const orderNotSubscriptionMock = {
       ...orderMock,
       type: 'order',
     }
     getOrderMock.mockImplementationOnce(() => orderNotSubscriptionMock)
-    getPaytrailPaymenCardFormParamsMock.mockImplementationOnce(
+    getUpdatePaytrailCardFormParamsMock.mockImplementationOnce(
       () => cardFormParametersMock
     )
     await expect(
-      getCardFormParametersController.implementation(mockRequest, mockResponse)
+      getUpdateCardFormParametersController.implementation(
+        mockRequest,
+        mockResponse
+      )
     ).rejects.toThrow('failed-order-is-not-subscription')
   })
-  it('Should throw 404 when gateway is not paytrail', async () => {
+  it('Should throw 400 when gateway is not paytrail', async () => {
     const paymentMethodWrongGatewayMock = {
       name: 'payment method',
       code: 'payment-method',
@@ -159,11 +161,14 @@ describe('Test getCardFormParametersController', () => {
       paymentMethod: paymentMethodWrongGatewayMock,
     }
     getOrderMock.mockImplementationOnce(() => orderWrongGatewayMock)
-    getPaytrailPaymenCardFormParamsMock.mockImplementationOnce(
+    getUpdatePaytrailCardFormParamsMock.mockImplementationOnce(
       () => cardFormParametersMock
     )
     await expect(
-      getCardFormParametersController.implementation(mockRequest, mockResponse)
+      getUpdateCardFormParametersController.implementation(
+        mockRequest,
+        mockResponse
+      )
     ).rejects.toThrow('failed-gateway-type-is-not-paytrail')
   })
   it('Should throw 404 when merchantId is not found from order items', async () => {
@@ -222,11 +227,14 @@ describe('Test getCardFormParametersController', () => {
       items: itemsWithoutMerchantIdMock,
     }
     getOrderMock.mockImplementationOnce(() => orderWithoutMerchantIdMock)
-    getPaytrailPaymenCardFormParamsMock.mockImplementationOnce(
+    getUpdatePaytrailCardFormParamsMock.mockImplementationOnce(
       () => cardFormParametersMock
     )
     await expect(
-      getCardFormParametersController.implementation(mockRequest, mockResponse)
+      getUpdateCardFormParametersController.implementation(
+        mockRequest,
+        mockResponse
+      )
     ).rejects.toThrow('merchant-id-not-found')
   })
 })
