@@ -19,6 +19,7 @@ const requestSchema = yup.object().shape({
     mainLedgerAccount: yup.string().required(),
     internalOrder: yup.string().notRequired(),
     profitCenter: yup.string().notRequired(),
+    balanceProfitCenter: yup.string().notRequired(),
     project: yup.string().notRequired(),
     operationArea: yup.string().notRequired(),
   }),

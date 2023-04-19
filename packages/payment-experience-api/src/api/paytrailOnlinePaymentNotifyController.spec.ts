@@ -116,6 +116,7 @@ describe('Test paytrail notify controller', () => {
         vatCode: 'vatCode',
         internalOrder: 'internalOrder',
         profitCenter: 'profitCenter',
+        balanceProfitCenter: 'balanceProfitCenter',
         project: 'project',
         operationArea: 'operationArea',
         companyCode: 'companyCode',

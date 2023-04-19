@@ -124,6 +124,7 @@ export interface ProductAccounting {
   vatCode: string
   internalOrder: string
   profitCenter: string
+  balanceProfitCenter: string
   project?: string | null
   operationArea?: string | null
 }
