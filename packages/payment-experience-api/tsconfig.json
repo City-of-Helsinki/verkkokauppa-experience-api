@@ -7,25 +7,25 @@
         "baseUrl": "./",
         "paths": {
             "@verkkokauppa/auth-helsinki-profile": [
-                "..\\auth-helsinki-profile"
+                "../auth-helsinki-profile"
             ],
             "@verkkokauppa/configuration-backend": [
-                "..\\configuration-backend"
+                "../configuration-backend"
             ],
             "@verkkokauppa/core": [
-                "..\\core"
+                "../core"
             ],
             "@verkkokauppa/message-backend": [
-                "..\\message-backend"
+                "../message-backend"
             ],
             "@verkkokauppa/order-backend": [
-                "..\\order-backend"
+                "../order-backend"
             ],
             "@verkkokauppa/payment-backend": [
-                "..\\payment-backend"
+                "../payment-backend"
             ],
             "@verkkokauppa/product-backend": [
-                "..\\product-backend"
+                "../product-backend"
             ]
         }
     },
@@ -34,25 +34,25 @@
     ],
     "references": [
         {
-            "path": "..\\auth-helsinki-profile"
+            "path": "../auth-helsinki-profile"
         },
         {
-            "path": "..\\configuration-backend"
+            "path": "../configuration-backend"
         },
         {
-            "path": "..\\core"
+            "path": "../core"
         },
         {
-            "path": "..\\message-backend"
+            "path": "../message-backend"
         },
         {
-            "path": "..\\order-backend"
+            "path": "../order-backend"
         },
         {
-            "path": "..\\payment-backend"
+            "path": "../payment-backend"
         },
         {
-            "path": "..\\product-backend"
+            "path": "../product-backend"
         }
     ]
 }

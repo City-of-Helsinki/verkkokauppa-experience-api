@@ -836,7 +836,6 @@ describe('Test Create Accounting entry for order', () => {
           vatCode: 'vatCode',
           internalOrder: 'internalOrder',
           profitCenter: 'profitCenter',
-          balanceProfitCenter: 'balanceProfitCenter',
           project: 'project',
           operationArea: 'operationArea',
         },

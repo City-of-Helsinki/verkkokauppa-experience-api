@@ -30,7 +30,6 @@ describe('Test Create Accounting info', () => {
     vatCode: 'vatCode',
     internalOrder: 'internalOrder',
     profitCenter: 'profitCenter',
-    balanceProfitCenter: 'balanceProfitCenter',
     project: 'project',
     operationArea: 'operationArea',
     companyCode: 'companyCode',
