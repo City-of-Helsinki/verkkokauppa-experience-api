@@ -513,9 +513,7 @@ export const checkLastValidPurchaseDateTime = (
 
   // If parameter is string convert it to Date
   if (typeof lastValidPurchaseDateTime === 'string') {
-    lastValidPurchaseDateTimeAsdate = new Date(
-      lastValidPurchaseDateTime as string
-    )
+    lastValidPurchaseDateTimeAsdate = new Date(lastValidPurchaseDateTime)
   }
 
   if (

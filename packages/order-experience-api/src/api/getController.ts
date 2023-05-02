@@ -9,6 +9,7 @@ import { getOrder } from '@verkkokauppa/order-backend'
 import * as yup from 'yup'
 import { getMerchantDetailsForOrder } from '@verkkokauppa/configuration-backend'
 import { paidPaymentExists } from '@verkkokauppa/payment-backend'
+import { isValidForCheckout } from '../lib/is-valid-for-checkout'
 
 const requestSchema = yup.object().shape({
   params: yup.object().shape({
@@ -40,7 +41,7 @@ export class GetController extends AbstractController<typeof requestSchema> {
 
     const dto = new Data({
       ...order,
-      isValidForCheckout: !orderIsPaid,
+      isValidForCheckout: !orderIsPaid && isValidForCheckout(order),
       merchant,
     })
 
