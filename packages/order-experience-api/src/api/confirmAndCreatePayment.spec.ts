@@ -4,6 +4,7 @@ import type { Request, Response } from 'express'
 jest.mock('@verkkokauppa/order-backend')
 jest.mock('@verkkokauppa/payment-backend')
 
+require('@verkkokauppa/order-backend').getOrder.mockImplementation(() => ({}))
 const confirmOrderMock = require('@verkkokauppa/order-backend').confirmOrder.mockImplementation(
   () => ({})
 )
