@@ -97,6 +97,7 @@ components:
         - vatCode
         - companyCode
         - mainLedgerAccount
+        - balanceProfitCenter
       properties:
         vatCode:
           type: string
