@@ -413,6 +413,24 @@ export const checkPaytrailCardReturnUrl = async (p: {
   }
 }
 
+export const checkPaytrailCardUpdateReturnUrl = async (p: {
+  params: ParsedQs
+  order: Order
+}) => {
+  const { params, order } = p
+  const url = `${getBackendUrl()}/payment/paytrail/check-card-update-return-url`
+  try {
+    const res = await axios.post(url, { order }, { params })
+    return res.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-check-paytrail-card-update-return-url',
+      message: 'Failed to check paytrail card update return url',
+      source: e,
+    })
+  }
+}
+
 export const checkPaytrailRefundCallbackUrl = async (p: {
   params: ParsedQs
   merchantId: string
