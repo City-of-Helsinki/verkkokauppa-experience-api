@@ -7,15 +7,21 @@ import { checkPaytrailCardUpdateReturnUrl } from '@verkkokauppa/payment-backend'
 export class PaytrailCardUpdateRedirectSuccessController extends AbstractController {
   protected readonly requestSchema = null
 
-  private static success = (url: URL, orderId: string | undefined) => {
+  private static success = (url: URL, orderId?: string, user?: string) => {
     url.pathname = `${orderId}/card-update-success`
+    if (user) {
+      url.searchParams.append('user', user)
+    }
     return url
   }
 
-  private static fault = (url: URL, orderId?: string) => {
+  private static fault = (url: URL, orderId?: string, user?: string) => {
     url.pathname = orderId
       ? `${orderId}/card-update-failed`
       : 'card-update-failed'
+    if (user) {
+      url.searchParams.append('user', user)
+    }
     return url
   }
 
@@ -26,6 +32,7 @@ export class PaytrailCardUpdateRedirectSuccessController extends AbstractControl
     }
     let redirectUrl = new URL(globalRedirectUrl)
     const { orderId } = req.params
+    let user = ''
     try {
       if (!orderId) {
         return res.redirect(
@@ -37,6 +44,7 @@ export class PaytrailCardUpdateRedirectSuccessController extends AbstractControl
       }
 
       const order = await getOrderAdmin({ orderId })
+      user = order.user
       await checkPaytrailCardUpdateReturnUrl({
         params: req.query,
         order,
@@ -46,7 +54,8 @@ export class PaytrailCardUpdateRedirectSuccessController extends AbstractControl
         302,
         PaytrailCardUpdateRedirectSuccessController.success(
           redirectUrl,
-          orderId
+          orderId,
+          user
         ).toString()
       )
     } catch (e) {
@@ -55,7 +64,8 @@ export class PaytrailCardUpdateRedirectSuccessController extends AbstractControl
         302,
         PaytrailCardUpdateRedirectSuccessController.fault(
           redirectUrl,
-          orderId
+          orderId,
+          user
         ).toString()
       )
     }
