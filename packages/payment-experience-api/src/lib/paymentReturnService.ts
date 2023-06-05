@@ -60,7 +60,10 @@ export const createUserRedirectUrl = async ({
     true
   )
 
-  return serviceSpecificRedirectUrl || internalRedirectUrl
+  const url = serviceSpecificRedirectUrl || internalRedirectUrl
+  url.searchParams.append('user', order.user)
+
+  return url
 }
 
 export const createPaymentRedirectUrlFromPaymentReturnStatus = (
