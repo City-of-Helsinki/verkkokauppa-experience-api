@@ -100,7 +100,7 @@ const orderMock = {
   orderId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
   createdAt: '2023-02-08T07:56:57.599811',
   namespace: 'ns1',
-  user: 'test@test.dev.hel',
+  user: 'user123',
   type: 'order',
   items: [
     {
@@ -273,7 +273,7 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     expect(mockRedirect).toHaveBeenCalledTimes(1)
     expect(mockRedirect.mock.calls[0][0]).toEqual(302)
     expect(mockRedirect.mock.calls[0][1]).toEqual(
-      `${baseUrl || 'https://test.dev.hel'}/${orderId}/summary?paymentPaid=false`
+      `${baseUrl || 'https://test.dev.hel'}/${orderId}/summary?paymentPaid=false&user=${orderMock.user}`
     )
   }
 
@@ -304,7 +304,11 @@ describe('Test paytrailCardRedirectSuccessController', () => {
       { params: { orderId }, query: { } } as any,
       mockResponse
     )
-    expectSummaryRedirect()
+    expect(mockRedirect).toHaveBeenCalledTimes(1)
+    expect(mockRedirect.mock.calls[0][0]).toEqual(302)
+    expect(mockRedirect.mock.calls[0][1]).toEqual(
+      `https://test.dev.hel/${orderId}/summary?paymentPaid=false`
+    )
     expect(axiosMock.post).toHaveBeenCalledTimes(0)
   })
   it('should redirect to summary if getPublicServiceConfiguration fails', async () => {
@@ -370,7 +374,7 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     expect(axiosMock.post).toHaveBeenCalledTimes(2)
     expect(mockRedirect.mock.calls[0][0]).toEqual(302)
     expect(mockRedirect.mock.calls[0][1]).toEqual(
-      `https://test.dev.hel/${orderId}/success`
+      `https://test.dev.hel/${orderId}/success?user=${orderMock.user}`
     )
   })
   it('should redirect to service specific success if service redirect url is present', async () => {
@@ -406,7 +410,7 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     expect(mockRedirect).toHaveBeenCalledTimes(1)
     expect(mockRedirect.mock.calls[0][0]).toEqual(302)
     expect(mockRedirect.mock.calls[0][1]).toEqual(
-      `${serviceUrl}/${orderId}/success`
+      `${serviceUrl}/${orderId}/success?user=${orderMock.user}`
     )
   })
   it('should redirect to service specific summary if service redirect url is present', async () => {
@@ -451,7 +455,7 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     expect(axiosMock.post).toHaveBeenCalledTimes(0)
     expect(mockRedirect.mock.calls[0][0]).toEqual(302)
     expect(mockRedirect.mock.calls[0][1]).toEqual(
-      `https://test.dev.hel/${orderId}/summary?paymentPaid=false`
+      `https://test.dev.hel/${orderId}/summary?paymentPaid=false&user=${orderMock.user}`
     )
   })
 
@@ -493,7 +497,7 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     expect(axiosMock.post).toHaveBeenCalledTimes(0)
     expect(mockRedirect.mock.calls[0][0]).toEqual(302)
     expect(mockRedirect.mock.calls[0][1]).toEqual(
-      `https://test.dev.hel/${orderId}/summary?paymentPaid=false`
+      `https://test.dev.hel/${orderId}/summary?paymentPaid=false&user=${orderMock.user}`
     )
   })
 })

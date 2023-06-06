@@ -19,7 +19,7 @@ const axiosMock = axios as jest.Mocked<typeof axios>
 const orderMock = {
   orderId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
   namespace: 'test',
-  user: 'test@test.dev.hel',
+  user: 'user123',
   createdAt: '1619157868',
   type: 'order' as const,
   items: [
@@ -98,7 +98,7 @@ describe('Test User redirection creation', () => {
       redirectPaymentUrlBase: 'https://test.dev.hel',
     })
     expect(result.toString()).toBe(
-      `${process.env.REDIRECT_PAYMENT_URL_BASE}/145d8829-07b7-4b03-ab0e-24063958ab9b/failure`
+      `${process.env.REDIRECT_PAYMENT_URL_BASE}/145d8829-07b7-4b03-ab0e-24063958ab9b/failure?user=${orderMock.user}`
     )
   })
   it('Should return service failure if order is not paid and cannot be retried and with service specific configuration set', async () => {
@@ -123,7 +123,7 @@ describe('Test User redirection creation', () => {
       redirectPaymentUrlBase: 'https://test.dev.hel',
     })
     expect(result.toString()).toBe(
-      `https://service.dev.hel/failure?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b`
+      `https://service.dev.hel/failure?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b&user=${orderMock.user}`
     )
   })
   it('Should return checkout failure with retry if order is not paid and no service specific configuration set', async () => {
@@ -147,7 +147,7 @@ describe('Test User redirection creation', () => {
       redirectPaymentUrlBase: 'https://test.dev.hel',
     })
     expect(result.toString()).toBe(
-      `${process.env.REDIRECT_PAYMENT_URL_BASE}/145d8829-07b7-4b03-ab0e-24063958ab9b/summary?paymentPaid=false`
+      `${process.env.REDIRECT_PAYMENT_URL_BASE}/145d8829-07b7-4b03-ab0e-24063958ab9b/summary?paymentPaid=false&user=${orderMock.user}`
     )
   })
   it('Should return checkout failure with retry if order is not paid and with service specific configuration set', async () => {
@@ -172,7 +172,7 @@ describe('Test User redirection creation', () => {
       redirectPaymentUrlBase: 'https://test.dev.hel',
     })
     expect(result.toString()).toBe(
-      `${process.env.REDIRECT_PAYMENT_URL_BASE}/145d8829-07b7-4b03-ab0e-24063958ab9b/summary?paymentPaid=false`
+      `${process.env.REDIRECT_PAYMENT_URL_BASE}/145d8829-07b7-4b03-ab0e-24063958ab9b/summary?paymentPaid=false&user=${orderMock.user}`
     )
   })
   it('Should return checkout success if order is paid and no service specific configuration set', async () => {
@@ -196,7 +196,7 @@ describe('Test User redirection creation', () => {
       redirectPaymentUrlBase: 'https://test.dev.hel',
     })
     expect(result.toString()).toBe(
-      `${process.env.REDIRECT_PAYMENT_URL_BASE}/145d8829-07b7-4b03-ab0e-24063958ab9b/success`
+      `${process.env.REDIRECT_PAYMENT_URL_BASE}/145d8829-07b7-4b03-ab0e-24063958ab9b/success?user=${orderMock.user}`
     )
   })
 
@@ -263,7 +263,7 @@ describe('Test User redirection creation', () => {
       redirectPaymentUrlBase: 'https://test.dev.hel',
     })
     expect(result.toString()).toBe(
-      `${configMock.configurationValue}/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b`
+      `${configMock.configurationValue}/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b&user=${orderMock.user}`
     )
   })
 
