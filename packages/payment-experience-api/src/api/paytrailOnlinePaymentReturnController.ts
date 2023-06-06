@@ -106,7 +106,8 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
           return result.redirect(
             302,
             PaytrailOnlinePaymentReturnController.getCardRenewalFailureRedirectUrl(
-              order.orderId
+              order.orderId,
+              order.user
             ).toString()
           )
         }
@@ -146,9 +147,14 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
     return process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE
   }
 
-  private static getCardRenewalFailureRedirectUrl(orderId: string) {
+  private static getCardRenewalFailureRedirectUrl(
+    orderId: string,
+    user: string
+  ) {
     const redirectUrl = this.checkAndCreateRedirectUrl()
     redirectUrl.pathname = `${orderId}/card-update-failed`
+
+    redirectUrl.searchParams.append('user', user)
 
     return redirectUrl.toString()
   }

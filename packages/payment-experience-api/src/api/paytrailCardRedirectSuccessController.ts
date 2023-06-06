@@ -25,20 +25,22 @@ import { getProductAccountingBatch } from '@verkkokauppa/product-backend'
 export class PaytrailCardRedirectSuccessController extends AbstractController {
   protected readonly requestSchema = null
 
-  private static success = (url: URL, orderId: string | undefined) => {
+  private static success = (url: URL, orderId?: string, user?: string) => {
     url.pathname = `${orderId}/success`
+    if (user) {
+      url.searchParams.append('user', user)
+    }
     return url
   }
 
-  private static fault = (url: URL) => {
-    url.pathname = 'summary'
+  private static fault = (url: URL, orderId?: string, user?: string) => {
+    url.pathname = orderId ? `${orderId}/summary` : 'summary'
     url.searchParams.append('paymentPaid', 'false')
-    return url
-  }
 
-  private static faultWithId = (url: URL, orderId: string | undefined) => {
-    url.pathname = `${orderId}/summary`
-    url.searchParams.append('paymentPaid', 'false')
+    if (user) {
+      url.searchParams.append('user', user)
+    }
+
     return url
   }
 
@@ -49,6 +51,7 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
     }
     let redirectUrl = new URL(globalRedirectUrl)
     const { orderId } = req.params
+    let user = ''
     try {
       if (!orderId) {
         return res.redirect(
@@ -57,12 +60,17 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
         )
       }
       const order = await getOrderAdmin({ orderId })
+      user = order.user
 
       if (await paidPaymentExists(order)) {
-        PaytrailCardRedirectSuccessController.faultWithId(
-          redirectUrl,
-          orderId
-        ).toString()
+        return res.redirect(
+          302,
+          PaytrailCardRedirectSuccessController.fault(
+            redirectUrl,
+            orderId,
+            user
+          ).toString()
+        )
       }
 
       const serviceConfigurationRedirectUrl = await getPublicServiceConfiguration(
@@ -112,9 +120,10 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
       if (payment.status !== 'payment_paid_online') {
         return res.redirect(
           302,
-          PaytrailCardRedirectSuccessController.faultWithId(
+          PaytrailCardRedirectSuccessController.fault(
             redirectUrl,
-            orderId
+            orderId,
+            user
           ).toString()
         )
       }
@@ -142,16 +151,18 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
         302,
         PaytrailCardRedirectSuccessController.success(
           redirectUrl,
-          orderId
+          orderId,
+          user
         ).toString()
       )
     } catch (e) {
       logger.error(e)
       return res.redirect(
         302,
-        PaytrailCardRedirectSuccessController.faultWithId(
+        PaytrailCardRedirectSuccessController.fault(
           redirectUrl,
-          orderId
+          orderId,
+          user
         ).toString()
       )
     }

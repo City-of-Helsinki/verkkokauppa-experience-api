@@ -5,8 +5,9 @@ jest.mock('@verkkokauppa/payment-backend')
 jest.mock('@verkkokauppa/order-backend')
 jest.mock('axios')
 
+const user = 'u123'
 const getOrderAdminMock = require('@verkkokauppa/order-backend').getOrderAdmin.mockImplementation(
-  () => {}
+  () => ({ user })
 )
 
 const checkPaytrailCardUpdateReturnUrlMock = require('@verkkokauppa/payment-backend').checkPaytrailCardUpdateReturnUrl.mockImplementation(
@@ -78,7 +79,7 @@ describe('Test paytrailCardUpdateRedirectSuccessController', () => {
     expect(mockRedirect).toHaveBeenCalledTimes(1)
     expect(mockRedirect.mock.calls[0][0]).toEqual(302)
     expect(mockRedirect.mock.calls[0][1]).toEqual(
-      `https://test.dev.hel/${orderId}/card-update-failed`
+      `https://test.dev.hel/${orderId}/card-update-failed?user=${user}`
     )
   })
   it('should redirect to success', async () => {
@@ -90,7 +91,7 @@ describe('Test paytrailCardUpdateRedirectSuccessController', () => {
     expect(mockRedirect).toHaveBeenCalledTimes(1)
     expect(mockRedirect.mock.calls[0][0]).toEqual(302)
     expect(mockRedirect.mock.calls[0][1]).toEqual(
-      `https://test.dev.hel/${orderId}/card-update-success`
+      `https://test.dev.hel/${orderId}/card-update-success?user=${user}`
     )
   })
 })

@@ -56,7 +56,7 @@ const orderBackendResponseMock = {
   order: {
     orderId: '145d8829-07b7-4b03-ab0e-24063958ab9b',
     namespace: 'test',
-    user: 'test@test.dev.hel',
+    user: 'user123',
     createdAt: '1619157868',
     type: 'order',
     merchant: {
@@ -227,7 +227,7 @@ describe('Test paytrail refund payment success controller', () => {
     expect(res.redirect).toBeCalledTimes(1)
     expect(res.redirect).toHaveBeenCalledWith(
       302,
-      'https://service.dev.hel/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b'
+      `https://service.dev.hel/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b&user=${orderBackendResponseMock.order.user}`
     )
   })
 
