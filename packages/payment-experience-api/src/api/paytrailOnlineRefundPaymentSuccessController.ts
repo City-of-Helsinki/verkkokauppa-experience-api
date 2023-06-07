@@ -101,12 +101,12 @@ export class PaytrailOnlineRefundPaymentSuccessController extends AbstractContro
       // create refundAccounting
       try {
         const productAccountings = await getProductAccountingBatch({
-          productIds: order.items.map((item) => item.productId),
+          productIds: refund.items.map((item) => item.productId),
         })
         await createAccountingEntryForRefund({
           refundId: refundId,
           orderId: orderId,
-          dtos: order.items.map((item) => {
+          dtos: refund.items.map((item) => {
             const productAccounting = productAccountings.find(
               (accountingData) => accountingData.productId === item.productId
             )
