@@ -1,3 +1,5 @@
+import type { ProductAccounting } from '../types'
+
 export type Refund = {
   refundId: string
   orderId: string
@@ -54,4 +56,27 @@ export interface RefundPayment {
   taxAmount: number
   refundTransactionId?: string // If payment is created using paytrail gateway
   timestamp: string
+}
+
+export type RefundAccountingItem = ProductAccounting & {
+  refundId: string
+  refundItemId: string
+  orderId: string
+}
+
+export interface RefundAccounting {
+  refundId: string
+  orderId: string
+  createdAt: string
+  items: RefundAccountingItem[]
+}
+
+export type RefundAccountingItemRequest = ProductAccounting & {
+  productId: string
+}
+
+export interface RefundAccountingRequest {
+  refundId: string
+  orderId: string
+  dtos: RefundAccountingItemRequest[]
 }
