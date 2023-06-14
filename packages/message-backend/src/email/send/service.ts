@@ -18,6 +18,7 @@ import type {
   VatTable,
   SubscriptionCardExpiredEmailParameters,
 } from '../create/types'
+import { ExperienceFailure } from '@verkkokauppa/core'
 
 function isMessageBackendUrlSet() {
   if (!process.env.MESSAGE_BACKEND_URL) {
@@ -202,4 +203,23 @@ export const sendSubscriptionCardExpiredEmailToCustomer = async (p: {
     attachments: {},
     emailType: emailType,
   })
+}
+
+export const sendErrorNotification = async (p: {
+  message: string
+  cause: string
+}): Promise<void> => {
+  const { message, cause } = p
+  isMessageBackendUrlSet()
+  const url = `${process.env.MESSAGE_BACKEND_URL}/message/send/errorNotification`
+  try {
+    await axios.post(url, { message, cause })
+    return
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-send-error-notification',
+      message: 'Failed to send error notification',
+      source: e,
+    })
+  }
 }
