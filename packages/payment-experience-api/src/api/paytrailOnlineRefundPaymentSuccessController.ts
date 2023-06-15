@@ -6,7 +6,11 @@ import {
 } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
 import { URL } from 'url'
-import { getOrderAdmin, getRefundAdmin } from '@verkkokauppa/order-backend'
+import {
+  createAccountingEntryForRefund,
+  getOrderAdmin,
+  getRefundAdmin,
+} from '@verkkokauppa/order-backend'
 import {
   checkPaytrailRefundCallbackUrl,
   getPaidRefundPaymentAdmin,
@@ -14,6 +18,7 @@ import {
 import { createUserRefundRedirectUrl } from '../lib/refundCallbackService'
 import { parseRefundIdFromPaytrailRefundCallbackUrl } from '../lib/paytrail'
 import { parseMerchantIdFromFirstOrderItem } from '@verkkokauppa/configuration-backend'
+import { getProductAccountingBatch } from '@verkkokauppa/product-backend'
 
 export class PaytrailOnlineRefundPaymentSuccessController extends AbstractController {
   protected readonly requestSchema = null
@@ -92,6 +97,40 @@ export class PaytrailOnlineRefundPaymentSuccessController extends AbstractContro
       // TODO: Make changes that sends email from refund
       // Function contains internal checks when to send receipt.
       // await sendReceiptToCustomer(paytrailStatus, orderId, order)
+
+      // create refundAccounting
+      try {
+        const productAccountings = await getProductAccountingBatch({
+          productIds: refund.items.map((item) => item.productId),
+        })
+        await createAccountingEntryForRefund({
+          refundId: refundId,
+          orderId: orderId,
+          dtos: refund.items.map((item) => {
+            const productAccounting = productAccountings.find(
+              (accountingData) => accountingData.productId === item.productId
+            )
+            if (!productAccounting) {
+              throw new ExperienceError({
+                code: 'failed-to-create-refund-accounting-entry',
+                message: `No accounting entry found for product ${item.productId}`,
+                responseStatus: StatusCode.BadRequest,
+                logLevel: 'error',
+              })
+            }
+            return {
+              ...item,
+              ...productAccounting,
+            }
+          }),
+        })
+      } catch (error) {
+        // only write error to log
+        logger.debug(
+          `Error occurred while trying to create accounting for refund with id: ${refundId}`
+        )
+        logger.error(error)
+      }
 
       return result.redirect(302, redirectUrl.toString())
     } catch (error) {
