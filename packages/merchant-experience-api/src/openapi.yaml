@@ -80,6 +80,7 @@ components:
         - merchantTermsOfServiceUrl
         - merchantBusinessId
         - merchantShopId
+        - merchantPaytrailMerchantId
       properties:
         merchantName:
           type: string
@@ -100,6 +101,8 @@ components:
         merchantBusinessId:
           type: string
         merchantShopId:
+          type: string
+        merchantPaytrailMerchantId:
           type: string
     MerchantConfigurationsUpdateAll:
       type: object
