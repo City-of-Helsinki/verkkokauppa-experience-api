@@ -24,6 +24,7 @@ export type MerchantKeys = {
   merchantBusinessId?: string
   merchantPhone?: string
   merchantShopId?: string
+  merchantPaytrailMerchantId?: string
   [key: string]: any // 👈️ variable keys
 }
 
