@@ -212,6 +212,13 @@ export const createMerchant = async (p: {
   }
 }
 
+const filterPaytrailSecret = (merchant: Merchant) => {
+  merchant.configurations = merchant.configurations?.filter(
+    (c) => c.key !== 'merchantPaytrailSecret'
+  )
+  return merchant
+}
+
 export const updateMerchant = async (merchant: Merchant): Promise<Merchant> => {
   if (!process.env.MERCHANT_CONFIGURATION_BACKEND_URL) {
     throw new Error('No configuration backend URL set')
@@ -220,7 +227,7 @@ export const updateMerchant = async (merchant: Merchant): Promise<Merchant> => {
   const url = `${process.env.MERCHANT_CONFIGURATION_BACKEND_URL}/merchant/upsert`
   try {
     const res = await axios.post(url, merchant)
-    return res.data
+    return filterPaytrailSecret(res.data)
   } catch (e) {
     throw new ExperienceFailure({
       code: 'failed-to-update-merchant',
@@ -260,7 +267,7 @@ export const getMerchantModels = async (
   const url = `${process.env.MERCHANT_CONFIGURATION_BACKEND_URL}/merchant/list-by-namespace?namespace=${namespace}`
   try {
     const res = await axios.get(url)
-    return res.data
+    return res.data.map((m: Merchant) => filterPaytrailSecret(m))
   } catch (e) {
     throw new ExperienceFailure({
       code: 'failed-to-list-merchants-by-namespace',
