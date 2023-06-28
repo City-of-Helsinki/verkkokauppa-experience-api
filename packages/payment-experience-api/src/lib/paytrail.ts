@@ -13,6 +13,6 @@ export const parseUuidFromPaytrailRedirectCheckoutStamp = (p: {
 }) => {
   const { query } = p
 
-  const result = query['checkout-stamp']?.toString().split('_')
-  return result[0]
+  const result = query['checkout-stamp']?.toString()?.split('_')
+  return result?.[0]
 }
