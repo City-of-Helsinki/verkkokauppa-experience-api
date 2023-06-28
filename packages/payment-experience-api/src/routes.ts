@@ -19,6 +19,7 @@ import { InstantRefundController } from './api/instantRefundController'
 import { GetRefundPaymentAdminController } from './api/getRefundPaymentAdminController'
 import { GetUpdateCardFormParametersController } from './api/getUpdateCardFormParametersController'
 import { PaytrailCardUpdateRedirectSuccessController } from './api/paytrailCardUpdateRedirectSuccessController'
+import { PaytrailOnlineRefundPaymentCancelController } from './api/paytrailOnlineRefundPaymentCancelController'
 
 const createPaymentController = new (withAuthentication(
   CreatePaymentController
@@ -38,6 +39,7 @@ const sendReceiptPaymentAdminInternalController = new SendReceiptPaymentAdminInt
 const onlinePaymentNotifyController = new OnlinePaymentNotifyController()
 const paytrailOnlinePaymentNotifyController = new PaytrailOnlinePaymentNotifyController()
 const paytrailOnlineRefundPaymentSuccessController = new PaytrailOnlineRefundPaymentSuccessController()
+const paytrailOnlineRefundPaymentCancelController = new PaytrailOnlineRefundPaymentCancelController()
 const getPaymentController = new (withAuthentication(GetPaymentController))()
 const getPaymentAdminController = new GetPaymentAdminController()
 const getRefundPaymentAdminController = new GetRefundPaymentAdminController()
@@ -79,6 +81,9 @@ router.get('/paytrailOnlinePayment/notify/:status', (req, res) =>
 )
 router.get('/paytrailOnlineRefund/success', (req, res) =>
   paytrailOnlineRefundPaymentSuccessController.execute(req, res)
+)
+router.get('/paytrailOnlineRefund/cancel', (req, res) =>
+  paytrailOnlineRefundPaymentCancelController.execute(req, res)
 )
 router.get('/subscription/:subscriptionId/tokenize', (req, res) =>
   subscriptionTokenizeController.execute(req, res)
