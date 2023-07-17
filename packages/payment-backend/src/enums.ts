@@ -5,6 +5,12 @@ export enum PaymentStatus {
   AUTHORIZED = 'authorized',
 }
 
+export enum RefundPaymentStatus {
+  CREATED = 'refund_created',
+  PAID_ONLINE = 'refund_paid_online',
+  CANCELLED = 'refund_cancelled',
+}
+
 export enum PaymentType {
   CREDIT_CARDS = 'creditcards',
   CARD_RENEWAL = 'payment_card_renewal',

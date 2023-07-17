@@ -1,6 +1,8 @@
 import axios from 'axios'
 import { stringify } from 'qs'
 import type {
+  FlowStep,
+  FlowStepRequest,
   Order,
   OrderAccounting,
   OrderAccountingRequest,
@@ -8,9 +10,11 @@ import type {
   OrderInvoice,
   OrderInvoiceRequest,
   OrderItemRequest,
+  OrderPaymentMethod,
   OrderWithItemsBackendResponse,
 } from './types'
 import {
+  AddFlowStepsToOrderFailure,
   AddItemsToOrderFailure,
   CancelOrderFailure,
   ConfirmOrderFailure,
@@ -26,11 +30,20 @@ import {
   SubscriptionNotFoundError,
 } from './errors'
 import { ExperienceFailure, ForbiddenError } from '@verkkokauppa/core'
+import { formatToTimeZone } from 'date-fns-timezone'
+
+const getBackendUrl = () => {
+  const url = process.env.ORDER_BACKEND_URL
+  if (!url) {
+    throw new Error('No order backend URL set')
+  }
+  return url
+}
 
 export const createOrder = async (p: {
   namespace: string
   user: string
-  lastValidPurchaseDateTime?: Date
+  lastValidPurchaseDateTime?: Date | string
 }): Promise<Order> => {
   const { namespace, user, lastValidPurchaseDateTime } = p
   if (!process.env.ORDER_BACKEND_URL) {
@@ -250,6 +263,28 @@ export const addItemsToOrder = async (p: {
   }
 }
 
+export const addFlowStepsToOrder = async (p: {
+  orderId: string
+  dto: FlowStepRequest
+}): Promise<FlowStep> => {
+  const { orderId, dto } = p
+
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+
+  const url = `${process.env.ORDER_BACKEND_URL}/order/${orderId}/flowSteps`
+  try {
+    const result = await axios.post<FlowStep>(url, dto)
+    return result.data
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new OrderNotFoundError()
+    }
+    throw new AddFlowStepsToOrderFailure(e)
+  }
+}
+
 export const getOrder = async (p: {
   orderId: string
   user: string
@@ -314,6 +349,8 @@ export const transFormBackendOrder = (
       lastValidPurchaseDateTime,
     },
     items,
+    flowSteps,
+    paymentMethod,
   } = p
   let customer
   if (customerFirstName && customerLastName && customerEmail) {
@@ -336,10 +373,12 @@ export const transFormBackendOrder = (
     type,
     subscriptionId,
     invoice,
-    checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}`,
+    checkoutUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}?user=${user}`,
     receiptUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}/receipt?user=${user}`,
     loggedInCheckoutUrl: `${process.env.CHECKOUT_BASE_URL}profile/${orderId}`,
     updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}/update-card?user=${user}`,
+    flowSteps,
+    paymentMethod,
   }
   if (lastValidPurchaseDateTime) {
     data = {
@@ -459,16 +498,52 @@ export const getOrdersByUserAdmin = async (p: {
   }
 }
 
+export const currentDateTimeInHelsinkiTimezone = () =>
+  new Date(
+    formatToTimeZone(new Date(), 'YYYY-MM-DDTHH:mm:ss.SSS', {
+      timeZone: 'Europe/Helsinki',
+    }) + 'Z'
+  )
+
 export const checkLastValidPurchaseDateTime = (
-  lastValidPurchaseDateTime: Date | undefined
+  lastValidPurchaseDateTime: Date | undefined | string
 ): Date => {
-  let currentDateTime = new Date()
+  const dateTimeInHelsinkiTimezone = currentDateTimeInHelsinkiTimezone()
+  let lastValidPurchaseDateTimeAsdate = lastValidPurchaseDateTime
+
+  // If parameter is string convert it to Date
+  if (typeof lastValidPurchaseDateTime === 'string') {
+    lastValidPurchaseDateTimeAsdate = new Date(lastValidPurchaseDateTime)
+  }
 
   if (
-    lastValidPurchaseDateTime !== undefined &&
-    lastValidPurchaseDateTime < currentDateTime
+    lastValidPurchaseDateTimeAsdate !== undefined &&
+    lastValidPurchaseDateTimeAsdate < dateTimeInHelsinkiTimezone
   ) {
     throw new ForbiddenError('Optional lastValidPurchaseDateTime is expired')
   }
-  return currentDateTime
+  return dateTimeInHelsinkiTimezone
+}
+
+export const setOrderPaymentMethod = async (p: {
+  orderId: string
+  user: string
+  paymentMethod: OrderPaymentMethod
+}): Promise<OrderPaymentMethod> => {
+  const { orderId, user: userId, paymentMethod } = p
+  const url = `${getBackendUrl()}/order/setPaymentMethod`
+  try {
+    const res = await axios.post(url, {
+      ...paymentMethod,
+      orderId,
+      userId,
+    })
+    return res.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-set-order-payment-method',
+      message: `failed to set order payment method (${JSON.stringify(p)})`,
+      source: e as Error,
+    })
+  }
 }

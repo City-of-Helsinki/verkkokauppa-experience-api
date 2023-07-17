@@ -4,7 +4,11 @@ import type { Request, Response } from 'express'
 jest.mock('@verkkokauppa/order-backend')
 jest.mock('@verkkokauppa/payment-backend')
 
+require('@verkkokauppa/order-backend').getOrder.mockImplementation(() => ({}))
 const confirmOrderMock = require('@verkkokauppa/order-backend').confirmOrder.mockImplementation(
+  () => ({})
+)
+const calculateTotalsFromItemsMock = require('@verkkokauppa/order-backend').calculateTotalsFromItems.mockImplementation(
   () => ({})
 )
 const getPaymentMethodListMock = require('@verkkokauppa/payment-backend').getPaymentMethodList.mockImplementation(
@@ -108,6 +112,11 @@ describe('Test confirmAndCreatePayment', () => {
   it('Should confirm order correctly', async () => {
     confirmOrderMock.mockImplementationOnce(() => orderMock)
     getPaymentMethodListMock.mockImplementationOnce(() => paymentMethodListMock)
+    calculateTotalsFromItemsMock.mockImplementationOnce(() => ({
+      priceNet: '250',
+      priceVat: '60',
+      priceTotal: '310',
+    }))
     createPaymentFromUnpaidOrderMock.mockImplementationOnce(() => {})
     getPaymentUrlMock.mockImplementationOnce(() => 'url.com')
     await confirmAndCreatePayment.implementation(

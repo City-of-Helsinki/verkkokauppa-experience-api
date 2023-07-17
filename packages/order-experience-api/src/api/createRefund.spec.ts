@@ -18,6 +18,10 @@ const getRefundsByOrderAdminMock = require('@verkkokauppa/order-backend').getRef
   () => []
 )
 
+const calculateTotalsFromItemsMock = require('@verkkokauppa/order-backend').calculateTotalsFromItems.mockImplementation(
+  () => ({})
+)
+
 const paidPaymentExistsMock = require('@verkkokauppa/payment-backend').paidPaymentExists.mockImplementation(
   () => true
 )
@@ -287,6 +291,11 @@ describe('Test CreateRefundController', () => {
           rowPriceTotal: '333',
         },
       ],
+    }))
+    calculateTotalsFromItemsMock.mockImplementationOnce(() => ({
+      priceNet: '22',
+      priceTotal: '66',
+      priceVat: '44',
     }))
     await controller.implementation(
       {

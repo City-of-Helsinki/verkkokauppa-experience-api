@@ -1,4 +1,10 @@
-import type { Refund, RefundAggregate, RefundItem } from './types'
+import type {
+  Refund,
+  RefundAggregate,
+  RefundItem,
+  RefundAccounting,
+  RefundAccountingRequest,
+} from './types'
 import axios from 'axios'
 import {
   ExperienceError,
@@ -6,6 +12,8 @@ import {
   StatusCode,
 } from '@verkkokauppa/core'
 import type { Order } from '../types'
+
+import { CreateRefundAccountingFailure } from '../errors'
 
 const getBackendUrl = () => {
   const url = process.env.ORDER_BACKEND_URL
@@ -147,5 +155,26 @@ export const getRefundsByOrderAdmin = async (p: {
       message: `Failed to get refunds with order id ${orderId}`,
       source: e,
     })
+  }
+}
+
+export const createAccountingEntryForRefund = async (
+  p: RefundAccountingRequest
+): Promise<any> => {
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+  const { refundId, orderId, dtos } = p
+  const url = `${process.env.ORDER_BACKEND_URL}/refund/accounting/create`
+  try {
+    const dto = {
+      refundId,
+      orderId,
+      dtos,
+    }
+    const result = await axios.post<RefundAccounting>(url, dto)
+    return result.data
+  } catch (e) {
+    throw new CreateRefundAccountingFailure(e)
   }
 }

@@ -10,6 +10,7 @@ import { getOrderAdmin } from '@verkkokauppa/order-backend'
 import {
   cancelPaymentAdmin,
   checkPaytrailReturnUrl,
+  getPaidPaymentAdmin,
   getPaymentsForOrderAdmin,
   Order,
   PaymentStatus,
@@ -34,6 +35,18 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
     // Validates that base redirect url is set
     PaytrailOnlinePaymentReturnController.checkAndCreateRedirectUrl()
     const orderId = parseOrderIdFromPaytrailRedirect({ query })
+
+    const payment = await getPaidPaymentAdmin({
+      orderId: orderId,
+    })
+
+    // Already found payment paid, return early to prevent multiple events happening
+    if (payment != null) {
+      return result.redirect(
+        200,
+        PaytrailOnlinePaymentReturnController.getFailureRedirectUrl()
+      )
+    }
 
     if (!orderId) {
       logger.error(
@@ -93,7 +106,8 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
           return result.redirect(
             302,
             PaytrailOnlinePaymentReturnController.getCardRenewalFailureRedirectUrl(
-              order.orderId
+              order.orderId,
+              order.user
             ).toString()
           )
         }
@@ -133,9 +147,14 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
     return process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE
   }
 
-  private static getCardRenewalFailureRedirectUrl(orderId: string) {
+  private static getCardRenewalFailureRedirectUrl(
+    orderId: string,
+    user: string
+  ) {
     const redirectUrl = this.checkAndCreateRedirectUrl()
     redirectUrl.pathname = `${orderId}/card-update-failed`
+
+    redirectUrl.searchParams.append('user', user)
 
     return redirectUrl.toString()
   }

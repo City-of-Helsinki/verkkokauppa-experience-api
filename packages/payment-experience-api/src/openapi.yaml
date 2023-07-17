@@ -118,7 +118,176 @@ components:
       allOf:
         - $ref: '#/components/schemas/Payment'
         - $ref: '#/components/schemas/PaymentUrl'
+    PaytrailCardFormParameters:
+      type: object
+      properties:
+        checkout-account:
+          type: number
+        checkout-algorithm:
+          type: string
+        checkout-method:
+          type: string
+        checkout-nonce:
+          type: string
+        checkout-timestamp:
+          type: string
+        checkout-redirect-success-url:
+          type: string
+        checkout-redirect-cancel-url:
+          type: string
+        signature:
+          type: string
+        checkout-callback-success-url:
+          type: string
+        checkout-callback-cancel-url:
+          type: string
+        language:
+          type: string
+    Refund:
+      type: object
+      required:
+        - refundId
+        - orderId
+        - namespace
+        - user
+        - createdAt
+        - status
+        - items
+      properties:
+        refundId:
+          type: string
+        orderId:
+          type: string
+        namespace:
+          type: string
+        user:
+          type: string
+        createdAt:
+          type: string
+        status:
+          type: string
+          enum:
+            - draft
+            - confirmed
+        customerFirstName:
+          type: string
+        customerLastName:
+          type: string
+        customerEmail:
+          type: string
+        customerPhone:
+          type: string
+        refundReason:
+          type: string
+        items:
+          type: array
+          items:
+            type: object
+            required:
+              - refundItemId
+              - refundId
+              - orderItemId
+              - orderId
+              - productId
+              - unit
+              - quantity
+              - rowPriceNet
+              - rowPriceVat
+              - rowPriceTotal
+              - vatPercentage
+              - priceNet
+              - priceVat
+              - priceGross
+            properties:
+              refundItemId:
+                type: string
+              refundId:
+                type: string
+              orderItemId:
+                type: string
+              orderId:
+                type: string
+              merchantId:
+                type: string
+              productId:
+                type: string
+              productName:
+                type: string
+              productLabel:
+                type: string
+              productDescription:
+                type: string
+              unit:
+                type: string
+              quantity:
+                type: integer
+                format: int32
+              rowPriceNet:
+                type: string
+              rowPriceVat:
+                type: string
+              rowPriceTotal:
+                type: string
+              vatPercentage:
+                type: string
+              priceNet:
+                type: string
+              priceVat:
+                type: string
+              priceGross:
+                type: string
+              originalPriceNet:
+                type: string
+              originalPriceVat:
+                type: string
+              originalPriceGross:
+                type: string
+    RefundPayment:
+      type: object
+      properties:
+        refundPaymentId:
+          type: string
+          description: 'refundId (Refund model id) + timestamp (Like creating paymentId)'
+        orderId:
+          type: string
+        namespace:
+          type: string
+        userId:
+          type: string
+        status:
+          type: string
+          description: 'Check RefundPaymentStatus in core'
+        refundMethod:
+          type: string
+        refundType:
+          type: string
+          description: 'order or subscription'
+        refundGateway:
+          type: string
+          description: 'Check RefundGateway in core'
+        totalExclTax:
+          type: number
+        total:
+          type: number
+        taxAmount:
+          type: number
+        refundTransactionId:
+          type: string
+        timestamp:
+          type: string
   responses:
+    AuthenticationError:
+      description: Authentication failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
+    InvalidApiKey:
+      description: Invalid api key
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
     NotFound:
       description: Entity (e.g. order or payment) not found
       content:
@@ -245,6 +414,29 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /{orderId}/cardFormParameters:
+    get:
+      description: Get card form parameters for subscription order
+      security:
+        - UserId: [ ]
+        - HelsinkiProfile: [ ]
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Returns the card form parameters for subscription order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaytrailCardFormParameters'
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '403':
+          $ref: '#/components/responses/AuthenticationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /onlinePayment/return:
     description: Return hook for online payment
     get:
@@ -360,4 +552,70 @@ paths:
                 $ref: '#/components/schemas/Payment'
         '404':
           $ref: '#/components/responses/NotFound'
+  /refund/instant/{orderId}:
+    get:
+      description: Create a refund for single order, confirm it and create a refund payment - refunds all order items.
+      security:
+        - ApiKey: [ ]
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Creates a refund for given order and all of its orderItems, confirms it and creates a refund payment.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - refunds
+                  - errors
+                properties:
+                  refunds:
+                    type: array
+                    items:
+                      allOf:
+                        - $ref: '#/components/schemas/Refund'
+                        - type: object
+                          required:
+                            - payment
+                          properties:
+                            payment:
+                              $ref: '#/components/schemas/RefundPayment'
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - code
+                        - message
+                      properties:
+                        code:
+                          type: string
+                        message:
+                          type: string
+        '403':
+          $ref: '#/components/responses/InvalidApiKey'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
+  /admin/refund-payment/{orderId}:
+    get:
+      description: Get refund payment by orderId
+      security:
+        - ApiKey: [ ]
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+        - $ref: '#/components/parameters/Namespace'
+      responses:
+        '200':
+          description: Fetched refund payment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefundPayment'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'

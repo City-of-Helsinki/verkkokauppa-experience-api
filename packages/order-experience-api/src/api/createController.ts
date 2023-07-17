@@ -10,6 +10,7 @@ import {
   checkLastValidPurchaseDateTime,
   createOrder,
   createOrderWithItems,
+  calculateTotalsFromItems,
   Order,
 } from '@verkkokauppa/order-backend'
 import {
@@ -23,7 +24,6 @@ import {
   itemsSchema,
   paymentFiltersSchema,
 } from '../lib/validation'
-import { calculateTotalsFromItems } from '../lib/totals'
 import * as yup from 'yup'
 
 const requestSchema = yup.object().shape({

@@ -85,6 +85,16 @@ export class AddItemsToOrderFailure extends ExperienceFailure {
   }
 }
 
+export class AddFlowStepsToOrderFailure extends ExperienceFailure {
+  constructor(source: Error) {
+    super({
+      code: 'failed-to-add-flow-steps-to-order',
+      message: 'Failed to add flow steps to order',
+      source,
+    })
+  }
+}
+
 export class GetOrderFailure extends ExperienceFailure {
   constructor(source: Error) {
     super({
@@ -132,6 +142,16 @@ export class CreateOrderAccountingFailure extends ExperienceFailure {
     super({
       code: 'failed-to-create-order-accounting',
       message: 'Failed to create order accounting',
+      source,
+    })
+  }
+}
+
+export class CreateRefundAccountingFailure extends ExperienceFailure {
+  constructor(source: Error) {
+    super({
+      code: 'failed-to-create-refund-accounting',
+      message: 'Failed to create refund accounting',
       source,
     })
   }

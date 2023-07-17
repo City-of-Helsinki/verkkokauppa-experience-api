@@ -81,6 +81,25 @@ components:
           type: string
         ovtId:
           type: string
+    PaymentMethod:
+      type: object
+      required:
+        - name
+        - code
+        - group
+        - img
+        - gateway
+      properties:
+        name:
+          type: string
+        code:
+          type: string
+        group:
+          type: string
+        img:
+          type: string
+        gateway:
+          type: string
     Order:
       type: object
       required:
@@ -113,6 +132,10 @@ components:
           type: string
         loggedInCheckoutUrl:
           type: string
+        updateCardUrl:
+          type: string
+        isValidForCheckout:
+          type: boolean
         customer:
           $ref: '#/components/schemas/Customer'
         invoice:
@@ -123,6 +146,38 @@ components:
           type: string
         type:
           $ref: '#/components/schemas/OrderType'
+        paymentMethod:
+          $ref: '#/components/schemas/PaymentMethod'
+    OrderAdmin:
+      allOf:
+        - $ref: '#/components/schemas/Order'
+      type: object
+      properties:
+        merchant:
+          $ref: '#/components/schemas/MerchantDetails'
+    MerchantDetails:
+      type: object
+      properties:
+        merchantName:
+          type: string
+        merchantStreet:
+          type: string
+        merchantZip:
+          type: string
+        merchantCity:
+          type: string
+        merchantEmail:
+          type: string
+        merchantUrl:
+          type: string
+        merchantTermsOfServiceUrl:
+          type: string
+        merchantBusinessId:
+          type: string
+        merchantPhone:
+          type: string
+        merchantShopId:
+          type: string
     OrderItem:
       type: object
       required:
@@ -208,6 +263,22 @@ components:
       enum:
         - subscription
         - order
+    FlowStep:
+      type: object
+      required:
+        - activeStep
+        - totalSteps
+      properties:
+        flowStepId:
+          type: string
+          readOnly: true
+        orderId:
+          type: string
+          readOnly: true
+        activeStep:
+          type: number
+        totalSteps:
+          type: number
     Subscription:
       type: object
       properties:
@@ -438,7 +509,7 @@ components:
         value:
           type: string
           description: "This can be paymentMethod name, code, group or gateway which will be removed from available payment methods
-           Example, if you want to filter out all banks, value=banks and filterType=banks 
+           Example, if you want to filter out all banks, value=banks and filterType=banks
            (Supported values can be found from FilterType enum)"
     ReferenceType:
       type: string
@@ -454,7 +525,30 @@ components:
         - wallets
         - online
         - online-paytrail
-
+    PaytrailProvider:
+      type: object
+      properties:
+        url:
+          type: string
+        icon:
+          type: string
+        svg:
+          type: string
+        group:
+          type: string
+        name:
+          type: string
+        id:
+          type: string
+        parameters:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              value:
+                type: string
   parameters:
     Namespace:
       name: namespace
@@ -516,8 +610,8 @@ paths:
     post:
       description: |
         Create a new order. The resulting order type depends on the input: if periodUnit and periodFrequency are present, the order is of type subscription
-        
-        Optional lastValidPurchaseDateTime can be set that determines the timeframe in which the order must be purchased. Given in ISO 8601 date time -format.
+
+        Optional lastValidPurchaseDateTime can be set that determines the timeframe in which the order must be purchased. Given in ISO 8601 date time -format and in Europe/Helsinki timezone.
       requestBody:
         required: true
         content:
@@ -641,7 +735,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Order'
+                $ref: '#/components/schemas/OrderAdmin'
         '403':
           $ref: '#/components/responses/InvalidApiKey'
         '404':
@@ -714,6 +808,32 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /{orderId}/paymentMethod:
+    post:
+      description: Set or update order's payment method
+      security:
+        - UserId: [ ]
+        - HelsinkiProfile: [ ]
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                paymentMethod:
+                  $ref: '#/components/schemas/PaymentMethod'
+      responses:
+        '200':
+          description: The payment method
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentMethod'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /{orderId}/items:
     post:
@@ -747,6 +867,37 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
+
+  /{orderId}/flowSteps:
+    post:
+      description: Set order's flow steps
+      security:
+        - UserId: [ ]
+        - HelsinkiProfile: [ ]
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlowStep'
+      responses:
+        '200':
+          description: The resulting flow step
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowStep'
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '403':
+          $ref: '#/components/responses/AuthenticationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
   /{orderId}/cancel:
     post:
       description: Cancel order
@@ -800,6 +951,8 @@ paths:
                   type: string
                 language:
                   type: string
+                gateway:
+                  type: string
       responses:
         '201':
           description: The confirmed order and its created payment
@@ -848,6 +1001,12 @@ paths:
                             type: string
                           paymentUrl:
                             type: string
+                          paymentGateway:
+                            type: string
+                            readOnly: true
+                            example: "online-paytrail (paytrail), online (visma), offline (invoice)"
+                          paytrailProvider:
+                            $ref: '#/components/schemas/PaytrailProvider'
         '400':
           $ref: '#/components/responses/RequestValidationError'
         '403':

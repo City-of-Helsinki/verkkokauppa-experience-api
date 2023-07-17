@@ -3,6 +3,7 @@ export type ProductAccounting = {
   vatCode: string
   internalOrder: string
   profitCenter: string
+  balanceProfitCenter: string
   project: string
   operationArea: string
   companyCode: string

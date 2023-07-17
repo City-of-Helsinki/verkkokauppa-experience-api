@@ -85,6 +85,8 @@ export interface Order {
   subscriptionId?: string
   type: OrderType
   lastValidPurchaseDateTime?: Date
+  flowSteps?: FlowStep
+  paymentMethod?: OrderPaymentMethod
 }
 
 export interface OrderBackendResponse {
@@ -110,6 +112,8 @@ export type OrderWithItemsBackendResponse = {
     priceTotal?: string
   }
   items: OrderItem[]
+  flowSteps?: FlowStep
+  paymentMethod?: OrderPaymentMethod
 }
 
 export interface ProductAccounting {
@@ -120,6 +124,7 @@ export interface ProductAccounting {
   vatCode: string
   internalOrder: string
   profitCenter: string
+  balanceProfitCenter: string
   project?: string | null
   operationArea?: string | null
 }
@@ -142,4 +147,24 @@ export type OrderAccountingItemRequest = ProductAccounting & {
 export interface OrderAccountingRequest {
   orderId: string
   dtos: OrderAccountingItemRequest[]
+}
+
+export interface FlowStepRequest {
+  activeStep: number
+  totalSteps: number
+}
+
+export interface FlowStep {
+  flowStepId: string
+  orderId: string
+  activeStep: number
+  totalSteps: number
+}
+
+export interface OrderPaymentMethod {
+  name: string
+  code: string
+  group: string
+  img: string
+  gateway: string
 }

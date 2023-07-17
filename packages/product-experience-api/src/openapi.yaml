@@ -97,6 +97,7 @@ components:
         - vatCode
         - companyCode
         - mainLedgerAccount
+        - balanceProfitCenter
       properties:
         vatCode:
           type: string
@@ -104,6 +105,8 @@ components:
           type: string
         profitCenter:
           type: string
+        balanceProfitCenter:
+            type: string
         project:
           type: string
         operationArea:
@@ -122,6 +125,8 @@ components:
         internalOrder:
           type: string
         profitCenter:
+          type: string
+        balanceProfitCenter:
           type: string
         project:
           type: string
