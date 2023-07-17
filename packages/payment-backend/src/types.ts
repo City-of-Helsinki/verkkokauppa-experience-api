@@ -25,6 +25,17 @@ export interface OrderCustomer {
   lastName: string
   email: string
 }
+export interface OrderPaymentMethod {
+  paymentMethodId?: string
+  orderId?: string
+  userId?: string
+  name?: string
+  code?: string
+  group?: string
+  img?: string
+}
+
+export type OrderType = 'subscription' | 'order'
 
 export interface Order {
   orderId: string
@@ -34,10 +45,12 @@ export interface Order {
   items: OrderItem[]
   checkoutUrl?: string
   customer?: OrderCustomer
+  paymentMethod?: OrderPaymentMethod
   status?: string
   priceNet?: string
   priceVat?: string
   priceTotal?: string
+  type: OrderType
 }
 
 export interface PaymentMethod {
@@ -76,6 +89,7 @@ export interface Payment {
   orderId: string
   status: string
   paymentMethod: string
+  paymentGateway: string
   paymentType: string
   totalExclTax: number
   total: number
@@ -84,6 +98,22 @@ export interface Payment {
   additionalInfo: string
   timestamp: string
   token: string
+  paytrailProvider?: PaytrailProvider
+}
+
+export interface PaytrailProvider {
+  url?: string
+  icon?: string
+  svg?: string
+  group?: string
+  name?: string
+  id?: string
+  parameters?: PaytrailProviderParameter[]
+}
+
+export interface PaytrailProviderParameter {
+  name?: string
+  value?: string
 }
 
 export interface PaymentFilter {
@@ -94,4 +124,18 @@ export interface PaymentFilter {
   referenceType: ReferenceType
   filterType: string
   value: string
+}
+
+export interface PaytrailCardFormParameters {
+  'checkout-account': number
+  'checkout-algorithm': string
+  'checkout-method': string
+  'checkout-nonce': string
+  'checkout-timestamp': string
+  'checkout-redirect-success-url': string
+  'checkout-redirect-cancel-url': string
+  signature: string
+  'checkout-callback-success-url': string
+  'checkout-callback-cancel-url': string
+  language: string
 }

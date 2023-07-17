@@ -27,6 +27,10 @@ const setOrderTotalsMock = require('@verkkokauppa/order-backend').setOrderTotals
   () => ({})
 )
 
+const calculateTotalsFromItemsMock = require('@verkkokauppa/order-backend').calculateTotalsFromItems.mockImplementation(
+  () => ({})
+)
+
 const getMerchantDetailsForOrderMock = require('@verkkokauppa/configuration-backend').getMerchantDetailsForOrder.mockImplementation(
   () => ({})
 )
@@ -131,6 +135,11 @@ describe('Test instantPurchase', () => {
         },
       }))
     createOrderMock.mockImplementationOnce(() => ({ orderId: 'oid1' }))
+    calculateTotalsFromItemsMock.mockImplementationOnce(() => ({
+      priceNet: '250',
+      priceVat: '60',
+      priceTotal: '310',
+    }))
     await instantPurchase.implementation(
       { body: requestBody } as Request,
       mockResponse
@@ -141,6 +150,7 @@ describe('Test instantPurchase', () => {
       user: 'user1',
       items: [
         {
+          merchantId: '',
           productId: 'pid1',
           productName: 'n1',
           quantity: 1,
@@ -163,6 +173,7 @@ describe('Test instantPurchase', () => {
           ],
         },
         {
+          merchantId: '',
           productId: 'pid2',
           productName: 'n2',
           quantity: 2,

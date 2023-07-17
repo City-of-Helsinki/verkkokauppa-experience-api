@@ -12,6 +12,7 @@ import {
   validateApiKey,
 } from '@verkkokauppa/configuration-backend'
 import { paidPaymentExists } from '@verkkokauppa/payment-backend'
+import { isValidForCheckout } from '../lib/is-valid-for-checkout'
 
 const requestSchema = yup.object().shape({
   params: yup.object().shape({
@@ -46,7 +47,7 @@ export class GetAdminController extends AbstractController {
 
     const dto = new Data({
       ...order,
-      isValidForCheckout: !orderIsPaid,
+      isValidForCheckout: !orderIsPaid && isValidForCheckout(order),
       merchant,
     })
 

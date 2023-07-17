@@ -1,9 +1,9 @@
 import { AbstractController, Data, ValidatedRequest } from '@verkkokauppa/core'
 import type { Response } from 'express'
 import {
-  checkLastValidPurchaseDateTime,
   confirmOrder,
-  getOrderAdmin,
+  calculateTotalsFromItems,
+  getOrder,
 } from '@verkkokauppa/order-backend'
 import {
   createPaymentFromUnpaidOrder,
@@ -11,8 +11,8 @@ import {
   getPaymentUrl,
 } from '@verkkokauppa/payment-backend'
 import * as yup from 'yup'
-import { calculateTotalsFromItems } from '../lib/totals'
 import { parseMerchantIdFromFirstOrderItem } from '@verkkokauppa/configuration-backend'
+import { checkValidityForCheckout } from '../lib/is-valid-for-checkout'
 
 const requestSchema = yup.object().shape({
   params: yup.object().shape({
@@ -43,10 +43,8 @@ export class ConfirmAndCreatePayment extends AbstractController<
       headers: { user },
     } = req
 
-    const orderForCheck = await getOrderAdmin({ orderId })
-    if (orderForCheck != undefined) {
-      checkLastValidPurchaseDateTime(orderForCheck.lastValidPurchaseDateTime)
-    }
+    const orderForCheck = await getOrder({ orderId, user })
+    checkValidityForCheckout(orderForCheck)
 
     const order = await confirmOrder({ orderId, user })
     const orderTotals = calculateTotalsFromItems(order)

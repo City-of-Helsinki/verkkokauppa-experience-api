@@ -29,6 +29,8 @@ import { DeleteGdprController } from './api/deleteGdpr'
 import { CreateRefundController } from './api/createRefund'
 import { ConfirmRefundController } from './api/confirmRefund'
 import { SendSubscriptionCardExpiredEmail } from './api/sendSubscriptionCardExpiredEmail'
+import { CreateFlowStepController } from './api/createFlowStepController'
+import { SetPaymentMethodController } from './api/setPaymentMethodController'
 
 const createController = new CreateController()
 const cartToOrderController = new CartToOrder()
@@ -38,7 +40,13 @@ const confirmAndCreatePaymentController = new (withAuthentication(
 ))()
 const setCustomerController = new (withAuthentication(SetCustomerController))()
 const setInvoiceController = new (withAuthentication(SetInvoiceController))()
+const setPaymentMethodController = new (withAuthentication(
+  SetPaymentMethodController
+))()
 const addItemController = new (withAuthentication(AddItemController))()
+const createFlowStepController = new (withAuthentication(
+  CreateFlowStepController
+))()
 const getController = new (withAuthentication(GetController))()
 const getAdminController = new GetAdminController()
 const getSubscriptionOrdersCtrl = new (withAuthentication(
@@ -92,8 +100,14 @@ router.post('/:orderId/customer', (req, res) =>
 router.post('/:orderId/invoice', (req, res) =>
   setInvoiceController.execute(req, res)
 )
+router.post('/:orderId/paymentMethod', (req, res) =>
+  setPaymentMethodController.execute(req, res)
+)
 router.post('/:orderId/items', (req, res) =>
   addItemController.execute(req, res)
+)
+router.post('/:orderId/flowSteps', (req, res) =>
+  createFlowStepController.execute(req, res)
 )
 router.post('/:orderId/cancel', (req, res) =>
   cancelController.execute(req, res)

@@ -1,4 +1,9 @@
-import { AbstractController, Data, ValidatedRequest } from '@verkkokauppa/core'
+import {
+  AbstractController,
+  Data,
+  logger,
+  ValidatedRequest,
+} from '@verkkokauppa/core'
 import type { Response } from 'express'
 import * as yup from 'yup'
 import {
@@ -6,11 +11,15 @@ import {
   createOrder,
   getOrder,
   setOrderTotals,
+  calculateTotalsFromItems,
 } from '@verkkokauppa/order-backend'
 import { getProduct } from '@verkkokauppa/product-backend'
 import { getPrice } from '@verkkokauppa/price-backend'
-import { calculateTotalsFromItems } from '../lib/totals'
-import { getMerchantDetailsForOrder } from '@verkkokauppa/configuration-backend'
+import {
+  getMerchantDetailsForOrder,
+  getMerchantModels,
+} from '@verkkokauppa/configuration-backend'
+import { getProductMapping } from '@verkkokauppa/product-mapping-backend'
 
 const requestSchema = yup.object().shape({
   body: yup.object().shape({
@@ -50,8 +59,31 @@ export class InstantPurchase extends AbstractController<typeof requestSchema> {
           getPrice({ productId }),
         ])
 
+        const merchants = await getMerchantModels(body.namespace)
+
+        let merchantId = ''
+
+        // Only one merchant found for namespace, we can use that merchant id
+        if (merchants && merchants.length === 1 && merchants[0]?.merchantId) {
+          merchantId = merchants[0]?.merchantId
+          logger.info(
+            'Using merchantId with namespace, only one merchant found'
+          )
+        }
+
+        // More than one merchant found, we need to get merchantId from product accounting
+        if (merchants && merchants.length > 1) {
+          try {
+            const productMapping = await getProductMapping({ productId })
+            merchantId = productMapping.merchantId
+          } catch (e) {
+            logger.info('Error when fetching product mapping', e)
+          }
+        }
+
         return {
           productId,
+          merchantId,
           quantity,
           unit,
           productName: product.name,

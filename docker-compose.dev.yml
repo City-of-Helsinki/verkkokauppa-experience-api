@@ -117,8 +117,10 @@ services:
     container_name: payment-experience-api
     expose:
       - '8080'
+      - '8081'
     ports:
       - '8085:8080'
+      - '8285:8081'
       - '9229:9229'
     command: yarn workspace @verkkokauppa/payment-experience-api dev
     environment:

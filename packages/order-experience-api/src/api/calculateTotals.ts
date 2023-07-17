@@ -9,8 +9,8 @@ import {
   getOrder,
   OrderValidationError,
   setOrderTotals,
+  calculateTotalsFromItems,
 } from '@verkkokauppa/order-backend'
-import { calculateTotalsFromItems } from '../lib/totals'
 import * as yup from 'yup'
 
 const requestSchema = yup.object().shape({
