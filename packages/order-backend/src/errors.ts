@@ -146,3 +146,13 @@ export class CreateOrderAccountingFailure extends ExperienceFailure {
     })
   }
 }
+
+export class CreateRefundAccountingFailure extends ExperienceFailure {
+  constructor(source: Error) {
+    super({
+      code: 'failed-to-create-refund-accounting',
+      message: 'Failed to create refund accounting',
+      source,
+    })
+  }
+}
