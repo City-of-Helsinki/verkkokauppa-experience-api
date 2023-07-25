@@ -112,6 +112,7 @@ services:
       - ./packages/payment-experience-api/:/opt/app-root/src/packages/payment-experience-api/
       - ./packages/order-backend/:/opt/app-root/src/packages/order-backend/
       - ./packages/payment-backend/:/opt/app-root/src/packages/payment-backend/
+      - ./packages/product-backend/:/opt/app-root/src/packages/product-backend/
       - ./packages/configuration-backend/:/opt/app-root/src/packages/configuration-backend/
       - ./packages/core/:/opt/app-root/src/packages/core/
     container_name: payment-experience-api
