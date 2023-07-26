@@ -114,6 +114,8 @@ services:
       - ./packages/payment-backend/:/opt/app-root/src/packages/payment-backend/
       - ./packages/configuration-backend/:/opt/app-root/src/packages/configuration-backend/
       - ./packages/core/:/opt/app-root/src/packages/core/
+      - ./packages/product-backend/:/opt/app-root/src/packages/product-backend/
+      - ./packages/message-backend/:/opt/app-root/src/packages/message-backend/
     container_name: payment-experience-api
     expose:
       - '8080'
