@@ -39,11 +39,21 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
     const payment = await getPaidPaymentAdmin({
       orderId: orderId,
     })
+    const order = await getOrderAdmin({ orderId })
 
     // Already found payment paid, return early to prevent multiple events happening
-    if (payment != null) {
+    if (payment != null && payment.status === 'payment_paid_online') {
+      // successfully paid so redirect to success
+      let url: URL = new URL(
+        PaytrailOnlinePaymentReturnController.getRedirectUrl()
+      )
+      url.pathname = `${orderId}/success`
+      url.searchParams.append('user', order.user)
+      return result.redirect(302, url.toString())
+    } else if (payment != null) {
+      // redirect to failure
       return result.redirect(
-        200,
+        302,
         PaytrailOnlinePaymentReturnController.getFailureRedirectUrl()
       )
     }
@@ -58,7 +68,6 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
       )
     }
 
-    const order = await getOrderAdmin({ orderId })
     const merchantId = parseMerchantIdFromFirstOrderItem(order)
 
     if (!merchantId) {
