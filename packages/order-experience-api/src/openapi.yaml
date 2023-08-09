@@ -232,6 +232,8 @@ components:
           type: string
         vatPercentage:
           type: string
+        invoicingDate:
+          type: string
         meta:
           type: array
           items:
