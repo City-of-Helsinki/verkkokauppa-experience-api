@@ -367,7 +367,11 @@ export const transFormBackendOrder = (
     namespace,
     user,
     createdAt,
-    items,
+    items: items?.map((item) => ({
+      ...item,
+      invoicingDate:
+        item.invoicingDate != null ? new Date(item.invoicingDate) : undefined,
+    })),
     customer,
     status,
     type,

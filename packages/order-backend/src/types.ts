@@ -18,6 +18,7 @@ export interface OrderItemRequest {
   originalPriceNet?: string
   originalPriceVat?: string
   originalPriceGross?: string
+  invoicingDate?: Date
 }
 
 export type OrderItem = OrderItemRequest & {
