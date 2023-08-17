@@ -8,6 +8,7 @@ import {
   GetProductAccountingFailure,
   ProductAccountingNotFoundError,
 } from './errors'
+import { ExperienceFailure } from '@verkkokauppa/core'
 
 type ProductBackendResponse = {
   id: string
@@ -35,6 +36,36 @@ export const getProduct = async (p: {
       throw new ProductNotFoundError(productId)
     }
     throw new GetProductFailure(productId, e)
+  }
+}
+
+type ProductInvoicing = {
+  productId: string
+  salesOrg: string
+  salesOffice: string
+  material: string
+  orderType: string
+}
+
+export const createProductInvoicing = async (p: {
+  productInvoicing: ProductInvoicing
+}): Promise<ProductInvoicing> => {
+  const { productInvoicing } = p
+
+  if (!process.env.PRODUCT_BACKEND_URL) {
+    throw new Error('No product backend URL set')
+  }
+
+  const url = `${process.env.PRODUCT_BACKEND_URL}/product/invoicing`
+  try {
+    const result = await axios.post(url, productInvoicing)
+    return result.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-create-product-invoicing',
+      message: 'Failed to create product invoicing',
+      source: e,
+    })
   }
 }
 

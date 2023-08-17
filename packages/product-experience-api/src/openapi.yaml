@@ -115,6 +115,35 @@ components:
           type: string
         mainLedgerAccount:
           type: string
+        productInvoicing:
+          type: object
+          required:
+            - salesOrg
+            - salesOffice
+            - material
+            - orderType
+          properties:
+            salesOrg:
+              type: string
+            salesOffice:
+              type: string
+            material:
+              type: string
+            orderType:
+              type: string
+    ProductInvoicing:
+      type: object
+      properties:
+        productId:
+          type: string
+        salesOrg:
+          type: string
+        salesOffice:
+          type: string
+        material:
+          type: string
+        orderType:
+          type: string
     ProductAccounting:
       type: object
       properties:
@@ -228,7 +257,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
   /{productId}/accounting:
     post:
-      description: 'Create product accounting for a product'
+      description: 'Create product accounting and optional invoicing for a product. Supplying invoicing details enables paying products with an invoice'
       security:
         - ApiKey: [ ]
       parameters:
@@ -246,7 +275,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductAccounting'
+                allOf:
+                  - $ref: '#/components/schemas/ProductAccounting'
+                  - type: object
+                    properties:
+                      productInvoicing:
+                        $ref: '#/components/schemas/ProductInvoicing'
         '400':
           $ref: '#/components/responses/RequestValidationError'
         '500':
