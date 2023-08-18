@@ -88,6 +88,7 @@ export interface Order {
   lastValidPurchaseDateTime?: Date
   flowSteps?: FlowStep
   paymentMethod?: OrderPaymentMethod
+  incrementId?: string
 }
 
 export interface OrderBackendResponse {
@@ -148,6 +149,23 @@ export type OrderAccountingItemRequest = ProductAccounting & {
 export interface OrderAccountingRequest {
   orderId: string
   dtos: OrderAccountingItemRequest[]
+}
+
+export interface OrderItemInvoicing {
+  createdAt: string
+  updatedAt: string
+  status: string
+  orderItemId: string
+  orderId: string
+  orderIncrementId: string
+  invoicingDate: string
+  customerYid: string
+  customerOvt: string
+  material: string
+  materialDescription: string
+  quantity: number
+  unit: string
+  priceNet: string
 }
 
 export interface FlowStepRequest {
