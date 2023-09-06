@@ -9,6 +9,7 @@ import type {
   OrderCustomer,
   OrderInvoice,
   OrderInvoiceRequest,
+  OrderItemInvoicing,
   OrderItemRequest,
   OrderPaymentMethod,
   OrderWithItemsBackendResponse,
@@ -433,6 +434,26 @@ export const setOrderTotals = async (p: {
       throw new OrderNotFoundError()
     }
     throw new SetOrderTotalsFailure(e)
+  }
+}
+
+export const createInvoicingEntryForOrder = async (p: {
+  items: Omit<OrderItemInvoicing, 'createdAt' | 'updatedAt' | 'status'>[]
+}): Promise<OrderItemInvoicing[]> => {
+  const { items } = p
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+  const url = `${process.env.ORDER_BACKEND_URL}/order/invoicing/create`
+  try {
+    const res = await axios.post(url, items)
+    return res.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-create-order-invoicing',
+      message: 'Failed to create order invoicing',
+      source: e,
+    })
   }
 }
 

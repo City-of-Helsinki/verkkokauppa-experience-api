@@ -69,6 +69,27 @@ export const createProductInvoicing = async (p: {
   }
 }
 
+export const getProductInvoicings = async (p: {
+  productIds: string[]
+}): Promise<(ProductInvoicing | null)[]> => {
+  const { productIds } = p
+  if (!process.env.PRODUCT_BACKEND_URL) {
+    throw new Error('No product backend URL set')
+  }
+
+  const url = `${process.env.PRODUCT_BACKEND_URL}/product/invoicing/list`
+  try {
+    const result = await axios.post(url, productIds)
+    return result.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-get-product-invoicings',
+      message: 'Failed to get product invoicings',
+      source: e,
+    })
+  }
+}
+
 export const createProductAccounting = async (p: {
   productAccounting: ProductAccounting
 }): Promise<ProductAccounting> => {
