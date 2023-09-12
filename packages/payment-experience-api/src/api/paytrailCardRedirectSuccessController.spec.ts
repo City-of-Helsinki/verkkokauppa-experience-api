@@ -251,6 +251,29 @@ function mockAxiosPostMailAndAccounting() {
   })
 }
 
+function mockAxiosPostMailAndEmailNotification() {
+  axiosMock.post.mockImplementation((url, data?: any) => {
+    if (url.includes(`message/send/email`)) {
+      expect(url).toEqual(
+        `${process.env.MESSAGE_BACKEND_URL}/message/send/email`
+      )
+      expect(data.header).toEqual(
+        'Tilausvahvistus ja kuitti / Order confirmation and receipt / Beställningsbekräftelse och kvitto'
+      )
+      expect(data.id).toEqual('145d8829-07b7-4b03-ab0e-24063958ab9b')
+      expect(data.receiver).toEqual('essi.esimerkki@gmail.com')
+      return Promise.resolve({ data: mockAxiosData })
+    }
+    else
+    {
+      expect(url).toEqual(
+        `${process.env.MESSAGE_BACKEND_URL}/message/send/errorNotification`
+      )
+      return Promise.resolve({ })
+    }
+  })
+}
+
 const orderId = orderMock.orderId
 
 const controller = new (class extends PaytrailCardRedirectSuccessController {
@@ -429,7 +452,7 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     expectSummaryRedirect(serviceUrl)
   })
 
-  it('should not call axios posts if product accounting is not received', async () => {
+  it('success even if product accounting is not received', async () => {
     process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
     process.env.MESSAGE_BACKEND_URL = 'http://localhost:8181'
     process.env.ORDER_BACKEND_URL = 'http://localhost:8183'
@@ -437,7 +460,7 @@ describe('Test paytrailCardRedirectSuccessController', () => {
 
     // mocks axios post and checks data sent to */message/send/email
     // and /order/accounting/create urls
-    mockAxiosPostMailAndAccounting()
+    mockAxiosPostMailAndEmailNotification()
 
     axiosMock.get.mockImplementation((url) => {
       if (url.includes(`/product/accounting/list`)) {
@@ -452,14 +475,14 @@ describe('Test paytrailCardRedirectSuccessController', () => {
       mockResponse
     )
     expect(mockRedirect).toHaveBeenCalledTimes(1)
-    expect(axiosMock.post).toHaveBeenCalledTimes(0)
+    expect(axiosMock.post).toHaveBeenCalledTimes(2)
     expect(mockRedirect.mock.calls[0][0]).toEqual(302)
     expect(mockRedirect.mock.calls[0][1]).toEqual(
-      `https://test.dev.hel/${orderId}/summary?paymentPaid=false&user=${orderMock.user}`
+      `https://test.dev.hel/${orderId}/success?user=${orderMock.user}`
     )
   })
 
-  it('should not call axios posts if product accounting does not have product', async () => {
+  it('success even if product accounting does not have product', async () => {
     process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
     process.env.MESSAGE_BACKEND_URL = 'http://localhost:8181'
     process.env.ORDER_BACKEND_URL = 'http://localhost:8183'
@@ -479,7 +502,7 @@ describe('Test paytrailCardRedirectSuccessController', () => {
 
     // mocks axios post and checks data sent to */message/send/email
     // and /order/accounting/create urls
-    mockAxiosPostMailAndAccounting()
+    mockAxiosPostMailAndEmailNotification()
 
     axiosMock.get.mockImplementation((url) => {
       if (url.includes(`/product/accounting/list`)) {
@@ -494,10 +517,10 @@ describe('Test paytrailCardRedirectSuccessController', () => {
       mockResponse
     )
     expect(mockRedirect).toHaveBeenCalledTimes(1)
-    expect(axiosMock.post).toHaveBeenCalledTimes(0)
+    expect(axiosMock.post).toHaveBeenCalledTimes(2)
     expect(mockRedirect.mock.calls[0][0]).toEqual(302)
     expect(mockRedirect.mock.calls[0][1]).toEqual(
-      `https://test.dev.hel/${orderId}/summary?paymentPaid=false&user=${orderMock.user}`
+      `https://test.dev.hel/${orderId}/success?user=${orderMock.user}`
     )
   })
 })
