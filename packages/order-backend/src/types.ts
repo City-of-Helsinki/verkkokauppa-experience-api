@@ -162,6 +162,9 @@ export interface OrderItemInvoicing {
   customerYid: string
   customerOvt: string
   material: string
+  orderType: string
+  salesOrg: string
+  salesOffice: string
   materialDescription: string
   quantity: number
   unit: string
