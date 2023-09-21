@@ -21,6 +21,7 @@ import {
 } from '@verkkokauppa/payment-backend'
 import { sendReceiptToCustomer } from '../lib/sendEmail'
 import { getProductAccountingBatch } from '@verkkokauppa/product-backend'
+import { sendErrorNotification } from '@verkkokauppa/message-backend'
 
 export class PaytrailCardRedirectSuccessController extends AbstractController {
   protected readonly requestSchema = null
@@ -86,28 +87,6 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
         )
       }
 
-      logger.info(`Load paytrail product accountings for order ${orderId}`)
-      const productAccountings = await getProductAccountingBatch({
-        productIds: order.items.map((item) => item.productId),
-      })
-
-      const accountingDtos = order.items.map((item) => {
-        const productAccounting = productAccountings.find(
-          (accountingData) => accountingData.productId === item.productId
-        )
-        if (!productAccounting) {
-          throw new ExperienceError({
-            code: 'failed-to-create-order-accounting-entry',
-            message: `No accounting entry found for product ${item.productId}`,
-            responseStatus: StatusCode.BadRequest,
-            logLevel: 'error',
-          })
-        }
-        return {
-          ...item,
-          ...productAccounting,
-        }
-      })
       // Now we confirm order and check if sums and other are ok. Mappings should be good now
       const confirmedOrder = await confirmOrder({ orderId, user: order.user })
 
@@ -136,16 +115,50 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
       // send email receipt. Method does not throw exceptions
       await sendReceiptToCustomer(paymentReturnStatus, orderId, order)
 
-      logger.info(
-        `Create accounting entry for paytrail order ${orderId} with accountings ${JSON.stringify(
-          productAccountings
-        )}`
-      )
+      try {
+        logger.info(`Load paytrail product accountings for order ${orderId}`)
+        const productAccountings = await getProductAccountingBatch({
+          productIds: order.items.map((item) => item.productId),
+        })
 
-      await createAccountingEntryForOrder({
-        orderId,
-        dtos: accountingDtos,
-      })
+        const accountingDtos = order.items.map((item) => {
+          const productAccounting = productAccountings.find(
+            (accountingData) => accountingData.productId === item.productId
+          )
+          if (!productAccounting) {
+            throw new ExperienceError({
+              code: 'failed-to-create-order-accounting-entry',
+              message: `No accounting entry found for product ${item.productId}`,
+              responseStatus: StatusCode.BadRequest,
+              logLevel: 'error',
+            })
+          }
+          return {
+            ...item,
+            ...productAccounting,
+          }
+        })
+
+        logger.info(
+          `Create accounting entry for paytrail order ${orderId} with accountings ${JSON.stringify(
+            productAccountings
+          )}`
+        )
+
+        await createAccountingEntryForOrder({
+          orderId,
+          dtos: accountingDtos,
+        })
+      } catch (e) {
+        // log error
+        logger.error('Creating accountings failed: ' + e.toString())
+        // send notification to Slack channel (email) that creating accountings failed
+        await sendErrorNotification({
+          message:
+            'Creating accountings failed in paytrailCardRedirectSuccessController',
+          cause: e.toString(),
+        })
+      }
 
       return res.redirect(
         302,
