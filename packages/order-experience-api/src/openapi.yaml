@@ -1651,20 +1651,3 @@ paths:
           $ref: '#/components/responses/InvalidApiKey'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  /{orderId}/invoice/create:
-    post:
-      description: Create invoice for order
-      security:
-        - UserId: [ ]
-        - HelsinkiProfile: [ ]
-      parameters:
-        - $ref: '#/components/parameters/OrderId'
-      responses:
-        '201':
-          description: Invoice was created
-        '400':
-          $ref: '#/components/responses/RequestValidationError'
-        '403':
-          $ref: '#/components/responses/AuthenticationError'
-        '500':
-          $ref: '#/components/responses/InternalServerError'

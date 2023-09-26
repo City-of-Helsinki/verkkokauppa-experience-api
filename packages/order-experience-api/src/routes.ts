@@ -31,7 +31,6 @@ import { ConfirmRefundController } from './api/confirmRefund'
 import { SendSubscriptionCardExpiredEmail } from './api/sendSubscriptionCardExpiredEmail'
 import { CreateFlowStepController } from './api/createFlowStepController'
 import { SetPaymentMethodController } from './api/setPaymentMethodController'
-import { CreateOrderInvoicingController } from './api/createOrderInvoicingController'
 
 const createController = new CreateController()
 const cartToOrderController = new CartToOrder()
@@ -81,9 +80,6 @@ const instantRefundController = new CreateRefundController({
   confirmAndCreatePayment: true,
 })
 const confirmRefundController = new ConfirmRefundController()
-const createOrderInvoicingController = new (withAuthentication(
-  CreateOrderInvoicingController
-))()
 
 const router = Router()
 router.post('/', (req, res) => createController.execute(req, res))
@@ -177,9 +173,5 @@ router.post('/refund/instant', (req, res) =>
 router.post('/refund/:refundId/confirm', (req, res) =>
   confirmRefundController.execute(req, res)
 )
-
-router.post('/:orderId/invoice/create', (req, res) => {
-  createOrderInvoicingController.execute(req, res)
-})
 
 export default router
