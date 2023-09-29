@@ -20,8 +20,10 @@
       "header": "Maksutiedot",
       "alv": "Sis. alv",
       "paidTotal": "Maksettu yhteensä",
+      "totalToBePaid": "Maksettavaa yhteensä",
       "paymentMethod": "Maksutapa",
       "date": "Päivämäärä",
+      "orderDate": "Tilausaika",
       "total": "yhteensä",
       "unit": {
         "pcs": "kpl",
