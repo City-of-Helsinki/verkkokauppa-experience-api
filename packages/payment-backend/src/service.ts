@@ -627,7 +627,10 @@ export const paidPaymentExists = async (p: {
 }): Promise<boolean> => {
   try {
     const payment = await getPaymentForOrder(p)
-    return payment.status === 'payment_paid_online'
+    return (
+      payment.status === 'payment_paid_online' ||
+      payment.status === PaymentStatus.INVOICE
+    )
   } catch (e) {
     if (e instanceof PaymentNotFound) {
       return false
@@ -777,6 +780,31 @@ export const getUpdatePaytrailCardFormParams = async (p: {
     throw new ExperienceFailure({
       code: 'failed-to-get-card-form-parameters',
       message: 'failed to get card form parameters',
+      source: e as Error,
+    })
+  }
+}
+
+export const setPaymentStatus = async (p: {
+  orderId: string
+  status: PaymentStatus
+}): Promise<void> => {
+  const { orderId, status } = p
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment-admin/payment-status`
+  try {
+    await axios.put(url, undefined, {
+      params: {
+        orderId,
+        status,
+      },
+    })
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-set-payment-status',
+      message: 'failed to set payment status',
       source: e as Error,
     })
   }

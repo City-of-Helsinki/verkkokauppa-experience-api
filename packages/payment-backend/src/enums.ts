@@ -3,6 +3,7 @@ export enum PaymentStatus {
   PAID_ONLINE = 'payment_paid_online',
   CANCELLED = 'payment_cancelled',
   AUTHORIZED = 'authorized',
+  INVOICE = 'payment_invoice',
 }
 
 export enum RefundPaymentStatus {
