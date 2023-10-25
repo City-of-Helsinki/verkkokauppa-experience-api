@@ -161,7 +161,14 @@ export interface OrderItemInvoicing {
   invoicingDate: string
   customerYid: string
   customerOvt: string
+  customerName: string
+  customerAddress: string
+  customerPostcode: string
+  customerCity: string
   material: string
+  orderType: string
+  salesOrg: string
+  salesOffice: string
   materialDescription: string
   quantity: number
   unit: string
