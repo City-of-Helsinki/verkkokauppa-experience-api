@@ -113,6 +113,7 @@ export class OrderNotFoundError extends ExperienceError {
       responseStatus: StatusCode.NotFound,
       logLevel: 'info',
     })
+    Object.setPrototypeOf(this, OrderNotFoundError.prototype)
   }
 }
 
