@@ -24,6 +24,7 @@ jest.mock('@verkkokauppa/payment-backend', () => {
     checkPaytrailReturnUrl: actual.checkPaytrailReturnUrl,
     // Payment type has to be actual one
     PaymentType: actual.PaymentType,
+    PaymentStatus: actual.PaymentStatus,
   }
 })
 
@@ -148,6 +149,9 @@ describe('Test paytrail refund payment success controller', () => {
     } as PaytrailStatus
 
     axiosMock.get.mockImplementation((url, data?: any) => {
+      if (url === undefined) {
+        return Promise.resolve({ data: '' })
+      }
       if (url.includes(`/payment/paytrail/check-return-url`)) {
         // eslint-disable-next-line jest/no-conditional-expect
         expect(data.params).toEqual(mockRequest.query)

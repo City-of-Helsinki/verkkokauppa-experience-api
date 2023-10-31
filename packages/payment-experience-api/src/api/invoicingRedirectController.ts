@@ -145,7 +145,7 @@ export class InvoicingRedirectController extends AbstractController {
       await setPaymentStatus({ orderId, status: PaymentStatus.INVOICE })
 
       try {
-        await sendReceipt(order)
+        await sendReceipt(order, false)
       } catch (e) {
         logger.error(e)
       }
