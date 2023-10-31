@@ -1,10 +1,27 @@
-import { sendOrderConfirmationEmailToCustomer } from '@verkkokauppa/message-backend'
-import { getPaymentForOrder, Order } from '@verkkokauppa/payment-backend'
+import {
+  createInvoiceTermsOfServiceBinary,
+  sendOrderConfirmationEmailToCustomer,
+} from '@verkkokauppa/message-backend'
+import {
+  getPaymentForOrder,
+  Order,
+  PaymentStatus,
+} from '@verkkokauppa/payment-backend'
 import { ExperienceFailure, logger } from '@verkkokauppa/core'
-import { getMerchantDetailsForOrder } from '@verkkokauppa/configuration-backend'
+import {
+  downloadMerchantTermsOfServiceBinary,
+  getMerchantDetailsForOrder,
+} from '@verkkokauppa/configuration-backend'
 import { isCardRenewal } from './paymentReturnService'
 
-export const sendReceipt = async (order: Order) => {
+const skipTosByNamespace = (process.env.SKIP_TERMS_ACCEPT_FOR_NAMESPACES || '')
+  .toLowerCase()
+  .split(',')
+
+export const sendReceipt = async (
+  order: Order,
+  isSubscriptionRenewal: boolean
+) => {
   const payments = await getPaymentForOrder(order)
   const merchant = await getMerchantDetailsForOrder(order)
   const orderWithPayments = {
@@ -12,11 +29,25 @@ export const sendReceipt = async (order: Order) => {
     payment: payments,
     merchant,
   }
+  const attachments: { [filename: string]: string } = {}
+  if (!isSubscriptionRenewal) {
+    if (payments?.status === PaymentStatus.INVOICE) {
+      attachments[
+        'laskutuksen-yleiset-ehdot.pdf'
+      ] = createInvoiceTermsOfServiceBinary()
+    }
+    if (!skipTosByNamespace.includes(order.namespace)) {
+      attachments[
+        'asiointipalvelun-ehdot.pdf'
+      ] = await downloadMerchantTermsOfServiceBinary(merchant)
+    }
+  }
   const email = await sendOrderConfirmationEmailToCustomer({
     order: orderWithPayments,
     emailHeader:
       'Tilausvahvistus ja kuitti / Order confirmation and receipt / Beställningsbekräftelse och kvitto',
     sendTo: orderWithPayments?.customer?.email || '',
+    attachments,
   })
   if (email.error !== '' && email.error !== undefined) {
     throw new ExperienceFailure({
@@ -37,7 +68,7 @@ export const sendReceiptToCustomer = async (
   if (paymentReturnStatus.paymentPaid && !isCardRenewal(paymentReturnStatus)) {
     logger.info(`Send receipt for order ${orderId}`)
     try {
-      await sendReceipt(order)
+      await sendReceipt(order, false)
     } catch (e) {
       // Skip errors for receipt sending
       logger.error(e)
