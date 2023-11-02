@@ -15,7 +15,7 @@ import { getSubscriptionAdmin } from '@verkkokauppa/order-backend'
 import { getPaymentForOrder } from '@verkkokauppa/payment-backend'
 import {
   getMerchantDetailsWithNamespaceAndMerchantId,
-  getSubscriptionTermsOfServiceBinary,
+  // getSubscriptionTermsOfServiceBinary,
   validateAdminApiKey,
 } from '@verkkokauppa/configuration-backend'
 
@@ -51,7 +51,8 @@ export class SendSubscriptionContractEmail extends AbstractController<
         subscription.namespace,
         subscription?.merchantId || ''
       ),
-      getSubscriptionTermsOfServiceBinary(subscription),
+      'null',
+      // getSubscriptionTermsOfServiceBinary(subscription),
     ])
 
     const subscriptionContractPdf = await createSubscriptionContractBinary({

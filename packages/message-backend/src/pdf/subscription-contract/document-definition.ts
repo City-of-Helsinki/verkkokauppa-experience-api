@@ -26,6 +26,7 @@ export const documentDefinition = (subscription: {
   firstPaymentDate: string
   secondPaymentDate: string
   priceGross: string
+  productLabel?: string
 }): TDocumentDefinitions => {
   return {
     defaultStyle: {
@@ -63,7 +64,7 @@ export const documentDefinition = (subscription: {
       } as any),
     content: [
       {
-        text: `${subscription.merchantName}: ${subscription.productName}\n\n\n`,
+        text: `${subscription.merchantName}: ${subscription.productName} ${subscription.productLabel}\n\n\n`,
         bold: true,
       },
       {
@@ -126,7 +127,7 @@ export const documentDefinition = (subscription: {
               )}\n\n`,
             ],
             [
-              'Tilausjakson hinta',
+              'Tilausjakson hinta sopimuksen syntyhetkellä',
               `${subscription.priceGross} € / ${
                 subscription.periodFrequency
               } ${i18next.t(
