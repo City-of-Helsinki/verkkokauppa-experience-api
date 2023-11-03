@@ -45,8 +45,8 @@ export function setFileName(this: any, fileName: HbsTemplateFiles): void {
 }
 
 export const localDateStringFromDateTime = (
-  datetime?: string,
-  addTimeZone = true
+  datetime?: string
+  // addTimeZone = true
 ) => {
   const date = datetime ? new Date(datetime) : new Date()
 
@@ -57,8 +57,8 @@ export const localDateStringFromDateTime = (
 }
 
 export const localTimeFromDateTime = (
-  date: string | number | Date,
-  addTimeZone = true
+  date: string | number | Date
+  // addTimeZone = true
 ) => {
   const dateCreated = new Date(date)
   if (dateCreated) {
@@ -123,7 +123,7 @@ export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
         localTimeFromDateTime(dateObj.toISOString())
       )
     }
-
+    // TODO Add timezone!
     const dateObj = parseTimestamp(date)
 
     return (
