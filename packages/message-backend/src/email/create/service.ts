@@ -44,6 +44,45 @@ export function setFileName(this: any, fileName: HbsTemplateFiles): void {
   this.fileName = fileName
 }
 
+export const localDateStringFromDateTime = (
+  datetime?: string
+  // addTimeZone = true
+) => {
+  const date = datetime ? new Date(datetime) : new Date()
+
+  if (isValidDate(date)) {
+    const datePartsFromIsoString = date.toISOString().slice(0, 10).split('-')
+    const [year, month, day] = datePartsFromIsoString
+
+    return `${day}.${month}.${year}`
+  }
+  return ''
+}
+
+export const isValidDate = (date: any) =>
+  date instanceof Date && date.toString() !== 'Invalid Date'
+
+export const localTimeFromDateTime = (
+  date: string | number | Date
+  // addTimeZone = true
+) => {
+  const dateCreated = new Date(date)
+  if (isValidDate(dateCreated) && dateCreated) {
+    const isoParts = dateCreated.toISOString().split('T')
+    if (isoParts.length > 0 && isoParts[1]) {
+      const timePart = isoParts[1].split('Z')[0]
+      if (timePart) {
+        const timeParts = timePart.split('.')
+        return timeParts[0] || ''
+      }
+      return ''
+    }
+    return ''
+  } else {
+    return ''
+  }
+}
+
 export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
   let fileName = ''
   let templateParams: T
@@ -67,35 +106,11 @@ export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
   Handlebars.registerHelper('eq', (a, b) => a == b)
 
   Handlebars.registerHelper('Time', function (date) {
-    const dateObj = new Date(date)
-
-    return dateObj.toLocaleTimeString('de-DE', {
-      timeZone: 'Europe/Helsinki',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-    })
+    return localTimeFromDateTime(date)
   })
 
   Handlebars.registerHelper('Date', function (date) {
-    if (typeof date === 'undefined') {
-      const dateObj = new Date()
-
-      return dateObj.toLocaleDateString('de-DE', {
-        timeZone: 'Europe/Helsinki',
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      })
-    }
-
-    const dateObj = new Date(date)
-    return dateObj.toLocaleDateString('de-DE', {
-      timeZone: 'Europe/Helsinki',
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    })
+    return localDateStringFromDateTime(date)
   })
 
   Handlebars.registerHelper(
@@ -109,38 +124,18 @@ export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
     if (typeof date === 'undefined') {
       const dateObj = new Date()
       return (
-        dateObj.toLocaleDateString('de-DE', {
-          timeZone: 'Europe/Helsinki',
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-        }) +
+        localDateStringFromDateTime(dateObj.toISOString()) +
         ' ' +
-        dateObj.toLocaleTimeString('de-DE', {
-          timeZone: 'Europe/Helsinki',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-        })
+        localTimeFromDateTime(dateObj.toISOString())
       )
     }
-
+    // TODO Add timezone!
     const dateObj = parseTimestamp(date)
 
     return (
-      dateObj.toLocaleDateString('de-DE', {
-        timeZone: 'Europe/Helsinki',
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      }) +
+      localDateStringFromDateTime(dateObj.toISOString()) +
       ' ' +
-      dateObj.toLocaleTimeString('de-DE', {
-        timeZone: 'Europe/Helsinki',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-      })
+      localTimeFromDateTime(dateObj.toISOString())
     )
   })
 
@@ -148,19 +143,9 @@ export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
     const dateObj = new Date(date)
 
     return (
-      dateObj.toLocaleDateString('de-DE', {
-        timeZone: 'Europe/Helsinki',
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      }) +
+      localDateStringFromDateTime(dateObj.toISOString()) +
       ' ' +
-      dateObj.toLocaleTimeString('de-DE', {
-        timeZone: 'Europe/Helsinki',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-      })
+      localTimeFromDateTime(dateObj.toISOString())
     )
   })
 
