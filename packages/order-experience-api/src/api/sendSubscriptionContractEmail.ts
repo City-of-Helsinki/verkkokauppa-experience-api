@@ -14,8 +14,8 @@ import {
 import { getSubscriptionAdmin } from '@verkkokauppa/order-backend'
 import { getPaymentForOrder } from '@verkkokauppa/payment-backend'
 import {
+  downloadMerchantTermsOfServiceBinary,
   getMerchantDetailsWithNamespaceAndMerchantId,
-  // getSubscriptionTermsOfServiceBinary,
   validateAdminApiKey,
 } from '@verkkokauppa/configuration-backend'
 
@@ -45,22 +45,23 @@ export class SendSubscriptionContractEmail extends AbstractController<
     // Assumption: subscription is currently on its first order
     const subscription = await getSubscriptionAdmin({ id })
 
-    const [payment, merchant, merchantTosPdf] = await Promise.all([
+    const [payment, merchant] = await Promise.all([
       getPaymentForOrder(subscription),
       getMerchantDetailsWithNamespaceAndMerchantId(
         subscription.namespace,
         subscription?.merchantId || ''
       ),
-      'null',
-      // getSubscriptionTermsOfServiceBinary(subscription),
     ])
 
-    const subscriptionContractPdf = await createSubscriptionContractBinary({
-      ...subscription,
-      merchantName: merchant.merchantName,
-      firstPaymentDate: parseTimestamp(payment.timestamp).toISOString(),
-      secondPaymentDate: subscription.renewalDate,
-    })
+    const [subscriptionContractPdf, merchantTosPdf] = await Promise.all([
+      createSubscriptionContractBinary({
+        ...subscription,
+        merchantName: merchant.merchantName,
+        firstPaymentDate: parseTimestamp(payment.timestamp).toISOString(),
+        secondPaymentDate: subscription.renewalDate,
+      }),
+      downloadMerchantTermsOfServiceBinary(merchant),
+    ])
 
     const tosPdf = createSubscriptionTermsOfServiceBinary()
 

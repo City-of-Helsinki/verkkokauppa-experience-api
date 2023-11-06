@@ -21,6 +21,7 @@ import { GetUpdateCardFormParametersController } from './api/getUpdateCardFormPa
 import { PaytrailCardUpdateRedirectSuccessController } from './api/paytrailCardUpdateRedirectSuccessController'
 import { PaytrailOnlineRefundPaymentCancelController } from './api/paytrailOnlineRefundPaymentCancelController'
 import { InvoicingRedirectController } from './api/invoicingRedirectController'
+import { PaytrailMitChargeNotifyController } from './api/paytrailMitChargeNotifyController'
 
 const createPaymentController = new (withAuthentication(
   CreatePaymentController
@@ -50,6 +51,7 @@ const paytrailCardRedirectSuccessController = new PaytrailCardRedirectSuccessCon
 const instantRefundController = new InstantRefundController()
 const paytrailCardUpdateRedirectSuccessController = new PaytrailCardUpdateRedirectSuccessController()
 const invoicingRedirectController = new InvoicingRedirectController()
+const paytrailMitChargeNotifyController = new PaytrailMitChargeNotifyController()
 
 const router = Router()
 router.get('/health', (req, res) => healthController.execute(req, res))
@@ -80,6 +82,9 @@ router.get('/onlinePayment/notify', (req, res) =>
 )
 router.get('/paytrailOnlinePayment/notify/:status', (req, res) =>
   paytrailOnlinePaymentNotifyController.execute(req, res)
+)
+router.get('/paytrailOnlinePayment/mitCharge/notify', (req, res) =>
+  paytrailMitChargeNotifyController.execute(req, res)
 )
 router.get('/paytrailOnlineRefund/success', (req, res) =>
   paytrailOnlineRefundPaymentSuccessController.execute(req, res)
