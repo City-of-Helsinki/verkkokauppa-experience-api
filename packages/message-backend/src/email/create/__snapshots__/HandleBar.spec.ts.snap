@@ -2355,7 +2355,7 @@ exports[`Create templates from parameters Should compile subscriptionCardExpired
                                                             <td width=\\"100%\\" class=\\"purchase_item pb-1\\">
                                                                 <span class=\\"f-fallback\\">
                                                                     Päivittämällä maksukorttisi tiedot ennen 
-                                                                    30.03.2022 07:56:57
+                                                                    30.03.2022 04:56:57
                                                                      varmistat tilauksen jatkumisen ilman katkoja: 
                                                                     <a href=\\"http://localhost:3000/dummy-order-KYV-351/update-card?user&#x3D;userId\\" target=\\"_blank\\">http://localhost:3000/dummy-order-KYV-351/update-card?user&#x3D;userId</a>
                                                                 </span>
@@ -2535,7 +2535,7 @@ exports[`Create templates from parameters Should compile subscriptionCardExpired
                                                             <td width=\\"100%\\" class=\\"purchase_item pb-1\\">
                                                                 <span class=\\"f-fallback\\">
                                                                     By updating your payment card details before 
-                                                                    30.03.2022 07:56:57
+                                                                    30.03.2022 04:56:57
                                                                     , you can ensure that your subscription will continue without interruption: 
                                                                     <a href=\\"http://localhost:3000/dummy-order-KYV-351/update-card?user&#x3D;userId\\" target=\\"_blank\\">http://localhost:3000/dummy-order-KYV-351/update-card?user&#x3D;userId</a>
                                                                 </span>
@@ -2715,7 +2715,7 @@ exports[`Create templates from parameters Should compile subscriptionCardExpired
                                                             <td width=\\"100%\\" class=\\"purchase_item pb-1\\">
                                                                 <span class=\\"f-fallback\\">
                                                                     Uppdatera betalkortsuppgifterna före 
-                                                                    30.03.2022 07:56:57
+                                                                    30.03.2022 04:56:57
                                                                      för att undvika avbrott i beställningen: 
                                                                     <a href=\\"http://localhost:3000/dummy-order-KYV-351/update-card?user&#x3D;userId\\" target=\\"_blank\\">http://localhost:3000/dummy-order-KYV-351/update-card?user&#x3D;userId</a>
                                                                 </span>

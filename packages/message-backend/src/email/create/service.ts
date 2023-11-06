@@ -50,18 +50,24 @@ export const localDateStringFromDateTime = (
 ) => {
   const date = datetime ? new Date(datetime) : new Date()
 
-  const datePartsFromIsoString = date.toISOString().slice(0, 10).split('-')
-  const [year, month, day] = datePartsFromIsoString
+  if (isValidDate(date)) {
+    const datePartsFromIsoString = date.toISOString().slice(0, 10).split('-')
+    const [year, month, day] = datePartsFromIsoString
 
-  return `${day}.${month}.${year}`
+    return `${day}.${month}.${year}`
+  }
+  return ''
 }
+
+export const isValidDate = (date: any) =>
+  date instanceof Date && date.toString() !== 'Invalid Date'
 
 export const localTimeFromDateTime = (
   date: string | number | Date
   // addTimeZone = true
 ) => {
   const dateCreated = new Date(date)
-  if (dateCreated) {
+  if (isValidDate(dateCreated) && dateCreated) {
     const isoParts = dateCreated.toISOString().split('T')
     if (isoParts.length > 0 && isoParts[1]) {
       const timePart = isoParts[1].split('Z')[0]
