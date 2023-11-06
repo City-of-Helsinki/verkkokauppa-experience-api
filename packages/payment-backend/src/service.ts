@@ -418,9 +418,20 @@ export const checkPaytrailCardUpdateReturnUrl = async (p: {
   order: Order
 }) => {
   const { params, order } = p
+  const dto = {
+    order: {
+      order: {
+        ...order,
+        customerFirstName: order.customer?.firstName,
+        customerLastName: order.customer?.lastName,
+        customerEmail: order.customer?.email,
+      },
+      items: order.items,
+    },
+  }
   const url = `${getBackendUrl()}/payment/paytrail/check-card-update-return-url`
   try {
-    const res = await axios.post(url, { order }, { params })
+    const res = await axios.post(url, dto, { params })
     return res.data
   } catch (e) {
     throw new ExperienceFailure({
