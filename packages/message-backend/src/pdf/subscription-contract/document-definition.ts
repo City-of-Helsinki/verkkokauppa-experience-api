@@ -4,12 +4,13 @@ import i18next from '../../i18n/init'
 
 const sideMargin = 50
 
-const datetimeFormat = ['fi-FI', { timeZone: 'Europe/Helsinki' }] as const
-const localeDateString = (datetime?: string) => {
-  const d = datetime ? new Date(datetime) : new Date()
-  // For some reason fi-FI yields mm/dd/yyyy instead of dd.mm.yyyy
-  const parts = d.toLocaleDateString(...datetimeFormat).split('/')
-  return `${parts[1]}.${parts[0]}.${parts[2]}`
+export const localeDateString = (datetime?: string) => {
+  const date = datetime ? new Date(datetime) : new Date()
+
+  const datePartsFromIsoString = date.toISOString().slice(0, 10).split('-')
+  const [year, month, day] = datePartsFromIsoString
+
+  return `${day}.${month}.${year}`
 }
 
 export const documentDefinition = (subscription: {
@@ -25,6 +26,7 @@ export const documentDefinition = (subscription: {
   firstPaymentDate: string
   secondPaymentDate: string
   priceGross: string
+  productLabel?: string
 }): TDocumentDefinitions => {
   return {
     defaultStyle: {
@@ -62,7 +64,7 @@ export const documentDefinition = (subscription: {
       } as any),
     content: [
       {
-        text: `${subscription.merchantName}: ${subscription.productName}\n\n\n`,
+        text: `${subscription.merchantName}: ${subscription.productName} ${subscription.productLabel}\n\n\n`,
         bold: true,
       },
       {
@@ -125,7 +127,7 @@ export const documentDefinition = (subscription: {
               )}\n\n`,
             ],
             [
-              'Tilausjakson hinta',
+              'Tilausjakson hinta sopimuksen syntyhetkellä',
               `${subscription.priceGross} € / ${
                 subscription.periodFrequency
               } ${i18next.t(
