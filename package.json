@@ -10,7 +10,7 @@
     "prepare": "node ./tsconfig-references.js && husky install",
     "build": "yarn workspaces run build",
     "lint": "eslint \"./packages/*/src/**/*.{ts,tsx}\" --max-warnings=0 --fix",
-    "test": "NODE_ICU_DATA=node_modules/full-icu yarn jest --coverage",
+    "test": "cross-env NODE_ICU_DATA=node_modules/full-icu yarn jest --coverage",
     "test:local": "cross-env TZ=Europe/Helsinki NODE_ICU_DATA=node_modules/full-icu IS_LOCAL_DEVELOPMENT=true yarn jest --coverage"
   },
   "devDependencies": {
