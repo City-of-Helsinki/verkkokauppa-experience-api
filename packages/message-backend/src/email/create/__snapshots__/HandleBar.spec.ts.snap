@@ -3359,7 +3359,7 @@ exports[`Create templates from parameters Should compile subscriptionPaymentFail
                                                                     Tilaukseen liittämäsi maksukortin 
                                                                     4321
                                                                     veloitusta yritetään uudelleen muutaman päivän sisällä. Mikäli veloituksen uusintayritys ei onnistu, tilatun palvelun käyttöoikeus päättyy
-                                                                    01.01.2022 07:56:57
+                                                                    01.01.2022 05:56:57
                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -3545,7 +3545,7 @@ exports[`Create templates from parameters Should compile subscriptionPaymentFail
                                                                     A new attempt will be made to charge the payment card 
                                                                     4321
                                                                     linked to your subscription within a few days. If the new attempt to charge the card is unsuccessful, your right to use the subscribed service will expire on 
-                                                                    01.01.2022 07:56:57
+                                                                    01.01.2022 05:56:57
                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -3731,7 +3731,7 @@ exports[`Create templates from parameters Should compile subscriptionPaymentFail
                                                                     Ett nytt debiteringsförsök på betalkortet 
                                                                     4321
                                                                      som anslutits till din beställning kommer att göras inom några dagar. Om det nya debiteringsförsöket inte lyckas, upphör rätten att använda den beställda tjänsten 
-                                                                    01.01.2022 07:56:57
+                                                                    01.01.2022 05:56:57
                                                                 </span>
                                                             </td>
                                                         </tr>
