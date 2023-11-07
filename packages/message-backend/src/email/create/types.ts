@@ -148,6 +148,7 @@ export interface Subscription {
   paymentMethodExpirationMonth: string
   paymentMethodCardLastFourDigits: string
   user: string
+  createdAt: string
   startDate: string
   endDate: string
   renewalDate: string
