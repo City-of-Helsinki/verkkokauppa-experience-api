@@ -436,9 +436,12 @@ describe('Test paytrailCardRedirectSuccessController', () => {
       `${serviceUrl}/${orderId}/success?user=${orderMock.user}`
     )
   })
-  it('should redirect to service specific summary if service redirect url is present', async () => {
+  it('should redirect to service specific failure url if present', async () => {
     process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
     const serviceUrl = 'https://testservice.dev.hel'
+    getPublicServiceConfigurationMock.mockImplementationOnce(() => ({
+      configurationValue: serviceUrl
+    }))
     getPublicServiceConfigurationMock.mockImplementationOnce(() => ({
       configurationValue: serviceUrl
     }))
@@ -449,7 +452,11 @@ describe('Test paytrailCardRedirectSuccessController', () => {
       { params: { orderId }, query: { } } as any,
       mockResponse
     )
-    expectSummaryRedirect(serviceUrl)
+    expect(mockRedirect).toHaveBeenCalledTimes(1)
+    expect(mockRedirect.mock.calls[0][0]).toEqual(302)
+    expect(mockRedirect.mock.calls[0][1]).toEqual(
+      `${serviceUrl}/?orderId=${orderId}&paymentPaid=false&user=${orderMock.user}`
+    )
   })
 
   it('success even if product accounting is not received', async () => {
