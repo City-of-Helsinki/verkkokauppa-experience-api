@@ -11,10 +11,15 @@ export const localeDateStringUTC = (datetime?: string) => {
 
 export const localeDateTimeStringWithHelsinkiTimezone = (datetime?: string) => {
   const date = datetime ? new Date(datetime) : new Date()
-  return formatInTimeZone(date, 'Europe/Helsinki', 'dd.MM.yyyy HH:mm:ss')
+  return formatInTimeZone(date, 'Europe/Helsinki', 'dd.MM.yyyy HH:mm')
+}
+
+export const localeTimeStringWithHelsinkiTimezone = (datetime?: string) => {
+  const date = datetime ? new Date(datetime) : new Date()
+  return formatInTimeZone(date, 'Europe/Helsinki', 'HH:mm')
 }
 
 export const localeDateTimeStringUTC = (datetime?: string) => {
   const date = datetime ? new Date(datetime) : new Date()
-  return formatInTimeZone(date, 'UTC', 'dd.MM.yyyy HH:mm:ss')
+  return formatInTimeZone(date, 'UTC', 'dd.MM.yyyy HH:mm')
 }
