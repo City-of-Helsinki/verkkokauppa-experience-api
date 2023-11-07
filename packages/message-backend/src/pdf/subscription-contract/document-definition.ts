@@ -1,17 +1,13 @@
 // eslint-disable-next-line import/no-unresolved
 import type { TDocumentDefinitions } from 'pdfmake/interfaces'
 import i18next from '../../i18n/init'
+import {
+  localeDateStringUTC,
+  localeDateStringWithHelsinkiTimeZone,
+  localeDateTimeStringUTC,
+} from '../../service'
 
 const sideMargin = 50
-
-export const localeDateString = (datetime?: string) => {
-  const date = datetime ? new Date(datetime) : new Date()
-
-  const datePartsFromIsoString = date.toISOString().slice(0, 10).split('-')
-  const [year, month, day] = datePartsFromIsoString
-
-  return `${day}.${month}.${year}`
-}
 
 export const documentDefinition = (subscription: {
   subscriptionId: string
@@ -52,7 +48,7 @@ export const documentDefinition = (subscription: {
             stack: [
               { text: 'TILAUSSOPIMUS', bold: true },
               '\n\n',
-              localeDateString(),
+              localeDateStringWithHelsinkiTimeZone(),
             ],
           },
           {
@@ -88,7 +84,7 @@ export const documentDefinition = (subscription: {
               'Tilaussopimuksen kesto',
               {
                 stack: [
-                  `Tilaussopimus on voimassa ${localeDateString(
+                  `Tilaussopimus on voimassa ${localeDateStringUTC(
                     subscription.startDate
                   )} alkaen toistaiseksi`,
                   '\n',
@@ -101,15 +97,15 @@ export const documentDefinition = (subscription: {
                 stack: [
                   'Sopimukseen liittyvät maksut veloitetaan tilausjaksoissa.',
                   '\n',
-                  `Ensimmäinen tilausjakso ${localeDateString(
+                  `Ensimmäinen tilausjakso ${localeDateTimeStringUTC(
                     subscription.startDate
-                  )} – ${localeDateString(
+                  )} – ${localeDateTimeStringUTC(
                     subscription.endDate
-                  )} maksettu ${localeDateString(
+                  )} maksettu ${localeDateStringWithHelsinkiTimeZone(
                     subscription.firstPaymentDate
                   )}.`,
                   '\n',
-                  `Seuraavan tilausjakson veloitus ${localeDateString(
+                  `Seuraavan tilausjakson veloitus ${localeDateStringWithHelsinkiTimeZone(
                     subscription.secondPaymentDate
                   )}, jonka jälkeen ${subscription.periodFrequency} ${i18next.t(
                     `subscriptionContractPdf.c4_2_3_${subscription.periodUnit}`
