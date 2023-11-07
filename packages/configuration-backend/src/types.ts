@@ -39,6 +39,7 @@ export type PublicServiceConfigurationKeys = {
   PAYMENT_NOTIFICATION_URL: string
   refundSuccessRedirectUrl: string
   merchantSubscriptionTermsOfServiceUrl: string
+  orderPaymentFailedRedirectUrl: string
 } & MerchantConfigurationKeys
 
 export type RestrictedServiceConfigurationKeys = {
