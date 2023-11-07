@@ -16,6 +16,8 @@
   "dependencies": {
     "@verkkokauppa/core": "^1.0.0",
     "axios": "^0.21.1",
+    "date-fns": "^2.30.0",
+    "date-fns-tz": "^2.0.0",
     "handlebars": "^4.7.7",
     "i18next": "^20.4.0",
     "pdfmake": "^0.2.4",
