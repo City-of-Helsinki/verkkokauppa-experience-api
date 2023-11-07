@@ -93,6 +93,9 @@ describe('Test receipt send', () => {
     }
 
     axiosMock.get.mockImplementation((url) => {
+      if (url === undefined) {
+        return Promise.resolve({ data: '' })
+      }
       if (url.includes(`/public/getAll`)) {
         return Promise.resolve({ data: [configMock, merchantConfigMock] })
       }
@@ -121,7 +124,7 @@ describe('Test receipt send', () => {
       return Promise.resolve({})
     })
 
-    const result = await sendReceipt(orderMock)
+    const result = await sendReceipt(orderMock, false)
     expect(result.error).toBe(``)
     expect(result.template).toBe('template')
   })

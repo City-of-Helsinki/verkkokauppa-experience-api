@@ -395,23 +395,19 @@ export const validateAdminApiKey = async (p: {
   return validateApiKey({ namespace: 'admin', apiKey })
 }
 
-export const getSubscriptionTermsOfServiceBinary = async (p: {
-  namespace: string
+export const downloadMerchantTermsOfServiceBinary = async (p: {
+  merchantTermsOfServiceUrl: string
 }): Promise<string> => {
-  const { namespace } = p
+  const { merchantTermsOfServiceUrl } = p
   try {
-    const configuration = await getPublicServiceConfiguration({
-      namespace,
-      key: 'merchantSubscriptionTermsOfServiceUrl',
-    })
-    const tos = await axios.get(configuration.configurationValue, {
+    const tos = await axios.get(merchantTermsOfServiceUrl, {
       responseType: 'arraybuffer',
     })
     return (tos.data as Buffer).toString('base64')
   } catch (e) {
     throw new ExperienceFailure({
-      code: 'failed-to-get-subscription-terms-of-service',
-      message: 'Failed to get subscription terms of service',
+      code: 'failed-to-get-merchant-terms-of-service',
+      message: 'Failed to get merchant terms of service',
       source: e,
     })
   }

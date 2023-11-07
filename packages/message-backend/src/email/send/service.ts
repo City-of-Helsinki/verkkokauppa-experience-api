@@ -125,6 +125,7 @@ export const sendOrderConfirmationEmailToCustomer = async (p: {
   order: Order
   sendTo: string
   emailHeader: string
+  attachments?: { [filename: string]: string }
 }): Promise<any> => {
   const emailType = 'orderConfirmation'
   const { order } = p
@@ -142,7 +143,7 @@ export const sendOrderConfirmationEmailToCustomer = async (p: {
     receiver: p.sendTo,
     header: p.emailHeader,
     body: created.template,
-    attachments: {},
+    attachments: p.attachments ?? {},
     emailType: emailType,
   })
 }
