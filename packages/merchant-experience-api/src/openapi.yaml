@@ -55,8 +55,6 @@ components:
           type: string
         merchantSubscriptionWebhookUrl:
           type: string
-        merchantSubscriptionTermsOfServiceUrl:
-          type: string
         merchantBusinessId:
           type: string
         orderCreatedRedirectUrl:
