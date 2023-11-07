@@ -32,7 +32,7 @@ RUN yarn workspace @verkkokauppa/core install && \
 yarn workspace @verkkokauppa/auth-helsinki-profile install && \
 yarn workspace @verkkokauppa/order-backend install && \
 yarn workspace @verkkokauppa/payment-backend install && \
-yarn workspace @verkkokauppa/message-backend install  && \
+yarn workspace @verkkokauppa/message-backend install && \
 yarn workspace @verkkokauppa/product-backend install && \
 yarn workspace @verkkokauppa/configuration-backend install && \
 yarn workspace @verkkokauppa/payment-experience-api install

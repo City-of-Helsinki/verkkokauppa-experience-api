@@ -4,6 +4,7 @@ import * as Handlebars from 'handlebars'
 import i18next from './../../i18n/init'
 import type { SUPPORTED_LANGUAGES } from '../../i18n/types'
 import { parseTimestamp } from '@verkkokauppa/core'
+import { localeDateTimeStringWithHelsinkiTimezone } from '../../service'
 
 const fs = require('fs')
 const path = require('path')
@@ -129,14 +130,9 @@ export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
         localTimeFromDateTime(dateObj.toISOString())
       )
     }
-    // TODO Add timezone!
     const dateObj = parseTimestamp(date)
 
-    return (
-      localDateStringFromDateTime(dateObj.toISOString()) +
-      ' ' +
-      localTimeFromDateTime(dateObj.toISOString())
-    )
+    return localeDateTimeStringWithHelsinkiTimezone(dateObj.toISOString())
   })
 
   Handlebars.registerHelper('DateTime', function (date) {
