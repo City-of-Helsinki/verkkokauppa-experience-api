@@ -1,9 +1,4 @@
-import {
-  AbstractController,
-  ExperienceError,
-  logger,
-  StatusCode,
-} from '@verkkokauppa/core'
+import { AbstractController, logger } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
 import { URL } from 'url'
 import { getOrderAdmin } from '@verkkokauppa/order-backend'
@@ -22,7 +17,10 @@ import {
   isAuthorized,
   isCardRenewal,
 } from '../lib/paymentReturnService'
-import { parseMerchantIdFromFirstOrderItem } from '@verkkokauppa/configuration-backend'
+import {
+  getPublicServiceConfiguration,
+  parseMerchantIdFromFirstOrderItem,
+} from '@verkkokauppa/configuration-backend'
 
 export class PaytrailOnlinePaymentReturnController extends AbstractController {
   protected readonly requestSchema = null
@@ -36,51 +34,53 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
     PaytrailOnlinePaymentReturnController.checkAndCreateRedirectUrl()
     const orderId = parseOrderIdFromPaytrailRedirect({ query })
 
-    const payment = await getPaidPaymentAdmin({
-      orderId: orderId,
-    })
-    const order = await getOrderAdmin({ orderId })
-
-    // Already found payment paid, return early to prevent multiple events happening
-    if (payment != null && payment.status === 'payment_paid_online') {
-      // successfully paid so redirect to success
-      let url: URL = new URL(
-        PaytrailOnlinePaymentReturnController.getRedirectUrl()
-      )
-      url.pathname = `${orderId}/success`
-      url.searchParams.append('user', order.user)
-      return result.redirect(302, url.toString())
-    } else if (payment != null) {
-      // redirect to failure
-      return result.redirect(
-        302,
-        PaytrailOnlinePaymentReturnController.getFailureRedirectUrl()
-      )
-    }
+    let failureRedirectUrl = PaytrailOnlinePaymentReturnController.checkAndCreateRedirectUrl()
+    failureRedirectUrl.pathname = 'failure'
 
     if (!orderId) {
       logger.error(
         'No orderId specified redirect to paytrail general failure url'
       )
-      return result.redirect(
-        302,
-        PaytrailOnlinePaymentReturnController.getFailureRedirectUrl()
-      )
-    }
-
-    const merchantId = parseMerchantIdFromFirstOrderItem(order)
-
-    if (!merchantId) {
-      logger.error('Paytrail: No merchantId found from order')
-      throw new ExperienceError({
-        code: 'merchant-id-not-found',
-        message: 'No merchantId found from order.',
-        responseStatus: StatusCode.NotFound,
-        logLevel: 'info',
-      })
+      return result.redirect(302, failureRedirectUrl.toString())
     }
 
     try {
+      const order = await getOrderAdmin({ orderId })
+
+      const nsFailureRedirectUrl = await getPublicServiceConfiguration({
+        namespace: order.namespace,
+        key: 'orderPaymentFailedRedirectUrl',
+      })
+
+      if (nsFailureRedirectUrl?.configurationValue) {
+        failureRedirectUrl = new URL(nsFailureRedirectUrl.configurationValue)
+      }
+
+      const payment = await getPaidPaymentAdmin({
+        orderId: orderId,
+      })
+
+      // Already found payment paid, return early to prevent multiple events happening
+      if (payment != null && payment.status === 'payment_paid_online') {
+        // successfully paid so redirect to success
+        let url: URL = new URL(
+          PaytrailOnlinePaymentReturnController.getRedirectUrl()
+        )
+        url.pathname = `${orderId}/success`
+        url.searchParams.append('user', order.user)
+        return result.redirect(302, url.toString())
+      } else if (payment != null) {
+        // redirect to failure
+        return result.redirect(302, failureRedirectUrl.toString())
+      }
+
+      const merchantId = parseMerchantIdFromFirstOrderItem(order)
+
+      if (!merchantId) {
+        logger.error('Paytrail: No merchantId found from order')
+        return result.redirect(302, failureRedirectUrl.toString())
+      }
+
       const paytrailStatus = await checkPaytrailReturnUrl({
         params: query,
         merchantId: merchantId,
@@ -92,10 +92,7 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
         logger.debug(
           `PaytrailStatus is not valid for ${orderId}, redirect to failure url`
         )
-        return result.redirect(
-          302,
-          PaytrailOnlinePaymentReturnController.getFailureRedirectUrl()
-        )
+        return result.redirect(302, failureRedirectUrl.toString())
       }
 
       const redirectUrl = await createUserRedirectUrl({
@@ -123,23 +120,13 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
       }
 
       return result.redirect(302, redirectUrl.toString())
-    } catch (error) {
-      logger.error(error)
+    } catch (e) {
+      logger.error(e)
       logger.debug(
         `Error occurred, redirect user to failure url for order ${orderId}`
       )
-      return result.redirect(
-        302,
-        PaytrailOnlinePaymentReturnController.getFailureRedirectUrl().toString()
-      )
+      return result.redirect(302, failureRedirectUrl.toString())
     }
-  }
-
-  private static getFailureRedirectUrl() {
-    const redirectUrl = this.checkAndCreateRedirectUrl()
-    redirectUrl.pathname = 'failure'
-
-    return redirectUrl.toString()
   }
 
   public static checkAndCreateRedirectUrl() {

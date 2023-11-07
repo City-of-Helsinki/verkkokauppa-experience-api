@@ -432,7 +432,10 @@ describe('Test paytrail refund payment success controller', () => {
       if (url.includes(`/payment/online/get`)) {
         return Promise.resolve({ data: paymentMock })
       }
-      if (url.includes(`/public/get`)) {
+      if (
+        url.includes(`/public/get`) &&
+        data.params['key'] !== 'orderPaymentFailedRedirectUrl'
+      ) {
         return Promise.resolve({ data: configMock })
       }
       if (url.includes(`/order-admin/get`)) {
@@ -571,7 +574,10 @@ describe('Test paytrail refund payment success controller', () => {
       if (url.includes(`/payment/online/get`)) {
         return Promise.resolve({ data: paymentMock })
       }
-      if (url.includes(`/public/get`)) {
+      if (
+        url.includes(`/public/get`) &&
+        data.params['key'] !== 'orderPaymentFailedRedirectUrl'
+      ) {
         return Promise.resolve({ data: configMock })
       }
       if (url.includes(`/order-admin/get`)) {
