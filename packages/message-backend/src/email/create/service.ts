@@ -119,7 +119,7 @@ export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
   })
 
   Handlebars.registerHelper('Date', function (date) {
-    return localeDateStringWithHelsinkiTimeZone(date)
+    return localDateStringFromDateTime(date)
   })
 
   Handlebars.registerHelper('DateTimeEurope', function (date) {
