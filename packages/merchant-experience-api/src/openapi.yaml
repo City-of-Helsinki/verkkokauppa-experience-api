@@ -67,6 +67,8 @@ components:
           type: string
         merchantShopId:
           type: string
+        orderPaymentFailedRedirectUrl:
+          type: string
     MerchantConfigurations:
       type: object
       required:
@@ -305,6 +307,8 @@ paths:
                     type: string
                   merchantShopId:
                     type: string
+                  orderPaymentFailedRedirectUrl:
+                    type: string
         '500':
           $ref: '#/components/responses/InternalServerError'
     post:
@@ -381,6 +385,8 @@ paths:
                   orderCreatedRedirectUrl:
                     type: string
                   merchantShopId:
+                    type: string
+                  orderPaymentFailedRedirectUrl:
                     type: string
         '500':
           $ref: '#/components/responses/InternalServerError'
