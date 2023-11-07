@@ -34,8 +34,7 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
     return url
   }
 
-  private static fault = (url: URL, orderId?: string, user?: string) => {
-    url.pathname = orderId ? `${orderId}/summary` : 'summary'
+  private static fault = (url: URL, user?: string) => {
     url.searchParams.append('paymentPaid', 'false')
 
     if (user) {
@@ -50,40 +49,51 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
     if (!globalRedirectUrl) {
       throw new Error('No default paytrail redirect url defined')
     }
-    let redirectUrl = new URL(globalRedirectUrl)
     const { orderId } = req.params
+    let successRedirectUrl = new URL(globalRedirectUrl)
+    let failureRedirectUrl = new URL(globalRedirectUrl)
+    failureRedirectUrl.pathname = `${orderId ?? ''}/summary`
+
     let user = ''
     try {
       if (!orderId) {
         return res.redirect(
           302,
-          PaytrailCardRedirectSuccessController.fault(redirectUrl).toString()
+          PaytrailCardRedirectSuccessController.fault(
+            failureRedirectUrl
+          ).toString()
         )
       }
       const order = await getOrderAdmin({ orderId })
       user = order.user
 
+      const [nsSuccessRedirectUrl, nsFailureRedirectUrl] = await Promise.all([
+        getPublicServiceConfiguration({
+          namespace: order.namespace,
+          key: 'ORDER_CREATED_REDIRECT_URL',
+        }),
+        getPublicServiceConfiguration({
+          namespace: order.namespace,
+          key: 'orderPaymentFailedRedirectUrl',
+        }),
+      ])
+
+      if (nsSuccessRedirectUrl?.configurationValue) {
+        successRedirectUrl = new URL(nsSuccessRedirectUrl.configurationValue)
+      }
+
+      if (nsFailureRedirectUrl?.configurationValue) {
+        failureRedirectUrl = new URL(nsFailureRedirectUrl.configurationValue)
+        failureRedirectUrl.searchParams.append('orderId', orderId)
+      }
+
       if (await paidPaymentExists(order)) {
         return res.redirect(
           302,
           PaytrailCardRedirectSuccessController.fault(
-            redirectUrl,
-            orderId,
+            failureRedirectUrl,
             user
           ).toString()
-        )
-      }
-
-      const serviceConfigurationRedirectUrl = await getPublicServiceConfiguration(
-        {
-          namespace: order.namespace,
-          key: 'ORDER_CREATED_REDIRECT_URL',
-        }
-      )
-
-      if (serviceConfigurationRedirectUrl?.configurationValue) {
-        redirectUrl = new URL(
-          serviceConfigurationRedirectUrl.configurationValue
         )
       }
 
@@ -100,8 +110,7 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
         return res.redirect(
           302,
           PaytrailCardRedirectSuccessController.fault(
-            redirectUrl,
-            orderId,
+            failureRedirectUrl,
             user
           ).toString()
         )
@@ -163,7 +172,7 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
       return res.redirect(
         302,
         PaytrailCardRedirectSuccessController.success(
-          redirectUrl,
+          successRedirectUrl,
           orderId,
           user
         ).toString()
@@ -173,8 +182,7 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
       return res.redirect(
         302,
         PaytrailCardRedirectSuccessController.fault(
-          redirectUrl,
-          orderId,
+          failureRedirectUrl,
           user
         ).toString()
       )

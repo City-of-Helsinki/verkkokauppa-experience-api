@@ -22,6 +22,7 @@ const merchantCommonSchema = yup.object({
   subscriptionPriceUrl: yup.string(),
   merchantRefundWebhookUrl: yup.string(),
   merchantShopId: yup.string(),
+  orderPaymentFailedRedirectUrl: yup.string(),
 })
 
 const merchantBackendSchema = merchantCommonSchema
