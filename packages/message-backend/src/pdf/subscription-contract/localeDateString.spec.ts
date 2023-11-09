@@ -25,6 +25,6 @@ describe('localeDateString', () => {
 
     const formattedDate = localeDateTimeStringWithHelsinkiTimezone(inputDate)
 
-    expect(formattedDate).toBe('02.10.2023 03:00:00')
+    expect(formattedDate).toBe('02.10.2023 03:00')
   })
 })

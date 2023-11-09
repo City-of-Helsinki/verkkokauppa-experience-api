@@ -8,7 +8,7 @@
                             <tr>
                                 <td class="content-cell">
                                     <div class="f-fallback">
-                                        <h1 style="margin-bottom: 0">{{I18n 'subscriptionContractEmail.h1'}} {{subscription.productName}} {{subscription.productLabel}}</h1>
+                                        <h1 style="margin-bottom: 0">{{I18n 'subscriptionContractEmail.h1'}} {{subscription.productName}} </br> {{subscription.productLabel}}</h1>
                                         <table class="purchase" width="100%" cellpadding="0" cellspacing="0" role="presentation">
                                             <tr>
                                                 <td colspan="2">
@@ -16,7 +16,7 @@
                                                         <tr class="pb-1">
                                                             <td width="100%" class="purchase_item pb-1">
                                                                 <span class="f-fallback">
-                                                                    {{I18n 'subscriptionContractEmail.p1'}} {{subscription.subscriptionId}} {{DateTime subscription.createdAt}}
+                                                                    {{I18n 'subscriptionContractEmail.p1'}} {{subscription.subscriptionId}} {{DateTimeEurope subscription.createdAt}}
                                                                 </span>
                                                             </td>
                                                         </tr>
