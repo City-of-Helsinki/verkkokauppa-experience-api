@@ -123,3 +123,6 @@ packages/payment-experience-api/src/config/ca.crt
 packages/payment-experience-api/src/config/ca.key
 packages/payment-experience-api/src/config/cert.crt
 packages/payment-experience-api/src/config/cert.key
+
+# Test generated pdf files
+packages/message-backend/src/pdf/subscription-contract/test-output
