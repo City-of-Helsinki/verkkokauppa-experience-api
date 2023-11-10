@@ -3253,7 +3253,7 @@ exports[`Create templates from parameters Should compile subscriptionContract.hb
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                 <span class=\\"f-fallback\\">
-                                                                    Tilaukseesi liittyvät maksut veloitetaan jatkossa tilauksen yhteydessä käyttämältäsi maksukortilta. Seuraavan maksun veloituspäivä on 07.11.2023. Tämän jälkeen tilaukseen liittyvät maksut veloitetaan 1 vrk välein.
+                                                                    Tilaukseesi liittyvät maksut veloitetaan jatkossa tilauksen yhteydessä käyttämältäsi maksukortilta. Seuraavan maksun veloituspäivä on 10.11.2023. Tämän jälkeen tilaukseen liittyvät maksut veloitetaan 1 vrk välein.
                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -3401,7 +3401,7 @@ exports[`Create templates from parameters Should compile subscriptionContract.hb
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                 <span class=\\"f-fallback\\">
-                                                                    Payments related to your subscription will be charged to the payment card you used when making the subscription. The next payment will be charged on 07.11.2023. After that, the payments related to the subscription will be charged every 1 day(s).
+                                                                    Payments related to your subscription will be charged to the payment card you used when making the subscription. The next payment will be charged on 10.11.2023. After that, the payments related to the subscription will be charged every 1 day(s).
                                                                 </span>
                                                             </td>
                                                         </tr>
@@ -3549,7 +3549,7 @@ exports[`Create templates from parameters Should compile subscriptionContract.hb
                                                         <tr>
                                                             <td width=\\"100%\\" class=\\"purchase_item\\">
                                                                 <span class=\\"f-fallback\\">
-                                                                    Avgifter för din beställning debiteras i fortsättningen från det betalkort som du använde i samband med beställningen. Debiteringsdatum för nästa avgift är 07.11.2023. Därefter debiteras avgifterna för beställningen varje 1 dag.
+                                                                    Avgifter för din beställning debiteras i fortsättningen från det betalkort som du använde i samband med beställningen. Debiteringsdatum för nästa avgift är 10.11.2023. Därefter debiteras avgifterna för beställningen varje 1 dag.
                                                                 </span>
                                                             </td>
                                                         </tr>
