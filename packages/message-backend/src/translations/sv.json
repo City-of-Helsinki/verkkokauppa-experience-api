@@ -63,6 +63,7 @@
     }
   },
   "subscriptionContractEmail": {
+    "traficom": "© Fordonsuppgifter - Trafik- och transportregistret, Traficom",
     "merchant": {
       "h1": "Säljarens uppgifter",
       "p1": "Om du har frågor kring beställningen eller du vill återkalla beställningen, vänligen kontakta säljaren.",
