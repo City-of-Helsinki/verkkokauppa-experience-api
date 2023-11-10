@@ -101,9 +101,9 @@ describe('document-definition.ts', () => {
                   stack: [
                     'Sopimukseen liittyvät maksut veloitetaan tilausjaksoissa.',
                     '\n',
-                    'Ensimmäinen tilausjakso 02.11.2023 13:16 – 02.12.2023 23:59 maksettu 07.11.2023.',
+                    'Ensimmäinen tilausjakso 02.11.2023 13:16 – 02.12.2023 23:59 maksettu 10.11.2023.',
                     '\n',
-                    'Seuraavan tilausjakson veloitus 07.11.2023, jonka jälkeen 1 kuukauden välein.',
+                    'Seuraavan tilausjakson veloitus 10.11.2023, jonka jälkeen 1 kuukauden välein.',
                     '\n',
                     'Maksut veloitetaan Tilaajan ensimmäisen maksun yhteydessä antamalta maksuvälineeltä tai Tilaajan päivittäessä maksuvälineen tietoa viimeksi päivitetyltä maksuvälineeltä.',
                     '\n',
