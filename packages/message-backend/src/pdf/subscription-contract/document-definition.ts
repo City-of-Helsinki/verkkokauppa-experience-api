@@ -23,6 +23,7 @@ export const documentDefinition = (subscription: {
   secondPaymentDate: string
   priceGross: string
   productLabel?: string
+  namespace?: string
 }): TDocumentDefinitions => {
   return {
     defaultStyle: {
@@ -60,8 +61,16 @@ export const documentDefinition = (subscription: {
       } as any),
     content: [
       {
-        text: `${subscription.merchantName}: ${subscription.productName} ${subscription.productLabel}\n\n\n`,
+        text: `${subscription.merchantName}: ${subscription.productName} ${subscription.productLabel}\n`,
         bold: true,
+      },
+      {
+        text: `${
+          subscription.namespace === 'asukaspysakointi'
+            ? '© Ajoneuvon tiedot - Liikenneasioidenrekisteri, Traficom\n\n\n'
+            : ''
+        }`,
+        bold: false,
       },
       {
         table: {

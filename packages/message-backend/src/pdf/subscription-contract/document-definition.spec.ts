@@ -1,5 +1,9 @@
 import { documentDefinition } from './document-definition'
 import type { Subscription } from '../../email/create/types'
+import * as path from 'path'
+import { createBinary } from '../create-binary'
+// eslint-disable-next-line import/no-unresolved,prettier/prettier
+import pdfmake = require('pdfmake')
 
 describe('document-definition.ts', () => {
   it('should format a provided date correctly', () => {
@@ -7,7 +11,7 @@ describe('document-definition.ts', () => {
       subscriptionId: '5d751fd9-9591-35ea-a2d1-9df3a834adcc',
       orderId: '4e6ccc41-0323-380a-948d-49d07f4cce16',
       status: 'active',
-      namespace: 'venepaikat',
+      namespace: 'asukaspysakointi',
       customerFirstName: 'dummy_firstname',
       customerLastName: 'dummy_lastname',
       customerEmail: '76ffa1a5-19b1-4eed-b969-f6a88c1f8b9e@ambientia.fi',
@@ -62,11 +66,17 @@ describe('document-definition.ts', () => {
     const result = documentDefinition({
       ...subscription,
     })
+
     expect(result).toEqual({
       content: [
         {
           bold: true,
-          text: 'merchantName: productName productLabel\n\n\n',
+          text: 'merchantName: productName productLabel\n',
+        },
+        {
+          bold: false,
+          text:
+            '© Ajoneuvon tiedot - Liikenneasioidenrekisteri, Traficom\n\n\n',
         },
         {
           table: {
@@ -152,6 +162,34 @@ describe('document-definition.ts', () => {
       },
       header: expect.any(Function),
       pageMargins: [50, 125, 50, 10],
+    })
+
+    const printer = new pdfmake({
+      Roboto: {
+        normal: path.join(__dirname, '../fonts/Roboto-Regular.ttf'),
+        bold: path.join(__dirname, '../fonts/Roboto-Bold.ttf'),
+      },
+    })
+
+    // eslint-disable-next-line jest/valid-expect-in-promise
+    Promise.resolve(createBinary(printer, result)).then((binary) => {
+      const writeToFile = true
+      if (writeToFile) {
+        // write to file test-output/subscription-contract.pdf
+        const fs = require('fs')
+        const path = require('path')
+        const filePath = path.join(
+          __dirname,
+          'test-output/subscription-contract.pdf'
+        )
+        fs.writeFile(filePath, binary, 'base64', (err: any) => {
+          if (err) {
+            console.error('An error occured while writing PDF to File.', err)
+          } else {
+            console.log('PDF written to File.')
+          }
+        })
+      }
     })
   })
 })
