@@ -39,7 +39,7 @@ export class SendSubscriptionPaymentFailedEmail extends AbstractController<
 
     await sendSubscriptionPaymentFailedEmailToCustomer({
       order: order,
-      subscription: subscription,
+      subscription: { createdAt: new Date().toISOString(), ...subscription },
       sendTo: subscription.customerEmail,
       emailHeader:
         'Maksukortin veloitus epäonnistui | Failed to charge your payment card | Debiteringen av betalkortet misslyckades',

@@ -49,7 +49,7 @@ export class SendSubscriptionCardExpiredEmail extends AbstractController<
 
     await sendSubscriptionCardExpiredEmailToCustomer({
       order: orderWithMerchantInfo,
-      subscription: subscription,
+      subscription: { createdAt: new Date().toISOString(), ...subscription },
       sendTo: subscription.customerEmail,
       emailHeader:
         'Maksukorttisi vanhenee pian | Your payment card will expire soon | Giltighetstiden för ditt betalkort upphör snart',
