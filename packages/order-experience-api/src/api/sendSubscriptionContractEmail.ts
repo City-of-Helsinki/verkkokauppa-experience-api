@@ -54,7 +54,7 @@ export class SendSubscriptionContractEmail extends AbstractController<
     ])
 
     const [subscriptionContractPdf, merchantTosPdf] = await Promise.all([
-      createSubscriptionContractBinary({
+      await createSubscriptionContractBinary({
         ...subscription,
         merchantName: merchant.merchantName,
         firstPaymentDate: parseTimestamp(payment.timestamp).toISOString(),
@@ -79,7 +79,7 @@ export class SendSubscriptionContractEmail extends AbstractController<
       header: `Tilaussopimus: ${subscription.productName} / Subscription agreement: ${subscription.productName} / Beställningsavtal: ${subscription.productName}`,
       body,
       attachments: {
-        'tilaussopimus.pdf': subscriptionContractPdf,
+        'tilaussopimus.pdf': subscriptionContractPdf as string,
         'asiointipalvelun-ehdot.pdf': merchantTosPdf,
         'yleiset-ehdot.pdf': tosPdf,
       },

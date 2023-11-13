@@ -10,8 +10,8 @@ const printer = new pdfmake({
   },
 })
 
-export const createSubscriptionContractBinary = (
+export const createSubscriptionContractBinary = async (
   ...params: Parameters<typeof documentDefinition>
 ) => {
-  return createBinary(printer, documentDefinition(...params))
+  return createBinary(printer, await documentDefinition(...params))
 }
