@@ -300,6 +300,121 @@ export const documentDefinition = async (subscription: {
           ],
         },
       },
+      // SV
+      {
+        pageBreak: 'before',
+        text: `${await changeLanguage('sv')}${subscription.merchantName}: ${
+          subscription.productName
+        } ${subscription.productLabel}\n`,
+        bold: true,
+      },
+      {
+        text: `${
+          subscription.namespace === 'asukaspysakointi'
+            ? '© Fordonsuppgifter - Trafik- och transportregistret, Traficom\n\n\n'
+            : ''
+        }`,
+        bold: false,
+      },
+      {
+        table: {
+          headerRows: 0,
+          widths: ['50%', '50%'],
+          body: [
+            [
+              'Beställningsavtalsparter',
+              {
+                stack: [
+                  `${subscription.merchantName}, nedan ”Tjänst”`,
+                  '\n',
+                  `${subscription.customerFirstName} ${subscription.customerLastName}, nedan ”Beställare”`,
+                  '\n',
+                ],
+              },
+            ],
+            ['Beställningsavtalsobjekt', `${subscription.subscriptionId}\n\n`],
+            [
+              'Beställningsavtalets längd',
+              {
+                stack: [
+                  `Beställningsavtalet gäller tills vidare från och med ${localeDateStringUTC(
+                    subscription.startDate
+                  )}`,
+                  '\n',
+                ],
+              },
+            ],
+            [
+              'Debitering av avgifter för beställningsavtalet',
+              {
+                stack: [
+                  'Avgifterna för avtalet debiteras enligt\n' +
+                    'beställningsperiod.',
+                  '\n',
+                  `Den första beställningsperioden ${localeDateTimeStringUTC(
+                    subscription.startDate
+                  )} – ${localeDateTimeStringUTC(
+                    subscription.endDate
+                  )} är betald ${localeDateStringWithHelsinkiTimeZone(
+                    subscription.firstPaymentDate
+                  )}.`,
+                  '\n',
+                  `Debitering för nästa beställningsperiod ${localeDateStringWithHelsinkiTimeZone(
+                    subscription.secondPaymentDate
+                  )}, varefter mellan ${
+                    subscription.periodFrequency
+                  } ${i18next.t(
+                    `subscriptionContractPdf.c4_2_3_${subscription.periodUnit}`
+                  )}`,
+                  '\n',
+                  `Avgifterna debiteras från det betalningsmedel som Beställaren angav i samband med den förstabetalningen, eller, om Beställaren uppdateraruppgiften om betalningsmedel, från det senastuppdaterade betalningsmedlet.`,
+                  '\n',
+                ],
+              },
+            ],
+            [
+              'Beställningsperiodens längd',
+              `${subscription.periodFrequency} ${i18next.t(
+                `subscriptionContractPdf.abbr_${subscription.periodUnit}`
+              )}\n\n`,
+            ],
+            [
+              'Pris för beställningsperioden',
+              `${subscription.priceGross} € / ${
+                subscription.periodFrequency
+              } ${i18next.t(
+                `subscriptionContractPdf.abbr_${subscription.periodUnit}`
+              )}\n\n`,
+            ],
+            [
+              'Villkor för beställningsavtalet',
+              {
+                stack: [
+                  'Villkoren för detta avtal:',
+                  '\n',
+                  {
+                    margin: [10, 0, 0, 0],
+                    ul: [
+                      `Allmänna villkor för fortlöpande beställningar`,
+                      'Tjänst avtalsvillkor',
+                    ],
+                  },
+                  '\n',
+                ],
+              },
+            ],
+            [
+              'Reklamationer om beställningsavtale',
+              {
+                stack: [
+                  'Reklamationer om beställningsavtalet ska adresseras till Tjänsten.',
+                  '\n',
+                ],
+              },
+            ],
+          ],
+        },
+      },
     ],
   }
 }

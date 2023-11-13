@@ -79,7 +79,7 @@ export class SendSubscriptionContractEmail extends AbstractController<
       header: `Tilaussopimus: ${subscription.productName} / Subscription agreement: ${subscription.productName} / Beställningsavtal: ${subscription.productName}`,
       body,
       attachments: {
-        'tilaussopimus.pdf': subscriptionContractPdf,
+        'tilaussopimus.pdf': subscriptionContractPdf as string,
         'asiointipalvelun-ehdot.pdf': merchantTosPdf,
         'yleiset-ehdot.pdf': tosPdf,
       },

@@ -80,5 +80,15 @@
     "p3_1": "Avgifter för din beställning debiteras i fortsättningen från det betalkort som du använde i samband med beställningen. Debiteringsdatum för nästa avgift är",
     "p3_2": "Därefter debiteras avgifterna för beställningen varje",
     "p3_3": "."
+  },
+  "subscriptionContractPdf": {
+    "c4_2_3_daily": "dag(ar)",
+    "c4_2_3_weekly": "veckor",
+    "c4_2_3_monthly": "månad(er)",
+    "c4_2_3_yearly": "år",
+    "abbr_daily": "dag",
+    "abbr_weekly": "vecka",
+    "abbr_monthly": "månad",
+    "abbr_yearly": "år"
   }
 }
