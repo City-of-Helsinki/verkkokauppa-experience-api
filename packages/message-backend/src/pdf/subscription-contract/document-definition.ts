@@ -9,7 +9,18 @@ import {
 
 const sideMargin = 50
 
-export const documentDefinition = (subscription: {
+async function changeLanguage(language: string) {
+  await i18next.changeLanguage(language)
+  return ''
+}
+
+const pageHeaders = [
+  'TILAUSSOPIMUS',
+  'SUBSCRIPTION AGREEMENT',
+  'BESTÄLLNINGSAVTAL',
+]
+
+export const documentDefinition = async (subscription: {
   subscriptionId: string
   merchantName: string
   productName: string
@@ -23,7 +34,8 @@ export const documentDefinition = (subscription: {
   secondPaymentDate: string
   priceGross: string
   productLabel?: string
-}): TDocumentDefinitions => {
+  namespace?: string
+}): Promise<TDocumentDefinitions> => {
   return {
     defaultStyle: {
       fontSize: 11,
@@ -46,8 +58,12 @@ export const documentDefinition = (subscription: {
           {
             width: '*',
             stack: [
-              { text: 'TILAUSSOPIMUS', bold: true },
-              '\n\n',
+              {
+                // text: 'TILAUSSOPIMUS/SUBSCRIPTION AGREEMENT/BESTÄLLNINGSAVTAL',
+                text: ` ${pageHeaders[currentPage - 1] || ''}`,
+                bold: true,
+              },
+              '\n',
               localeDateStringWithHelsinkiTimeZone(),
             ],
           },
@@ -60,8 +76,16 @@ export const documentDefinition = (subscription: {
       } as any),
     content: [
       {
-        text: `${subscription.merchantName}: ${subscription.productName} ${subscription.productLabel}\n\n\n`,
+        text: `${subscription.merchantName}: ${subscription.productName} ${subscription.productLabel}\n`,
         bold: true,
+      },
+      {
+        text: `${
+          subscription.namespace === 'asukaspysakointi'
+            ? '© Ajoneuvon tiedot - Liikenneasioidenrekisteri, Traficom\n\n\n'
+            : ''
+        }`,
+        bold: false,
       },
       {
         table: {
@@ -152,6 +176,238 @@ export const documentDefinition = (subscription: {
               {
                 stack: [
                   'Tilaussopimusta koskevat reklamaatiot tulee osoittaa Asiointipalvelulle.',
+                  '\n',
+                ],
+              },
+            ],
+          ],
+        },
+      },
+      // EN
+      {
+        pageBreak: 'before',
+        text: `${await changeLanguage('en')}${subscription.merchantName}: ${
+          subscription.productName
+        } ${subscription.productLabel}\n`,
+        bold: true,
+      },
+      {
+        text: `${
+          subscription.namespace === 'asukaspysakointi'
+            ? '© Vehicle information - Transport register, Traficom\n\n\n'
+            : ''
+        }`,
+        bold: false,
+      },
+      {
+        table: {
+          headerRows: 0,
+          widths: ['50%', '50%'],
+          body: [
+            [
+              'Parties to the subscription agreement',
+              {
+                stack: [
+                  `${subscription.merchantName}, hereinafter referred to as the ”Service provider”`,
+                  '\n',
+                  `${subscription.customerFirstName} ${subscription.customerLastName}, hereinafter referred to as the ”Customer”`,
+                  '\n',
+                ],
+              },
+            ],
+            [
+              'Object of the subscription agreement',
+              `${subscription.subscriptionId}\n\n`,
+            ],
+            [
+              'Duration of the subscription agreement',
+              {
+                stack: [
+                  `The subscription agreement is valid from ${localeDateStringUTC(
+                    subscription.startDate
+                  )} until further notice.`,
+                  '\n',
+                ],
+              },
+            ],
+            [
+              'Charging the payments related to the subscription agreement',
+              {
+                stack: [
+                  'Payments related to the agreement will be charged in subscription periods.',
+                  '\n',
+                  `The first subscription period ${localeDateTimeStringUTC(
+                    subscription.startDate
+                  )} – ${localeDateTimeStringUTC(
+                    subscription.endDate
+                  )} was paid on ${localeDateStringWithHelsinkiTimeZone(
+                    subscription.firstPaymentDate
+                  )}.`,
+                  '\n',
+                  `The next subscription period will be charged on ${localeDateStringWithHelsinkiTimeZone(
+                    subscription.secondPaymentDate
+                  )}, and the periods after that every ${
+                    subscription.periodFrequency
+                  } ${i18next.t(
+                    `subscriptionContractPdf.c4_2_3_${subscription.periodUnit}`
+                  )}`,
+                  '\n',
+                  'The payments shall be charged to the payment instrument provided by the Customer in connection with the first instalment or, in the event that the Customer updates the payment instrument details, to the last updated payment instrument.',
+                  '\n',
+                ],
+              },
+            ],
+            [
+              'Length of the subscription period',
+              `${subscription.periodFrequency} ${i18next.t(
+                `subscriptionContractPdf.abbr_${subscription.periodUnit}`
+              )}\n\n`,
+            ],
+            [
+              'Price of the subscription period',
+              `${subscription.priceGross} € / ${
+                subscription.periodFrequency
+              } ${i18next.t(
+                `subscriptionContractPdf.abbr_${subscription.periodUnit}`
+              )}\n\n`,
+            ],
+            [
+              'Terms and conditions applied to the subscription agreement',
+              {
+                stack: [
+                  'Terms and conditions applied to this agreement:',
+                  '\n',
+                  {
+                    margin: [10, 0, 0, 0],
+                    ul: [
+                      'General terms and conditions applied to subscriptions',
+                      'Service provider terms and conditions of the agreement ',
+                    ],
+                  },
+                  '\n',
+                ],
+              },
+            ],
+            [
+              'Filing a complaint regarding the subscription agreement',
+              {
+                stack: [
+                  'Any complaints regarding the subscription agreement shall be addressed to the Service provider.',
+                  '\n',
+                ],
+              },
+            ],
+          ],
+        },
+      },
+      // SV
+      {
+        pageBreak: 'before',
+        text: `${await changeLanguage('sv')}${subscription.merchantName}: ${
+          subscription.productName
+        } ${subscription.productLabel}\n`,
+        bold: true,
+      },
+      {
+        text: `${
+          subscription.namespace === 'asukaspysakointi'
+            ? '© Fordonsuppgifter - Trafik- och transportregistret, Traficom\n\n\n'
+            : ''
+        }`,
+        bold: false,
+      },
+      {
+        table: {
+          headerRows: 0,
+          widths: ['50%', '50%'],
+          body: [
+            [
+              'Beställningsavtalsparter',
+              {
+                stack: [
+                  `${subscription.merchantName}, nedan ”Tjänst”`,
+                  '\n',
+                  `${subscription.customerFirstName} ${subscription.customerLastName}, nedan ”Beställare”`,
+                  '\n',
+                ],
+              },
+            ],
+            ['Beställningsavtalsobjekt', `${subscription.subscriptionId}\n\n`],
+            [
+              'Beställningsavtalets längd',
+              {
+                stack: [
+                  `Beställningsavtalet gäller tills vidare från och med ${localeDateStringUTC(
+                    subscription.startDate
+                  )}`,
+                  '\n',
+                ],
+              },
+            ],
+            [
+              'Debitering av avgifter för beställningsavtalet',
+              {
+                stack: [
+                  'Avgifterna för avtalet debiteras enligt\n' +
+                    'beställningsperiod.',
+                  '\n',
+                  `Den första beställningsperioden ${localeDateTimeStringUTC(
+                    subscription.startDate
+                  )} – ${localeDateTimeStringUTC(
+                    subscription.endDate
+                  )} är betald ${localeDateStringWithHelsinkiTimeZone(
+                    subscription.firstPaymentDate
+                  )}.`,
+                  '\n',
+                  `Debitering för nästa beställningsperiod ${localeDateStringWithHelsinkiTimeZone(
+                    subscription.secondPaymentDate
+                  )}, varefter mellan ${
+                    subscription.periodFrequency
+                  } ${i18next.t(
+                    `subscriptionContractPdf.c4_2_3_${subscription.periodUnit}`
+                  )}`,
+                  '\n',
+                  `Avgifterna debiteras från det betalningsmedel som Beställaren angav i samband med den förstabetalningen, eller, om Beställaren uppdateraruppgiften om betalningsmedel, från det senastuppdaterade betalningsmedlet.`,
+                  '\n',
+                ],
+              },
+            ],
+            [
+              'Beställningsperiodens längd',
+              `${subscription.periodFrequency} ${i18next.t(
+                `subscriptionContractPdf.abbr_${subscription.periodUnit}`
+              )}\n\n`,
+            ],
+            [
+              'Pris för beställningsperioden',
+              `${subscription.priceGross} € / ${
+                subscription.periodFrequency
+              } ${i18next.t(
+                `subscriptionContractPdf.abbr_${subscription.periodUnit}`
+              )}\n\n`,
+            ],
+            [
+              'Villkor för beställningsavtalet',
+              {
+                stack: [
+                  'Villkoren för detta avtal:',
+                  '\n',
+                  {
+                    margin: [10, 0, 0, 0],
+                    ul: [
+                      `Allmänna villkor för fortlöpande beställningar`,
+                      'Tjänst avtalsvillkor',
+                    ],
+                  },
+                  '\n',
+                ],
+              },
+            ],
+            [
+              'Reklamationer om beställningsavtale',
+              {
+                stack: [
+                  'Reklamationer om beställningsavtalet ska adresseras till Tjänsten.',
                   '\n',
                 ],
               },
