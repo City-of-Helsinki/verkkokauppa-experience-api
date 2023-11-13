@@ -96,7 +96,9 @@ export const documentDefinition = async (subscription: {
               'Tilaussopimuksen osapuolet',
               {
                 stack: [
-                  `${subscription.merchantName}, jäljempänä ”Asiointipalvelu”`,
+                  `${await changeLanguage('fi')}${
+                    subscription.merchantName
+                  }, jäljempänä ”Asiointipalvelu”`,
                   '\n',
                   `${subscription.customerFirstName} ${subscription.customerLastName}, jäljempänä ”Tilaaja”`,
                   '\n',
