@@ -80,5 +80,15 @@
     "p3_1": "Payments related to your subscription will be charged to the payment card you used when making the subscription. The next payment will be charged on",
     "p3_2": "After that, the payments related to the subscription will be charged every",
     "p3_3": "."
+  },
+  "subscriptionContractPdf": {
+    "c4_2_3_daily": "day(s)",
+    "c4_2_3_weekly": "week(s)",
+    "c4_2_3_monthly": "month(s)",
+    "c4_2_3_yearly": "year(s)",
+    "abbr_daily": "day",
+    "abbr_weekly": "week",
+    "abbr_monthly": "month",
+    "abbr_yearly": "year"
   }
 }
