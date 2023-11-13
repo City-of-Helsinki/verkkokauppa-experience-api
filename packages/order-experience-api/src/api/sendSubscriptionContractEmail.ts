@@ -54,7 +54,7 @@ export class SendSubscriptionContractEmail extends AbstractController<
     ])
 
     const [subscriptionContractPdf, merchantTosPdf] = await Promise.all([
-      await createSubscriptionContractBinary({
+      createSubscriptionContractBinary({
         ...subscription,
         merchantName: merchant.merchantName,
         firstPaymentDate: parseTimestamp(payment.timestamp).toISOString(),
