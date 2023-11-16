@@ -65,6 +65,8 @@ describe('document-definition.ts', () => {
     // @ts-ignore
     const result = await documentDefinition({
       ...subscription,
+      firstPaymentDate: '2023-11-13T13:16:59.770Z',
+      secondPaymentDate: '2023-11-13T13:16:59.770Z',
     })
 
     expect(result).toEqual({
