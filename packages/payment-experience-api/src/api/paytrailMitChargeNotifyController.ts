@@ -95,6 +95,8 @@ export class PaytrailMitChargeNotifyController extends AbstractController<
           'Creating accountings failed in paytrailMitChargeNotifyController',
         cause: e.toString(),
       })
+      // rethrow error
+      throw e
     }
 
     await sendReceipt(order, true)
