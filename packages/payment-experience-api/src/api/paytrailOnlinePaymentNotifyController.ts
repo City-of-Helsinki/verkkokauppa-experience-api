@@ -100,6 +100,8 @@ export class PaytrailOnlinePaymentNotifyController extends AbstractController {
           'Creating accountings failed in paytrailOnlinePaymentNotifyController',
         cause: e.toString(),
       })
+      // rethrow error
+      throw e
     }
     return this.success<any>(response, paytrailStatus)
   }
