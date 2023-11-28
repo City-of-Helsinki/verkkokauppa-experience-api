@@ -170,8 +170,6 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
             'Creating accountings failed in paytrailCardRedirectSuccessController',
           cause: e.toString(),
         })
-        // rethrow error
-        throw e
       }
 
       return res.redirect(
