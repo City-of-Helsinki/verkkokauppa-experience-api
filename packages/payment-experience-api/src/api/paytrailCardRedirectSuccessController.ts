@@ -187,7 +187,7 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
         PaytrailCardRedirectSuccessController.success(
           successRedirectUrl,
           orderId,
-          user
+          ''
         ).toString()
       )
     } catch (e) {
