@@ -419,7 +419,7 @@ describe('Test paytrailCardRedirectSuccessController', () => {
       return Promise.resolve({})
     })
 
-    getPublicServiceConfigurationMock.mockImplementationOnce(() => ({
+    getPublicServiceConfigurationMock.mockImplementation(() => ({
       configurationValue: serviceUrl
     }))
 
@@ -433,7 +433,7 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     expect(mockRedirect).toHaveBeenCalledTimes(1)
     expect(mockRedirect.mock.calls[0][0]).toEqual(302)
     expect(mockRedirect.mock.calls[0][1]).toEqual(
-      `${serviceUrl}/${orderId}/success?user=${orderMock.user}`
+      `${serviceUrl}/${orderId}/success?orderId=${orderId}&user=${orderMock.user}`
     )
   })
   it('should redirect to service specific failure url if present', async () => {
@@ -477,6 +477,10 @@ describe('Test paytrailCardRedirectSuccessController', () => {
       return Promise.resolve({})
     })
 
+    getPublicServiceConfigurationMock.mockImplementation(() => ({
+      configurationValue: ''
+    }))
+
     await controller.implementation(
       { params: { orderId }, query: { } } as any,
       mockResponse
@@ -518,6 +522,10 @@ describe('Test paytrailCardRedirectSuccessController', () => {
       console.log(url)
       return Promise.resolve({})
     })
+
+    getPublicServiceConfigurationMock.mockImplementation(() => ({
+      configurationValue: ''
+    }))
 
     await controller.implementation(
       { params: { orderId }, query: { } } as any,
