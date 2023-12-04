@@ -32,10 +32,6 @@ const getOrderAdminMock = require('@verkkokauppa/order-backend').getOrderAdmin.m
   () => orderMock
 )
 
-const confirmOrderMock = require('@verkkokauppa/order-backend').confirmOrder.mockImplementation(
-  () => orderMock
-)
-
 const getPublicServiceConfigurationMock = require('@verkkokauppa/configuration-backend').getPublicServiceConfiguration.mockImplementation(
   () => null
 )
@@ -50,10 +46,6 @@ require('@verkkokauppa/payment-backend').getPaymentForOrder.mockImplementation(
 
 require('@verkkokauppa/configuration-backend').getMerchantDetailsForOrder.mockImplementation(
   () => merchant
-)
-
-const getProductAccountingBatchMock = require('@verkkokauppa/product-backend').getProductAccountingBatch.mockImplementation(
-  () => mockProductAccounting
 )
 
 const axiosMock = axios as jest.Mocked<typeof axios>
@@ -173,57 +165,6 @@ const orderMock = {
     }
     ],
 }
-const mockProductAccounting = [
-  {
-    productId: 'dummy-product',
-    vatCode: 'vatCode',
-    internalOrder: 'internalOrder',
-    profitCenter: 'profitCenter',
-    balanceProfitCenter: 'balanceProfitCenter',
-    project: 'project',
-    operationArea: 'operationArea',
-    companyCode: 'companyCode',
-    mainLedgerAccount: 'mainLedgerAccount',
-  },
-]
-
-
-const orderBackendCustomerMock = {
-  customerFirstName: 'Customer',
-  customerLastName: 'Name',
-  customerEmail: 'test@test.dev.hel',
-  customerPhone: '+358401231233',
-};
-
-const mockAxiosData = {
-  order: {
-    ...orderMock,
-    ...orderBackendCustomerMock,
-    priceNet: '100',
-    priceVat: '24',
-    priceTotal: '124',
-  },
-  items: [
-    {
-      orderId: orderMock.orderId,
-      orderItemId: '19699acf-b0a3-440f-818f-e582825fa3a7',
-      productId: '30a245ed-5fca-4fcf-8b2a-cdf1ce6fca0d',
-      quantity: 2,
-      productName: 'Product Name',
-      productLabel: 'Product Label',
-      productDescription: 'Product Description',
-      unit: 'pcs',
-      rowPriceNet: '100',
-      rowPriceVat: '24',
-      rowPriceTotal: '124',
-      priceNet: '50',
-      priceGross: '62',
-      priceVat: '12',
-      vatPercentage: '24',
-    },
-  ],
-};
-
 
 const orderId = orderMock.orderId
 
