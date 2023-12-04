@@ -160,7 +160,10 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
         })
       } catch (e) {
         // log error
-        logger.error('Creating accountings failed: ' + e.toString())
+        logger.error(
+          'Creating accountings in paytrailCardRedirectSuccessController failed: ' +
+            e.toString()
+        )
         // send notification to Slack channel (email) that creating accountings failed
         await sendErrorNotification({
           message:
