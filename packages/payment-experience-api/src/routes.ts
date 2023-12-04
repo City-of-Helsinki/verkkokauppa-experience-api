@@ -15,6 +15,7 @@ import { PaytrailOnlinePaymentNotifyController } from './api/paytrailOnlinePayme
 import { PaytrailOnlineRefundPaymentSuccessController } from './api/paytrailOnlineRefundPaymentSuccessController'
 import { GetCardFormParametersController } from './api/getCardFormParametersController'
 import { PaytrailCardRedirectSuccessController } from './api/paytrailCardRedirectSuccessController'
+import { PaytrailCardRedirectCancelController } from './api/paytrailCardRedirectCancelController'
 import { InstantRefundController } from './api/instantRefundController'
 import { GetRefundPaymentAdminController } from './api/getRefundPaymentAdminController'
 import { GetUpdateCardFormParametersController } from './api/getUpdateCardFormParametersController'
@@ -48,6 +49,7 @@ const getRefundPaymentAdminController = new GetRefundPaymentAdminController()
 const healthController = new Health()
 const subscriptionTokenizeController = new SubscriptionTokenizeController()
 const paytrailCardRedirectSuccessController = new PaytrailCardRedirectSuccessController()
+const paytrailCardRedirectCancelController = new PaytrailCardRedirectCancelController()
 const instantRefundController = new InstantRefundController()
 const paytrailCardUpdateRedirectSuccessController = new PaytrailCardUpdateRedirectSuccessController()
 const invoicingRedirectController = new InvoicingRedirectController()
@@ -101,6 +103,9 @@ router.get('/send/receipt/:orderId', (req, res) =>
 )
 router.get('/paytrailCard/redirect/success/:orderId', (req, res) =>
   paytrailCardRedirectSuccessController.execute(req, res)
+)
+router.get('/paytrailCard/redirect/cancel/:orderId', (req, res) =>
+  paytrailCardRedirectCancelController.execute(req, res)
 )
 router.get('/paytrailCardUpdate/redirect/success/:orderId', (req, res) =>
   paytrailCardUpdateRedirectSuccessController.execute(req, res)
