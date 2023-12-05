@@ -132,6 +132,7 @@ export type HbsTemplateFiles =
   | 'subscriptionContract'
   | 'subscriptionPaymentFailed'
   | 'subscriptionCardExpired'
+  | 'refundConfirmation'
 
 export interface Subscription {
   subscriptionId: string
