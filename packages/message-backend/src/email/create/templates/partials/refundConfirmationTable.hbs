@@ -1,0 +1,329 @@
+<table class="email-wrapper" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+    <tr>
+        <td align="center">
+            <table class="email-content" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                <tr>
+                    <td class="email-body" width="100%" cellpadding="0" cellspacing="0">
+                        <table class="email-body_inner" align="center" width="414" cellpadding="0" cellspacing="0" role="presentation">
+                            <tr>
+                                <td class="content-cell">
+                                    <div class="f-fallback">
+                                        <h1 style="margin-bottom: 0">{{I18n 'refundConfirmationEmail.h1'}}</h1>
+                                        <table class="purchase" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                                            <tr>
+                                                <td colspan="2">
+                                                    <table class="purchase_content" width="100%" cellpadding="0" cellspacing="0">
+                                                        <tr>
+                                                            <td width="100%" class="purchase_item pb-1">
+                                                                <span class="f-fallback">
+                                                                    {{I18n 'refundConfirmationEmail.p1_1'}} {{order.orderId}} {{DateEurope order.createdAt}}<br/>{{I18n 'refundConfirmationEmail.p1_2'}} {{TimeEurope order.createdAt}} {{I18n 'refundConfirmationEmail.p1_3'}}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="f-fallback pb-1">
+                                        <h1 style="margin-bottom: 0">{{I18n 'refundConfirmationEmail.h2'}}</h1>
+                                        <table class="purchase" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                                            <tr>
+                                                <td colspan="2">
+                                                    <table class="purchase_content" width="100%" cellpadding="0" cellspacing="0">
+                                                        {{#each refund.items}}
+                                                            {{#if productLabel}}
+                                                                <tr>
+                                                                    <td width="100%" colspan="2" class="purchase_item">
+                                                                        <h2>{{productLabel}}</h2>
+                                                                    </td>
+                                                                </tr>
+                                                            {{/if}}
+                                                            <tr>
+                                                                <td width="80%" class="purchase_item">
+                                                    <span class="f-fallback" style="font-weight:bolder;">
+                                                        {{productName}}
+                                                    </span>
+                                                                </td>
+                                                                <td class="align-right" width="20%" class="purchase_item">
+                                                                    <span class="f-fallback no-wrap">
+                                                        {{priceGross}} € / {{I18n 'refundConfirmationEmail.unit.' unit}}
+                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                            {{#if productDescription}}
+                                                                <tr>
+                                                                    <td width="80%" class="purchase_item">
+                                                    <span class="f-fallback" style="font-weight:normal;">
+                                                        {{productDescription}}
+                                                    </span>
+                                                                    </td>
+                                                                    <td class="align-right" width="20%" class="purchase_item">
+                                                    <span class="f-fallback no-wrap">
+                                                        &nbsp;
+                                                    </span>
+                                                                    </td>
+                                                                </tr>
+                                                            {{/if}}
+
+                                                            <tr>
+                                                                <td width="80%" class="purchase_item">
+                                                    <span class="f-fallback">
+                                                        {{quantity}} {{I18n 'refundConfirmationEmail.unit.' unit}} {{I18n 'refundConfirmationEmail.total'}}
+                                                        {{I18n 'refundConfirmationEmail.alv'}} ({{vatPercentage}}%)
+                                                    </span>
+                                                                </td>
+                                                                <td class="align-right" width="20%" class="purchase_item pb-1">
+                                                    <span class="f-fallback no-wrap">
+                                                        {{rowPriceTotal}} €
+                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                            {{#each meta}}
+
+                                                                {{#if label}}
+                                                                    <tr>
+                                                                        <td width="100%" class="purchase_item" style="padding-top: 20px;">
+                                                        <span class="f-fallback no-wrap pb-1" style="font-size:16px; font-weight:600;">
+                                                            {{label}}
+                                                        </span>
+                                                                        </td>
+                                                                    </tr>
+                                                                {{/if}}
+
+                                                                {{#if value}}
+                                                                    <tr>
+                                                                        <td width="100%" class="purchase_item">
+                                                            <span class="f-fallback no-wrap pb-1" style="font-size:16px;">
+                                                                {{value}}
+                                                            </span>
+                                                                        </td>
+                                                                    </tr>
+                                                                {{/if}}
+
+                                                            {{/each}}
+                                                            <tr>
+                                                                <td>
+                                                                    <span>&emsp;</span>
+                                                                </td>
+                                                            </tr>
+                                                        {{/each}}
+                                                        <tr>
+                                                            <td width="80%" class="purchase_item" style="border-top: 1rem solid transparent;">
+                                                                <span class="f-fallback">
+                                                                    {{I18n 'refundConfirmationEmail.refundTotal'}}
+                                                                </span>
+                                                            </td>
+                                                            <td class="align-right" width="20%" class="purchase_item" style="border-top: 1rem solid transparent;">
+                                                                <span class="f-fallback no-wrap">
+                                                                    {{payment.total}} €
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        {{#each vatTable}}
+                                                            <tr>
+                                                                <td width="80%" class="purchase_item">
+                                                                 <span class="f-fallback">
+                                                                     {{I18n 'refundConfirmationEmail.alv'}} ({{@key}}%)
+                                                                 </span>
+                                                                </td>
+                                                                <td class="align-right" width="20%" class="purchase_item">
+                                                                 <span class="f-fallback no-wrap">
+                                                                     {{this}} &euro;
+                                                                 </span>
+                                                                </td>
+                                                            </tr>
+                                                        {{/each}}
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="f-fallback">
+                                        <h1 style="margin-bottom: 0">{{I18n 'refundConfirmationEmail.h3'}}</h1>
+                                        <table class="purchase" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                                            <tr>
+                                                <td colspan="2">
+                                                    <table class="purchase_content" width="100%" cellpadding="0" cellspacing="0">
+                                                        <tr class="pb-1">
+                                                            <td width="100%" class="purchase_item pb-1">
+                                                                <span class="f-fallback">
+                                                                    {{I18n 'refundConfirmationEmail.p2'}}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="pb-1">
+                                                            <td width="100%" class="purchase_item pb-1">
+                                                                <span class="f-fallback">
+                                                                    {{I18n 'refundConfirmationEmail.p3'}}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="pb-1">
+                                                            <td width="100%" class="purchase_item pb-1">
+                                                                <span class="f-fallback">
+                                                                    {{I18n 'refundConfirmationEmail.p4'}}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="pb-1">
+                                                            <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{I18n 'refundConfirmationEmail.p5'}}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="email-body" width="100%" cellpadding="0" cellspacing="0">
+                        <table class="email-body_inner" align="center" width="414" cellpadding="0" cellspacing="0" role="presentation">
+                            <tr>
+                                <td class="content-cell">
+                                    <div class="f-fallback">
+                                        <hr>
+                                        <h1 style="margin-bottom: 0;border-top: 1rem solid transparent;">{{I18n 'refundConfirmationEmail.customer.h1'}}</h1>
+
+                                        <table class="purchase" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                                            <tr>
+                                                <td colspan="2">
+                                                    <table class="purchase_content" width="100%" cellpadding="0" cellspacing="0">
+
+                                                        <tr>
+                                                            <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{order.customer.firstName}} {{order.customer.lastName}}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{order.customer.email}}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{order.customer.phone}}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        {{#if order.customer.address}}
+                                                            <tr>
+                                                                <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{order.customer.address}}
+                                                                </span>
+                                                                </td>
+                                                            </tr>
+                                                        {{/if}}
+                                                        {{#if order.customer.district}}
+                                                            <tr>
+                                                                <td width="100%" class="purchase_item">
+                                                                <span class="f-fallback">
+                                                                    {{order.customer.district}}
+                                                                </span>
+                                                                </td>
+                                                            </tr>
+                                                        {{/if}}
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="email-body" width="100%" cellpadding="0" cellspacing="0">
+                        <table class="email-body_inner" align="center" width="414" cellpadding="0" cellspacing="0" role="presentation">
+                            <tr>
+                                <td class="content-cell">
+                                    <div class="f-fallback">
+                                        <hr>
+                                        <h1 style="margin-bottom: 0; border-top: 1rem solid transparent;">{{I18n 'refundConfirmationEmail.merchant.h1'}}</h1>
+
+                                        <table class="purchase" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                                            <tr>
+                                                <td colspan="2">
+                                                    <table class="purchase_content" width="100%" cellpadding="0" cellspacing="0">
+                                                        <tr>
+                                                            <td width="100%" class="purchase_item">
+                                                <span class="f-fallback">
+                                                    {{merchant.merchantName}}
+                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="100%" class="purchase_item">
+                                                <span class="f-fallback">
+                                                    {{merchant.merchantStreet}}
+                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="100%" class="purchase_item">
+                                                <span class="f-fallback">
+                                                    {{merchant.merchantZip}} {{merchant.merchantCity}}
+                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="100%" class="purchase_item">
+                                                <span class="f-fallback">
+                                                    {{merchant.merchantEmail}}
+                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="100%" class="purchase_item">
+                                                <span class="f-fallback">
+                                                    {{merchant.merchantPhone}}
+                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        {{#if merchant.merchantBusinessId}}
+                                                            <tr>
+                                                                <td width="100%" class="purchase_item">
+                                                <span class="f-fallback">
+                                                    {{I18n 'refundConfirmationEmail.merchant.businessId'}} {{merchant.merchantBusinessId}}
+                                                </span>
+                                                                </td>
+                                                            </tr>
+                                                        {{/if}}
+                                                        <tr>
+                                                            <td width="100%" class="purchase_item">
+                                                <span class="f-fallback">
+                                                    {{I18n 'refundConfirmationEmail.merchant.p1'}}
+                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                {{> footerRow}}
+            </table>
+        </td>
+    </tr>
+</table>
