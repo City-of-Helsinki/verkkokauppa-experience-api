@@ -26,14 +26,6 @@ import { sendErrorNotification } from '@verkkokauppa/message-backend'
 export class PaytrailCardRedirectSuccessController extends AbstractController {
   protected readonly requestSchema = null
 
-  private static success = (url: URL, orderId?: string, user?: string) => {
-    url.pathname = `${orderId}/success`
-    if (user) {
-      url.searchParams.append('user', user)
-    }
-    return url
-  }
-
   private static fault = (url: URL, user?: string) => {
     url.searchParams.append('paymentPaid', 'false')
 
@@ -51,6 +43,7 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
     }
     const { orderId } = req.params
     let successRedirectUrl = new URL(globalRedirectUrl)
+    successRedirectUrl.pathname = `${orderId ?? ''}/success`
     let failureRedirectUrl = new URL(globalRedirectUrl)
     failureRedirectUrl.pathname = `${orderId ?? ''}/summary`
 
@@ -80,6 +73,8 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
 
       if (nsSuccessRedirectUrl?.configurationValue) {
         successRedirectUrl = new URL(nsSuccessRedirectUrl.configurationValue)
+        successRedirectUrl.pathname = 'success'
+        successRedirectUrl.searchParams.append('orderId', orderId)
       }
 
       if (nsFailureRedirectUrl?.configurationValue) {
@@ -172,14 +167,8 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
         })
       }
 
-      return res.redirect(
-        302,
-        PaytrailCardRedirectSuccessController.success(
-          successRedirectUrl,
-          orderId,
-          ''
-        ).toString()
-      )
+      successRedirectUrl.searchParams.append('user', order.user)
+      return res.redirect(302, successRedirectUrl.toString())
     } catch (e) {
       logger.error(e)
       return res.redirect(
