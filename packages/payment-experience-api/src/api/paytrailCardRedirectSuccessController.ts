@@ -22,7 +22,6 @@ import {
 import { sendReceiptToCustomer } from '../lib/sendEmail'
 import { getProductAccountingBatch } from '@verkkokauppa/product-backend'
 import { sendErrorNotification } from '@verkkokauppa/message-backend'
-import { createUserRedirectUrl } from '../lib/paymentReturnService'
 
 export class PaytrailCardRedirectSuccessController extends AbstractController {
   protected readonly requestSchema = null
@@ -68,16 +67,20 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
       const order = await getOrderAdmin({ orderId })
       user = order.user
 
-      const [nsFailureRedirectUrl] = await Promise.all([
+      const [nsSuccessRedirectUrl, nsFailureRedirectUrl] = await Promise.all([
+        getPublicServiceConfiguration({
+          namespace: order.namespace,
+          key: 'ORDER_CREATED_REDIRECT_URL',
+        }),
         getPublicServiceConfiguration({
           namespace: order.namespace,
           key: 'orderPaymentFailedRedirectUrl',
         }),
       ])
 
-      // if (nsSuccessRedirectUrl?.configurationValue) {
-      //   successRedirectUrl = new URL(nsSuccessRedirectUrl.configurationValue)
-      // }
+      if (nsSuccessRedirectUrl?.configurationValue) {
+        successRedirectUrl = new URL(nsSuccessRedirectUrl.configurationValue)
+      }
 
       if (nsFailureRedirectUrl?.configurationValue) {
         failureRedirectUrl = new URL(nsFailureRedirectUrl.configurationValue)
@@ -168,19 +171,6 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
           cause: e.toString(),
         })
       }
-
-      const isPaymentPaid = payment.status === 'payment_paid_online'
-      successRedirectUrl = await createUserRedirectUrl({
-        order,
-        paymentReturnStatus: {
-          paymentPaid: isPaymentPaid,
-          valid: isPaymentPaid,
-          paymentType: payment.paymentType,
-          authorized: false,
-          canRetry: false,
-        },
-        redirectPaymentUrlBase: globalRedirectUrl,
-      })
 
       return res.redirect(
         302,
