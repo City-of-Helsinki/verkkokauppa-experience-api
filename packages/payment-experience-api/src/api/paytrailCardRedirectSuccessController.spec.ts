@@ -433,7 +433,7 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     expect(mockRedirect).toHaveBeenCalledTimes(1)
     expect(mockRedirect.mock.calls[0][0]).toEqual(302)
     expect(mockRedirect.mock.calls[0][1]).toEqual(
-      `${serviceUrl}/${orderId}/success?orderId=${orderId}&user=${orderMock.user}`
+      `${serviceUrl}/success?orderId=${orderId}&user=${orderMock.user}`
     )
   })
   it('should redirect to service specific failure url if present', async () => {
