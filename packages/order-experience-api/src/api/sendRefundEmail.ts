@@ -6,11 +6,7 @@ import {
   validateAdminApiKey,
 } from '@verkkokauppa/configuration-backend'
 import { getOrderAdmin, getRefundAdmin } from '@verkkokauppa/order-backend'
-import {
-  createEmailTemplate,
-  parseItemMetaVisibilityAndOrdinal,
-  sendEmail,
-} from '@verkkokauppa/message-backend'
+import { sendRefundConfirmationEmail } from '@verkkokauppa/message-backend'
 import { getRefundPaymentForOrderAdmin } from '@verkkokauppa/payment-backend'
 
 const requestSchema = yup.object().shape({
@@ -47,40 +43,11 @@ export class SendRefundEmailController extends AbstractController<
       orderId: order.orderId,
     })
 
-    const vatTable = refund.items.reduce((table, item) => {
-      if (!table[item.vatPercentage]) {
-        table[item.vatPercentage] = 0
-      }
-      table[item.vatPercentage] += +item.rowPriceVat || 0
-      return table
-    }, {} as { [key: string]: number })
-
-    const { template: email } = await createEmailTemplate({
-      fileName: 'refundConfirmation',
-      templateParams: {
-        refund: {
-          ...refund,
-          items: refund.items.map((item) => ({
-            ...item,
-            meta: parseItemMetaVisibilityAndOrdinal(
-              order.items.find((i) => i.orderItemId === item.orderItemId)?.meta
-            ),
-          })),
-        },
-        order,
-        merchant,
-        payment,
-        vatTable,
-      },
-    })
-
-    await sendEmail({
-      id: refund.refund.refundId,
-      receiver: order.customer?.email!,
-      header: 'Vahvistus ja kuitti maksun palautuksesta',
-      body: email,
-      attachments: {},
-      emailType: 'refundConfirmation',
+    await sendRefundConfirmationEmail({
+      refund,
+      order,
+      merchant,
+      payment,
     })
 
     return this.success(res)

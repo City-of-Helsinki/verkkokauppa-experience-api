@@ -169,3 +169,23 @@ export interface Subscription {
   orderId: string
   meta?: SubscriptionItemMeta[]
 }
+
+export type RefundItem = {
+  orderItemId: string
+  productLabel?: string
+  productName?: string
+  priceGross: string
+  unit: string
+  productDescription?: string
+  quantity: number
+  vatPercentage: string
+  rowPriceTotal: string
+  rowPriceVat: string
+}
+
+export type Refund = {
+  refund: {
+    refundId: string
+  }
+  items: RefundItem[]
+}
