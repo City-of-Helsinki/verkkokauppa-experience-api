@@ -20,8 +20,10 @@
       "header": "Betalningsuppgifter",
       "alv": "Inkl. moms",
       "paidTotal": "Betalat totalt",
+      "totalToBePaid": "sv - Maksettavaa yhteensä",
       "paymentMethod": "Betalningssätt",
       "date": "Datum",
+      "orderDate": "sv - Tilausaika",
        "total": "totalt",
        "unit": {
          "pcs": "st.",
