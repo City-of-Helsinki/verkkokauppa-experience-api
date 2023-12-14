@@ -20,8 +20,10 @@
       "header": "Payment information",
       "alv": "Incl. VAT",
       "paidTotal": "Paid in total",
+      "totalToBePaid": "en - Maksettavaa yhteensä",
       "paymentMethod": "Payment method",
       "date": "Date",
+      "orderDate": "en - Tilausaika",
        "total": "in total",
        "unit": {
          "pcs": "pcs",
