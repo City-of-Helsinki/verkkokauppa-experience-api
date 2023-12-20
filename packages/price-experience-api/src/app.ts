@@ -6,10 +6,12 @@ import routes from './routes'
 import * as swaggerUi from 'swagger-ui-express'
 import * as yaml from 'yamljs'
 import * as path from 'path'
+import { initSentry } from '@verkkokauppa/core'
 const openapiDocument = yaml.load(path.join(__dirname, `/openapi.yaml`))
 
 const app = express()
 
+initSentry(app)
 app.use(compression())
 app.use(cors())
 app.use(json())

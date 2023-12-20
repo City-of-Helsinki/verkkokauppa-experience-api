@@ -9,11 +9,13 @@ import * as path from 'path'
 // Importing the fs and https modules -------------- STEP 1
 import https from 'https'
 import fs from 'fs'
+import { initSentry } from '@verkkokauppa/core'
 
 const openapiDocument = yaml.load(path.join(__dirname, `/openapi.yaml`))
 
 const app = express()
 
+initSentry(app)
 app.use(compression())
 app.use(cors())
 app.use(json())
