@@ -36,10 +36,9 @@
     "p1_1": "Tilaukseesi",
     "p1_2": "Tilausaika",
     "p1_3": "on tehty maksun palautus.",
-    "p2": "Saatamme tarvita palautusta varten tilinumerosi. Tilinumeron ilmoittaminen tapahtuu maksunvälityspalvelun tarjoajaltamme (Paytrail Oyj) saapuvan sähköpostin mukaisesti. Sähköpostiviesti toimitetaan osoitteesta no-reply@paytrail.com.",
-    "p3": "Tilinumeroa ei voi toimittaa vastaamalla tähän viestiin.",
-    "p4": "Palautus maksetaan automaattisesti tilauksella käyttämällesi maksutavalle 1–3 pankkipäivän kuluessa tai tapauksissa, joissa tarvitsemme tilinumerosi ilmoittamallesi pankkitilille 1–3 pankkipäivän kuluessa tilinumeron ilmoittamisesta.",
-    "p5": "Lisätietoa maksun palautusprosessista antaa: talpa.asiakaspalvelu@hel.fi",
+    "p2": "Palautus maksetaan tilauksella käyttämällesi maksutavalle 1–3 pankkipäivän kuluessa. Maksun palautus tapahtuu automaattisesti.",
+    "p3": "Joissakin tapauksissa saatamme tarvita tilinumerosi maksun palauttamista varten. Saat tällöin viestin maksunvälityspalvelusta (Paytrail Oyj) osoitteesta no-reply@paytrail.com. Noudata saamasi viestin ohjeita. Maksu palautetaan 1–3 pankkipäivän kuluessa siitä, kun olet toimittanut tilinumerosi.",
+    "p4": "Lisätietoa maksamisesta ja maksun palauttamisesta antaa: talpa.asiakaspalvelu@hel.fi",
     "unit": {
       "pcs": "kpl",
       "month": "kk"
@@ -52,7 +51,7 @@
     },
     "merchant": {
       "h1": "Myyjän tiedot",
-      "p1": "Mikäli sinulla on kysymyksiä liittyen maksun palautuksen perusteisiin, kohdistathan ne suoraan myyjälle.",
+      "p1": "Mikäli sinulla on kysymyksiä liittyen tilaukseesi ja maksun palautuksen perusteisiin, otathan yhteyttä suoraan myyjään.",
       "businessId": "Y-tunnus"
     }
   },
