@@ -8,7 +8,10 @@ import {
 } from '@verkkokauppa/core'
 import * as yup from 'yup'
 import type { Response } from 'express'
-import { validateApiKey } from '@verkkokauppa/configuration-backend'
+import {
+  getMerchantDetailsWithNamespaceAndMerchantId,
+  validateApiKey,
+} from '@verkkokauppa/configuration-backend'
 import {
   confirmRefundAdmin,
   createRefund,
@@ -25,6 +28,7 @@ import {
   paidPaymentExists,
   RefundGateway,
 } from '@verkkokauppa/payment-backend'
+import { sendRefundConfirmationEmail } from '@verkkokauppa/message-backend'
 
 const requestSchema = yup.object().shape({
   params: yup.object().shape({
@@ -140,6 +144,16 @@ export class InstantRefundController extends AbstractController<
         ...confirmedRefund,
         items: refundItems,
         payment: refundPayment,
+      })
+
+      await sendRefundConfirmationEmail({
+        refund: { refund: confirmedRefund, items: refundItems },
+        payment,
+        order,
+        merchant: await getMerchantDetailsWithNamespaceAndMerchantId(
+          refund.namespace,
+          refundItems[0]?.merchantId || ''
+        ),
       })
     } catch (e) {
       if (e instanceof ExperienceError) {

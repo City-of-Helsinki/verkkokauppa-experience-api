@@ -25,6 +25,7 @@ export type OrderItem = OrderItemRequest & {
   orderItemId: string
   orderId: string
   merchantId?: string
+  meta?: OrderItemMeta[]
 }
 export type OrderItemMeta = {
   orderItemMetaId: string

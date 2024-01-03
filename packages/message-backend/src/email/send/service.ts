@@ -17,8 +17,15 @@ import type {
   SubscriptionPaymentFailedEmailParameters,
   VatTable,
   SubscriptionCardExpiredEmailParameters,
+  Refund,
+  OrderMerchant,
+  Payment,
 } from '../create/types'
-import { ExperienceFailure } from '@verkkokauppa/core'
+import {
+  ExperienceError,
+  ExperienceFailure,
+  StatusCode,
+} from '@verkkokauppa/core'
 
 function isMessageBackendUrlSet() {
   if (!process.env.MESSAGE_BACKEND_URL) {
@@ -223,4 +230,58 @@ export const sendErrorNotification = async (p: {
       source: e,
     })
   }
+}
+
+export const sendRefundConfirmationEmail = async (p: {
+  order: Order
+  refund: Refund
+  merchant: OrderMerchant
+  payment: Pick<Payment, 'total'>
+}) => {
+  const { order, refund, merchant, payment } = p
+
+  const vatTable = refund.items.reduce((table, item) => {
+    if (!table[item.vatPercentage]) {
+      table[item.vatPercentage] = 0
+    }
+    table[item.vatPercentage] += +item.rowPriceVat || 0
+    return table
+  }, {} as { [key: string]: number })
+
+  const { template: email } = await createEmailTemplate({
+    fileName: 'refundConfirmation',
+    templateParams: {
+      refund: {
+        ...refund,
+        items: refund.items.map((item) => ({
+          ...item,
+          meta: parseItemMetaVisibilityAndOrdinal(
+            order.items.find((i) => i.orderItemId === item.orderItemId)?.meta
+          ),
+        })),
+      },
+      order,
+      merchant,
+      payment,
+      vatTable,
+    },
+  })
+
+  if (!order.customer?.email) {
+    throw new ExperienceError({
+      code: 'missing-customer-email',
+      message: 'Refund order is missing customer email to send email to',
+      responseStatus: StatusCode.BadRequest,
+      logLevel: 'info',
+    })
+  }
+
+  await sendEmail({
+    id: refund.refund.refundId,
+    receiver: order.customer.email,
+    header: 'Vahvistus ja kuitti maksun palautuksesta',
+    body: email,
+    attachments: {},
+    emailType: 'refundConfirmation',
+  })
 }
