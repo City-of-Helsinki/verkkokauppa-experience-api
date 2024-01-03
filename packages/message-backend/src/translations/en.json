@@ -29,6 +29,32 @@
        }
     }
   },
+  "refundConfirmationEmail": {
+    "h1": "Confirmation and receipt of a refund",
+    "h2": "Details of the refund",
+    "h3": "More information on the refund",
+    "p1_1": "Your order",
+    "p1_2": "Order time",
+    "p1_3": "has been refunded.",
+    "p2": "The payment will be refunded using the original payment method of your order within 1–3 banking days. The refund will be processed automatically.",
+    "p3": "In some cases, we may need your account number for the refund. In this case, you will receive an email from the payment service provider (Paytrail Plc) from no-reply@paytrail.com. Please follow the instructions in the email you receive. The payment will be refunded within 1–3 banking days after you have provided your account number.",
+    "p4": "For more information on payments and refunds, please contact: talpa.asiakaspalvelu@hel.fi",
+    "unit": {
+      "pcs": "pcs",
+      "month": "month"
+    },
+    "alv": "Incl. VAT",
+    "total": "in total",
+    "refundTotal": "Total amount to be refunded",
+    "customer": {
+      "h1": "Customer information"
+    },
+    "merchant": {
+      "h1": "Vendor details",
+      "p1": "If you have any questions regarding your order and the refund policy, please contact the seller directly.",
+      "businessId": "Business ID"
+    }
+  },
   "subscriptionPaymentFailed": {
     "clock": "Tilausaika",
     "order": {

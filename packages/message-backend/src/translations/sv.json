@@ -29,6 +29,32 @@
        }
     }
   },
+  "refundConfirmationEmail": {
+    "h1": "Bekräftelse och kvitto på återbetalning av beloppet",
+    "h2": "Uppgifter om återbetalningen",
+    "h3": "Tilläggsuppgifter om återbetalningen",
+    "p1_1": "Beloppet för din beställning",
+    "p1_2": "Beställningstid",
+    "p1_3": "har återbetalats.",
+    "p2": "Återbetalningen sker inom 1– 3 bankdagar med samma betalningsmetod som du använde vid beställningen. Återbetalningen sker automatiskt.",
+    "p3": "I vissa fall kan vi behöva ditt kontonummer för återbetalningen. I detta fall får du ett meddelande från betalningsmedlingstjänstens (Paytrail Oyj) adress no-reply@paytrail.com. Följ anvisningarna i meddelandet. Beloppet återbetalas inom 1–3 bankdagar från det att du har meddelat ditt kontonummer.",
+    "p4": "Tilläggsuppgifter om betalning och återbetalning tillhandahålls av: talpa.asiakaspalvelu@hel.fi",
+    "unit": {
+      "pcs": "st.",
+      "month": "mån."
+    },
+    "alv": "Inkl. moms",
+    "total": "totalt",
+    "refundTotal": "Återbetalas sammanlagt",
+    "customer": {
+      "h1": "Beställarens uppgifter"
+    },
+    "merchant": {
+      "h1": "Säljarens uppgifter",
+      "p1": "Om du har frågor gällande din beställning och grunderna för återbetalningen, vänligen ta kontakt direkt med säljaren.",
+      "businessId": "FO-nummer"
+    }
+  },
   "subscriptionPaymentFailed": {
     "clock": "Tilausaika",
     "order": {
