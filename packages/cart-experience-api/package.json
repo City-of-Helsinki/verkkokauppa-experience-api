@@ -1,6 +1,6 @@
 {
   "name": "@verkkokauppa/cart-experience-api",
-  "version": "0.5.12",
+  "version": "0.5.13",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
