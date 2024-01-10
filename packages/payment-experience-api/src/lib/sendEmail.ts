@@ -14,10 +14,6 @@ import {
 } from '@verkkokauppa/configuration-backend'
 import { isCardRenewal } from './paymentReturnService'
 
-// const skipTosByNamespace = (process.env.SKIP_TERMS_ACCEPT_FOR_NAMESPACES || '')
-//   .toLowerCase()
-//   .split(',')
-
 export const sendReceipt = async (
   order: Order,
   isSubscriptionRenewal: boolean
