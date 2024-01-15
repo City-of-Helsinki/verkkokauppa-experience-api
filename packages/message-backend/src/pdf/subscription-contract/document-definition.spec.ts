@@ -77,8 +77,7 @@ describe('document-definition.ts', () => {
         },
         {
           bold: false,
-          text:
-            '© Ajoneuvon tiedot - Liikenneasioidenrekisteri, Traficom\n\n\n',
+          text: 'Lähde: Liikenneasioidenrekisteri, Traficom\n\n\n',
         },
         {
           table: {
@@ -165,7 +164,7 @@ describe('document-definition.ts', () => {
         },
         {
           bold: false,
-          text: '© Vehicle information - Transport register, Traficom\n\n\n',
+          text: 'Source: Transport register, Traficom\n\n\n',
         },
         {
           table: {
@@ -249,8 +248,7 @@ describe('document-definition.ts', () => {
         },
         {
           bold: false,
-          text:
-            '© Fordonsuppgifter - Trafik- och transportregistret, Traficom\n\n\n',
+          text: 'Källa: Trafik- och transportregistret, Traficom\n\n\n',
         },
         {
           table: {
