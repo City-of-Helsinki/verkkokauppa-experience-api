@@ -49,13 +49,14 @@ export class InvoicingRedirectController extends AbstractController {
     let redirectUrl = new URL(globalRedirectUrl)
 
     const {
-      params: { orderId, user },
+      query: { orderId, user },
     } = req
 
+    if (typeof orderId !== 'string' || typeof user !== 'string') {
+      return res.redirect(302, InvoicingRedirectController.fault(redirectUrl))
+    }
+
     try {
-      if (!orderId || !user) {
-        return res.redirect(302, InvoicingRedirectController.fault(redirectUrl))
-      }
       redirectUrl.pathname = orderId + '/'
 
       const order = await getOrder({ orderId, user })
