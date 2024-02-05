@@ -11,7 +11,10 @@ import {
   getOrder,
   OrderNotFoundError,
 } from '@verkkokauppa/order-backend'
-import { getProductInvoicings } from '@verkkokauppa/product-backend'
+import {
+  getProductAccountingBatch,
+  getProductInvoicings,
+} from '@verkkokauppa/product-backend'
 import { URL } from 'url'
 import {
   paidPaymentExists,
@@ -86,8 +89,23 @@ export class InvoicingRedirectController extends AbstractController {
         productIds: order.items.map((i) => i.productId),
       })
 
+      const productAccountings = await getProductAccountingBatch({
+        productIds: order.items.map((i) => i.productId),
+      })
+
       await createInvoicingEntryForOrder({
         items: order.items.map((item) => {
+          const productAccounting = productAccountings.find(
+            (i) => i?.productId === item.productId
+          )
+          if (!productAccounting) {
+            throw new ExperienceError({
+              code: 'failed-to-find-product-accounting',
+              message: `No accounting entry found for product ${item.productId}`,
+              responseStatus: StatusCode.InternalServerError,
+              logLevel: 'error',
+            })
+          }
           const productInvoicing = productInvoicings.find(
             (i) => i?.productId === item.productId
           )
@@ -119,6 +137,10 @@ export class InvoicingRedirectController extends AbstractController {
               quantity: yup.number().required(),
               unit: yup.string().required(),
               priceNet: yup.string().required(),
+              internalOrder: yup.string().required(),
+              profitCenter: yup.string().required(),
+              project: yup.string().required(),
+              operationArea: yup.string().required(),
             })
             .validateSync({
               orderId: order.orderId,
@@ -139,6 +161,10 @@ export class InvoicingRedirectController extends AbstractController {
               quantity: item.quantity,
               unit: item.unit,
               priceNet: item.priceNet,
+              internalOrder: productAccounting.internalOrder,
+              profitCenter: productAccounting.profitCenter,
+              project: productAccounting.project,
+              operationArea: productAccounting.operationArea,
             })
         }),
       })
