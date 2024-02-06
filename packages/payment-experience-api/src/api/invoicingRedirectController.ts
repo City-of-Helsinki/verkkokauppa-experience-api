@@ -137,10 +137,10 @@ export class InvoicingRedirectController extends AbstractController {
               quantity: yup.number().required(),
               unit: yup.string().required(),
               priceNet: yup.string().required(),
-              internalOrder: yup.string().required(),
-              profitCenter: yup.string().required(),
-              project: yup.string().required(),
-              operationArea: yup.string().required(),
+              internalOrder: yup.string().notRequired(),
+              profitCenter: yup.string().notRequired(),
+              project: yup.string().notRequired(),
+              operationArea: yup.string().notRequired(),
             })
             .validateSync({
               orderId: order.orderId,
