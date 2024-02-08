@@ -28,6 +28,7 @@ const keyMap: { [key: string]: string } = {
   MERCHANT_PHONE: 'merchantPhone',
   MERCHANT_URL: 'merchantUrl',
   MERCHANT_TERMS_OF_SERVICE_URL: 'merchantTermsOfServiceUrl',
+  SEND_MERCHANT_TERMS_OF_SERVICE: 'sendMerchantTermsOfService',
   MERCHANT_PAYMENT_WEBHOOK_URL: 'merchantPaymentWebhookUrl',
   MERCHANT_ORDER_WEBHOOK_URL: 'merchantOrderWebhookUrl',
   MERCHANT_SUBSCRIPTION_WEBHOOK_URL: 'merchantSubscriptionWebhookUrl',
