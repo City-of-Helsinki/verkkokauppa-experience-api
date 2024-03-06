@@ -18,6 +18,8 @@ jest.mock('@verkkokauppa/order-backend', () => {
     // first start with all of the module's functions auto-mocked
     getOrderAdmin: jest.fn(() => []),
     confirmOrder: jest.fn(() => []),
+    lockOrder: jest.fn(() => true),
+    unlockOrder: jest.fn(() => undefined),
     // lastly override w/ any of the module's functions that
     // we want to use the *real* implementations for
 
@@ -35,6 +37,10 @@ const getOrderAdminMock = require('@verkkokauppa/order-backend').getOrderAdmin.m
 const confirmOrderMock = require('@verkkokauppa/order-backend').confirmOrder.mockImplementation(
   () => orderMock
 )
+
+const lockOrderMock = require('@verkkokauppa/order-backend').lockOrder
+
+const unlockOrderMock = require('@verkkokauppa/order-backend').unlockOrder
 
 const getPublicServiceConfigurationMock = require('@verkkokauppa/configuration-backend').getPublicServiceConfiguration.mockImplementation(
   () => null
@@ -317,6 +323,8 @@ describe('Test paytrailCardRedirectSuccessController', () => {
       `https://test.dev.hel/summary?paymentPaid=false`
     )
     expect(axiosMock.post).toHaveBeenCalledTimes(0)
+    expect(lockOrderMock).toHaveBeenCalledTimes(0)
+    expect(unlockOrderMock).toHaveBeenCalledTimes(0)
   })
   it('should redirect to summary if order cannot be fetched', async () => {
     process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
@@ -333,6 +341,8 @@ describe('Test paytrailCardRedirectSuccessController', () => {
       `https://test.dev.hel/${orderId}/summary?paymentPaid=false`
     )
     expect(axiosMock.post).toHaveBeenCalledTimes(0)
+    expect(lockOrderMock).toHaveBeenCalledTimes(0)
+    expect(unlockOrderMock).toHaveBeenCalledTimes(0)
   })
   it('should redirect to summary if getPublicServiceConfiguration fails', async () => {
     process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
@@ -345,6 +355,8 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     )
     expectSummaryRedirect()
     expect(axiosMock.post).toHaveBeenCalledTimes(0)
+    expect(lockOrderMock).toHaveBeenCalledTimes(0)
+    expect(unlockOrderMock).toHaveBeenCalledTimes(0)
   })
   it('should redirect to summary if checkPaytrailCardReturnUrl fails', async () => {
     process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
@@ -357,6 +369,8 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     )
     expectSummaryRedirect()
     expect(axiosMock.post).toHaveBeenCalledTimes(0)
+    expect(lockOrderMock).toHaveBeenCalledTimes(1)
+    expect(unlockOrderMock).toHaveBeenCalledTimes(1)
   })
   it('should redirect to summary if payment status is not payment_paid_online', async () => {
     process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
@@ -368,6 +382,8 @@ describe('Test paytrailCardRedirectSuccessController', () => {
       mockResponse
     )
     expectSummaryRedirect()
+    expect(lockOrderMock).toHaveBeenCalledTimes(1)
+    expect(unlockOrderMock).toHaveBeenCalledTimes(1)
   })
   it('should redirect to success', async () => {
     process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
@@ -399,6 +415,8 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     expect(mockRedirect.mock.calls[0][1]).toEqual(
       `https://test.dev.hel/${orderId}/success?user=${orderMock.user}`
     )
+    expect(lockOrderMock).toHaveBeenCalledTimes(1)
+    expect(unlockOrderMock).toHaveBeenCalledTimes(1)
   })
   it('should redirect to service specific success if service redirect url is present', async () => {
     process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
@@ -435,6 +453,8 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     expect(mockRedirect.mock.calls[0][1]).toEqual(
       `${serviceUrl}/success?orderId=${orderId}&user=${orderMock.user}`
     )
+    expect(lockOrderMock).toHaveBeenCalledTimes(1)
+    expect(unlockOrderMock).toHaveBeenCalledTimes(1)
   })
   it('should redirect to service specific failure url if present', async () => {
     process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
@@ -457,6 +477,8 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     expect(mockRedirect.mock.calls[0][1]).toEqual(
       `${serviceUrl}/?orderId=${orderId}&paymentPaid=false&user=${orderMock.user}`
     )
+    expect(lockOrderMock).toHaveBeenCalledTimes(1)
+    expect(unlockOrderMock).toHaveBeenCalledTimes(1)
   })
 
   it('success even if product accounting is not received', async () => {
@@ -491,6 +513,8 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     expect(mockRedirect.mock.calls[0][1]).toEqual(
       `https://test.dev.hel/${orderId}/success?user=${orderMock.user}`
     )
+    expect(lockOrderMock).toHaveBeenCalledTimes(1)
+    expect(unlockOrderMock).toHaveBeenCalledTimes(1)
   })
 
   it('success even if product accounting does not have product', async () => {
@@ -537,5 +561,50 @@ describe('Test paytrailCardRedirectSuccessController', () => {
     expect(mockRedirect.mock.calls[0][1]).toEqual(
       `https://test.dev.hel/${orderId}/success?user=${orderMock.user}`
     )
+    expect(lockOrderMock).toHaveBeenCalledTimes(1)
+    expect(unlockOrderMock).toHaveBeenCalledTimes(1)
+  })
+  it('should fault on too many lock order retries', async () => {
+    process.env.REDIRECT_PAYTRAIL_PAYMENT_URL_BASE = 'https://test.dev.hel'
+    process.env.MESSAGE_BACKEND_URL = 'http://localhost:8181'
+    process.env.ORDER_BACKEND_URL = 'http://localhost:8183'
+    getProductAccountingBatchMock.mockImplementationOnce(() => {})
+
+    // mocks axios post and checks data sent to */message/send/email
+    // and /order/accounting/create urls
+    mockAxiosPostMailAndEmailNotification()
+
+    axiosMock.get.mockImplementation((url) => {
+      if (url.includes(`/product/accounting/list`)) {
+        return Promise.resolve({ data: mockProductAccounting})
+      }
+      console.log(url)
+      return Promise.resolve({})
+    })
+
+    getPublicServiceConfigurationMock.mockImplementation(() => ({
+      configurationValue: ''
+    }))
+
+    lockOrderMock.mockImplementation(() => false)
+    // @ts-ignore
+    const setTimeoutMock = jest.fn((cb, delay) => cb())
+    global.setTimeout = setTimeoutMock as any
+
+    await controller.implementation(
+      { params: { orderId }, query: { } } as any,
+      mockResponse
+    )
+
+    expect(setTimeoutMock).toHaveBeenCalledTimes(3)
+    expect(setTimeoutMock.mock.calls[0]![1]).toEqual(5500)
+    expect(setTimeoutMock.mock.calls[1]![1]).toEqual(11000)
+    expect(setTimeoutMock.mock.calls[2]![1]).toEqual(22000)
+    expect(mockRedirect).toHaveBeenCalledTimes(1)
+    expect(mockRedirect.mock.calls[0][0]).toEqual(302)
+    expect(mockRedirect.mock.calls[0][1]).toEqual(
+      `https://test.dev.hel/${orderId}/summary?paymentPaid=false&user=${orderMock.user}`
+    )
+    expect(unlockOrderMock).toHaveBeenCalledTimes(0)
   })
 })
