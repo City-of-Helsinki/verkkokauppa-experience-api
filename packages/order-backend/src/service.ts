@@ -335,7 +335,7 @@ export const getActiveOrderAdmin = async (p: {
   if (!process.env.ORDER_BACKEND_URL) {
     throw new Error('No order backend URL set')
   }
-  const url = `${process.env.ORDER_BACKEND_URL}/order-admin/get-active`
+  const url = `${process.env.ORDER_BACKEND_URL}/order-admin/get-active-by-subscription-id`
   try {
     const result = await axios.get<OrderWithItemsBackendResponse>(url, {
       params: { subscriptionId, endDate },
