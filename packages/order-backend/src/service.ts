@@ -327,6 +327,28 @@ export const getOrderAdmin = async (p: { orderId: string }): Promise<Order> => {
   }
 }
 
+export const getActiveOrderAdmin = async (p: {
+  subscriptionId: string
+  endDate: string
+}): Promise<Order> => {
+  const { subscriptionId, endDate } = p
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+  const url = `${process.env.ORDER_BACKEND_URL}/order-admin/get-active-by-subscription-id`
+  try {
+    const result = await axios.get<OrderWithItemsBackendResponse>(url, {
+      params: { subscriptionId, endDate },
+    })
+    return transFormBackendOrder(result.data)
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new OrderNotFoundError()
+    }
+    throw new GetOrderFailure(e)
+  }
+}
+
 export const transFormBackendOrder = (
   p: OrderWithItemsBackendResponse
 ): Order => {
