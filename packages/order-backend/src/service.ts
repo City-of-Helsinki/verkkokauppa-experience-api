@@ -594,3 +594,42 @@ export const setOrderPaymentMethod = async (p: {
     })
   }
 }
+
+export const lockOrder = async (p: { orderId: string }): Promise<boolean> => {
+  const { orderId } = p
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+  const url = `${process.env.ORDER_BACKEND_URL}/order-admin/lock`
+  try {
+    const res = await axios.post(url, undefined, {
+      params: { orderId },
+    })
+    return res.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-lock-order',
+      message: `failed to lock order (${JSON.stringify(p)})`,
+      source: e as Error,
+    })
+  }
+}
+
+export const unlockOrder = async (p: { orderId: string }): Promise<void> => {
+  const { orderId } = p
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+  const url = `${process.env.ORDER_BACKEND_URL}/order-admin/unlock`
+  try {
+    await axios.post(url, undefined, {
+      params: { orderId },
+    })
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-unlock-order',
+      message: `failed to unlock order (${JSON.stringify(p)})`,
+      source: e as Error,
+    })
+  }
+}
