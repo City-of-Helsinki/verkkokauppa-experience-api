@@ -137,6 +137,7 @@ describe('Test getUpdateCardFormParametersController', () => {
     const orderNotSubscriptionMock = {
       ...orderMock,
       type: 'order',
+      subscriptionId: null,
     }
     getOrderMock.mockImplementationOnce(() => orderNotSubscriptionMock)
     getUpdatePaytrailCardFormParamsMock.mockImplementationOnce(
