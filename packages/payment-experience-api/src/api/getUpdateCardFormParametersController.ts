@@ -42,7 +42,7 @@ export class GetUpdateCardFormParametersController extends AbstractController<
 
     const order = await getOrder({ orderId, user })
 
-    if (order.type !== 'subscription') {
+    if (order.subscriptionId == null) {
       throw new ExperienceError({
         code: 'failed-order-is-not-subscription',
         message:
