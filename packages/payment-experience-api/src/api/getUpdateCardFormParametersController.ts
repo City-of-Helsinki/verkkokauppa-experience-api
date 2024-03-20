@@ -53,7 +53,7 @@ export class GetUpdateCardFormParametersController extends AbstractController<
     }
 
     if (
-      order.paymentMethod?.gateway !== null &&
+      order.paymentMethod?.gateway != null &&
       order.paymentMethod?.gateway !== PaymentGateway.PAYTRAIL
     ) {
       throw new ExperienceError({
