@@ -385,7 +385,7 @@ export const transFormBackendOrder = (
     updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}/update-card?user=${user}`,
     flowSteps,
     paymentMethod,
-    incrementId, //saving
+    incrementId,
   }
   if (lastValidPurchaseDateTime) {
     data = {
