@@ -318,6 +318,16 @@ export const getPaymentMethodList = async (parameters: {
     }
   })
 
+  order.items.map((item) => {
+    // Allows only invoice payment method if invoicing date is set
+    if (item.invoicingDate) {
+      globallyFilteredPaymentGateways = removeItem(
+        globallyFilteredPaymentGateways,
+        PaymentGateway.INVOICE
+      )
+    }
+  })
+
   filteredPaymentFilters = filterPaymentMethodByGateway(
     filteredPaymentFilters,
     globallyFilteredPaymentGateways
