@@ -9,6 +9,8 @@ import {
   confirmOrder,
   createAccountingEntryForOrder,
   getOrderAdmin,
+  lockOrder,
+  unlockOrder,
 } from '@verkkokauppa/order-backend'
 import { URL } from 'url'
 import {
@@ -48,6 +50,7 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
     failureRedirectUrl.pathname = `${orderId ?? ''}/summary`
 
     let user = ''
+    let lock = false
     try {
       if (!orderId) {
         return res.redirect(
@@ -76,20 +79,31 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
         successRedirectUrl.pathname = 'success'
         successRedirectUrl.searchParams.append('orderId', orderId)
       }
+      successRedirectUrl.searchParams.append('user', order.user)
 
       if (nsFailureRedirectUrl?.configurationValue) {
         failureRedirectUrl = new URL(nsFailureRedirectUrl.configurationValue)
         failureRedirectUrl.searchParams.append('orderId', orderId)
       }
 
+      let retry = 0
+      while (!(lock = await lockOrder(order))) {
+        logger.info('order is already locked')
+        if (retry > 2) {
+          throw new ExperienceError({
+            code: 'failed-to-lock-order',
+            message: 'Exceeded max retry attempts trying to lock order',
+            responseStatus: StatusCode.InternalServerError,
+            logLevel: 'error',
+          })
+        }
+        const wait = 5500 * 2 ** retry++
+        logger.info(`waiting ${wait}ms to retry`)
+        await new Promise((resolve) => setTimeout(resolve, wait))
+      }
+
       if (await paidPaymentExists(order)) {
-        return res.redirect(
-          302,
-          PaytrailCardRedirectSuccessController.fault(
-            failureRedirectUrl,
-            user
-          ).toString()
-        )
+        return res.redirect(302, successRedirectUrl.toString())
       }
 
       // Now we confirm order and check if sums and other are ok. Mappings should be good now
@@ -167,7 +181,6 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
         })
       }
 
-      successRedirectUrl.searchParams.append('user', order.user)
       return res.redirect(302, successRedirectUrl.toString())
     } catch (e) {
       logger.error(e)
@@ -178,6 +191,10 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
           user
         ).toString()
       )
+    } finally {
+      if (orderId && lock) {
+        await unlockOrder({ orderId })
+      }
     }
   }
 }

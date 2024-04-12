@@ -42,7 +42,7 @@ export class GetUpdateCardFormParametersController extends AbstractController<
 
     const order = await getOrder({ orderId, user })
 
-    if (order.type !== 'subscription') {
+    if (order.subscriptionId == null) {
       throw new ExperienceError({
         code: 'failed-order-is-not-subscription',
         message:
@@ -52,7 +52,10 @@ export class GetUpdateCardFormParametersController extends AbstractController<
       })
     }
 
-    if (order.paymentMethod?.gateway !== PaymentGateway.PAYTRAIL) {
+    if (
+      order.paymentMethod?.gateway != null &&
+      order.paymentMethod?.gateway !== PaymentGateway.PAYTRAIL
+    ) {
       throw new ExperienceError({
         code: 'failed-gateway-type-is-not-paytrail',
         message: `Payment gateway has to be ${PaymentGateway.PAYTRAIL} to get card form parameters.`,
