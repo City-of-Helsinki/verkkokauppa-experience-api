@@ -11,7 +11,10 @@ import {
   getOrder,
   OrderNotFoundError,
 } from '@verkkokauppa/order-backend'
-import { getProductInvoicings } from '@verkkokauppa/product-backend'
+import {
+  getProductAccountingBatch,
+  getProductInvoicings,
+} from '@verkkokauppa/product-backend'
 import { URL } from 'url'
 import {
   paidPaymentExists,
@@ -48,13 +51,15 @@ export class InvoicingRedirectController extends AbstractController {
     }
     let redirectUrl = new URL(globalRedirectUrl)
 
-    const orderId = req.query.orderId as string | null
-    const user = req.query.user as string | null
+    const {
+      query: { orderId, user },
+    } = req
+
+    if (typeof orderId !== 'string' || typeof user !== 'string') {
+      return res.redirect(302, InvoicingRedirectController.fault(redirectUrl))
+    }
 
     try {
-      if (!orderId || !user) {
-        return res.redirect(302, InvoicingRedirectController.fault(redirectUrl))
-      }
       redirectUrl.pathname = orderId + '/'
 
       const order = await getOrder({ orderId, user })
@@ -84,8 +89,23 @@ export class InvoicingRedirectController extends AbstractController {
         productIds: order.items.map((i) => i.productId),
       })
 
+      const productAccountings = await getProductAccountingBatch({
+        productIds: order.items.map((i) => i.productId),
+      })
+
       await createInvoicingEntryForOrder({
         items: order.items.map((item) => {
+          const productAccounting = productAccountings.find(
+            (i) => i?.productId === item.productId
+          )
+          if (!productAccounting) {
+            throw new ExperienceError({
+              code: 'failed-to-find-product-accounting',
+              message: `No accounting entry found for product ${item.productId}`,
+              responseStatus: StatusCode.InternalServerError,
+              logLevel: 'error',
+            })
+          }
           const productInvoicing = productInvoicings.find(
             (i) => i?.productId === item.productId
           )
@@ -117,6 +137,10 @@ export class InvoicingRedirectController extends AbstractController {
               quantity: yup.number().required(),
               unit: yup.string().required(),
               priceNet: yup.string().required(),
+              internalOrder: yup.string().notRequired(),
+              profitCenter: yup.string().notRequired(),
+              project: yup.string().notRequired(),
+              operationArea: yup.string().notRequired(),
             })
             .validateSync({
               orderId: order.orderId,
@@ -137,6 +161,10 @@ export class InvoicingRedirectController extends AbstractController {
               quantity: item.quantity,
               unit: item.unit,
               priceNet: item.priceNet,
+              internalOrder: productAccounting.internalOrder,
+              profitCenter: productAccounting.profitCenter,
+              project: productAccounting.project,
+              operationArea: productAccounting.operationArea,
             })
         }),
       })

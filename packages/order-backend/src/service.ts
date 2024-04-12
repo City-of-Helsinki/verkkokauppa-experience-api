@@ -327,6 +327,28 @@ export const getOrderAdmin = async (p: { orderId: string }): Promise<Order> => {
   }
 }
 
+export const getActiveOrderAdmin = async (p: {
+  subscriptionId: string
+  endDate: string
+}): Promise<Order> => {
+  const { subscriptionId, endDate } = p
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+  const url = `${process.env.ORDER_BACKEND_URL}/order-admin/get-active-by-subscription-id`
+  try {
+    const result = await axios.get<OrderWithItemsBackendResponse>(url, {
+      params: { subscriptionId, endDate },
+    })
+    return transFormBackendOrder(result.data)
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new OrderNotFoundError()
+    }
+    throw new GetOrderFailure(e)
+  }
+}
+
 export const transFormBackendOrder = (
   p: OrderWithItemsBackendResponse
 ): Order => {
@@ -570,6 +592,45 @@ export const setOrderPaymentMethod = async (p: {
     throw new ExperienceFailure({
       code: 'failed-to-set-order-payment-method',
       message: `failed to set order payment method (${JSON.stringify(p)})`,
+      source: e as Error,
+    })
+  }
+}
+
+export const lockOrder = async (p: { orderId: string }): Promise<boolean> => {
+  const { orderId } = p
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+  const url = `${process.env.ORDER_BACKEND_URL}/order-admin/lock`
+  try {
+    const res = await axios.post(url, undefined, {
+      params: { orderId },
+    })
+    return res.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-lock-order',
+      message: `failed to lock order (${JSON.stringify(p)})`,
+      source: e as Error,
+    })
+  }
+}
+
+export const unlockOrder = async (p: { orderId: string }): Promise<void> => {
+  const { orderId } = p
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+  const url = `${process.env.ORDER_BACKEND_URL}/order-admin/unlock`
+  try {
+    await axios.post(url, undefined, {
+      params: { orderId },
+    })
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-unlock-order',
+      message: `failed to unlock order (${JSON.stringify(p)})`,
       source: e as Error,
     })
   }

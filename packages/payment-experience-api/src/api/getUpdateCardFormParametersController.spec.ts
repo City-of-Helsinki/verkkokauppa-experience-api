@@ -16,6 +16,7 @@ const getUpdatePaytrailCardFormParamsMock = require('@verkkokauppa/payment-backe
 const orderMock = {
   orderId: 'test123',
   type: 'subscription',
+  subscriptionId: 'sub123',
   namespace: 'n1',
   paymentMethod: {
     name: 'payment method',
@@ -136,6 +137,7 @@ describe('Test getUpdateCardFormParametersController', () => {
     const orderNotSubscriptionMock = {
       ...orderMock,
       type: 'order',
+      subscriptionId: null,
     }
     getOrderMock.mockImplementationOnce(() => orderNotSubscriptionMock)
     getUpdatePaytrailCardFormParamsMock.mockImplementationOnce(
