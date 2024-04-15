@@ -181,5 +181,30 @@ services:
     networks:
       - common
 
+  hotreloader:
+    build:
+      context: ./
+      dockerfile: packages/core/Dockerfile
+      target: base
+      args:
+        - TZ=Europe/Helsinki
+    volumes:
+      - ./packages/auth-helsinki-profile/:/opt/app-root/src/packages/auth-helsinki-profile
+      - ./packages/core/:/opt/app-root/src/packages/core
+      - ./packages/cart-backend/:/opt/app-root/src/packages/cart-backend
+      - ./packages/configuration-backend/:/opt/app-root/src/packages/configuration-backend
+      - ./packages/message-backend/:/opt/app-root/src/packages/message-backend
+      - ./packages/order-backend/:/opt/app-root/src/packages/order-backend
+      - ./packages/payment-backend/:/opt/app-root/src/packages/payment-backend
+      - ./packages/price-backend/:/opt/app-root/src/packages/price-backend
+      - ./packages/product-backend/:/opt/app-root/src/packages/product-backend
+      - ./packages/product-mapping-backend/:/opt/app-root/src/packages/product-mapping-backend
+    container_name: hotreloader
+#    command: yarn workspace @verkkokauppa/payment-experience-api dev
+    env_file:
+      - .env.docker
+    networks:
+      - common
+
 networks:
   common:
