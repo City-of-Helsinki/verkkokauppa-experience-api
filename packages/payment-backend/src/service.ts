@@ -254,6 +254,19 @@ export const filterPaymentMethodsByCode = (
     return !globallyFilteredPaymentMethods.includes(method.code.toLowerCase())
   })
 
+export const isAllowedToPayWithInvoice = (order: Order) => {
+  let allItemsHaveInvoicingDate = true
+
+  for (const item of order.items) {
+    // If any item does not have an invoicingDate, set the flag to false and exit the loop
+    if (!item.invoicingDate) {
+      allItemsHaveInvoicingDate = false
+      break
+    }
+  }
+  return allItemsHaveInvoicingDate
+}
+
 export const getPaymentMethodList = async (parameters: {
   namespace: string
   totalPrice: number
@@ -317,6 +330,15 @@ export const getPaymentMethodList = async (parameters: {
       )
     }
   })
+
+  let allItemsHaveInvoicingDate = isAllowedToPayWithInvoice(order)
+  // If all items have invoicingDate, remove PaymentGateway.INVOICE
+  if (allItemsHaveInvoicingDate) {
+    globallyFilteredPaymentGateways = removeItem(
+      globallyFilteredPaymentGateways,
+      PaymentGateway.INVOICE
+    )
+  }
 
   filteredPaymentFilters = filterPaymentMethodByGateway(
     filteredPaymentFilters,

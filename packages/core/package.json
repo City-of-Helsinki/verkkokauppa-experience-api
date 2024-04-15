@@ -5,6 +5,9 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
+    "dev:all": "./hotreload-dependencies.sh",
+    "dev": "nodemon -L -e js,ts --watch src --recursive --exec \"yarn run compile:incremental\"",
+    "compile:incremental": "pwd && tsc --incremental --preserveWatchOutput  --watch && cp \"./package.json\" ./dist/",
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
     "prepack": "yarn build",
     "build": "yarn clean && yarn compile",
