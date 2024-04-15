@@ -45,7 +45,7 @@ export class CancelController extends AbstractController<typeof requestSchema> {
     )
   }
 
-  private static async createCancelUrl(p: {
+  public static async createCancelUrl(p: {
     namespace: string
     orderId: string
   }): Promise<string | null> {
