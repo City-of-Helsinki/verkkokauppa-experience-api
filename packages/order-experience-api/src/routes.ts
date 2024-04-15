@@ -32,10 +32,12 @@ import { SendSubscriptionCardExpiredEmail } from './api/sendSubscriptionCardExpi
 import { CreateFlowStepController } from './api/createFlowStepController'
 import { SetPaymentMethodController } from './api/setPaymentMethodController'
 import { SendRefundEmailController } from './api/sendRefundEmail'
+import { GetCancelController } from './api/getCancelUrlController'
 
 const createController = new CreateController()
 const cartToOrderController = new CartToOrder()
 const cancelController = new (withAuthentication(CancelController))()
+const getCancelController = new (withAuthentication(GetCancelController))()
 const confirmAndCreatePaymentController = new (withAuthentication(
   ConfirmAndCreatePayment
 ))()
@@ -113,6 +115,9 @@ router.post('/:orderId/flowSteps', (req, res) =>
 )
 router.post('/:orderId/cancel', (req, res) =>
   cancelController.execute(req, res)
+)
+router.get('/:orderId/getCancelUrl', (req, res) =>
+  getCancelController.execute(req, res)
 )
 router.post('/:orderId/confirmAndCreatePayment', (req, res) =>
   confirmAndCreatePaymentController.execute(req, res)

@@ -79,6 +79,7 @@ services:
       target: base
     volumes:
       - ./packages/order-experience-api/:/opt/app-root/src/packages/order-experience-api/
+      - ./packages/order-experience-api/src/openapi.yaml:/opt/app-root/src/packages/order-experience-api/dist/openapi.yaml
       - ./packages/order-experience-api/nodemon.json:/opt/app-root/src/packages/order-experience-api/nodemon.json
       - ./packages/order-backend/:/opt/app-root/src/packages/order-backend/
       - ./packages/cart-backend/:/opt/app-root/src/packages/cart-backend/
