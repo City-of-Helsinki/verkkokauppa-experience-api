@@ -1,8 +1,10 @@
 {
   "verbose": true,
   "ignore": [],
+  "ext": "ts,yaml,json",
   "watch": [
     "src/**/*.ts",
+    "src/openapi.yaml",
     "../price-backend/src/**/*.ts"
   ],
   "execMap": {

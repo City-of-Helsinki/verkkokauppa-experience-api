@@ -8,6 +8,7 @@ services:
       target: base
     volumes:
       - ./packages/product-experience-api/:/opt/app-root/src/packages/product-experience-api/
+      - ./packages/product-experience-api/src/openapi.yaml:/opt/app-root/src/packages/product-experience-api/dist/openapi.yaml
       - ./packages/product-experience-api/nodemon.json:/opt/app-root/src/packages/product-experience-api/nodemon.json
       - ./packages/product-backend/:/opt/app-root/src/packages/product-backend/
       - ./packages/product-mapping-backend/:/opt/app-root/src/packages/product-mapping-backend/
@@ -33,6 +34,7 @@ services:
       target: base
     volumes:
       - ./packages/price-experience-api/:/opt/app-root/src/packages/price-experience-api/
+      - ./packages/price-experience-api/src/openapi.yaml:/opt/app-root/src/packages/price-experience-api/dist/openapi.yaml
       - ./packages/price-experience-api/nodemon.json:/opt/app-root/src/packages/price-experience-api/nodemon.json
       - ./packages/price-backend/:/opt/app-root/src/packages/price-backend/
       - ./packages/core/:/opt/app-root/src/packages/core/
@@ -111,6 +113,7 @@ services:
         - TZ=Europe/Helsinki
     volumes:
       - ./packages/payment-experience-api/:/opt/app-root/src/packages/payment-experience-api/
+      - ./packages/payment-experience-api/src/openapi.yaml:/opt/app-root/src/packages/payment-experience-api/dist/openapi.yaml
       - ./packages/order-backend/:/opt/app-root/src/packages/order-backend/
       - ./packages/payment-backend/:/opt/app-root/src/packages/payment-backend/
       - ./packages/product-backend/:/opt/app-root/src/packages/product-backend/
@@ -141,6 +144,7 @@ services:
       target: base
     volumes:
       - ./packages/merchant-experience-api/:/opt/app-root/src/packages/merchant-experience-api/
+      - ./packages/merchant-experience-api/src/openapi.yaml:/opt/app-root/src/packages/merchant-experience-api/dist/openapi.yaml
       - ./packages/merchant-experience-api/nodemon.json:/opt/app-root/src/packages/merchant-experience-api/nodemon.json
       - ./packages/configuration-backend/:/opt/app-root/src/packages/configuration-backend/
       - ./packages/core/:/opt/app-root/src/packages/core/
@@ -165,6 +169,7 @@ services:
       target: base
     volumes:
       - ./packages/monitoring-experience-api/:/opt/app-root/src/packages/monitoring-experience-api/
+      - ./packages/monitoring-experience-api/src/openapi.yaml:/opt/app-root/src/packages/monitoring-experience-api/dist/openapi.yaml
       - ./packages/monitoring-experience-api/nodemon.json:/opt/app-root/src/packages/monitoring-experience-api/nodemon.json
       - ./packages/configuration-backend/:/opt/app-root/src/packages/configuration-backend/
       - ./packages/core/:/opt/app-root/src/packages/core/
