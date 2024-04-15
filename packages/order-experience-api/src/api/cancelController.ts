@@ -54,7 +54,7 @@ export class CancelController extends AbstractController<typeof requestSchema> {
       const cancelRedirectUrlConfiguration = await getPublicServiceConfiguration(
         {
           namespace: namespace,
-          key: 'ORDER_CANCEL_REDIRECT_URL',
+          key: 'ORDER_CANCEL_REDIRECT_URL', // TODO needs to be changed to camel case in future?
         }
       )
       const cancelUrl = new URL(
