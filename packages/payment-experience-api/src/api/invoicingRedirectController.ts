@@ -28,7 +28,7 @@ import { getPublicServiceConfiguration } from '@verkkokauppa/configuration-backe
 export class InvoicingRedirectController extends AbstractController {
   protected readonly requestSchema = null
 
-  private static fault = (url: URL, user?: string) => {
+  private static fault = (url: URL, user?: string | null) => {
     url.pathname += 'failure'
     if (user) {
       url.searchParams.append('user', user)
@@ -123,8 +123,8 @@ export class InvoicingRedirectController extends AbstractController {
               orderIncrementId: yup.string().required(),
               orderItemId: yup.string().required(),
               invoicingDate: yup.string().required(),
+              customerOvt: yup.string().nullable().default(''),
               customerYid: yup.string().required(),
-              customerOvt: yup.string().required(),
               customerName: yup.string().required(),
               customerAddress: yup.string().required(),
               customerPostcode: yup.string().required(),

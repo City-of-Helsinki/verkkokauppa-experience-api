@@ -9,8 +9,11 @@ import {
   savePaymentFiltersAdmin,
   filterPaymentMethodByGateway,
   filterPaymentMethodsByCode,
+  isAllowedToPayWithInvoice,
 } from './service'
 import { PaymentGateway, ReferenceType } from './enums'
+import { removeItem } from '@verkkokauppa/core'
+import type { Order } from './types'
 
 jest.mock('axios')
 const axiosMock = axios as jest.Mocked<typeof axios>
@@ -550,5 +553,80 @@ describe('Test global payment filtering', () => {
     actual = filterPaymentMethodsByCode(actual, globallyFilteredPaymentMethods)
 
     expect(actual).toEqual([])
+  })
+
+  test('should remove PaymentGateway.INVOICE if all items have invoicingDate and they are the same', () => {
+    // Sample data
+    const order = ({
+      items: [
+        { invoicingDate: '2024-04-12' },
+        { invoicingDate: '2024-04-12' },
+        { invoicingDate: '2024-04-12' },
+      ],
+    } as unknown) as Order
+
+    // Sample globallyFilteredPaymentGateways
+    let globallyFilteredPaymentGateways = [PaymentGateway.INVOICE]
+
+    if (isAllowedToPayWithInvoice(order)) {
+      // Call the function to be tested
+      globallyFilteredPaymentGateways = removeItem(
+        globallyFilteredPaymentGateways,
+        PaymentGateway.INVOICE
+      )
+    }
+
+    // Expect globallyFilteredPaymentGateways to be empty (PaymentGateway.INVOICE should be removed)
+    expect(globallyFilteredPaymentGateways).toEqual([])
+  })
+
+  test('should not remove PaymentGateway.INVOICE if any item does not have invoicingDate', () => {
+    // Sample data with one item missing invoicingDate
+    const order = ({
+      items: [
+        { invoicingDate: '2024-04-12' },
+        { invoicingDate: '2024-04-12' },
+        {}, // Missing invoicingDate
+      ],
+    } as unknown) as Order
+
+    // Sample globallyFilteredPaymentGateways
+    let globallyFilteredPaymentGateways = [PaymentGateway.INVOICE]
+
+    if (isAllowedToPayWithInvoice(order)) {
+      // Call the function to be tested
+      globallyFilteredPaymentGateways = removeItem(
+        globallyFilteredPaymentGateways,
+        PaymentGateway.INVOICE
+      )
+    }
+
+    // Expect globallyFilteredPaymentGateways to still contain PaymentGateway.INVOICE
+    expect(globallyFilteredPaymentGateways).toEqual([PaymentGateway.INVOICE])
+  })
+
+  test('should remove PaymentGateway.INVOICE if invoicingDate is different among items', () => {
+    // Sample data with different invoicingDates
+    const order = ({
+      items: [
+        { invoicingDate: '2024-04-12' },
+        { invoicingDate: '2024-04-13' }, // Different invoicingDate
+        { invoicingDate: '2024-04-12' },
+      ],
+    } as unknown) as Order
+
+    // Sample globallyFilteredPaymentGateways
+    let globallyFilteredPaymentGateways = [PaymentGateway.INVOICE]
+
+    if (isAllowedToPayWithInvoice(order)) {
+      // Call the function to be tested
+      globallyFilteredPaymentGateways = removeItem(
+        globallyFilteredPaymentGateways,
+        PaymentGateway.INVOICE
+      )
+    }
+
+    // Expect globallyFilteredPaymentGateways to to be empty
+    expect(globallyFilteredPaymentGateways).toEqual([])
   })
 })
