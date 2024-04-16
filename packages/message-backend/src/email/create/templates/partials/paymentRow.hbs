@@ -153,6 +153,40 @@
                                                                 </span>
                                             </td>
                                         </tr>
+
+                                        {{#ifCond order.type '===' 'subscription'}}
+                                            <!-- Render this block if order.type is 'subscription' -->
+                                            <tr>
+                                                <td width="50%" class="purchase_item">
+                                                    <span class="f-fallback">
+                                                        {{I18n 'orderConfirmation.receipt.date'}}
+                                                    </span>
+                                                </td>
+                                                <td class="align-right" width="50%" class="purchase_item">
+                                                    <span class="f-fallback no-wrap">
+                                                        {{ order.updateCardUrl }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        {{else}}
+                                            {{#ifCond order.subscriptionId 'length' 0}}
+                                                <!-- Render this block if order.subscriptionId is not empty -->
+                                                <tr>
+                                                    <td width="50%" class="purchase_item">
+                                                        <span class="f-fallback">
+                                                            {{I18n 'orderConfirmation.receipt.date'}}
+                                                        </span>
+                                                    </td>
+                                                    <td class="align-right" width="50%" class="purchase_item">
+                                                        <span class="f-fallback no-wrap">
+                                                            {{ order.updateCardUrl }}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            {{else}}
+                                                <!-- Render this block if neither condition is met -->
+                                            {{/ifCond}}
+                                        {{/ifCond}}
                                     </table>
                                 </td>
                             </tr>

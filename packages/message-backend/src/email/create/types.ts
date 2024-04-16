@@ -104,6 +104,8 @@ export interface Order {
   status?: string
   type?: OrderType
   merchant?: OrderMerchant
+  updateCardUrl?: string | null
+  subscriptionId?: string | null
 }
 
 export interface Payment {

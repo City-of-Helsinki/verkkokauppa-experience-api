@@ -193,6 +193,9 @@ export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
       case '||':
         // @ts-ignore
         return v1 || v2 ? options.fn(this) : options.inverse(this)
+      case 'length':
+        // @ts-ignore
+        return v1?.length > v2 ? options.fn(this) : options.inverse(this)
       default:
         // @ts-ignore
         return options.inverse(this)
