@@ -198,15 +198,15 @@ services:
       # Ignores/Hides the node_modules from the bind on the host allowing the node_modules
       # from inside the container to be used instead
       - /opt/app-root/src/packages/auth-helsinki-profile/node_modules
-      - /packages/core/node_modules
-      - /packages/cart-backend/node_modules
-      - /packages/configuration-backend/node_modules
-      - /packages/message-backend/node_modules
-      - /packages/order-backend/node_modules
-      - /packages/payment-backend/node_modules
-      - /packages/price-backend/node_modules
-      - /packages/product-backend/node_modules
-      - /packages/product-mapping-backend/node_modules
+      - /opt/app-root/src/packages/core/node_modules
+      - /opt/app-root/src/packages/cart-backend/node_modules
+      - /opt/app-root/src/packages/configuration-backend/node_modules
+      - /opt/app-root/src/packages/message-backend/node_modules
+      - /opt/app-root/src/packages/order-backend/node_modules
+      - /opt/app-root/src/packages/payment-backend/node_modules
+      - /opt/app-root/src/packages/price-backend/node_modules
+      - /opt/app-root/src/packages/product-backend/node_modules
+      - /opt/app-root/src/packages/product-mapping-backend/node_modules
       - ./packages/auth-helsinki-profile/:/opt/app-root/src/packages/auth-helsinki-profile
       - ./packages/core/:/opt/app-root/src/packages/core
       - ./packages/cart-backend/:/opt/app-root/src/packages/cart-backend
