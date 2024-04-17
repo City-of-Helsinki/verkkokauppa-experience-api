@@ -1,8 +1,10 @@
 {
   "verbose": true,
   "ignore": [],
+  "ext": "ts,yaml,json",
   "watch": [
     "src/**/*.ts",
+    "src/openapi.yaml",
     "../auth-helsinki-profile/src/**/*.ts",
     "../configuration-backend/src/**/*.ts",
     "../core/src/**/*.ts",
