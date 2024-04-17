@@ -14,10 +14,6 @@ import {
 } from '@verkkokauppa/configuration-backend'
 import { isCardRenewal } from './paymentReturnService'
 
-const skipTosByNamespace = (process.env.SKIP_TERMS_ACCEPT_FOR_NAMESPACES || '')
-  .toLowerCase()
-  .split(',')
-
 export const sendReceipt = async (
   order: Order,
   isSubscriptionRenewal: boolean
@@ -36,7 +32,13 @@ export const sendReceipt = async (
         'laskutuksen-yleiset-ehdot.pdf'
       ] = createInvoiceTermsOfServiceBinary()
     }
-    if (!skipTosByNamespace.includes(order.namespace)) {
+    if (
+      merchant.sendMerchantTermsOfService !== undefined &&
+      merchant.sendMerchantTermsOfService.toUpperCase() == 'TRUE'
+    ) {
+      logger.info(
+        `Include terms of service to receipt for order ${order.orderId} from ${merchant.merchantTermsOfServiceUrl}`
+      )
       attachments[
         'asiointipalvelun-ehdot.pdf'
       ] = await downloadMerchantTermsOfServiceBinary(merchant)
