@@ -157,14 +157,10 @@
                                         {{#ifCond order.type '===' 'subscription'}}
                                             <!-- Render this block if order.type is 'subscription' -->
                                             <tr>
-                                                <td width="50%" class="purchase_item">
-                                                    <span class="f-fallback">
-                                                        {{I18n 'orderConfirmation.receipt.date'}}
-                                                    </span>
-                                                </td>
-                                                <td class="align-right" width="50%" class="purchase_item">
+                                                <td class="align-right" width="100%" class="purchase_item">
                                                     <span class="f-fallback no-wrap">
-                                                        {{ order.updateCardUrl }}
+                                                        {{I18n 'subscriptionPaymentFailed.information.cardUpdateText'}}
+                                                        <a href="{{order.updateCardUrl}}" target="_blank">{{I18n 'subscriptionPaymentFailed.information.linkText'}}</a>
                                                     </span>
                                                 </td>
                                             </tr>
@@ -172,14 +168,10 @@
                                             {{#ifCond order.subscriptionId 'length' 0}}
                                                 <!-- Render this block if order.subscriptionId is not empty -->
                                                 <tr>
-                                                    <td width="50%" class="purchase_item">
-                                                        <span class="f-fallback">
-                                                            {{I18n 'orderConfirmation.receipt.date'}}
-                                                        </span>
-                                                    </td>
-                                                    <td class="align-right" width="50%" class="purchase_item">
+                                                    <td class="align-right" width="100%" class="purchase_item">
                                                         <span class="f-fallback no-wrap">
-                                                            {{ order.updateCardUrl }}
+                                                            {{I18n 'subscriptionPaymentFailed.information.cardUpdateText'}}
+                                                            <a href="{{order.updateCardUrl}}" target="_blank">{{I18n 'subscriptionPaymentFailed.information.linkText'}}</a>
                                                         </span>
                                                     </td>
                                                 </tr>
