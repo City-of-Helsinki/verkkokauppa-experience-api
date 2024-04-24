@@ -726,7 +726,15 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             </td>
                                                         </tr>
                 
-                
+                                                                <!-- Render this block if order.subscriptionId is not empty -->
+                                                                <tr>
+                                                                    <td class=\\"align-right\\" width=\\"100%\\" class=\\"purchase_item\\">
+                                                                        <span class=\\"f-fallback no-wrap\\">
+                                                                            Voit halutessasi päivittää maksukorttisi tiedot osoitteessa:
+                                                                            <a href=\\"updateCardUrl\\" target=\\"_blank\\">Linkki</a>
+                                                                        </span>
+                                                                    </td>
+                                                                </tr>
                                                     </table>
                                                 </td>
                                             </tr>
@@ -1164,7 +1172,15 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             </td>
                                                         </tr>
                 
-                
+                                                                <!-- Render this block if order.subscriptionId is not empty -->
+                                                                <tr>
+                                                                    <td class=\\"align-right\\" width=\\"100%\\" class=\\"purchase_item\\">
+                                                                        <span class=\\"f-fallback no-wrap\\">
+                                                                            To update your payment card details, please visit:
+                                                                            <a href=\\"updateCardUrl\\" target=\\"_blank\\">Link</a>
+                                                                        </span>
+                                                                    </td>
+                                                                </tr>
                                                     </table>
                                                 </td>
                                             </tr>
@@ -1602,7 +1618,15 @@ exports[`Create templates from parameters Should compile orderConfirmation.hbs t
                                                             </td>
                                                         </tr>
                 
-                
+                                                                <!-- Render this block if order.subscriptionId is not empty -->
+                                                                <tr>
+                                                                    <td class=\\"align-right\\" width=\\"100%\\" class=\\"purchase_item\\">
+                                                                        <span class=\\"f-fallback no-wrap\\">
+                                                                            Du kan uppdatera dina betalkortsuppgifter på: 
+                                                                            <a href=\\"updateCardUrl\\" target=\\"_blank\\">Länk</a>
+                                                                        </span>
+                                                                    </td>
+                                                                </tr>
                                                     </table>
                                                 </td>
                                             </tr>
