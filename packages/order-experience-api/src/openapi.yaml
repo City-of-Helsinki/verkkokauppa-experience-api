@@ -551,6 +551,37 @@ components:
                 type: string
               value:
                 type: string
+    WebhookRequest:
+      type: object
+      properties:
+        namespace:
+          type: string
+          default: ''
+        orderId:
+          type: string
+          default: ''
+        timestamp:
+          type: string
+          format: date-time
+          default: ''
+        eventType:
+          type: string
+          default: ''
+        subscriptionId:
+          type: string
+          default: ''
+        paymentId:
+          type: string
+          default: ''
+        eventTimestamp:
+          type: string
+          format: date-time
+          default: ''
+        paymentPaidTimestamp:
+          type: string
+          format: date-time
+          default: ''
+
   parameters:
     Namespace:
       name: namespace
@@ -607,6 +638,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorBody'
+    WebhookResponse:
+      description: Response of internal webhook
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/WebhookRequest'
 paths:
   /:
     post:
@@ -1645,6 +1682,67 @@ paths:
                     $ref: '#/components/schemas/Refund'
                   payment:
                     $ref: '#/components/schemas/RefundPayment'
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '403':
+          $ref: '#/components/responses/InvalidApiKey'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /internal/webhooks:
+    post:
+      summary: Handle internal webhooks
+      operationId: handleInternalWebhooks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                namespace:
+                  type: string
+                  default: ''
+                orderId:
+                  type: string
+                  default: ''
+                timestamp:
+                  type: string
+                  format: date-time
+                  default: ''
+                eventType:
+                  type: string
+                  default: ''
+                subscriptionId:
+                  type: string
+                  default: ''
+                paymentId:
+                  type: string
+                  default: ''
+                eventTimestamp:
+                  type: string
+                  format: date-time
+                  default: ''
+                paymentPaidTimestamp:
+                  type: string
+                  format: date-time
+                  default: ''
+      parameters:
+        - in: header
+          name: webhook-api-key
+          required: true
+          schema:
+            type: string
+          description: API key for webhook authentication
+        - in: header
+          name: namespace
+          required: true
+          schema:
+            type: string
+          description: Namespace for the webhook
+      responses:
+        '200':
+          $ref: '#/components/responses/WebhookResponse'
         '400':
           $ref: '#/components/responses/RequestValidationError'
         '403':

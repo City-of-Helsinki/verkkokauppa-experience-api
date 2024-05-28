@@ -3,8 +3,8 @@ set -e
 
 # Define an array of strings
 BACKEND_API_DEPENDENCY=(
-#"/opt/app-root/src/packages/auth-helsinki-profile"
-#"/opt/app-root/src/packages/core"
+"/opt/app-root/src/packages/auth-helsinki-profile"
+"/opt/app-root/src/packages/core"
 "/opt/app-root/src/packages/cart-backend"
 "/opt/app-root/src/packages/configuration-backend"
 "/opt/app-root/src/packages/message-backend"
