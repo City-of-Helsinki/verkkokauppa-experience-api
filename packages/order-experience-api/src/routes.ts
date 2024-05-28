@@ -32,6 +32,7 @@ import { SendSubscriptionCardExpiredEmail } from './api/sendSubscriptionCardExpi
 import { CreateFlowStepController } from './api/createFlowStepController'
 import { SetPaymentMethodController } from './api/setPaymentMethodController'
 import { SendRefundEmailController } from './api/sendRefundEmail'
+import { HandleInternalWebhooks } from './api/handleInternalWebhooks'
 
 const createController = new CreateController()
 const cartToOrderController = new CartToOrder()
@@ -69,6 +70,7 @@ const cancelSubscription = new (withAuthentication(CancelSubscription))()
 const sendSubscriptionContractEmail = new SendSubscriptionContractEmail()
 const sendSubscriptionPaymentFailedEmail = new SendSubscriptionPaymentFailedEmail()
 const sendSubscriptionCardExpiredEmail = new SendSubscriptionCardExpiredEmail()
+const handleInternalWebhooks = new HandleInternalWebhooks()
 const recreateSubscription = new RecreateSubscriptionController()
 const listSubscriptionsController = new ListSubscriptionsController()
 // Authentication is already mixed in at the controller
@@ -147,6 +149,10 @@ router.post('/subscription/:id/emailSubscriptionPaymentFailed', (req, res) =>
 router.post('/subscription/:id/emailSubscriptionCardExpired', (req, res) =>
   sendSubscriptionCardExpiredEmail.execute(req, res)
 )
+router.post('/internal/webhooks', (req, res) =>
+  handleInternalWebhooks.execute(req, res)
+)
+
 router.post('/subscription/:id/recreate', (req, res) =>
   recreateSubscription.execute(req, res)
 )

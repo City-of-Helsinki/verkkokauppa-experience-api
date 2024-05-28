@@ -1,7 +1,16 @@
 {
   "verbose": true,
   "ignore": [],
-  "watch": ["src/**/*.ts"],
+  "watch": [
+    "src/**/*.ts",
+    "../packages/payment-experience-api/src/**/*.ts",
+    "../packages/order-backend/src/**/*.ts",
+    "../packages/payment-backend/src/**/*.ts",
+    "../packages/product-backend/src/**/*.ts",
+    "../packages/configuration-backend/src/**/*.ts",
+    "../packages/core/src/**/*.ts",
+    "../packages/message-backend/src/**/*.ts"
+  ],
   "execMap": {
     "ts": "node --inspect=0.0.0.0:9229 --nolazy -r ts-node/register"
   }
