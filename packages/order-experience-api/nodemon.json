@@ -1,15 +1,19 @@
 {
   "verbose": true,
   "ignore": [],
+  "ext": "ts,yaml,json",
   "watch": [
     "src/**/*.ts",
-    "../packages/payment-experience-api/src/**/*.ts",
-    "../packages/order-backend/src/**/*.ts",
-    "../packages/payment-backend/src/**/*.ts",
-    "../packages/product-backend/src/**/*.ts",
-    "../packages/configuration-backend/src/**/*.ts",
-    "../packages/core/src/**/*.ts",
-    "../packages/message-backend/src/**/*.ts"
+    "src/openapi.yaml",
+    "../auth-helsinki-profile/src/**/*.ts",
+    "../configuration-backend/src/**/*.ts",
+    "../core/src/**/*.ts",
+    "../message-backend/src/**/*.ts",
+    "../order-backend/src/**/*.ts",
+    "../payment-backend/src/**/*.ts",
+    "../product-backend/src/**/*.ts",
+    "../price-backend/src/**/*.ts",
+    "../payment-experience-api/src/**/*.ts"
   ],
   "execMap": {
     "ts": "node --inspect=0.0.0.0:9229 --nolazy -r ts-node/register"

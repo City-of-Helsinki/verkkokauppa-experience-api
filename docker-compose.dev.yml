@@ -8,6 +8,7 @@ services:
       target: base
     volumes:
       - ./packages/product-experience-api/:/opt/app-root/src/packages/product-experience-api/
+      - ./packages/product-experience-api/src/openapi.yaml:/opt/app-root/src/packages/product-experience-api/dist/openapi.yaml
       - ./packages/product-experience-api/nodemon.json:/opt/app-root/src/packages/product-experience-api/nodemon.json
       - ./packages/product-backend/:/opt/app-root/src/packages/product-backend/
       - ./packages/product-mapping-backend/:/opt/app-root/src/packages/product-mapping-backend/
@@ -33,6 +34,7 @@ services:
       target: base
     volumes:
       - ./packages/price-experience-api/:/opt/app-root/src/packages/price-experience-api/
+      - ./packages/price-experience-api/src/openapi.yaml:/opt/app-root/src/packages/price-experience-api/dist/openapi.yaml
       - ./packages/price-experience-api/nodemon.json:/opt/app-root/src/packages/price-experience-api/nodemon.json
       - ./packages/price-backend/:/opt/app-root/src/packages/price-backend/
       - ./packages/core/:/opt/app-root/src/packages/core/
@@ -57,6 +59,7 @@ services:
     volumes:
       - ./packages/auth-helsinki-profile/:/opt/app-root/src/packages/auth-helsinki-profile
       - ./packages/order-experience-api/:/opt/app-root/src/packages/order-experience-api/
+      - ./packages/order-experience-api/src/openapi.yaml:/opt/app-root/src/packages/order-experience-api/dist/openapi.yaml
       - ./packages/order-experience-api/nodemon.json:/opt/app-root/src/packages/order-experience-api/nodemon.json
       - ./packages/order-backend/:/opt/app-root/src/packages/order-backend/
       - ./packages/cart-backend/:/opt/app-root/src/packages/cart-backend/
@@ -90,6 +93,7 @@ services:
     volumes:
       - ./packages/auth-helsinki-profile/:/opt/app-root/src/packages/auth-helsinki-profile
       - ./packages/payment-experience-api/:/opt/app-root/src/packages/payment-experience-api/
+      - ./packages/payment-experience-api/src/openapi.yaml:/opt/app-root/src/packages/payment-experience-api/dist/openapi.yaml
       - ./packages/order-backend/:/opt/app-root/src/packages/order-backend/
       - ./packages/payment-backend/:/opt/app-root/src/packages/payment-backend/
       - ./packages/product-backend/:/opt/app-root/src/packages/product-backend/
@@ -120,6 +124,7 @@ services:
       target: base
     volumes:
       - ./packages/merchant-experience-api/:/opt/app-root/src/packages/merchant-experience-api/
+      - ./packages/merchant-experience-api/src/openapi.yaml:/opt/app-root/src/packages/merchant-experience-api/dist/openapi.yaml
       - ./packages/merchant-experience-api/nodemon.json:/opt/app-root/src/packages/merchant-experience-api/nodemon.json
       - ./packages/configuration-backend/:/opt/app-root/src/packages/configuration-backend/
       - ./packages/core/:/opt/app-root/src/packages/core/
@@ -144,6 +149,7 @@ services:
       target: base
     volumes:
       - ./packages/monitoring-experience-api/:/opt/app-root/src/packages/monitoring-experience-api/
+      - ./packages/monitoring-experience-api/src/openapi.yaml:/opt/app-root/src/packages/monitoring-experience-api/dist/openapi.yaml
       - ./packages/monitoring-experience-api/nodemon.json:/opt/app-root/src/packages/monitoring-experience-api/nodemon.json
       - ./packages/configuration-backend/:/opt/app-root/src/packages/configuration-backend/
       - ./packages/core/:/opt/app-root/src/packages/core/
@@ -169,6 +175,18 @@ services:
       args:
         - TZ=Europe/Helsinki
     volumes:
+      # Ignores/Hides the node_modules from the bind on the host allowing the node_modules
+      # from inside the container to be used instead
+      - /opt/app-root/src/packages/auth-helsinki-profile/node_modules
+      - /opt/app-root/src/packages/core/node_modules
+      - /opt/app-root/src/packages/cart-backend/node_modules
+      - /opt/app-root/src/packages/configuration-backend/node_modules
+      - /opt/app-root/src/packages/message-backend/node_modules
+      - /opt/app-root/src/packages/order-backend/node_modules
+      - /opt/app-root/src/packages/payment-backend/node_modules
+      - /opt/app-root/src/packages/price-backend/node_modules
+      - /opt/app-root/src/packages/product-backend/node_modules
+      - /opt/app-root/src/packages/product-mapping-backend/node_modules
       - ./packages/auth-helsinki-profile/:/opt/app-root/src/packages/auth-helsinki-profile
       - ./packages/core/:/opt/app-root/src/packages/core
       - ./packages/cart-backend/:/opt/app-root/src/packages/cart-backend
