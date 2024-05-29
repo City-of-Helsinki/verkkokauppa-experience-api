@@ -23,7 +23,7 @@ services:
     environment:
       - SERVICE_NAME=product-experience-api
     env_file:
-      - .env.local.docker
+      - .env.docker
     networks:
       - common
   price-experience-api:
@@ -45,39 +45,17 @@ services:
     environment:
       - SERVICE_NAME=price-experience-api
     env_file:
-      - .env.local.docker
+      - .env.docker
     networks:
       - common
-  cart-experience-api:
-    build:
-      context: ./
-      dockerfile: packages/cart-experience-api/Dockerfile
-      target: base
-    volumes:
-      - ./packages/cart-experience-api/:/opt/app-root/src/packages/cart-experience-api/
-      - ./packages/cart-experience-api/nodemon.json:/opt/app-root/src/packages/cart-experience-api/nodemon.json
-      - ./packages/cart-backend/:/opt/app-root/src/packages/cart-backend/
-      - ./packages/core/:/opt/app-root/src/packages/core/
-      - ./packages/product-backend/:/opt/app-root/src/packages/product-backend/
-      - ./packages/price-backend/:/opt/app-root/src/packages/price-backend/
-    container_name: cart-experience-api
-    expose:
-      - '8080'
-    ports:
-      - '8083:8080'
-    command: yarn workspace @verkkokauppa/cart-experience-api dev
-    environment:
-      - SERVICE_NAME=cart-experience-api
-    env_file:
-      - .env.local.docker
-    networks:
-      - common
+
   order-experience-api:
     build:
       context: ./
       dockerfile: packages/order-experience-api/Dockerfile
       target: base
     volumes:
+      - ./packages/auth-helsinki-profile/:/opt/app-root/src/packages/auth-helsinki-profile
       - ./packages/order-experience-api/:/opt/app-root/src/packages/order-experience-api/
       - ./packages/order-experience-api/nodemon.json:/opt/app-root/src/packages/order-experience-api/nodemon.json
       - ./packages/order-backend/:/opt/app-root/src/packages/order-backend/
@@ -88,6 +66,7 @@ services:
       - ./packages/product-backend/:/opt/app-root/src/packages/product-backend/
       - ./packages/price-backend/:/opt/app-root/src/packages/price-backend/
       - ./packages/configuration-backend/:/opt/app-root/src/packages/configuration-backend/
+      - ./packages/product-mapping-backend/:/opt/app-root/src/packages/product-mapping-backend
     container_name: order-experience-api
     expose:
       - '8080'
@@ -98,7 +77,7 @@ services:
     environment:
       - SERVICE_NAME=order-experience-api
     env_file:
-      - .env.local.docker
+      - .env.docker
     networks:
       - common
   payment-experience-api:
@@ -109,16 +88,21 @@ services:
       args:
         - TZ=Europe/Helsinki
     volumes:
+      - ./packages/auth-helsinki-profile/:/opt/app-root/src/packages/auth-helsinki-profile
       - ./packages/payment-experience-api/:/opt/app-root/src/packages/payment-experience-api/
       - ./packages/order-backend/:/opt/app-root/src/packages/order-backend/
       - ./packages/payment-backend/:/opt/app-root/src/packages/payment-backend/
+      - ./packages/product-backend/:/opt/app-root/src/packages/product-backend/
       - ./packages/configuration-backend/:/opt/app-root/src/packages/configuration-backend/
       - ./packages/core/:/opt/app-root/src/packages/core/
+      - ./packages/message-backend/:/opt/app-root/src/packages/message-backend/
     container_name: payment-experience-api
     expose:
       - '8080'
+      - '8081'
     ports:
       - '8085:8080'
+      - '8285:8081'
       - '9229:9229'
     command: yarn workspace @verkkokauppa/payment-experience-api dev
     environment:
@@ -126,7 +110,7 @@ services:
       - VISMA_PAY_PRIVATE_KEY=MOCKKEY
       - VISMA_PAY_API_KEY=MOCKKEY
     env_file:
-      - .env.local.docker
+      - .env.docker
     networks:
       - common
   merchant-experience-api:
@@ -149,7 +133,7 @@ services:
     environment:
       - SERVICE_NAME=merchant-experience-api
     env_file:
-      - .env.local.docker
+      - .env.docker
     networks:
       - common
 
@@ -173,9 +157,57 @@ services:
     environment:
       - SERVICE_NAME=monitoring-experience-api
     env_file:
-      - .env.local.docker
+      - .env.docker
     networks:
       - common
 
+  hotreloader:
+    build:
+      context: ./
+      dockerfile: packages/core/Dockerfile
+      target: base
+      args:
+        - TZ=Europe/Helsinki
+    volumes:
+      - ./packages/auth-helsinki-profile/:/opt/app-root/src/packages/auth-helsinki-profile
+      - ./packages/core/:/opt/app-root/src/packages/core
+      - ./packages/cart-backend/:/opt/app-root/src/packages/cart-backend
+      - ./packages/configuration-backend/:/opt/app-root/src/packages/configuration-backend
+      - ./packages/message-backend/:/opt/app-root/src/packages/message-backend
+      - ./packages/order-backend/:/opt/app-root/src/packages/order-backend
+      - ./packages/payment-backend/:/opt/app-root/src/packages/payment-backend
+      - ./packages/price-backend/:/opt/app-root/src/packages/price-backend
+      - ./packages/product-backend/:/opt/app-root/src/packages/product-backend
+      - ./packages/product-mapping-backend/:/opt/app-root/src/packages/product-mapping-backend
+    container_name: hotreloader
+    #    command: yarn workspace @verkkokauppa/payment-experience-api dev
+    env_file:
+      - .env.docker
+    networks:
+      - common
+#  cart-experience-api:
+#    build:
+#      context: ./
+#      dockerfile: packages/cart-experience-api/Dockerfile
+#      target: base
+#    volumes:
+#      - ./packages/cart-experience-api/:/opt/app-root/src/packages/cart-experience-api/
+#      - ./packages/cart-experience-api/nodemon.json:/opt/app-root/src/packages/cart-experience-api/nodemon.json
+#      - ./packages/cart-backend/:/opt/app-root/src/packages/cart-backend/
+#      - ./packages/core/:/opt/app-root/src/packages/core/
+#      - ./packages/product-backend/:/opt/app-root/src/packages/product-backend/
+#      - ./packages/price-backend/:/opt/app-root/src/packages/price-backend/
+#    container_name: cart-experience-api
+#    expose:
+#      - '8080'
+#    ports:
+#      - '8083:8080'
+#    command: yarn workspace @verkkokauppa/cart-experience-api dev
+#    environment:
+#      - SERVICE_NAME=cart-experience-api
+#    env_file:
+#      - .env.docker
+#    networks:
+#      - common
 networks:
   common:

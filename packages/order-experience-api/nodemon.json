@@ -12,7 +12,8 @@
     "../order-backend/src/**/*.ts",
     "../payment-backend/src/**/*.ts",
     "../product-backend/src/**/*.ts",
-    "../price-backend/src/**/*.ts"
+    "../price-backend/src/**/*.ts",
+    "../payment-experience-api/src/**/*.ts"
   ],
   "execMap": {
     "ts": "node --inspect=0.0.0.0:9229 --nolazy -r ts-node/register"
