@@ -153,6 +153,32 @@
                                                                 </span>
                                             </td>
                                         </tr>
+
+                                        {{#ifCond order.type '===' 'subscription'}}
+                                            <!-- Render this block if order.type is 'subscription' -->
+                                            <tr>
+                                                <td class="align-right" width="100%" class="purchase_item">
+                                                    <span class="f-fallback no-wrap">
+                                                        {{I18n 'subscriptionPaymentFailed.information.cardUpdateText'}}
+                                                        <a href="{{order.updateCardUrl}}" target="_blank">{{I18n 'subscriptionPaymentFailed.information.linkText'}}</a>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        {{else}}
+                                            {{#ifCond order.subscriptionId 'length' 0}}
+                                                <!-- Render this block if order.subscriptionId is not empty -->
+                                                <tr>
+                                                    <td class="align-right" width="100%" class="purchase_item">
+                                                        <span class="f-fallback no-wrap">
+                                                            {{I18n 'subscriptionPaymentFailed.information.cardUpdateText'}}
+                                                            <a href="{{order.updateCardUrl}}" target="_blank">{{I18n 'subscriptionPaymentFailed.information.linkText'}}</a>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            {{else}}
+                                                <!-- Render this block if neither condition is met -->
+                                            {{/ifCond}}
+                                        {{/ifCond}}
                                     </table>
                                 </td>
                             </tr>

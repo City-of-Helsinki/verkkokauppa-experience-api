@@ -22,6 +22,7 @@
       "paidTotal": "Maksettu yhteensä",
       "paymentMethod": "Maksutapa",
       "date": "Päivämäärä",
+      "updateCard": "Päivämäärä",
       "total": "yhteensä",
       "unit": {
         "pcs": "kpl",
