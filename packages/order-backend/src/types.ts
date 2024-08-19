@@ -151,6 +151,7 @@ export type OrderAccountingItemRequest = ProductAccounting & {
 export interface OrderAccountingRequest {
   orderId: string
   dtos: OrderAccountingItemRequest[]
+  namespace: string
 }
 
 export interface OrderItemInvoicing {
