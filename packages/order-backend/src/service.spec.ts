@@ -818,7 +818,11 @@ describe('Test Create Accounting entry for order', () => {
   it('Should throw error with no backend url set', async () => {
     process.env.ORDER_BACKEND_URL = ''
     await expect(
-      createAccountingEntryForOrder({ dtos: [], orderId: '' })
+      createAccountingEntryForOrder({
+        dtos: [],
+        orderId: '',
+        namespace: 'namespace',
+      })
     ).rejects.toThrow('No order backend URL set')
   })
   it('Should create order accounting entry correctly with backend url set', async () => {
@@ -841,6 +845,7 @@ describe('Test Create Accounting entry for order', () => {
           operationArea: 'operationArea',
         },
       ],
+      namespace: 'namespace',
     }
     axiosMock.post.mockResolvedValue({ data: mockData })
     const result = await createAccountingEntryForOrder({

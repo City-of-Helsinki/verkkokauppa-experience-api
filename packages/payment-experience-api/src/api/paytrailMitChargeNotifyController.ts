@@ -82,6 +82,7 @@ export class PaytrailMitChargeNotifyController extends AbstractController<
             ...productAccounting,
           }
         }),
+        namespace: order.namespace,
       })
     } catch (e) {
       // log error

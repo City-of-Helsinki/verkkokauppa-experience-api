@@ -166,6 +166,7 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
         await createAccountingEntryForOrder({
           orderId,
           dtos: accountingDtos,
+          namespace: order.namespace,
         })
       } catch (e) {
         // log error

@@ -86,6 +86,7 @@ export class PaytrailOnlinePaymentNotifyController extends AbstractController {
               ...productAccounting,
             }
           }),
+          namespace: order.namespace,
         })
       }
     } catch (e) {

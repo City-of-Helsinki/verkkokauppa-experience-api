@@ -67,6 +67,7 @@ export class OnlinePaymentNotifyController extends AbstractController {
             ...productAccounting,
           }
         }),
+        namespace: order.namespace,
       })
     }
     return this.success<any>(response, vismaStatus)
