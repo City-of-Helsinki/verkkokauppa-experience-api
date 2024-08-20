@@ -131,6 +131,31 @@ components:
               type: string
             orderType:
               type: string
+        nextEntity:
+          type: object
+          properties:
+            companyCode:
+              type: string
+            mainLedgerAccount:
+              type: string
+            vatCode:
+              type: string
+            internalOrder:
+              type: string
+            profitCenter:
+              type: string
+            balanceProfitCenter:
+              type: string
+            project:
+              type: string
+            operationArea:
+              type: string
+        activeFrom:
+          type: string
+          format: date-time
+          example: "2024-08-19T10:00:00.000Z"
+          description: >
+            The date and time when this record becomes active. It should be in ISO 8601 format.
     ProductInvoicing:
       type: object
       properties:
@@ -257,7 +282,16 @@ paths:
           $ref: '#/components/responses/InternalServerError'
   /{productId}/accounting:
     post:
-      description: 'Create product accounting and optional invoicing for a product. Supplying invoicing details enables paying products with an invoice'
+      summary: 'Create Product Accounting and Optional Invoicing'
+      description: >
+        Create product accounting and optional invoicing for a product. 
+        Supplying invoicing details enables paying products with an invoice.
+        
+        **NextEntity Explanation**:
+        The `nextEntity` object contains accounting details that will be applied after the `activeFrom` date and time have elapsed. 
+        If any field within the `nextEntity` object is `null` or not provided, the corresponding value from the base object 
+        (the primary accounting details) will be used instead. This allows for a smooth transition of accounting details over time, 
+        where only the changes in `nextEntity` need to be specified.
       security:
         - ApiKey: [ ]
       parameters:
