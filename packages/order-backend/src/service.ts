@@ -487,12 +487,13 @@ export const createAccountingEntryForOrder = async (
   if (!process.env.ORDER_BACKEND_URL) {
     throw new Error('No order backend URL set')
   }
-  const { orderId, dtos } = p
+  const { orderId, dtos, namespace } = p
   const url = `${process.env.ORDER_BACKEND_URL}/order/accounting/create`
   try {
     const dto = {
       orderId,
       dtos,
+      namespace,
     }
     const result = await axios.post<OrderAccounting>(url, dto)
     return result.data
