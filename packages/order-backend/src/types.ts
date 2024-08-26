@@ -152,6 +152,7 @@ export interface OrderAccountingRequest {
   orderId: string
   dtos: OrderAccountingItemRequest[]
   namespace: string
+  // paidAt: string
 }
 
 export interface OrderItemInvoicing {
