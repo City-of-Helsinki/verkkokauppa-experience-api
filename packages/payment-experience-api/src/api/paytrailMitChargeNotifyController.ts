@@ -18,6 +18,10 @@ import {
 import { getProductAccountingBatch } from '@verkkokauppa/product-backend'
 import { sendReceipt } from '../lib/sendEmail'
 import { sendErrorNotification } from '@verkkokauppa/message-backend'
+import {
+  Payment,
+  updateInternalPaymentFromPaytrail,
+} from '@verkkokauppa/payment-backend'
 
 const requestSchema = yup.object().shape({
   headers: yup.object().shape({
@@ -26,6 +30,7 @@ const requestSchema = yup.object().shape({
   }),
   query: yup.object().shape({
     orderId: yup.string().required(),
+    'checkout-stamp': yup.string().optional(),
   }),
 })
 
@@ -40,7 +45,7 @@ export class PaytrailMitChargeNotifyController extends AbstractController<
   ) {
     const {
       headers: { 'api-key': apiKey, namespace },
-      query: { orderId },
+      query: { orderId, 'checkout-stamp': paymentId },
     } = req
 
     await validateApiKey({ namespace, apiKey })
@@ -56,6 +61,25 @@ export class PaytrailMitChargeNotifyController extends AbstractController<
         responseStatus: StatusCode.NotFound,
         logLevel: 'info',
       })
+    }
+
+    let paymentWithUpdatePaidAt: Payment
+    try {
+      if (!paymentId) {
+        throw new Error(
+          `Notify - Payment not found when updating internal payment from paytrail with orderId ${orderId}`
+        )
+      }
+      paymentWithUpdatePaidAt = await updateInternalPaymentFromPaytrail({
+        paymentId: paymentId,
+        merchantId: merchantId,
+        namespace: order.namespace,
+      })
+    } catch (e) {
+      logger.error(e)
+      logger.debug(
+        `Notify - Error occurred, when updating payment data from paytrail ${orderId}`
+      )
     }
 
     try {
@@ -80,6 +104,7 @@ export class PaytrailMitChargeNotifyController extends AbstractController<
           return {
             ...item,
             ...productAccounting,
+            paidAt: paymentWithUpdatePaidAt?.paidAt || '',
           }
         }),
         namespace: order.namespace,

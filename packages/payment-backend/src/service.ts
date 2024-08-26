@@ -6,6 +6,7 @@ import type {
   PaymentMethod,
   PaytrailCardFormParameters,
   PaytrailStatus,
+  UpdateFromPaytrailPaymentParameters,
   VismaPayResponse,
   VismaStatus,
 } from './types'
@@ -767,6 +768,27 @@ export const savePaymentFiltersAdmin = async (
     throw new ExperienceFailure({
       code: 'failed-to-save-payment-filter',
       message: 'failed to save payment filter(s)',
+      source: e as Error,
+    })
+  }
+}
+
+export const updateInternalPaymentFromPaytrail = async (
+  updateFromPaytrailPaymentParameters: UpdateFromPaytrailPaymentParameters
+): Promise<Payment> => {
+  checkBackendUrlExists()
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/paytrail/update-from-paytrail-payment`
+  try {
+    const res = await axios.post<Payment>(
+      url,
+      updateFromPaytrailPaymentParameters
+    )
+    return res.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-update-internal-payment-from-paytrail',
+      message: 'failed to update internal payment with paytrail data',
       source: e as Error,
     })
   }

@@ -20,6 +20,8 @@ import {
 import {
   checkPaytrailCardReturnUrl,
   paidPaymentExists,
+  Payment,
+  updateInternalPaymentFromPaytrail,
 } from '@verkkokauppa/payment-backend'
 import { sendReceiptToCustomer } from '../lib/sendEmail'
 import { getProductAccountingBatch } from '@verkkokauppa/product-backend'
@@ -124,6 +126,24 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
           ).toString()
         )
       }
+      let paymentWithUpdatePaidAt: Payment
+      try {
+        if (!payment) {
+          throw new Error(
+            `Card-redirect - Payment not found when updating internal payment from paytrail with orderId ${orderId}`
+          )
+        }
+        paymentWithUpdatePaidAt = await updateInternalPaymentFromPaytrail({
+          paymentId: payment.paymentId,
+          merchantId: parseMerchantIdFromFirstOrderItem(order),
+          namespace: order.namespace,
+        })
+      } catch (e) {
+        logger.error(e)
+        logger.debug(
+          `Card-redirect - Error occurred, when updating payment data from paytrail ${orderId}`
+        )
+      }
 
       const paymentReturnStatus = {
         paymentPaid: payment.status === 'payment_paid_online',
@@ -154,6 +174,7 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
           return {
             ...item,
             ...productAccounting,
+            paidAt: paymentWithUpdatePaidAt?.paidAt || '',
           }
         })
 

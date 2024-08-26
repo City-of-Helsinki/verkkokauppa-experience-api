@@ -65,6 +65,7 @@ export class OnlinePaymentNotifyController extends AbstractController {
           return {
             ...item,
             ...productAccounting,
+            paidAt: new Date().toISOString(),
           }
         }),
         namespace: order.namespace,
