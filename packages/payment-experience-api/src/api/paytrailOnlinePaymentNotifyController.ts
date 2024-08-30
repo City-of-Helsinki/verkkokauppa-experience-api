@@ -11,7 +11,11 @@ import {
   OrderNotFoundError,
 } from '@verkkokauppa/order-backend'
 import { getProductAccountingBatch } from '@verkkokauppa/product-backend'
-import { checkPaytrailReturnUrl } from '@verkkokauppa/payment-backend'
+import {
+  checkPaytrailReturnUrl,
+  Payment,
+  updateInternalPaymentFromPaytrail,
+} from '@verkkokauppa/payment-backend'
 import { parseOrderIdFromPaytrailRedirect } from '../lib/paytrail'
 import { parseMerchantIdFromFirstOrderItem } from '@verkkokauppa/configuration-backend'
 import { sendErrorNotification } from '@verkkokauppa/message-backend'
@@ -55,6 +59,24 @@ export class PaytrailOnlinePaymentNotifyController extends AbstractController {
         paytrailStatus
       )}`
     )
+    let paymentWithUpdatePaidAt: Payment
+    try {
+      if (!query[`checkout-stamp`]) {
+        throw new Error(
+          `Notify - Payment not found when updating internal payment from paytrail with orderId ${orderId}`
+        )
+      }
+      paymentWithUpdatePaidAt = await updateInternalPaymentFromPaytrail({
+        paymentId: query[`checkout-stamp`].toString(),
+        merchantId: merchantId,
+        namespace: order.namespace,
+      })
+    } catch (e) {
+      logger.error(e)
+      logger.debug(
+        `Notify - Error occurred, when updating payment data from paytrail ${orderId}`
+      )
+    }
 
     try {
       logger.info(`Load paytrail product accountings for order ${orderId}`)
@@ -84,8 +106,10 @@ export class PaytrailOnlinePaymentNotifyController extends AbstractController {
             return {
               ...item,
               ...productAccounting,
+              paidAt: paymentWithUpdatePaidAt?.paidAt || '',
             }
           }),
+          namespace: order.namespace,
         })
       }
     } catch (e) {

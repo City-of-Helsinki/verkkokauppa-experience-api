@@ -98,6 +98,7 @@ export interface Payment {
   description: string | null
   additionalInfo: string
   timestamp: string
+  paidAt?: string
   token: string
   paytrailProvider?: PaytrailProvider
 }
@@ -125,6 +126,12 @@ export interface PaymentFilter {
   referenceType: ReferenceType
   filterType: string
   value: string
+}
+
+export interface UpdateFromPaytrailPaymentParameters {
+  paymentId: string
+  merchantId: string | null
+  namespace: string
 }
 
 export interface PaytrailCardFormParameters {
