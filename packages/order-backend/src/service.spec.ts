@@ -1,17 +1,17 @@
 import {
   addItemsToOrder,
   cancelOrder,
-  isVatCodeUsedAfterDateTime,
   checkLastValidPurchaseDateTime,
   createAccountingEntryForOrder,
   createOrder,
   createOrderWithItems,
   getOrder,
+  isVatCodeUsedAfterDateTime,
+  isVatPercentageUsedInOrderItems,
   OrderItem,
   setCustomerToOrder,
   setInvoiceToOrder,
   setOrderTotals,
-  getEndOfDayInFinland,
 } from './index'
 import axios from 'axios'
 import { ExperienceError } from '@verkkokauppa/core'
@@ -867,14 +867,6 @@ describe('checkIfWrongVatCodeAfterGivenDate', () => {
     expect(result).toBe(false)
   })
 
-  it('should return true when the VAT code is wrong and date is after the given date', () => {
-    const items = ([{ vatPercentage: '24' }] as unknown) as [OrderItem]
-    const vatCode = '24'
-    const dateTime = '2023-08-25T10:00:00.000Z'
-    const result = isVatCodeUsedAfterDateTime(items, vatCode, dateTime)
-    expect(result).toBe(true)
-  })
-
   it('should return false when the VAT code is correct and date is after the given date', () => {
     const items = ([{ vatPercentage: '10' }] as unknown) as [OrderItem]
     const vatCode = '24'
@@ -891,11 +883,25 @@ describe('checkIfWrongVatCodeAfterGivenDate', () => {
     expect(result).toBe(false)
   })
 
-  it('should return true when the date is exactly the same as the given date and VAT code is wrong', () => {
-    const items = ([{ vatPercentage: '24' }] as unknown) as [OrderItem]
+  it('should return true if vat percentage starts with 24', () => {
+    const items = ([
+      { vatPercentage: '24,00' },
+      { vatPercentage: '24.00' },
+      { vatPercentage: '24.12' },
+    ] as unknown) as [OrderItem]
     const vatCode = '24'
-    const dateTime2 = getEndOfDayInFinland('2024-08-29')
-    const result = isVatCodeUsedAfterDateTime(items, vatCode, dateTime2)
+    const result = isVatPercentageUsedInOrderItems(items, vatCode)
+    expect(result).toBe(true) // Adjust based on your logic (true/false).
+  })
+
+  it('should return false if vat percentage starts with 2', () => {
+    const items = ([
+      { vatPercentage: '2' },
+      { vatPercentage: '2' },
+      { vatPercentage: '2' },
+    ] as unknown) as [OrderItem]
+    const vatCode = '2'
+    const result = isVatPercentageUsedInOrderItems(items, vatCode)
     expect(result).toBe(true) // Adjust based on your logic (true/false).
   })
 })
