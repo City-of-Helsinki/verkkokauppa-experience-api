@@ -15,6 +15,13 @@ const createOrderWithItemsMock = require('@verkkokauppa/order-backend').createOr
   () => ({})
 )
 
+const isVatPercentageUsedInOrderItemsMock = require('@verkkokauppa/order-backend').isVatPercentageUsedInOrderItems.mockImplementation(
+  () => ({})
+)
+const getEndOfDayInFinlandMock = require('@verkkokauppa/order-backend').getEndOfDayInFinland.mockImplementation(
+  () => ({})
+)
+
 const savePaymentFiltersAdminMock = require('@verkkokauppa/payment-backend').savePaymentFiltersAdmin.mockImplementation(
   () => ({})
 )
@@ -259,6 +266,41 @@ describe('Test CreateController', () => {
       },
       responseMock
     )
+    expect(createOrderWithItemsMock).toHaveBeenCalledTimes(1)
+    expect(controller.respond.mock.calls[0][2]).toMatchObject({
+      ...orderWithItemsMock,
+      paymentFilters: [...paymentFiltersDataResponseMock],
+    })
+  })
+
+  it('Should return created order with items and payment filters and add lastValidpurchase datetime if vatpercentage is 24', async () => {
+    getProductMappingMock.mockImplementation(
+      () => productMappingDataResponseMock
+    )
+    createOrderWithItemsMock.mockImplementationOnce(() => orderWithItemsMock)
+    savePaymentFiltersAdminMock.mockImplementationOnce(
+      () => paymentFiltersDataResponseMock
+    )
+    isVatPercentageUsedInOrderItemsMock.mockImplementationOnce(() => true)
+    const lastValidPurchaseDateTime = new Date('2024-08-31T23:59:59.999Z')
+    getEndOfDayInFinlandMock.mockImplementationOnce(
+      () => lastValidPurchaseDateTime
+    )
+
+    await controller.implementation(
+      {
+        body: {
+          namespace: 'testNameSpace',
+          user: 'test@test.dev.hel',
+          items: orderWithItemsMock.items,
+          customer: orderCustomerMock,
+          paymentFilters: paymentFiltersDataRequestMock,
+        },
+        get: () => 'test.com',
+      },
+      { ...responseMock }
+    )
+    expect(controller.respond.mock.calls[0][1]).toEqual(201)
     expect(createOrderWithItemsMock).toHaveBeenCalledTimes(1)
     expect(controller.respond.mock.calls[0][2]).toMatchObject({
       ...orderWithItemsMock,

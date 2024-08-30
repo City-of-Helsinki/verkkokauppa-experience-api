@@ -9,6 +9,7 @@ import type {
   OrderCustomer,
   OrderInvoice,
   OrderInvoiceRequest,
+  OrderItem,
   OrderItemInvoicing,
   OrderItemRequest,
   OrderPaymentMethod,
@@ -31,7 +32,9 @@ import {
   SubscriptionNotFoundError,
 } from './errors'
 import { ExperienceFailure, ForbiddenError } from '@verkkokauppa/core'
+import { format, isAfter } from 'date-fns'
 import { formatToTimeZone } from 'date-fns-timezone'
+import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz'
 
 const getBackendUrl = () => {
   const url = process.env.ORDER_BACKEND_URL
@@ -573,6 +576,64 @@ export const checkLastValidPurchaseDateTime = (
     throw new ForbiddenError('Optional lastValidPurchaseDateTime is expired')
   }
   return dateTimeInHelsinkiTimezone
+}
+
+export const getEndOfDayInFinland = (dateString: string) => {
+  const finlandTimezone = 'Europe/Helsinki'
+
+  // Parse the input date string into a Date object
+  const date = new Date(dateString)
+
+  // Convert the date to Finland timezone
+  const dateInFinland = utcToZonedTime(date, finlandTimezone)
+
+  // Set time to the end of the day (23:59:59.999)
+  dateInFinland.setHours(23, 59, 59, 999)
+
+  // Convert the adjusted time back to UTC
+  return dateInFinland
+}
+
+export const isVatCodeUsedAfterDateTime = (
+  items: [OrderItem],
+  vatCode: string,
+  dateTime: any
+) => {
+  const finlandTimezone = 'Europe/Helsinki'
+
+  // Get the current date and time in Finland timezone
+  const currentDateInFinland = zonedTimeToUtc(
+    format(
+      utcToZonedTime(new Date(), finlandTimezone),
+      "yyyy-MM-dd'T'HH:mm:ss.SSSX"
+    ),
+    finlandTimezone
+  )
+  let dateToCheckAgainst: Date
+  // If parameter is string convert it to Date
+  if (typeof dateTime === 'string') {
+    dateToCheckAgainst = new Date(dateTime)
+  }
+
+  // Iterate through items to check for wrong VAT code after the current date in Finland
+  return items.some((item) => {
+    // Check if the item's date is after the current time and VAT code is 24
+    return (
+      isAfter(dateToCheckAgainst, currentDateInFinland) &&
+      item.vatPercentage === vatCode
+    )
+  })
+}
+
+export const isVatPercentageUsedInOrderItems = (
+  items: [OrderItem],
+  vatPercentage: string
+) => {
+  // Iterate through items to check for wrong VAT code after the current date in Finland
+  return items.some((item) => {
+    // Check if the item's starts with VAT code 24
+    return item.vatPercentage.startsWith(vatPercentage)
+  })
 }
 
 export const setOrderPaymentMethod = async (p: {

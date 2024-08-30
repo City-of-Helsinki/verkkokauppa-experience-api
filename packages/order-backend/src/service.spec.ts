@@ -1,14 +1,17 @@
 import {
   addItemsToOrder,
   cancelOrder,
+  isVatCodeUsedAfterDateTime,
   checkLastValidPurchaseDateTime,
   createAccountingEntryForOrder,
   createOrder,
   createOrderWithItems,
   getOrder,
+  OrderItem,
   setCustomerToOrder,
   setInvoiceToOrder,
   setOrderTotals,
+  getEndOfDayInFinland,
 } from './index'
 import axios from 'axios'
 import { ExperienceError } from '@verkkokauppa/core'
@@ -852,5 +855,47 @@ describe('Test Create Accounting entry for order', () => {
       ...mockData,
     })
     expect(result).toEqual(mockData)
+  })
+})
+
+describe('checkIfWrongVatCodeAfterGivenDate', () => {
+  it('should return false when the VAT code is correct and date is before the given date', () => {
+    const items = ([{ vatPercentage: '10' }] as unknown) as [OrderItem]
+    const vatCode = '24'
+    const dateTime = '2023-08-20T10:00:00.000Z'
+    const result = isVatCodeUsedAfterDateTime(items, vatCode, dateTime)
+    expect(result).toBe(false)
+  })
+
+  it('should return true when the VAT code is wrong and date is after the given date', () => {
+    const items = ([{ vatPercentage: '24' }] as unknown) as [OrderItem]
+    const vatCode = '24'
+    const dateTime = '2023-08-25T10:00:00.000Z'
+    const result = isVatCodeUsedAfterDateTime(items, vatCode, dateTime)
+    expect(result).toBe(true)
+  })
+
+  it('should return false when the VAT code is correct and date is after the given date', () => {
+    const items = ([{ vatPercentage: '10' }] as unknown) as [OrderItem]
+    const vatCode = '24'
+    const dateTime = '2023-08-25T10:00:00.000Z'
+    const result = isVatCodeUsedAfterDateTime(items, vatCode, dateTime)
+    expect(result).toBe(false)
+  })
+
+  it('should return false when the VAT code is correct but date is before the given date', () => {
+    const items = ([{ vatPercentage: '24' }] as unknown) as [OrderItem]
+    const vatCode = '24'
+    const dateTime = '2023-08-20T10:00:00.000Z'
+    const result = isVatCodeUsedAfterDateTime(items, vatCode, dateTime)
+    expect(result).toBe(false)
+  })
+
+  it('should return true when the date is exactly the same as the given date and VAT code is wrong', () => {
+    const items = ([{ vatPercentage: '24' }] as unknown) as [OrderItem]
+    const vatCode = '24'
+    const dateTime2 = getEndOfDayInFinland('2024-08-29')
+    const result = isVatCodeUsedAfterDateTime(items, vatCode, dateTime2)
+    expect(result).toBe(true) // Adjust based on your logic (true/false).
   })
 })

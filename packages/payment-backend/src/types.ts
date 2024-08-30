@@ -131,7 +131,6 @@ export interface PaymentFilter {
 export interface UpdateFromPaytrailPaymentParameters {
   paymentId: string
   merchantId: string | null
-  // paytrailTransactionId: string
   namespace: string
 }
 

@@ -12,6 +12,9 @@ import {
   getOrder,
   setOrderTotals,
   calculateTotalsFromItems,
+  isVatPercentageUsedInOrderItems,
+  getEndOfDayInFinland,
+  OrderItem,
 } from '@verkkokauppa/order-backend'
 import { getProduct } from '@verkkokauppa/product-backend'
 import { getPrice } from '@verkkokauppa/price-backend'
@@ -104,10 +107,21 @@ export class InstantPurchase extends AbstractController<typeof requestSchema> {
         }
       })
     )
+    const isVatCodeUsed = isVatPercentageUsedInOrderItems(
+      (orderItems as unknown) as [OrderItem],
+      '24'
+    )
 
+    let lastValidPurchaseDateTime
+    if (isVatCodeUsed) {
+      lastValidPurchaseDateTime = getEndOfDayInFinland(
+        process.env.FORCED_END_OF_DAY || '2024-08-31'
+      )
+    }
     const { orderId } = await createOrder({
       namespace: body.namespace,
       user: body.user,
+      lastValidPurchaseDateTime,
     })
 
     await addItemsToOrder({
