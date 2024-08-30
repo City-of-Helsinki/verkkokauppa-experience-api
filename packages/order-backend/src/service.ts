@@ -596,7 +596,7 @@ export const getEndOfDayInFinland = (dateString: string) => {
 
 export const isVatCodeUsedAfterDateTime = (
   items: [OrderItem],
-  vatCode: string,
+  vatPercentage: string,
   dateTime: any
 ) => {
   const finlandTimezone = 'Europe/Helsinki'
@@ -620,7 +620,7 @@ export const isVatCodeUsedAfterDateTime = (
     // Check if the item's date is after the current time and VAT code is 24
     return (
       isAfter(dateToCheckAgainst, currentDateInFinland) &&
-      item.vatPercentage === vatCode
+      item.vatPercentage === vatPercentage
     )
   })
 }
