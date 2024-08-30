@@ -78,5 +78,6 @@ export type RefundAccountingItemRequest = ProductAccounting & {
 export interface RefundAccountingRequest {
   refundId: string
   orderId: string
+  namespace: string
   dtos: RefundAccountingItemRequest[]
 }

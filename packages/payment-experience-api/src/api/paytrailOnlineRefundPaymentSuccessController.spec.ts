@@ -738,6 +738,7 @@ describe('Test paytrail refund payment success controller', () => {
       {
         refundId: refundId,
         orderId: mockProductAccountingDtos.orderId,
+        namespace: merchantConfigMock.namespace,
         dtos: [mockProductAccountingDtos],
       }
     )

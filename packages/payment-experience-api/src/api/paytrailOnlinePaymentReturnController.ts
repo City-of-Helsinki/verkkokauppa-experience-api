@@ -9,6 +9,7 @@ import {
   getPaymentsForOrderAdmin,
   Order,
   PaymentStatus,
+  updateInternalPaymentFromPaytrail,
 } from '@verkkokauppa/payment-backend'
 import { sendReceiptToCustomer } from '../lib/sendEmail'
 import { parseOrderIdFromPaytrailRedirect } from '../lib/paytrail'
@@ -59,6 +60,24 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
       const payment = await getPaidPaymentAdmin({
         orderId: orderId,
       })
+
+      try {
+        if (!payment) {
+          throw new Error(
+            `Payment not found when updating internal payment from paytrail with orderId ${orderId}`
+          )
+        }
+        await updateInternalPaymentFromPaytrail({
+          paymentId: payment.paymentId,
+          merchantId: parseMerchantIdFromFirstOrderItem(order),
+          namespace: order.namespace,
+        })
+      } catch (e) {
+        logger.error(e)
+        logger.debug(
+          `Error occurred, when updating payment data from paytrail ${orderId}`
+        )
+      }
 
       // Already found payment paid, return early to prevent multiple events happening
       if (payment != null && payment.status === 'payment_paid_online') {
