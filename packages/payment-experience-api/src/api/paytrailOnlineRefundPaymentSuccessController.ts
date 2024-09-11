@@ -58,7 +58,7 @@ export class PaytrailOnlineRefundPaymentSuccessController extends AbstractContro
     }
 
     const refundPayment = await getPaidRefundPaymentAdmin({
-      orderId: orderId,
+      refundId: refundId,
     })
 
     // Already found refundPayment paid, return early to prevent multiple events happening

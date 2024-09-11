@@ -114,7 +114,7 @@ router.post('/refund/instant/:orderId', (req, res) =>
   instantRefundController.execute(req, res)
 )
 
-router.get('/admin/refund-payment/:orderId', (req, res) =>
+router.get('/admin/refund-payment/:refundId', (req, res) =>
   getRefundPaymentAdminController.execute(req, res)
 )
 router.get('/invoice/redirect', (req, res) =>

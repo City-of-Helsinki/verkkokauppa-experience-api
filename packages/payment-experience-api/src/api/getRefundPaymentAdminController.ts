@@ -23,7 +23,7 @@ export class GetRefundPaymentAdminController extends AbstractController<
     result: Response
   ): Promise<any> {
     const {
-      params: { orderId },
+      params: { refundId },
       headers: { 'api-key': apiKey, namespace },
     } = request
 
@@ -31,7 +31,7 @@ export class GetRefundPaymentAdminController extends AbstractController<
 
     const dto = new Data(
       await getRefundPaymentForOrderAdmin({
-        orderId,
+        refundId,
       })
     )
 

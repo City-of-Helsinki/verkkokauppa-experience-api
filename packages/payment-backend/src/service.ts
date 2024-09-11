@@ -588,9 +588,9 @@ export const getPaymentForOrderAdmin = async (p: {
 }
 
 export const getRefundPaymentForOrderAdmin = async (p: {
-  orderId: string
+  refundId: string
 }): Promise<RefundPayment> => {
-  const { orderId } = p
+  const { refundId } = p
   if (!process.env.PAYMENT_BACKEND_URL) {
     throw new Error('No payment API backend URL set')
   }
@@ -598,7 +598,7 @@ export const getRefundPaymentForOrderAdmin = async (p: {
   const url = `${process.env.PAYMENT_BACKEND_URL}/refund-admin/refund-payment/get`
   try {
     const res = await axios.get(url, {
-      params: { orderId },
+      params: { refundId },
     })
     return res.data
   } catch (e) {
@@ -691,7 +691,7 @@ export const getPaidPaymentAdmin = async (p: {
 }
 
 export const getPaidRefundPaymentAdmin = async (p: {
-  orderId: string
+  refundId: string
 }): Promise<RefundPayment | null> => {
   try {
     const refundPayment = await getRefundPaymentForOrderAdmin(p)
