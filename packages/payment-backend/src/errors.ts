@@ -160,6 +160,15 @@ export class GetRefundPaymentForOrderByRefundIdFailure extends ExperienceFailure
     })
   }
 }
+export class GetRefundPaymentByRefundPaymentIdFailure extends ExperienceFailure {
+  constructor(source: Error) {
+    super({
+      code: 'failed-to-get-refund-payment-by-refund-payment-id',
+      message: 'Failed to get refund payment by refund payment id',
+      source,
+    })
+  }
+}
 
 export class CancelPaymentWithPaymentIdFailure extends ExperienceFailure {
   constructor(source: Error) {
