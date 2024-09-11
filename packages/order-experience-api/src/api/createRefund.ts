@@ -127,6 +127,7 @@ export class CreateRefundController extends AbstractController<
                 (refundItem) => refundItem.orderItemId === item.orderItemId
               )
 
+            // TODO: instead of quantity check the sum
             const refundedQuantity = refundedItems.reduce(
               (quantity, refundItem) => quantity + refundItem.quantity,
               0

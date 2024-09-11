@@ -40,7 +40,7 @@ export class SendRefundEmailController extends AbstractController<
       refund.items[0]?.merchantId || ''
     )
     const payment = await getRefundPaymentForOrderAdmin({
-      orderId: order.orderId,
+      refundId: refundId,
     })
 
     await sendRefundConfirmationEmail({
