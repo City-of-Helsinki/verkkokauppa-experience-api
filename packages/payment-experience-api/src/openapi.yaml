@@ -35,6 +35,12 @@ components:
       required: true
       schema:
         type: string
+    RefundPaymentId:
+      name: refundPaymentId
+      in: path
+      required: true
+      schema:
+        type: string
     Namespace:
       name: namespace
       in: header
@@ -644,6 +650,27 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/RefundPayment'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+
+  /admin/refund-payment-id/{refundPaymentId}:
+    get:
+      description: Get refund payment by refund payment id
+      security:
+        - ApiKey: [ ]
+      parameters:
+        - $ref: '#/components/parameters/RefundPaymentId'
+        - $ref: '#/components/parameters/Namespace'
+      responses:
+        '200':
+          description: Fetched refund payment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefundPayment'
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
