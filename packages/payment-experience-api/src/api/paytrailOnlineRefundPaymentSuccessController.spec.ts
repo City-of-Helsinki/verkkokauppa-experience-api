@@ -14,6 +14,7 @@ jest.mock('@verkkokauppa/payment-backend', () => {
     __esModules: true,
     // first start with all of the module's functions auto-mocked
     getPaidRefundPaymentAdmin: jest.fn(() => null),
+    getPaidRefundPaymentAdminByRefundId: jest.fn(() => null),
     // lastly override w/ any of the module's functions that
     // we want to use the *real* implementations for
 
@@ -328,8 +329,16 @@ describe('Test paytrail refund payment success controller', () => {
     const mockGetPaidRefundPaymentAdmin = jest.requireMock(
       '@verkkokauppa/payment-backend'
     ).getPaidRefundPaymentAdmin
+    const mockgetPaidRefundPaymentAdminByRefundId = jest.requireMock(
+      '@verkkokauppa/payment-backend'
+    ).getPaidRefundPaymentAdminByRefundId
 
     mockGetPaidRefundPaymentAdmin.mockImplementationOnce(() => {
+      return {
+        refundPayment: 'refundPayment',
+      }
+    })
+    mockgetPaidRefundPaymentAdminByRefundId.mockImplementationOnce(() => {
       return {
         refundPayment: 'refundPayment',
       }

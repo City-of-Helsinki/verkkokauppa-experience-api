@@ -13,7 +13,7 @@ import {
 } from '@verkkokauppa/order-backend'
 import {
   checkPaytrailRefundCallbackUrl,
-  getPaidRefundPaymentAdmin,
+  getPaidRefundPaymentAdminByRefundId,
 } from '@verkkokauppa/payment-backend'
 import { createUserRefundRedirectUrl } from '../lib/refundCallbackService'
 import { parseRefundIdFromPaytrailRefundCallbackUrl } from '../lib/paytrail'
@@ -57,12 +57,15 @@ export class PaytrailOnlineRefundPaymentSuccessController extends AbstractContro
       })
     }
 
-    const refundPayment = await getPaidRefundPaymentAdmin({
-      orderId: orderId,
+    const refundPayment = await getPaidRefundPaymentAdminByRefundId({
+      refundId: refundId,
     })
 
     // Already found refundPayment paid, return early to prevent multiple events happening
     if (refundPayment != null) {
+      logger.debug(
+        `Paid payment already found for this refund, quitting early. Refund id: ${refundId}`
+      )
       return result.redirect(
         200,
         PaytrailOnlineRefundPaymentSuccessController.getFailureRedirectUrl()
