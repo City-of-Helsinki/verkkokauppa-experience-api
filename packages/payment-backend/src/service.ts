@@ -21,6 +21,7 @@ import {
   GetPaymentsForOrderFailure,
   GetPaymentStatusFailure,
   GetPaymentUrlFailure,
+  GetRefundPaymentByRefundPaymentIdFailure,
   GetRefundPaymentForOrderByRefundIdFailure,
   GetRefundPaymentForOrderFailure,
   PaymentMethodsNotFound,
@@ -629,6 +630,27 @@ export const getRefundPaymentForOrderAdminByRefundId = async (p: {
       throw new RefundPaymentNotFound()
     }
     throw new GetRefundPaymentForOrderByRefundIdFailure(e)
+  }
+}
+export const getRefundPaymentAdminByRefundPaymentId = async (p: {
+  refundPaymentId: string
+}): Promise<RefundPayment> => {
+  const { refundPaymentId } = p
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/refund-admin/refund-payment/get/refundPaymentId`
+  try {
+    const res = await axios.get(url, {
+      params: { refundPaymentId },
+    })
+    return res.data
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new RefundPaymentNotFound()
+    }
+    throw new GetRefundPaymentByRefundPaymentIdFailure(e)
   }
 }
 
