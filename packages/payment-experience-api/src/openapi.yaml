@@ -29,6 +29,18 @@ components:
       required: true
       schema:
         type: string
+    RefundId:
+      name: refundId
+      in: path
+      required: true
+      schema:
+        type: string
+    RefundPaymentId:
+      name: refundPaymentId
+      in: path
+      required: true
+      schema:
+        type: string
     Namespace:
       name: namespace
       in: header
@@ -554,6 +566,7 @@ paths:
           $ref: '#/components/responses/NotFound'
   /refund/instant/{orderId}:
     get:
+      deprecated: true
       description: Create a refund for single order, confirm it and create a refund payment - refunds all order items.
       security:
         - ApiKey: [ ]
@@ -602,11 +615,54 @@ paths:
 
   /admin/refund-payment/{orderId}:
     get:
-      description: Get refund payment by orderId
+      deprecated: true
+      description: Get refund payment by orderId (Supports only one refund payment per response)
       security:
         - ApiKey: [ ]
       parameters:
         - $ref: '#/components/parameters/OrderId'
+        - $ref: '#/components/parameters/Namespace'
+      responses:
+        '200':
+          description: Fetched refund payment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefundPayment'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /admin/refunds/{refundId}/payment:
+    get:
+      description: Get refund payment(s) by refund id (Supports multiple refund payments in response)
+      security:
+        - ApiKey: [ ]
+      parameters:
+        - $ref: '#/components/parameters/RefundId'
+        - $ref: '#/components/parameters/Namespace'
+      responses:
+        '200':
+          description: Fetched refund payment
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RefundPayment'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+
+  /admin/refund-payment-id/{refundPaymentId}:
+    get:
+      description: Get refund payment by refund payment id
+      security:
+        - ApiKey: [ ]
+      parameters:
+        - $ref: '#/components/parameters/RefundPaymentId'
         - $ref: '#/components/parameters/Namespace'
       responses:
         '200':
