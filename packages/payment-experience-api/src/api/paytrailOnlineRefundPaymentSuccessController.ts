@@ -63,6 +63,9 @@ export class PaytrailOnlineRefundPaymentSuccessController extends AbstractContro
 
     // Already found refundPayment paid, return early to prevent multiple events happening
     if (refundPayment != null) {
+      logger.debug(
+        `Paid payment already found for this refund, quitting early. Refund id: ${refundId}`
+      )
       return result.redirect(
         200,
         PaytrailOnlineRefundPaymentSuccessController.getFailureRedirectUrl()
