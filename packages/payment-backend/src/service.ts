@@ -752,6 +752,28 @@ export const getPaidRefundPaymentAdmin = async (p: {
   }
 }
 
+export const getPaidRefundPaymentAdminByRefundId = async (p: {
+  refundId: string
+}): Promise<RefundPayment | null> => {
+  try {
+    let paidRefundPayment = null
+    const refundPayment = await getRefundPaymentForOrderAdminByRefundId(p)
+
+    refundPayment.forEach((payment) => {
+      if (payment.status === RefundPaymentStatus.PAID_ONLINE.toString()) {
+        paidRefundPayment = payment
+      }
+    })
+
+    return paidRefundPayment
+  } catch (e) {
+    if (e instanceof RefundPaymentNotFound) {
+      return null
+    }
+    throw e
+  }
+}
+
 export const createPaymentFromUnpaidOrder = async (p: {
   order: Order
   paymentMethod: string
