@@ -1240,59 +1240,59 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  /subscription/create:
-    post:
-      description: Create subscription
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Subscription'
-      responses:
-        '201':
-          description: The created subscription
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Subscription'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-  /subscription/create-from-order:
-    post:
-      description: Create subscriptions from order. Each order item creates its own subscription.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - orderId
-                - user
-              properties:
-                orderId:
-                  type: string
-                user:
-                  type: string
-      responses:
-        '201':
-          description: The subscription ids
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - subscriptionIds
-                properties:
-                  subscriptionIds:
-                    type: array
-                    items:
-                      type: string
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+#  /subscription/create:
+#    post:
+#      description: Create subscription
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: '#/components/schemas/Subscription'
+#      responses:
+#        '201':
+#          description: The created subscription
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/Subscription'
+#        '500':
+#          $ref: '#/components/responses/InternalServerError'
+#  /subscription/create-from-order:
+#    post:
+#      description: Create subscriptions from order. Each order item creates its own subscription.
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              type: object
+#              required:
+#                - orderId
+#                - user
+#              properties:
+#                orderId:
+#                  type: string
+#                user:
+#                  type: string
+#      responses:
+#        '201':
+#          description: The subscription ids
+#          content:
+#            application/json:
+#              schema:
+#                type: object
+#                required:
+#                  - subscriptionIds
+#                properties:
+#                  subscriptionIds:
+#                    type: array
+#                    items:
+#                      type: string
+#        '404':
+#          $ref: '#/components/responses/NotFound'
+#        '500':
+#          $ref: '#/components/responses/InternalServerError'
   /subscription/search/active:
     post:
       description: Search active subscriptions
@@ -1693,6 +1693,38 @@ paths:
   /refund/{refundId}/confirm:
     post:
       description: Confirm refund and creates refund payment and return them on payment field in response
+      security:
+        - ApiKey: [ ]
+      parameters:
+        - $ref: '#/components/parameters/Namespace'
+        - $ref: '#/components/parameters/RefundId'
+      responses:
+        '200':
+          description: The confirmed refund
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - refund
+                  - payment
+                properties:
+                  refund:
+                    $ref: '#/components/schemas/Refund'
+                  payment:
+                    $ref: '#/components/schemas/RefundPayment'
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '403':
+          $ref: '#/components/responses/InvalidApiKey'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /refund/{refundId}:
+    get:
+      summary: Get refund and refund payment details
+      description: Fetch refund and corresponding refund payment details for a given refund ID.
+      operationId: getRefundPayment
       security:
         - ApiKey: [ ]
       parameters:
