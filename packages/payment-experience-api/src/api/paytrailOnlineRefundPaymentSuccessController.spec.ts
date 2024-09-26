@@ -83,7 +83,7 @@ const refundBackendResponseMock = {
     status: 'draft',
     customerFirstName: 'dummy_firstname',
     customerLastName: 'dummy_lastname',
-    customerEmail: 'f117c93e-426c-4dcc-8b86-f7ff65cacde4@ambientia.fi',
+    customerEmail: 'f117c93e-426c-4dcc-8b86-f7ff65cacde4@hiq.fi',
     customerPhone: '0404123456',
     refundReason: 'Palautuksen syy',
     priceNet: '100',

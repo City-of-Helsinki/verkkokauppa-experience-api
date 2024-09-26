@@ -61,24 +61,6 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
         orderId: orderId,
       })
 
-      try {
-        if (!payment) {
-          throw new Error(
-            `Payment not found when updating internal payment from paytrail with orderId ${orderId}`
-          )
-        }
-        await updateInternalPaymentFromPaytrail({
-          paymentId: payment.paymentId,
-          merchantId: parseMerchantIdFromFirstOrderItem(order),
-          namespace: order.namespace,
-        })
-      } catch (e) {
-        logger.error(e)
-        logger.debug(
-          `Error occurred, when updating payment data from paytrail ${orderId}`
-        )
-      }
-
       // Already found payment paid, return early to prevent multiple events happening
       if (payment != null && payment.status === 'payment_paid_online') {
         // successfully paid so redirect to success
@@ -112,6 +94,26 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
           `PaytrailStatus is not valid for ${orderId}, redirect to failure url`
         )
         return result.redirect(302, failureRedirectUrl.toString())
+      }
+
+      try {
+        const paymentId = query['checkout-stamp']?.toString()
+        if (paymentId) {
+          await updateInternalPaymentFromPaytrail({
+            paymentId: paymentId,
+            merchantId: parseMerchantIdFromFirstOrderItem(order),
+            namespace: order.namespace,
+          })
+        } else {
+          logger.error(
+            `Error occurred, when updating payment data from paytrail ${orderId}. checkout-stamp is null.`
+          )
+        }
+      } catch (e) {
+        logger.error(e)
+        logger.debug(
+          `Error occurred, when updating payment data from paytrail ${orderId}`
+        )
       }
 
       const redirectUrl = await createUserRedirectUrl({
