@@ -2,6 +2,8 @@ import axios from 'axios'
 import {
   CreateProductMappingFailure,
   GetProductMappingFailure,
+  GetProductMappingsByNamespaceFailure,
+  ProductMappingByNamespaceNotFound,
   ProductMappingNotFound,
 } from './errors'
 
@@ -37,6 +39,26 @@ export const getProductMapping = async (p: {
       throw new ProductMappingNotFound()
     }
     throw new GetProductMappingFailure(e)
+  }
+}
+
+export const getProductMappingsByNamespace = async (p: {
+  namespace: string
+}): Promise<[ProductMappingBackendResponse]> => {
+  checkBackendUrlExists()
+
+  const { namespace } = p
+  const url = `${process.env.PRODUCT_MAPPING_BACKEND_URL}/productmapping/get/namespace`
+  try {
+    const result = await axios.get<[ProductMappingBackendResponse]>(url, {
+      params: { namespace },
+    })
+    return result.data
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new ProductMappingByNamespaceNotFound(namespace)
+    }
+    throw new GetProductMappingsByNamespaceFailure(e)
   }
 }
 
