@@ -319,3 +319,41 @@ paths:
           $ref: '#/components/responses/RequestValidationError'
         '500':
           $ref: '#/components/responses/InternalServerError'
+    get:
+      summary: 'Get Product Accounting and Optional Invoicing'
+      description: >
+        Create product accounting and optional invoicing for a product. 
+        Supplying invoicing details enables paying products with an invoice.
+
+        **NextEntity Explanation**:
+        The `nextEntity` object contains accounting details that will be applied after the `activeFrom` date and time have elapsed. 
+        If any field within the `nextEntity` object is `null` or not provided, the corresponding value from the base object 
+        (the primary accounting details) will be used instead. This allows for a smooth transition of accounting details over time, 
+        where only the changes in `nextEntity` need to be specified.
+      security:
+        - ApiKey: [ ]
+      parameters:
+        - $ref: '#/components/parameters/ProductId'
+        - $ref: '#/components/parameters/Namespace'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductAccountingRequest'
+      responses:
+        '201':
+          description: 'Created product accounting'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ProductAccounting'
+                  - type: object
+                    properties:
+                      productInvoicing:
+                        $ref: '#/components/schemas/ProductInvoicing'
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
