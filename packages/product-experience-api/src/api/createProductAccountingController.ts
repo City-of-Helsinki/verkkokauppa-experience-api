@@ -75,7 +75,7 @@ export class CreateProductAccountingController extends AbstractController<
     const { productId } = req.params
     const { 'api-key': apiKey, namespace } = req.headers
     const { productInvoicing, ...accounting } = req.body
-    const productAccounting: any = { productId, ...accounting }
+    const productAccounting: any = { productId, ...accounting, namespace }
 
     await validateApiKey({ namespace, apiKey })
 

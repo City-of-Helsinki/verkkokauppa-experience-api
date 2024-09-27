@@ -50,12 +50,12 @@ export class GetProductAccountingController extends AbstractController<
         productInvoicing: { productId, ...productInvoicing },
       }
 
-      return this.created<any>(res, dto)
+      return this.success<any>(res, dto)
     } catch (e) {
       logger.debug(
         `Get invoicingAccounting for product id: ${productId} returned an error`
       )
-      return this.created<any>(res, accounting)
+      return this.success<any>(res, accounting)
     }
   }
 }
