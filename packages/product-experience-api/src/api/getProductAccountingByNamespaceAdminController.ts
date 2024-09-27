@@ -10,17 +10,19 @@ import {
   ProductInvoicing,
 } from '@verkkokauppa/product-backend'
 import * as yup from 'yup'
-import { validateApiKey } from '@verkkokauppa/configuration-backend'
+import { validateAdminApiKey } from '@verkkokauppa/configuration-backend'
 import { getProductMappingsByNamespace } from '@verkkokauppa/product-mapping-backend'
 
 const requestSchema = yup.object().shape({
+  params: yup.object().shape({
+    namespace: yup.string().required(),
+  }),
   headers: yup.object().shape({
     'api-key': yup.string().required(),
-    namespace: yup.string().required(),
   }),
 })
 
-export class GetProductAccountingByNamespaceController extends AbstractController<
+export class GetProductAccountingByNamespaceAdminController extends AbstractController<
   typeof requestSchema
 > {
   protected readonly requestSchema = requestSchema
@@ -29,14 +31,16 @@ export class GetProductAccountingByNamespaceController extends AbstractControlle
     req: ValidatedRequest<typeof requestSchema>,
     res: Response
   ): Promise<any> {
-    // const { namespaceFromReq } = req.params
-    const { 'api-key': apiKey, namespace } = req.headers
+    const { namespace } = req.params
+    const { 'api-key': apiKey } = req.headers
 
-    await validateApiKey({ namespace, apiKey })
+    await validateAdminApiKey({ apiKey })
 
-    logger.debug(`Get product accounting for namespace: ${namespace}`)
+    logger.debug(`Admin - Get product accounting for namespace: ${namespace}`)
 
-    const productMappings = await getProductMappingsByNamespace({ namespace })
+    const productMappings = (
+      await getProductMappingsByNamespace({ namespace })
+    ).filter((value) => value !== null)
     const productIds = productMappings.map((mapping) => mapping.productId)
 
     // Fetch accounting and invoicing data in parallel
@@ -49,7 +53,7 @@ export class GetProductAccountingByNamespaceController extends AbstractControlle
       productInvoicing = await getProductInvoicings({ productIds })
     } catch (e) {
       logger.debug(
-        `Get invoicingAccounting for products id: ${productIds.join(
+        `Admin - Get invoicingAccounting for products id: ${productIds.join(
           ','
         )} returned an error`
       )

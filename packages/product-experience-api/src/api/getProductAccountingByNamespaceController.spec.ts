@@ -1,4 +1,4 @@
-import { GetProductAccountingController } from './getProductAccountingController'
+import { GetProductAccountingByNamespaceController } from './getProductAccountingByNamespaceController'
 import type { ValidatedRequest } from '@verkkokauppa/core'
 import type { Response as MockedResponse } from 'express'
 import { logger } from '@verkkokauppa/core'
@@ -6,6 +6,10 @@ import { logger } from '@verkkokauppa/core'
 jest.mock('@verkkokauppa/product-backend', () => ({
   getProductAccountingBatch: jest.fn(),
   getProductInvoicings: jest.fn(),
+}))
+
+jest.mock('@verkkokauppa/product-mapping-backend', () => ({
+  getProductMappingsByNamespace: jest.fn(),
 }))
 
 jest.mock('@verkkokauppa/configuration-backend', () => ({
@@ -17,7 +21,11 @@ const {
   getProductInvoicings,
 } = require('@verkkokauppa/product-backend')
 
-// Now set up the mock implementations
+const {
+  getProductMappingsByNamespace,
+} = require('@verkkokauppa/product-mapping-backend')
+
+// Set up the mock implementations
 getProductAccountingBatch.mockImplementation(() => [
   {
     productId: 'test-product-id',
@@ -27,8 +35,16 @@ getProductAccountingBatch.mockImplementation(() => [
 
 getProductInvoicings.mockImplementation(() => [
   {
+    productId: 'test-product-id',
     invoiceId: 'test-invoice-id',
     amount: 100,
+  },
+])
+
+getProductMappingsByNamespace.mockImplementation(() => [
+  {
+    productId: 'test-product-id',
+    mappingDetails: 'some-mapping-data',
   },
 ])
 
@@ -36,34 +52,33 @@ jest.mock('@verkkokauppa/core', () => {
   const originalModule = jest.requireActual('@verkkokauppa/core')
 
   return {
-    ...originalModule, // Spread the original module to keep the original functionality
+    ...originalModule,
     logger: {
       info: jest.fn(),
       debug: jest.fn(),
     },
   }
 })
-describe('GetProductAccountingController', () => {
-  let controller: GetProductAccountingController
+
+describe('GetProductAccountingByNamespaceController', () => {
+  let controller: GetProductAccountingByNamespaceController
   let mockRequest: any
   let mockResponse: any
 
   beforeEach(() => {
-    controller = new GetProductAccountingController()
+    controller = new GetProductAccountingByNamespaceController()
 
     mockRequest = {
-      params: { productId: '' },
       headers: {
-        'api-key': '',
-        namespace: '',
+        'api-key': 'test-api-key',
+        namespace: 'test-namespace',
       },
-      // Mock the get method for req.get(header)
       get: jest.fn((header: string) => {
         if (header === 'api-key') {
-          return 'mockApiKey'
+          return 'test-api-key'
         }
         if (header === 'namespace') {
-          return 'mockNamespace'
+          return 'test-namespace'
         }
         return null
       }),
@@ -73,55 +88,56 @@ describe('GetProductAccountingController', () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
       get: jest.fn((header: string) => {
-        if (header === 'Content-Type') {
-          return 'application/json'
+        if (header === 'api-key') {
+          return 'test-api-key'
+        }
+        if (header === 'namespace') {
+          return 'test-namespace'
         }
         return null
       }),
     }
+
     jest.clearAllMocks()
   })
 
   it('should return product accounting and invoicing successfully', async () => {
-    const productId = 'test-product-id'
-    const apiKey = 'test-api-key'
-    const namespace = 'test-namespace'
-
-    mockRequest.params = { productId }
-    mockRequest.headers = { 'api-key': apiKey, namespace }
-
     await controller.execute(
       mockRequest as ValidatedRequest<any>,
       mockResponse as MockedResponse
     )
 
+    expect(getProductMappingsByNamespace).toHaveBeenCalledWith({
+      namespace: 'test-namespace',
+    })
     expect(getProductAccountingBatch).toHaveBeenCalledWith({
-      productIds: [productId],
+      productIds: ['test-product-id'],
     })
     expect(getProductInvoicings).toHaveBeenCalledWith({
-      productIds: [productId],
+      productIds: ['test-product-id'],
     })
 
     expect(mockResponse.status).toHaveBeenCalledWith(200)
-    expect(mockResponse.json.mock.calls[0][0]).toEqual({
-      productId: productId,
-      accountingDetails: 'some-accounting-data',
-      productInvoicing: {
-        productId,
-        invoiceId: 'test-invoice-id',
-        amount: 100,
+    expect(mockResponse.json.mock.calls[0][0]).toEqual([
+      {
+        productMapping: {
+          productId: 'test-product-id',
+          mappingDetails: 'some-mapping-data',
+        },
+        accounting: {
+          productId: 'test-product-id',
+          accountingDetails: 'some-accounting-data',
+        },
+        productInvoicing: {
+          productId: 'test-product-id',
+          invoiceId: 'test-invoice-id',
+          amount: 100,
+        },
       },
-    })
+    ])
   })
 
   it('should handle invoicing error gracefully', async () => {
-    const productId = 'test-product-id'
-    const apiKey = 'test-api-key'
-    const namespace = 'test-namespace'
-
-    mockRequest.params = { productId }
-    mockRequest.headers = { 'api-key': apiKey, namespace }
-
     getProductInvoicings.mockImplementationOnce(() => {
       throw new Error('Invoicing error')
     })
@@ -131,30 +147,37 @@ describe('GetProductAccountingController', () => {
       mockResponse as MockedResponse
     )
 
+    expect(getProductMappingsByNamespace).toHaveBeenCalledWith({
+      namespace: 'test-namespace',
+    })
     expect(getProductAccountingBatch).toHaveBeenCalledWith({
-      productIds: [productId],
+      productIds: ['test-product-id'],
     })
     expect(getProductInvoicings).toHaveBeenCalledWith({
-      productIds: [productId],
+      productIds: ['test-product-id'],
     })
 
-    // Ensure logger was called
     const calls = (logger.debug as jest.Mock).mock.calls
-    // console.log(JSON.stringify(calls, null, 4))
-    // console.log(JSON.stringify(calls[0], null, 4))
-    // console.log(JSON.stringify(calls[1], null, 4))
     expect(calls[0][0]).toEqual(
-      `Get product accounting for product id: ${productId}`
+      'Get product accounting for namespace: test-namespace'
     )
-    // Ensure logger was called
     expect(calls[1][0]).toEqual(
-      `Get invoicingAccounting for product id: ${productId} returned an error`
+      'Get invoicingAccounting for products id: test-product-id returned an error'
     )
 
     expect(mockResponse.status).toHaveBeenCalledWith(200)
-    expect(mockResponse.json).toHaveBeenCalledWith({
-      productId: productId,
-      accountingDetails: 'some-accounting-data',
-    })
+    expect(mockResponse.json).toHaveBeenCalledWith([
+      {
+        productMapping: {
+          productId: 'test-product-id',
+          mappingDetails: 'some-mapping-data',
+        },
+        accounting: {
+          productId: 'test-product-id',
+          accountingDetails: 'some-accounting-data',
+        },
+        productInvoicing: {}, // Empty object due to error in invoicing
+      },
+    ])
   })
 })

@@ -48,7 +48,7 @@ export const getProductMappingsByNamespace = async (p: {
   checkBackendUrlExists()
 
   const { namespace } = p
-  const url = `${process.env.PRODUCT_MAPPING_BACKEND_URL}/productmapping/get/namespace`
+  const url = `${process.env.PRODUCT_MAPPING_BACKEND_URL}/productmappings/get/namespace`
   try {
     const result = await axios.get<[ProductMappingBackendResponse]>(url, {
       params: { namespace },
