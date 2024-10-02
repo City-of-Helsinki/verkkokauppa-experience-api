@@ -7,7 +7,8 @@ import type { Response } from 'express'
 import * as yup from 'yup'
 import { validateApiKey } from '@verkkokauppa/configuration-backend'
 import { getOrderAdmin, getRefundAdmin } from '@verkkokauppa/order-backend'
-import { getRefundPaymentForOrderAdmin } from '@verkkokauppa/payment-backend'
+import { getRefundPaymentForOrderAdminByRefundId } from '@verkkokauppa/payment-backend'
+
 const requestSchema = yup.object().shape({
   params: yup.object().shape({
     refundId: yup.string().required(),
@@ -35,12 +36,14 @@ export class GetRefundController extends AbstractController<
 
     const refund = await getRefundAdmin({ refundId })
 
-    const order = await getOrderAdmin(refund.refund)
+    const order = await getOrderAdmin({
+      orderId: refund.refund.orderId,
+    })
 
-    let refundPayment = null
+    let refundPayments = null
     try {
-      refundPayment = await getRefundPaymentForOrderAdmin({
-        orderId: order.orderId,
+      refundPayments = await getRefundPaymentForOrderAdminByRefundId({
+        refundId: refund.refund.refundId,
       })
     } catch (e) {
       logger.info(
@@ -50,7 +53,7 @@ export class GetRefundController extends AbstractController<
 
     return this.success(res, {
       ...refund,
-      payment: refundPayment,
+      payment: refundPayments,
     })
   }
 }
