@@ -2,7 +2,7 @@ import axios from 'axios'
 import { GetRefundController } from './getRefund' // Assuming your controller is here
 import { validateApiKey } from '@verkkokauppa/configuration-backend'
 import { getOrderAdmin, getRefundAdmin } from '@verkkokauppa/order-backend'
-import { getRefundPaymentForOrderAdmin } from '@verkkokauppa/payment-backend'
+import { getRefundPaymentForOrderAdminByRefundId } from '@verkkokauppa/payment-backend'
 
 // Mock the external dependencies
 jest.mock('axios')
@@ -14,7 +14,7 @@ jest.mock('@verkkokauppa/order-backend', () => ({
   getOrderAdmin: jest.fn(),
 }))
 jest.mock('@verkkokauppa/payment-backend', () => ({
-  getRefundPaymentForOrderAdmin: jest.fn(),
+  getRefundPaymentForOrderAdminByRefundId: jest.fn(),
 }))
 
 // Axios mock instance
@@ -70,15 +70,17 @@ describe('GetRefundController Tests', () => {
     ;(validateApiKey as jest.Mock).mockResolvedValue(undefined)
 
     // Mocking the refund and order admin API calls
-    const mockRefund = { refundId: 'mockRefundId', refund: 'mockRefund' }
+    const mockRefund = {
+      refund: { refundId: 'mockRefundId', orderId: 'mockOrderId' },
+    }
     const mockOrder = { orderId: 'mockOrderId' }
     const mockRefundPayment = { paymentId: 'mockPaymentId' }
 
     ;(getRefundAdmin as jest.Mock).mockResolvedValue(mockRefund)
     ;(getOrderAdmin as jest.Mock).mockResolvedValue(mockOrder)
-    ;(getRefundPaymentForOrderAdmin as jest.Mock).mockResolvedValue(
-      mockRefundPayment
-    )
+    ;(getRefundPaymentForOrderAdminByRefundId as jest.Mock).mockResolvedValue([
+      mockRefundPayment,
+    ])
 
     // Execute the controller method
     await controller.execute(mockRequest, mockResponse)
@@ -89,17 +91,16 @@ describe('GetRefundController Tests', () => {
       apiKey: 'mockApiKey',
     })
     expect(getRefundAdmin).toHaveBeenCalledWith({ refundId: 'mockRefundId' })
-    expect(getOrderAdmin).toHaveBeenCalledWith('mockRefund')
-    expect(getRefundPaymentForOrderAdmin).toHaveBeenCalledWith({
-      orderId: 'mockOrderId',
+    expect(getOrderAdmin).toHaveBeenCalledWith({ orderId: 'mockOrderId' })
+    expect(getRefundPaymentForOrderAdminByRefundId).toHaveBeenCalledWith({
+      refundId: 'mockRefundId',
     })
 
     // Verify the response
     expect(mockResponse.status).toHaveBeenCalledWith(200)
     expect(mockResponse.json).toHaveBeenCalledWith({
-      refundId: 'mockRefundId',
-      refund: 'mockRefund',
-      payment: mockRefundPayment,
+      refund: { refundId: 'mockRefundId', orderId: 'mockOrderId' },
+      payment: [mockRefundPayment],
     })
   })
 
@@ -108,12 +109,14 @@ describe('GetRefundController Tests', () => {
     ;(validateApiKey as jest.Mock).mockResolvedValue(undefined)
 
     // Mocking the refund and order admin API calls
-    const mockRefund = { refundId: 'mockRefundId', refund: 'mockRefund' }
+    const mockRefund = {
+      refund: { refundId: 'mockRefundId', orderId: 'mockOrderId' },
+    }
     const mockOrder = { orderId: 'mockOrderId' }
 
     ;(getRefundAdmin as jest.Mock).mockResolvedValue(mockRefund)
     ;(getOrderAdmin as jest.Mock).mockResolvedValue(mockOrder)
-    ;(getRefundPaymentForOrderAdmin as jest.Mock).mockRejectedValue(
+    ;(getRefundPaymentForOrderAdminByRefundId as jest.Mock).mockRejectedValue(
       new Error('Refund payment not found')
     )
 
@@ -126,16 +129,15 @@ describe('GetRefundController Tests', () => {
       apiKey: 'mockApiKey',
     })
     expect(getRefundAdmin).toHaveBeenCalledWith({ refundId: 'mockRefundId' })
-    expect(getOrderAdmin).toHaveBeenCalledWith('mockRefund')
-    expect(getRefundPaymentForOrderAdmin).toHaveBeenCalledWith({
-      orderId: 'mockOrderId',
+    expect(getOrderAdmin).toHaveBeenCalledWith({ orderId: 'mockOrderId' })
+    expect(getRefundPaymentForOrderAdminByRefundId).toHaveBeenCalledWith({
+      refundId: 'mockRefundId',
     })
 
     // Verify the response (no payment info)
     expect(mockResponse.status).toHaveBeenCalledWith(200)
     expect(mockResponse.json).toHaveBeenCalledWith({
-      refundId: 'mockRefundId',
-      refund: 'mockRefund',
+      refund: { refundId: 'mockRefundId', orderId: 'mockOrderId' },
       payment: null, // No payment info
     })
   })
