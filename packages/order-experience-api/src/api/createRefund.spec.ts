@@ -38,7 +38,7 @@ const confirmRefundAdminDataMock = {
   status: 'confirmed',
   customerFirstName: 'dummy_firstname',
   customerLastName: 'dummy_lastname',
-  customerEmail: 'test@ambientia.fi',
+  customerEmail: 'test@hiq.fi',
   customerPhone: '',
   priceNet: '100',
   priceVat: '100',
@@ -434,7 +434,7 @@ describe('Test CreateRefundController', () => {
           },
         ],
         refund: {
-          customerEmail: 'test@ambientia.fi',
+          customerEmail: 'test@hiq.fi',
           customerFirstName: 'dummy_firstname',
           customerLastName: 'dummy_lastname',
           customerPhone: '',
