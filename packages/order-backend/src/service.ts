@@ -28,6 +28,7 @@ import {
   OrderValidationError,
   SetCustomerToOrderFailure,
   SetInvoiceToOrderFailure,
+  SetOrderAccountedFailure,
   SetOrderTotalsFailure,
   SubscriptionNotFoundError,
 } from './errors'
@@ -502,6 +503,21 @@ export const createAccountingEntryForOrder = async (
     return result.data
   } catch (e) {
     throw new CreateOrderAccountingFailure(e)
+  }
+}
+
+export const setOrderAsAccounted = async (orderId: string): Promise<any> => {
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+  const url = `${process.env.ORDER_BACKEND_URL}/order/setAccounted`
+  try {
+    const result = await axios.post<void>(url, null, {
+      params: { orderId },
+    })
+    return result.data
+  } catch (e) {
+    throw new SetOrderAccountedFailure(e)
   }
 }
 
