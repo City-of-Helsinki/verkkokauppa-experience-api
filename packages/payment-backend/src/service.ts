@@ -43,6 +43,7 @@ const allowedPaymentGateways = [
   PaymentGateway.PAYTRAIL.toString(),
   PaymentGateway.VISMA.toString(),
   PaymentGateway.INVOICE.toString(),
+  PaymentGateway.FREE.toString(),
 ]
 
 const checkBackendUrlExists = () => {
@@ -71,6 +72,9 @@ export const createMethodPartFromGateway = (gateway: string) => {
       break
     case 'offline':
       paymentMethodPart = 'invoice'
+      break
+    case 'free':
+      paymentMethodPart = 'free'
       break
   }
   return paymentMethodPart
@@ -391,6 +395,30 @@ export const checkPaytrailReturnUrl = async (p: {
     const result = await axios.get<PaytrailStatus>(url, {
       params: {
         ...params,
+        merchantId,
+      },
+    })
+    return result.data
+  } catch (e) {
+    throw new CheckPaytrailReturnUrlFailure(e)
+  }
+}
+
+export const checkFreeReturnUrl = async (p: {
+  orderId: string
+  merchantId: string
+}): Promise<PaytrailStatus> => {
+  const { orderId, merchantId } = p
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/free/check-return-url`
+
+  try {
+    const result = await axios.get<PaytrailStatus>(url, {
+      params: {
+        orderId,
         merchantId,
       },
     })
