@@ -106,6 +106,10 @@ export class PaytrailOnlinePaymentNotifyController extends AbstractController {
             return {
               ...item,
               ...productAccounting,
+              merchantId: merchantId,
+              namespace: order.namespace,
+              paytrailTransactionId:
+                paymentWithUpdatePaidAt?.paytrailTransactionId || '',
               paidAt: paymentWithUpdatePaidAt?.paidAt || '',
             }
           }),

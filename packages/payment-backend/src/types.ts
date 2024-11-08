@@ -99,6 +99,7 @@ export interface Payment {
   additionalInfo: string
   timestamp: string
   paidAt?: string
+  paytrailTransactionId?: string
   token: string
   paytrailProvider?: PaytrailProvider
 }
