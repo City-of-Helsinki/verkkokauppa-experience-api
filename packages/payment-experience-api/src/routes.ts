@@ -25,6 +25,7 @@ import { InvoicingRedirectController } from './api/invoicingRedirectController'
 import { PaytrailMitChargeNotifyController } from './api/paytrailMitChargeNotifyController'
 import { GetRefundPaymentWithRefundIdAdminController } from './api/getRefundPaymentWithRefundIdAdminController'
 import { GetRefundPaymentWithRefundPaymentIdAdminController } from './api/getRefundPaymentWithRefundPaymentIdAdminController'
+import { AccountingCreateAdminController } from './api/accountingCreateAdminController'
 
 const createPaymentController = new (withAuthentication(
   CreatePaymentController
@@ -58,6 +59,7 @@ const instantRefundController = new InstantRefundController()
 const paytrailCardUpdateRedirectSuccessController = new PaytrailCardUpdateRedirectSuccessController()
 const invoicingRedirectController = new InvoicingRedirectController()
 const paytrailMitChargeNotifyController = new PaytrailMitChargeNotifyController()
+const accountingCreateAdminController = new AccountingCreateAdminController()
 
 const router = Router()
 router.get('/health', (req, res) => healthController.execute(req, res))
@@ -120,6 +122,10 @@ router.post('/refund/instant/:orderId', (req, res) =>
 
 router.get('/admin/refund-payment/:orderId', (req, res) =>
   getRefundPaymentAdminController.execute(req, res)
+)
+
+router.post('/admin/accounting-create', (req, res) =>
+  accountingCreateAdminController.execute(req, res)
 )
 
 router.get('/admin/refunds/:refundId/payment', (req, res) =>

@@ -9,32 +9,32 @@ import * as yup from 'yup'
 import type { Response } from 'express'
 import {
   parseMerchantIdFromFirstOrderItem,
-  validateApiKey,
+  validateAdminApiKey,
 } from '@verkkokauppa/configuration-backend'
 import {
   createAccountingEntryForOrder,
   getOrderAdmin,
+  OrderAccounting,
 } from '@verkkokauppa/order-backend'
 import { getProductAccountingBatch } from '@verkkokauppa/product-backend'
-import { sendReceipt } from '../lib/sendEmail'
 import { sendErrorNotification } from '@verkkokauppa/message-backend'
 import {
   Payment,
+  PaymentStatus,
   updateInternalPaymentFromPaytrail,
 } from '@verkkokauppa/payment-backend'
 
 const requestSchema = yup.object().shape({
   headers: yup.object().shape({
     'api-key': yup.string().required(),
-    namespace: yup.string().required(),
   }),
-  query: yup.object().shape({
+  body: yup.object().shape({
     orderId: yup.string().required(),
-    'checkout-stamp': yup.string().optional(),
+    paymentId: yup.string().required(),
   }),
 })
 
-export class PaytrailMitChargeNotifyController extends AbstractController<
+export class AccountingCreateAdminController extends AbstractController<
   typeof requestSchema
 > {
   protected readonly requestSchema = requestSchema
@@ -44,17 +44,17 @@ export class PaytrailMitChargeNotifyController extends AbstractController<
     res: Response
   ) {
     const {
-      headers: { 'api-key': apiKey, namespace },
-      query: { orderId, 'checkout-stamp': paymentId },
+      headers: { 'api-key': apiKey },
+      body: { orderId, paymentId },
     } = req
 
-    await validateApiKey({ namespace, apiKey })
+    await validateAdminApiKey({ apiKey })
 
     const order = await getOrderAdmin({ orderId })
     const merchantId = parseMerchantIdFromFirstOrderItem(order)
 
     if (!merchantId) {
-      logger.error('Paytrail: No merchantId found from order')
+      logger.error('AccountingAdmin: No merchantId found from order')
       throw new ExperienceError({
         code: 'merchant-id-not-found',
         message: 'No merchantId found from order.',
@@ -67,7 +67,7 @@ export class PaytrailMitChargeNotifyController extends AbstractController<
     try {
       if (!paymentId) {
         throw new Error(
-          `Notify - Payment not found when updating internal payment from paytrail with orderId ${orderId}`
+          `AccountingAdmin - Payment not found when updating internal payment from paytrail with orderId ${orderId}`
         )
       }
       paymentWithUpdatePaidAt = await updateInternalPaymentFromPaytrail({
@@ -75,19 +75,36 @@ export class PaytrailMitChargeNotifyController extends AbstractController<
         merchantId: merchantId,
         namespace: order.namespace,
       })
+      if (
+        paymentWithUpdatePaidAt &&
+        paymentWithUpdatePaidAt.status !== PaymentStatus.PAID_ONLINE.toString()
+      ) {
+        throw new ExperienceError({
+          code: 'failed-to-create-order-accounting-entry',
+          message: `No paid account entry found for product ${orderId}`,
+          responseStatus: StatusCode.BadRequest,
+          logLevel: 'error',
+        })
+      }
     } catch (e) {
+      if (
+        e instanceof ExperienceError &&
+        e?.definition?.responseStatus === StatusCode.BadRequest
+      ) {
+        throw e
+      }
       logger.error(e)
       logger.debug(
-        `Notify - Error occurred, when updating payment data from paytrail ${orderId}`
+        `AccountingAdmin - Error occurred, when updating payment data from paytrail ${orderId}`
       )
     }
-
+    let orderAccounting: OrderAccounting | null | string = null
     try {
       const productAccountings = await getProductAccountingBatch({
         productIds: order.items.map((item) => item.productId),
       })
 
-      await createAccountingEntryForOrder({
+      orderAccounting = await createAccountingEntryForOrder({
         orderId,
         dtos: order.items.map((item) => {
           const productAccounting = productAccountings.find(
@@ -95,12 +112,13 @@ export class PaytrailMitChargeNotifyController extends AbstractController<
           )
           if (!productAccounting) {
             throw new ExperienceError({
-              code: 'failed-to-create-order-accounting-entry',
+              code: 'admin-failed-to-create-order-accounting-entry',
               message: `No accounting entry found for product ${item.productId}`,
               responseStatus: StatusCode.BadRequest,
               logLevel: 'error',
             })
           }
+
           return {
             ...item,
             ...productAccounting,
@@ -116,19 +134,30 @@ export class PaytrailMitChargeNotifyController extends AbstractController<
     } catch (e) {
       // log error
       logger.error(
-        'Creating accountings in paytrailMitChargeNotifyController failed: ' +
-          e.toString()
+        'Creating accountings in AccountingAdmin failed: ' + e.toString()
       )
       // send notification to Slack channel (email) that creating accountings failed
       await sendErrorNotification({
-        message:
-          'Creating accountings failed in paytrailMitChargeNotifyController',
+        message: `Creating accountings failed in AccountingAdmin for order ${orderId} products ${order?.items
+          .map((item) => item?.productId)
+          .join(',')} paymentId ${paymentId}`,
         cause: e.toString(),
       })
     }
 
-    await sendReceipt(order, true)
+    const accountingExists =
+      typeof orderAccounting === 'string' &&
+      orderAccounting?.trim().length === 0
 
-    return this.success(res)
+    if (accountingExists) {
+      throw new ExperienceError({
+        code: 'admin-order-accounting-entry-exist',
+        message: `Accounting entry already exists for order ${orderId}`,
+        responseStatus: StatusCode.Conflict,
+        logLevel: 'info',
+      })
+    }
+
+    return this.created(res, orderAccounting)
   }
 }
