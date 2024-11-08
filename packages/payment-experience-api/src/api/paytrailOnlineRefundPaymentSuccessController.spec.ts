@@ -615,6 +615,10 @@ describe('Test paytrail refund payment success controller', () => {
       unit: 'pcs',
       vatCode: 'vatCode',
       vatPercentage: '24',
+      refundCreatedAt: '',
+      refundTransactionId: '',
+      merchantId: orderBackendResponseMock?.items[0]?.merchantId,
+      namespace: paymentMock.namespace,
     }
 
     const mockProductAccounting = [
