@@ -121,8 +121,9 @@ export class PaytrailMitChargeNotifyController extends AbstractController<
       )
       // send notification to Slack channel (email) that creating accountings failed
       await sendErrorNotification({
-        message:
-          'Creating accountings failed in paytrailMitChargeNotifyController',
+        message: `Creating accountings failed in paytrailMitChargeNotifyController for order ${orderId} products ${order?.items
+          .map((item) => item?.productId)
+          .join(',')}`,
         cause: e.toString(),
       })
     }

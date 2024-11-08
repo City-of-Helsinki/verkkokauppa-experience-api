@@ -119,13 +119,13 @@ export class PaytrailOnlinePaymentNotifyController extends AbstractController {
     } catch (e) {
       // log error
       logger.error(
-        'Creating accountings in paytrailOnlinePaymentNotifyController failed: ' +
-          e.toString()
+        `Creating accountings in paytrailOnlinePaymentNotifyController for order: ${orderId} failed: ${e.toString()}`
       )
       // send notification to Slack channel (email) that creating accountings failed
       await sendErrorNotification({
-        message:
-          'Creating accountings failed in paytrailOnlinePaymentNotifyController',
+        message: `Creating accountings failed in paytrailOnlinePaymentNotifyController for order: ${orderId} products ${order?.items
+          .map((item) => item?.productId)
+          .join(',')}`,
         cause: e.toString(),
       })
     }

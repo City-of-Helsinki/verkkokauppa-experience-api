@@ -34,6 +34,7 @@ import { SetPaymentMethodController } from './api/setPaymentMethodController'
 import { SendRefundEmailController } from './api/sendRefundEmail'
 import { HandleInternalWebhooks } from './api/handleInternalWebhooks'
 import { GetCancelController } from './api/getCancelUrlController'
+import { GetRefundController } from './api/getRefund'
 
 const createController = new CreateController()
 const cartToOrderController = new CartToOrder()
@@ -85,6 +86,7 @@ const instantRefundController = new CreateRefundController({
   confirmAndCreatePayment: true,
 })
 const confirmRefundController = new ConfirmRefundController()
+const getRefundController = new GetRefundController()
 const sendRefundEmailController = new SendRefundEmailController()
 
 const router = Router()
@@ -185,6 +187,10 @@ router.post('/refund/instant', (req, res) =>
 
 router.post('/refund/:refundId/confirm', (req, res) =>
   confirmRefundController.execute(req, res)
+)
+
+router.get('/refund/:refundId', (req, res) =>
+  getRefundController.execute(req, res)
 )
 
 router.post('/refund/:refundId/emailRefundConfirmation', (req, res) =>
