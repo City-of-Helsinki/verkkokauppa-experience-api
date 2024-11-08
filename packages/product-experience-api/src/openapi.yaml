@@ -381,7 +381,7 @@ paths:
         - $ref: '#/components/parameters/Namespace'
       responses:
         '200':
-          description: 'Product Mappings, Accounting, and Invoicing data created'
+          description: 'Product Mappings, Accounting, and Invoicing data found'
           content:
             application/json:
               schema:
