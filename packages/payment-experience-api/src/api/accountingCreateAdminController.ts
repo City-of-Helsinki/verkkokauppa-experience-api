@@ -19,6 +19,7 @@ import {
 import { getProductAccountingBatch } from '@verkkokauppa/product-backend'
 import { sendErrorNotification } from '@verkkokauppa/message-backend'
 import {
+  getPaidPaymentAdmin,
   Payment,
   PaymentStatus,
   updateInternalPaymentFromPaytrail,
@@ -63,21 +64,30 @@ export class AccountingCreateAdminController extends AbstractController<
       })
     }
 
-    let paymentWithUpdatePaidAt: Payment
+    let shouldBePaidPayment: Payment | null
     try {
       if (!paymentId) {
         throw new Error(
           `AccountingAdmin - Payment not found when updating internal payment from paytrail with orderId ${orderId}`
         )
       }
-      paymentWithUpdatePaidAt = await updateInternalPaymentFromPaytrail({
-        paymentId: paymentId,
-        merchantId: merchantId,
-        namespace: order.namespace,
-      })
+      try {
+        shouldBePaidPayment = await updateInternalPaymentFromPaytrail({
+          paymentId: paymentId,
+          merchantId: merchantId,
+          namespace: order.namespace,
+        })
+      } catch (e) {
+        logger.info(
+          `Failed to update ${paymentId} from paytrail, try to use from current payment`
+        )
+        shouldBePaidPayment = await getPaidPaymentAdmin({
+          orderId,
+        })
+      }
       if (
-        paymentWithUpdatePaidAt &&
-        paymentWithUpdatePaidAt.status !== PaymentStatus.PAID_ONLINE.toString()
+        shouldBePaidPayment &&
+        shouldBePaidPayment.status !== PaymentStatus.PAID_ONLINE.toString()
       ) {
         throw new ExperienceError({
           code: 'failed-to-create-order-accounting-entry',
@@ -125,8 +135,8 @@ export class AccountingCreateAdminController extends AbstractController<
             merchantId: merchantId,
             namespace: order.namespace,
             paytrailTransactionId:
-              paymentWithUpdatePaidAt?.paytrailTransactionId || '',
-            paidAt: paymentWithUpdatePaidAt?.paidAt || '',
+              shouldBePaidPayment?.paytrailTransactionId || '',
+            paidAt: shouldBePaidPayment?.paidAt || '',
           }
         }),
         namespace: order.namespace,
