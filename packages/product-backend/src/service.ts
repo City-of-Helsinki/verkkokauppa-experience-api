@@ -39,7 +39,7 @@ export const getProduct = async (p: {
   }
 }
 
-type ProductInvoicing = {
+export type ProductInvoicing = {
   productId: string
   salesOrg: string
   salesOffice: string

@@ -203,6 +203,12 @@ components:
       required: true
       schema:
         type: string
+    NamespaceInPath:
+      name: namespace
+      in: path
+      required: true
+      schema:
+        type: string
   responses:
     NotFound:
       description: Entity (e.g. product) not found
@@ -315,6 +321,128 @@ paths:
                     properties:
                       productInvoicing:
                         $ref: '#/components/schemas/ProductInvoicing'
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    get:
+      summary: 'Get Product Accounting and Optional Invoicing'
+      description: >
+        Create product accounting and optional invoicing for a product. 
+        Supplying invoicing details enables paying products with an invoice.
+
+        **NextEntity Explanation**:
+        The `nextEntity` object contains accounting details that will be applied after the `activeFrom` date and time have elapsed. 
+        If any field within the `nextEntity` object is `null` or not provided, the corresponding value from the base object 
+        (the primary accounting details) will be used instead. This allows for a smooth transition of accounting details over time, 
+        where only the changes in `nextEntity` need to be specified.
+      security:
+        - ApiKey: [ ]
+      parameters:
+        - $ref: '#/components/parameters/ProductId'
+        - $ref: '#/components/parameters/Namespace'
+      responses:
+        '200':
+          description: 'Retrieved product accounting'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ProductAccounting'
+                  - type: object
+                    properties:
+                      productInvoicing:
+                        $ref: '#/components/schemas/ProductInvoicing'
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /namespace/accountings:
+    get:
+      summary: 'Retrieve Product Mappings, Accounting, and Optional Invoicing Details by Namespace'
+      description: >
+        This endpoint retrieves product mappings, accounting details, and optional invoicing information for products within a specified namespace.
+        
+        The request requires an API key and a namespace in the headers for authentication and authorization.
+        
+        The response includes:
+        - Product mappings, which link the product to its respective accounting and invoicing details.
+        - Product accounting data, retrieved in batch, for each product mapped to the specified namespace.
+        - Optional invoicing information, if available, for products. If invoicing details cannot be fetched, the response will still include the product mapping and accounting details, with invoicing fields left empty.
+        
+        **Error Handling**:
+        If an error occurs while retrieving invoicing details, the service will log the error but continue processing to return the available product mappings and accounting details.
+        
+        **Mapping and Fallback Mechanism**:
+        Each product will be mapped to its respective accounting and invoicing details. If accounting or invoicing data for a product is unavailable, the response will return empty objects for those fields.
+      security:
+        - ApiKey: [ ]
+      parameters:
+        - $ref: '#/components/parameters/Namespace'
+      responses:
+        '200':
+          description: 'Product Mappings, Accounting, and Invoicing data found'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    productMapping:
+                      $ref: '#/components/schemas/ProductMapping'
+                    accounting:
+                      $ref: '#/components/schemas/ProductAccounting'
+                    productInvoicing:
+                      oneOf:
+                        - $ref: '#/components/schemas/ProductInvoicing'
+                        - type: object
+                          description: 'Invoicing details, or empty object if invoicing is unavailable'
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /admin/{namespace}/accountings:
+    get:
+      summary: 'Admin - Retrieve Product Mappings, Accounting, and Optional Invoicing Details by Namespace'
+      description: >
+        This endpoint retrieves product mappings, accounting details, and optional invoicing information for products within a specified namespace.
+        
+        The request requires an admin API key and a namespace in the headers for authentication and authorization.
+        Uses namespace from path parameter
+        The response includes:
+        - Product mappings, which link the product to its respective accounting and invoicing details.
+        - Product accounting data, retrieved in batch, for each product mapped to the specified namespace.
+        - Optional invoicing information, if available, for products. If invoicing details cannot be fetched, the response will still include the product mapping and accounting details, with invoicing fields left empty.
+        
+        **Error Handling**:
+        If an error occurs while retrieving invoicing details, the service will log the error but continue processing to return the available product mappings and accounting details.
+        
+        **Mapping and Fallback Mechanism**:
+        Each product will be mapped to its respective accounting and invoicing details. If accounting or invoicing data for a product is unavailable, the response will return empty objects for those fields.
+      security:
+        - ApiKey: [ ]
+      parameters:
+        - $ref: '#/components/parameters/NamespaceInPath'
+      responses:
+        '200':
+          description: 'Product Mappings, Accounting, and Invoicing data found'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    productMapping:
+                      $ref: '#/components/schemas/ProductMapping'
+                    accounting:
+                      $ref: '#/components/schemas/ProductAccounting'
+                    productInvoicing:
+                      oneOf:
+                        - $ref: '#/components/schemas/ProductInvoicing'
+                        - type: object
+                          description: 'Invoicing details, or empty object if invoicing is unavailable'
         '400':
           $ref: '#/components/responses/RequestValidationError'
         '500':
