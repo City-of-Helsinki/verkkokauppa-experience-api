@@ -9,6 +9,7 @@ export type ProductAccounting = {
   companyCode: string
   mainLedgerAccount: string
   activeFrom?: string
+  namespace?: string
   nextEntity?: {
     companyCode: string
     mainLedgerAccount: string
