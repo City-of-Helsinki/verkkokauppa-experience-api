@@ -62,6 +62,10 @@ export type RefundAccountingItem = ProductAccounting & {
   refundId: string
   refundItemId: string
   orderId: string
+  refundCreatedAt: string
+  merchantId: string
+  namespace: string
+  refundTransactionId: string // If payment is created using paytrail gateway
 }
 
 export interface RefundAccounting {

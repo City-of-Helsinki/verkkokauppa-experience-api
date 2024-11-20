@@ -14,6 +14,7 @@ import {
 import {
   checkPaytrailRefundCallbackUrl,
   getPaidRefundPaymentAdminByRefundId,
+  RefundPayment,
 } from '@verkkokauppa/payment-backend'
 import { createUserRefundRedirectUrl } from '../lib/refundCallbackService'
 import { parseRefundIdFromPaytrailRefundCallbackUrl } from '../lib/paytrail'
@@ -122,9 +123,15 @@ export class PaytrailOnlineRefundPaymentSuccessController extends AbstractContro
                 logLevel: 'error',
               })
             }
+            const refundPaymentTyped = (refundPayment as unknown) as RefundPayment
             return {
               ...item,
               ...productAccounting,
+              merchantId: merchantId,
+              namespace: order.namespace,
+              refundTransactionId:
+                refundPaymentTyped?.refundTransactionId || '',
+              refundCreatedAt: refundPaymentTyped?.createdAt || '',
             }
           }),
         })

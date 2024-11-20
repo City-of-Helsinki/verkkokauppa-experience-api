@@ -174,6 +174,10 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
           return {
             ...item,
             ...productAccounting,
+            merchantId: parseMerchantIdFromFirstOrderItem(order) || '',
+            namespace: order.namespace,
+            paytrailTransactionId:
+              paymentWithUpdatePaidAt?.paytrailTransactionId || '',
             paidAt: paymentWithUpdatePaidAt?.paidAt || '',
           }
         })
