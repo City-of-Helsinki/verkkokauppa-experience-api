@@ -13,6 +13,7 @@ import {
 } from '@verkkokauppa/order-backend'
 import { getProductAccountingBatch } from '@verkkokauppa/product-backend'
 import { checkVismaReturnUrl } from '@verkkokauppa/payment-backend'
+import { parseMerchantIdFromFirstOrderItem } from '@verkkokauppa/configuration-backend'
 
 export class OnlinePaymentNotifyController extends AbstractController {
   protected readonly requestSchema = null
@@ -65,6 +66,9 @@ export class OnlinePaymentNotifyController extends AbstractController {
           return {
             ...item,
             ...productAccounting,
+            merchantId: parseMerchantIdFromFirstOrderItem(order) || '',
+            namespace: order.namespace,
+            paytrailTransactionId: '', // visma payment
             paidAt: new Date().toISOString(),
           }
         }),

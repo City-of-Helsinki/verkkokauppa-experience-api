@@ -7,6 +7,7 @@ export enum StatusCode {
   Forbidden = 403,
   NotFound = 404,
   InternalServerError = 500,
+  Conflict = 409,
 }
 
 type LogLevel = 'none' | 'debug' | 'info' | 'error'

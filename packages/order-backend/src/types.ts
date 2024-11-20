@@ -136,6 +136,10 @@ export interface ProductAccounting {
 export type OrderAccountingItem = ProductAccounting & {
   orderItemId: string
   orderId: string
+  paidAt: string
+  merchantId: string
+  namespace: string
+  paytrailTransactionId: string
 }
 
 export interface OrderAccounting {
@@ -146,6 +150,10 @@ export interface OrderAccounting {
 
 export type OrderAccountingItemRequest = ProductAccounting & {
   productId: string
+  paidAt: string
+  merchantId: string
+  namespace: string
+  paytrailTransactionId: string
 }
 
 export interface OrderAccountingRequest {

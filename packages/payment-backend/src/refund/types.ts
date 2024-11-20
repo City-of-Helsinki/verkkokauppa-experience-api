@@ -54,4 +54,5 @@ export interface RefundPayment {
   taxAmount: number
   refundTransactionId?: string // If payment is created using paytrail gateway
   timestamp: string
+  createdAt: string
 }

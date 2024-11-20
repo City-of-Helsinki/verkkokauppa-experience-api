@@ -41,6 +41,12 @@ components:
       required: true
       schema:
         type: string
+    PaymentId:
+      name: paymentId
+      in: path
+      required: true
+      schema:
+        type: string
     Namespace:
       name: namespace
       in: header
@@ -287,6 +293,86 @@ components:
           type: string
         timestamp:
           type: string
+    ProductAccounting:
+      type: object
+      properties:
+        priceGross:
+          type: string
+          description: Gross price of the product
+        priceNet:
+          type: string
+          description: Net price of the product
+        companyCode:
+          type: string
+          description: The company code
+        mainLedgerAccount:
+          type: string
+          description: The main ledger account
+        vatCode:
+          type: string
+          description: The VAT code
+        internalOrder:
+          type: string
+          description: The internal order code
+        profitCenter:
+          type: string
+          description: The profit center
+        balanceProfitCenter:
+          type: string
+          description: The balance profit center
+        project:
+          type: string
+          nullable: true
+          description: The project, can be null
+        operationArea:
+          type: string
+          nullable: true
+          description: The operation area, can be null
+      required:
+        - priceGross
+        - priceNet
+        - companyCode
+        - mainLedgerAccount
+        - vatCode
+        - internalOrder
+        - profitCenter
+        - balanceProfitCenter
+
+    OrderAccountingItem:
+      allOf:
+        - $ref: '#/components/schemas/ProductAccounting'
+        - type: object
+          properties:
+            orderItemId:
+              type: string
+              description: The ID of the order item
+            orderId:
+              type: string
+              description: The ID of the associated order
+          required:
+            - orderItemId
+            - orderId
+
+    OrderAccounting:
+      type: object
+      properties:
+        orderId:
+          type: string
+          description: The ID of the order
+        createdAt:
+          type: string
+          format: date-time
+          description: The creation date of the order
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderAccountingItem'
+          description: A list of accounting items associated with the order
+      required:
+        - orderId
+        - createdAt
+        - items
+
   responses:
     AuthenticationError:
       description: Authentication failed
@@ -302,6 +388,12 @@ components:
             $ref: '#/components/schemas/ErrorBody'
     NotFound:
       description: Entity (e.g. order or payment) not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
+    Conflict:
+      description: Entry already exists in database
       content:
         application/json:
           schema:
@@ -330,6 +422,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorBody'
+
 paths:
   /{orderId}:
     get:
@@ -675,3 +768,36 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
+
+  /admin/accounting-create:
+    post:
+      description: Create order accounting for given order and paymentId
+      security:
+        - ApiKey: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                paymentId:
+                  type: string
+      responses:
+        '200':
+          description: Created order accounting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderAccounting'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+
+

@@ -11,7 +11,8 @@
     "build": "yarn workspaces run build",
     "lint": "eslint \"./packages/*/src/**/*.{ts,tsx}\" --max-warnings=0 --fix",
     "test": "cross-env TZ=Europe/Helsinki NODE_ICU_DATA=node_modules/full-icu yarn jest --coverage",
-    "test:local": "cross-env TZ=Europe/Helsinki NODE_ICU_DATA=node_modules/full-icu IS_LOCAL_DEVELOPMENT=true yarn jest --coverage"
+    "test:local": "cross-env TZ=Europe/Helsinki NODE_ICU_DATA=node_modules/full-icu IS_LOCAL_DEVELOPMENT=true yarn jest --coverage",
+    "playwright:install": "npx playwright install"
   },
   "devDependencies": {
     "@types/jest": "^26.0.22",

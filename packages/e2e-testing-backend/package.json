@@ -1,0 +1,30 @@
+{
+  "name": "@verkkokauppa/e2e-backend",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "nodemon -L -e js,ts --watch src --recursive --exec \"yarn run compile:incremental\"",
+    "compile:incremental": "pwd && tsc --incremental --preserveWatchOutput  --watch && cp \"./package.json\" ./dist/",
+    "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
+    "prepack": "yarn build",
+    "build": "yarn clean && yarn compile",
+    "compile": "tsc --build && cp \"./package.json\" ./dist/",
+    "lint": "eslint \"./src/**/*.{ts,tsx}\" --max-warnings=0"
+  },
+  "dependencies": {
+    "@elastic/elasticsearch": "7.14",
+    "@ngrok/ngrok": "^1.2.0",
+    "@verkkokauppa/configuration-backend": "^1.0.0",
+    "@verkkokauppa/core": "^1.0.0",
+    "@verkkokauppa/message-backend": "^1.0.0",
+    "@verkkokauppa/order-backend": "^1.0.0",
+    "@verkkokauppa/payment-backend": "^1.0.0",
+    "@verkkokauppa/price-backend": "^1.0.0",
+    "@verkkokauppa/product-backend": "^1.0.0",
+    "axios": "^0.21.1",
+    "dotenv": "^16.4.5",
+    "playwright": "^1.47.2"
+  }
+}
