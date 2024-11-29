@@ -109,8 +109,8 @@ export const withAuthentication = <
               return reject(experienceError('jwt subject missing'))
             }
 
-            // Check `amr` claim for all required values
-            const expectedAmrValues = (process.env.HEL_KEYCLOAK_PROFILE_AMR || '').split(',').map(value => value.trim())
+            // Check `amr` claim for all required values (Defaults to suomi_fi)
+            const expectedAmrValues = (process.env.HEL_KEYCLOAK_PROFILE_AMR || 'suomi_fi').split(',').map(value => value.trim())
 
             if (!Array.isArray(decoded.amr)) {
               return reject(
@@ -140,7 +140,7 @@ export const withAuthentication = <
         return super.validateRequest(req)
       }
 
-      throw new RequestValidationError('headers.X-Auth-Server-Type is a required field')
+      throw new RequestValidationError('headers.x-auth-server-type is a required field')
 
     }
   }
