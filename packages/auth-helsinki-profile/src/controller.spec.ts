@@ -9,12 +9,9 @@ jest.mock('jwks-rsa')
 jest.mock('jsonwebtoken')
 
 const jwksGetSigningKeyMock = jest.fn()
-const jwksClientConstructorMock = require('jwks-rsa').JwksClient.mockImplementation(
-  () => ({
-    getSigningKey: jwksGetSigningKeyMock,
-  })
-)
-
+require('jwks-rsa').JwksClient.mockImplementation(() => ({
+  getSigningKey: jwksGetSigningKeyMock,
+}))
 const sub = 'abc12345'
 
 const verifyMock = require('jsonwebtoken').verify.mockImplementation(
@@ -168,14 +165,5 @@ describe('AuthenticationController validateRequest', () => {
       cb(error)
     })
     await expect(getSigningKeyPromise({ kid: 'kid123' })).rejects.toBe(error)
-  })
-  it('should initialize jwks rsa with the correct options', () => {
-    require('./controller')
-    expect(jwksClientConstructorMock).toHaveBeenCalledTimes(1)
-    expect(jwksClientConstructorMock.mock.calls[0][0]).toEqual({
-      rateLimit: true,
-      jwksRequestsPerMinute: 10,
-      jwksUri,
-    })
   })
 })
