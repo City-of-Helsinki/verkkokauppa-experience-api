@@ -9,12 +9,9 @@ jest.mock('jwks-rsa')
 jest.mock('jsonwebtoken')
 
 const jwksGetSigningKeyMock = jest.fn()
-const jwksClientConstructorMock = require('jwks-rsa').JwksClient.mockImplementation(
-  () => ({
-    getSigningKey: jwksGetSigningKeyMock,
-  })
-)
-
+require('jwks-rsa').JwksClient.mockImplementation(() => ({
+  getSigningKey: jwksGetSigningKeyMock,
+}))
 const sub = 'abc12345'
 
 const verifyMock = require('jsonwebtoken').verify.mockImplementation(
