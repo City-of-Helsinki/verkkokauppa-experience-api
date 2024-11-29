@@ -17,6 +17,11 @@ components:
       description: jwt issued by Helsinki Profile
       scheme: bearer
       bearerFormat: jwt
+    HelsinkiProfileAuthServerType:
+      type: http
+      description: Auth server to use, KEYCLOAK (tunnistus), TUNNISTAMO
+      in: header
+      name: auth-server-type
     UserId:
       type: apiKey
       description: Id (e.g. uuid4) to identify anonymous users
@@ -1810,5 +1815,163 @@ paths:
           $ref: '#/components/responses/RequestValidationError'
         '403':
           $ref: '#/components/responses/InvalidApiKey'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+
+  /gdpr-api/v1/profiles/tunnistus/{id}:
+    get:
+      summary: Retrieve GDPR Profile
+      description: Fetch GDPR-related profile information for a specific user based on their ID.
+      operationId: getGdprProfile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier (UUID) of the user's profile.
+          schema:
+            type: string
+        - name: displayable
+          in: query
+          required: false
+          description: Whether to include formatting and labels for display purposes.
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Successfully retrieved GDPR profile data.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  profile:
+                    type: object
+                    properties:
+                      subscriptions:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                              example: subscription
+                            children:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  key:
+                                    type: string
+                                    example: meta
+                                  children:
+                                    type: array
+                                    items:
+                                      type: object
+                                      properties:
+                                        key:
+                                          type: string
+                                          example: metaItem
+                                        children:
+                                          type: array
+                                          items:
+                                            type: object
+                                            properties:
+                                              key:
+                                                type: string
+                                              value:
+                                                type: string
+                      orders:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                              example: order
+                            children:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  key:
+                                    type: string
+                                    example: customer
+                                  children:
+                                    type: array
+                                    items:
+                                      type: object
+                                      properties:
+                                        key:
+                                          type: string
+                                        value:
+                                          type: string
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+
+        '403':
+          description: Forbidden. The client does not have access to the resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+        '404':
+          description: Not Found. The specified user profile could not be found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+
+    delete:
+      summary: Delete GDPR Profile
+      description: |
+        Deletes the GDPR profile for the specified user ID. The deletion is restricted due to the Accounting Act and will return a `403 Forbidden` error with a descriptive message.
+      operationId: deleteGdprProfile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier (UUID) of the user's profile.
+          schema:
+            type: string
+        - name: user
+          in: header
+          required: true
+          description: The authenticated user ID.
+          schema:
+            type: string
+        - name: auth-server-type
+          in: header
+          required: true
+          description: Specifies the authentication server to use. Fixed value KEYCLOAK.
+          schema:
+            type: string
+            enum:
+              - KEYCLOAK
+      responses:
+        '403':
+          description: Forbidden. Profile deletion is not allowed due to the Accounting Act.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                          example: profile-deletion-failed
+                        message:
+                          type: object
+                          properties:
+                            en:
+                              type: string
+                              description: Error message in English.
+                              example: Forbidden due accounting act
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
         '500':
           $ref: '#/components/responses/InternalServerError'
