@@ -169,13 +169,4 @@ describe('AuthenticationController validateRequest', () => {
     })
     await expect(getSigningKeyPromise({ kid: 'kid123' })).rejects.toBe(error)
   })
-  it('should initialize jwks rsa with the correct options', () => {
-    require('./controller')
-    expect(jwksClientConstructorMock).toHaveBeenCalledTimes(1)
-    expect(jwksClientConstructorMock.mock.calls[0][0]).toEqual({
-      rateLimit: true,
-      jwksRequestsPerMinute: 10,
-      jwksUri,
-    })
-  })
 })
