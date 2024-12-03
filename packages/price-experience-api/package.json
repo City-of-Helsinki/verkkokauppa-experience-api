@@ -1,6 +1,6 @@
 {
   "name": "@verkkokauppa/price-experience-api",
-  "version": "0.7.15",
+  "version": "0.7.16",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
