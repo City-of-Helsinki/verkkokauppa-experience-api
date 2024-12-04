@@ -112,7 +112,7 @@ export class InstantPurchase extends AbstractController<typeof requestSchema> {
       '24'
     )
 
-    let lastValidPurchaseDateTime
+    let lastValidPurchaseDateTime = undefined
     if (isVatCodeUsed) {
       lastValidPurchaseDateTime = getEndOfDayInFinland(
         process.env.FORCED_END_OF_DAY || '2024-08-31'
