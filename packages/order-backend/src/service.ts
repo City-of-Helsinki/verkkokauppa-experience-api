@@ -48,7 +48,7 @@ const getBackendUrl = () => {
 export const createOrder = async (p: {
   namespace: string
   user: string
-  lastValidPurchaseDateTime?: Date | string
+  lastValidPurchaseDateTime?: Date | string | undefined
 }): Promise<Order> => {
   const { namespace, user, lastValidPurchaseDateTime } = p
   if (!process.env.ORDER_BACKEND_URL) {
