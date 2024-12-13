@@ -17,11 +17,6 @@ components:
       description: jwt issued by Helsinki Profile
       scheme: bearer
       bearerFormat: jwt
-    HelsinkiProfileAuthServerType:
-      type: http
-      description: Auth server to use, KEYCLOAK (tunnistus), TUNNISTAMO
-      in: header
-      name: auth-server-type
     UserId:
       type: apiKey
       description: Id (e.g. uuid4) to identify anonymous users
@@ -1821,6 +1816,8 @@ paths:
 
   /gdpr-api/v1/profiles/tunnistus/{id}:
     get:
+      security:
+        - HelsinkiProfile: [ ]
       summary: Retrieve GDPR Profile
       description: Fetch GDPR-related profile information for a specific user based on their ID.
       operationId: getGdprProfile
@@ -1923,6 +1920,8 @@ paths:
                 $ref: '#/components/schemas/ErrorBody'
 
     delete:
+      security:
+        - HelsinkiProfile: [ ]
       summary: Delete GDPR Profile
       description: |
         Deletes the GDPR profile for the specified user ID. The deletion is restricted due to the Accounting Act and will return a `403 Forbidden` error with a descriptive message.
