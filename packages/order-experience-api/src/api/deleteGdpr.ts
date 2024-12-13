@@ -11,7 +11,7 @@ import * as yup from 'yup'
 
 const requestSchema = yup.object().shape({
   params: yup.object().shape({
-    user: yup.string().required(),
+    user: yup.string().optional(),
   }),
   headers: yup.object().shape({
     user: yup.string().required(),
@@ -47,10 +47,10 @@ export class DeleteGdprController extends withAuthentication(
   ): Promise<any> {
     const {
       params: { user: userParam },
-      headers: { user },
+      headers: { user, 'x-auth-server-type': serverType },
     } = req
 
-    if (userParam !== user) {
+    if (serverType !== 'KEYCLOAK' && userParam && userParam !== user) {
       throw new ExperienceError({
         code: 'authentication-failed',
         message: 'Authenticated user does not match given id',
