@@ -181,17 +181,17 @@ router.delete('/gdpr-api/v1/profiles/:id', (req, res) =>
 
 router.get('/gdpr-api/v1/profiles/tunnistus/:id', (req, res) => {
   // Set the `auth-server-type` header to "KEYCLOAK"
-  req.headers['auth-server-type'] = 'KEYCLOAK'
+  req.headers['x-auth-server-type'] = 'KEYCLOAK'
 
   // Execute the controller with the modified request header
-  getGdprController.execute(req, res)
+  return getGdprController.execute(req, res)
 })
 
 router.delete('/gdpr-api/v1/profiles/tunnistus/:id', (req, res) => {
   // Set the `auth-server-type` header to "KEYCLOAK"
-  req.headers['auth-server-type'] = 'KEYCLOAK'
+  req.headers['x-auth-server-type'] = 'KEYCLOAK'
   // Execute the controller with the modified request header
-  deleteGdprController.execute(req, res)
+  return deleteGdprController.execute(req, res)
 })
 
 router.post('/refund', (req, res) => createRefundController.execute(req, res))
