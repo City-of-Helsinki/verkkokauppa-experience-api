@@ -27,6 +27,7 @@ import { GetRefundPaymentWithRefundIdAdminController } from './api/getRefundPaym
 import { GetRefundPaymentWithRefundPaymentIdAdminController } from './api/getRefundPaymentWithRefundPaymentIdAdminController'
 import { FreePaymentReturnController } from './api/freePaymentReturnController'
 import { AccountingCreateAdminController } from './api/accountingCreateAdminController'
+import { FreeRefundPaymentSuccessController } from './api/freeRefundPaymentSuccessController'
 
 const createPaymentController = new (withAuthentication(
   CreatePaymentController
@@ -62,6 +63,7 @@ const invoicingRedirectController = new InvoicingRedirectController()
 const paytrailMitChargeNotifyController = new PaytrailMitChargeNotifyController()
 const accountingCreateAdminController = new AccountingCreateAdminController()
 const freePaymentReturnController = new FreePaymentReturnController()
+const freeRefundPaymentSuccessController = new FreeRefundPaymentSuccessController()
 
 const router = Router()
 router.get('/health', (req, res) => healthController.execute(req, res))
