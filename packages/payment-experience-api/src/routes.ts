@@ -147,4 +147,8 @@ router.get('/free/return', (req, res) =>
   freePaymentReturnController.execute(req, res)
 )
 
+router.get('/freeRefund/success', (req, res) =>
+  freeRefundPaymentSuccessController.execute(req, res)
+)
+
 export default router
