@@ -199,34 +199,9 @@ services:
       - ./packages/product-backend/:/opt/app-root/src/packages/product-backend
       - ./packages/product-mapping-backend/:/opt/app-root/src/packages/product-mapping-backend
     container_name: hotreloader
-#    command: yarn workspace @verkkokauppa/payment-experience-api dev
     env_file:
       - .env.docker
     networks:
       - common
-#  cart-experience-api:
-#    build:
-#      context: ./
-#      dockerfile: packages/cart-experience-api/Dockerfile
-#      target: base
-#    volumes:
-#      - ./packages/cart-experience-api/:/opt/app-root/src/packages/cart-experience-api/
-#      - ./packages/cart-experience-api/nodemon.json:/opt/app-root/src/packages/cart-experience-api/nodemon.json
-#      - ./packages/cart-backend/:/opt/app-root/src/packages/cart-backend/
-#      - ./packages/core/:/opt/app-root/src/packages/core/
-#      - ./packages/product-backend/:/opt/app-root/src/packages/product-backend/
-#      - ./packages/price-backend/:/opt/app-root/src/packages/price-backend/
-#    container_name: cart-experience-api
-#    expose:
-#      - '8080'
-#    ports:
-#      - '8083:8080'
-#    command: yarn workspace @verkkokauppa/cart-experience-api dev
-#    environment:
-#      - SERVICE_NAME=cart-experience-api
-#    env_file:
-#      - .env.docker
-#    networks:
-#      - common
 networks:
   common:
