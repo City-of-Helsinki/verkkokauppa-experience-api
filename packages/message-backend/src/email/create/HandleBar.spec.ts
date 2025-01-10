@@ -318,7 +318,7 @@ describe('Create templates from parameters', () => {
 
     const orderConfirmationTemplate = compiledTemplate(templateParams)
     // Used to make developing faster when html can be "hot reloaded" from file.
-    const writeToFile = false
+    const writeToFile = true
     if (writeToFile) {
       try {
         fs.writeFileSync(
