@@ -30,7 +30,7 @@ import {
   PaymentValidationError,
   RefundPaymentNotFound,
 } from './errors'
-import { ExperienceFailure, removeItem } from '@verkkokauppa/core'
+import { ExperienceFailure, logger, removeItem } from '@verkkokauppa/core'
 import {
   PaymentGateway,
   PaymentStatus,
@@ -204,6 +204,25 @@ export const getOfflinePaymentMethods = async (parameters: {
   }
 }
 
+export const getDefaultPaymentMethods = async (): Promise<PaymentMethod[]> => {
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment-admin/payment-method`
+
+  try {
+    // We use POST instead of GET since we need to send complex parameters,
+    // although using GET would be semantically more correct.
+    const result = await axios.get<PaymentMethod[]>(url)
+    return result.data
+  } catch (e) {
+    logger.log(e)
+    // Default to empty array when no payment methods created.
+    return []
+  }
+}
+
 export const getPaymentFiltersAdmin = async (p: {
   referenceId: string
   referenceType: ReferenceType
@@ -273,6 +292,23 @@ export const isAllowedToPayWithInvoice = (order: Order) => {
   }
   return allItemsHaveInvoicingDate
 }
+export const isFreeOrder = (order: Order): boolean => {
+  // Ensure priceTotal is a number and check if it is effectively zero
+  const priceTotal =
+    typeof order.priceTotal === 'string'
+      ? parseFloat(order.priceTotal)
+      : order.priceTotal
+
+  if (
+    (priceTotal && isNaN(<number>priceTotal)) ||
+    (priceTotal !== undefined && isNaN(<number>priceTotal))
+  ) {
+    throw new Error('Invalid priceTotal value')
+  }
+
+  // Check if priceTotal is zero
+  return priceTotal !== undefined ? priceTotal === 0 : false
+}
 
 export const getPaymentMethodList = async (parameters: {
   namespace: string
@@ -285,17 +321,37 @@ export const getPaymentMethodList = async (parameters: {
   const [
     onlineMethods,
     offlineMethods,
+    defaultPaymentMethods,
     orderPaymentFilters,
     merchantPaymentFilters,
   ] = await Promise.all([
     getOnlinePaymentMethods(parameters),
     getOfflinePaymentMethods(parameters),
+    getDefaultPaymentMethods(),
     getOrderPaymentFilters(parameters.order),
     merchantId ? getMerchantPaymentFilters({ merchantId }) : [],
   ])
-  const paymentFilters = orderPaymentFilters.concat(merchantPaymentFilters)
+  const paymentFilters = orderPaymentFilters
+    .concat(merchantPaymentFilters)
+    .filter((item) => {
+      // Exclude empty arrays and empty objects
+      if (Array.isArray(item) && item.length === 0) {
+        return false
+      }
+      // Exclude null, undefined, empty string, and NaN
+      return item !== null && item !== undefined
+    })
   let filteredPaymentFilters = onlineMethods
     .concat(offlineMethods)
+    .concat(defaultPaymentMethods)
+    .filter((item) => {
+      // Exclude empty arrays and empty objects
+      if (Array.isArray(item) && item.length === 0) {
+        return false
+      }
+      // Exclude null, undefined, empty string, and NaN
+      return item !== null && item !== undefined
+    })
     .filter((method) => {
       return !paymentFilters.find((filter) => {
         const value = filter.value.toLowerCase()
@@ -319,7 +375,7 @@ export const getPaymentMethodList = async (parameters: {
   // TODO remove Paytrail filter when we are disabling payments via visma pay
   const gateways =
     process.env.FILTERED_PAYMENT_GATEWAYS ||
-    `${PaymentGateway.VISMA},${PaymentGateway.INVOICE}`
+    `${PaymentGateway.VISMA},${PaymentGateway.INVOICE},${PaymentGateway.FREE}`
 
   let globallyFilteredPaymentGateways = gateways.split(',')
 
@@ -344,6 +400,21 @@ export const getPaymentMethodList = async (parameters: {
     globallyFilteredPaymentGateways = removeItem(
       globallyFilteredPaymentGateways,
       PaymentGateway.INVOICE
+    )
+  }
+
+  // If order priceTotal is 0 then we allow only the free payment method (remove others from payment method list)
+  if (isFreeOrder(order)) {
+    filteredPaymentFilters = filteredPaymentFilters.filter((paymentFilters) => {
+      return (
+        paymentFilters?.gateway?.toLowerCase() ===
+        PaymentGateway.FREE.toString().toLowerCase()
+      )
+    })
+
+    globallyFilteredPaymentGateways = removeItem(
+      globallyFilteredPaymentGateways,
+      PaymentGateway.FREE
     )
   }
 
