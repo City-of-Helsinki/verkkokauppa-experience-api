@@ -74,8 +74,10 @@ services:
     container_name: order-experience-api
     expose:
       - '8080'
+      - '8081'
     ports:
       - '8084:8080'
+      - '8284:8081'
       - '9230:9229'
     command: yarn workspace @verkkokauppa/order-experience-api dev
     environment:
