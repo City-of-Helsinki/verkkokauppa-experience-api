@@ -10,6 +10,7 @@ import {
   filterPaymentMethodByGateway,
   filterPaymentMethodsByCode,
   isAllowedToPayWithInvoice,
+  isFreeOrder,
 } from './service'
 import { PaymentGateway, ReferenceType } from './enums'
 import { removeItem } from '@verkkokauppa/core'
@@ -628,5 +629,146 @@ describe('Test global payment filtering', () => {
 
     // Expect globallyFilteredPaymentGateways to to be empty
     expect(globallyFilteredPaymentGateways).toEqual([])
+  })
+})
+
+describe('Payment Gateway Filtering', () => {
+  it('should only allow FREE payment method when the order is free', () => {
+    let filteredPaymentFilters = [
+      {
+        gateway: PaymentGateway.PAYTRAIL,
+        name: 'Paytrail',
+        code: 'pt',
+        group: 'online',
+        img: 'paytrail.png',
+      },
+      {
+        gateway: PaymentGateway.FREE,
+        name: 'Free',
+        code: 'free',
+        group: 'free',
+        img: 'free.png',
+      },
+      {
+        gateway: PaymentGateway.INVOICE,
+        name: 'Invoice',
+        code: 'inv',
+        group: 'offline',
+        img: 'invoice.png',
+      },
+    ]
+
+    let globallyFilteredPaymentGateways = [
+      PaymentGateway.PAYTRAIL,
+      PaymentGateway.FREE,
+      PaymentGateway.INVOICE,
+    ]
+
+    const order = ({ priceTotal: 0 } as unknown) as Order
+
+    if (isFreeOrder(order)) {
+      filteredPaymentFilters = filteredPaymentFilters.filter(
+        (paymentFilters) => {
+          return (
+            paymentFilters?.gateway?.toLowerCase() ===
+            PaymentGateway.FREE.toString().toLowerCase()
+          )
+        }
+      )
+
+      globallyFilteredPaymentGateways = removeItem(
+        globallyFilteredPaymentGateways,
+        PaymentGateway.FREE
+      )
+    }
+
+    expect(filteredPaymentFilters).toEqual([
+      {
+        gateway: PaymentGateway.FREE,
+        name: 'Free',
+        code: 'free',
+        group: 'free',
+        img: 'free.png',
+      },
+    ])
+    expect(globallyFilteredPaymentGateways).toEqual([
+      PaymentGateway.PAYTRAIL,
+      PaymentGateway.INVOICE,
+    ])
+  })
+
+  it('should not filter payment methods when the order is not free', () => {
+    let filteredPaymentFilters = [
+      {
+        gateway: PaymentGateway.PAYTRAIL,
+        name: 'Paytrail',
+        code: 'pt',
+        group: 'online',
+        img: 'paytrail.png',
+      },
+      {
+        gateway: PaymentGateway.FREE,
+        name: 'Free',
+        code: 'free',
+        group: 'free',
+        img: 'free.png',
+      },
+      {
+        gateway: PaymentGateway.INVOICE,
+        name: 'Invoice',
+        code: 'inv',
+        group: 'offline',
+        img: 'invoice.png',
+      },
+    ]
+
+    let globallyFilteredPaymentGateways = [
+      PaymentGateway.PAYTRAIL,
+      PaymentGateway.FREE,
+      PaymentGateway.INVOICE,
+    ]
+
+    const order = ({ priceTotal: 100 } as unknown) as Order
+
+    if (isFreeOrder(order)) {
+      filteredPaymentFilters = filteredPaymentFilters.filter(
+        (paymentFilters) => {
+          return (
+            paymentFilters?.gateway?.toLowerCase() ===
+            PaymentGateway.FREE.toString().toLowerCase()
+          )
+        }
+      )
+
+      globallyFilteredPaymentGateways = removeItem(
+        globallyFilteredPaymentGateways,
+        PaymentGateway.FREE
+      )
+    }
+
+    expect(filteredPaymentFilters).toHaveLength(3)
+    expect(globallyFilteredPaymentGateways).toEqual([
+      PaymentGateway.PAYTRAIL,
+      PaymentGateway.FREE,
+      PaymentGateway.INVOICE,
+    ])
+  })
+
+  it('should throw an error for invalid priceTotal', () => {
+    const order = ({ priceTotal: 'invalid' } as unknown) as Order
+
+    expect(() => isFreeOrder(order)).toThrow('Invalid priceTotal value')
+  })
+
+  it('should handle priceTotal as a string that can be parsed', () => {
+    const order = ({ priceTotal: '0.0' } as unknown) as Order
+
+    expect(isFreeOrder(order)).toBe(true)
+  })
+
+  it('should return false for undefined priceTotal', () => {
+    const order = ({} as unknown) as Order
+
+    expect(isFreeOrder(order)).toBe(false)
   })
 })
