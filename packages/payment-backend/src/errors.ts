@@ -35,6 +35,16 @@ export class PaymentMethodsNotFound extends ExperienceError {
     })
   }
 }
+export class DefaultPaymentMethodsNotFound extends ExperienceError {
+  constructor() {
+    super({
+      code: 'default-payment-methods-not-found',
+      message: 'Default Payment methods not found',
+      logLevel: 'info',
+      responseStatus: StatusCode.NotFound,
+    })
+  }
+}
 
 export class GetPaymentMethodListFailure extends ExperienceFailure {
   constructor(source: Error) {
