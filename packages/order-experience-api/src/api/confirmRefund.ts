@@ -100,7 +100,7 @@ export class ConfirmRefundController extends AbstractController<
         items: refund.items,
       },
       payment,
-      gateway: RefundGateway.PAYTRAIL.toString(),
+      gateway: payment?.paymentGateway || RefundGateway.PAYTRAIL.toString(),
       merchantId: refund.items[0]?.merchantId || '',
     })
 
