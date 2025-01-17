@@ -79,7 +79,7 @@ export class FreeRefundPaymentSuccessController extends AbstractController {
       )
       if (!freeRefundStatus.valid) {
         logger.debug(
-          `PaytrailStatus is not valid for refund ${refundId}, redirect to failure url`
+          `FreeRefundStatus is not valid for refund ${refundId}, redirect to failure url`
         )
         return result.redirect(
           302,
