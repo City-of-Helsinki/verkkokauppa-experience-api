@@ -29,7 +29,7 @@ export class FreeRefundPaymentSuccessController extends AbstractController {
 
     if (!refundId) {
       logger.error(
-        'No refundId specified redirect to paytrail general failure url'
+        'No refundId specified redirect to freeRefund general failure url'
       )
       return result.redirect(
         302,
@@ -43,7 +43,7 @@ export class FreeRefundPaymentSuccessController extends AbstractController {
     const merchantId = parseMerchantIdFromFirstOrderItem(order)
 
     if (!merchantId) {
-      logger.error('Paytrail: No merchantId found from order')
+      logger.error('Free refund: No merchantId found from order')
       throw new ExperienceError({
         code: 'merchant-id-not-found',
         message: 'No merchantId found from order.',
@@ -68,16 +68,16 @@ export class FreeRefundPaymentSuccessController extends AbstractController {
     }
 
     try {
-      const paytrailStatus = await checkFreeRefundCallbackUrl({
+      const freeRefundStatus = await checkFreeRefundCallbackUrl({
         params: query,
         merchantId: merchantId,
       })
       logger.debug(
-        `PaytrailStatus for refund ${refundId}: ${JSON.stringify(
-          paytrailStatus
+        `FreeRefundStatus for refund ${refundId}: ${JSON.stringify(
+          freeRefundStatus
         )}`
       )
-      if (!paytrailStatus.valid) {
+      if (!freeRefundStatus.valid) {
         logger.debug(
           `PaytrailStatus is not valid for refund ${refundId}, redirect to failure url`
         )
@@ -89,7 +89,7 @@ export class FreeRefundPaymentSuccessController extends AbstractController {
 
       const redirectUrl = await createUserRefundRedirectUrl({
         order,
-        refundPaymentStatus: paytrailStatus,
+        refundPaymentStatus: freeRefundStatus,
         redirectPaymentUrlBase: FreeRefundPaymentSuccessController.getRefundRedirectUrl(),
       })
       // TODO: Make changes that sends email from refund

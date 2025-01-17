@@ -25,6 +25,7 @@ import {
   createRefundPaymentFromRefund,
   getPaidPaymentAdmin,
   paidPaymentExists,
+  RefundGateway,
 } from '@verkkokauppa/payment-backend'
 import { sendRefundConfirmationEmail } from '@verkkokauppa/message-backend'
 
@@ -186,7 +187,8 @@ export class CreateRefundController extends AbstractController<
               items: refundItems,
             },
             payment,
-            gateway: payment.paymentGateway,
+            gateway:
+              payment?.paymentGateway || RefundGateway.PAYTRAIL.toString(),
             merchantId: refundItems[0]?.merchantId || '',
           })
 
