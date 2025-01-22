@@ -499,6 +499,30 @@ export const checkFreeReturnUrl = async (p: {
   }
 }
 
+export const checkInvoiceReturnUrl = async (p: {
+  orderId: string
+  merchantId: string
+}): Promise<PaytrailStatus> => {
+  const { orderId, merchantId } = p
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/invoice/check-return-url`
+
+  try {
+    const result = await axios.get<PaytrailStatus>(url, {
+      params: {
+        orderId,
+        merchantId,
+      },
+    })
+    return result.data
+  } catch (e) {
+    throw new CheckPaytrailReturnUrlFailure(e)
+  }
+}
+
 export const checkPaytrailCardReturnUrl = async (p: {
   params: ParsedQs
   order: Order
