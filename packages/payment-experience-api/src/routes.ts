@@ -27,6 +27,7 @@ import { GetRefundPaymentWithRefundIdAdminController } from './api/getRefundPaym
 import { GetRefundPaymentWithRefundPaymentIdAdminController } from './api/getRefundPaymentWithRefundPaymentIdAdminController'
 import { FreePaymentReturnController } from './api/freePaymentReturnController'
 import { AccountingCreateAdminController } from './api/accountingCreateAdminController'
+import { PaytrailCardUpdateRedirectCancelController } from './api/paytrailCardUpdateRedirectCancelController'
 
 const createPaymentController = new (withAuthentication(
   CreatePaymentController
@@ -58,6 +59,7 @@ const paytrailCardRedirectSuccessController = new PaytrailCardRedirectSuccessCon
 const paytrailCardRedirectCancelController = new PaytrailCardRedirectCancelController()
 const instantRefundController = new InstantRefundController()
 const paytrailCardUpdateRedirectSuccessController = new PaytrailCardUpdateRedirectSuccessController()
+const paytrailCardUpdateRedirectCancelController = new PaytrailCardUpdateRedirectCancelController()
 const invoicingRedirectController = new InvoicingRedirectController()
 const paytrailMitChargeNotifyController = new PaytrailMitChargeNotifyController()
 const accountingCreateAdminController = new AccountingCreateAdminController()
@@ -117,6 +119,9 @@ router.get('/paytrailCard/redirect/cancel/:orderId', (req, res) =>
 )
 router.get('/paytrailCardUpdate/redirect/success/:orderId', (req, res) =>
   paytrailCardUpdateRedirectSuccessController.execute(req, res)
+)
+router.get('/paytrailCardUpdate/redirect/cancel/:orderId', (req, res) =>
+  paytrailCardUpdateRedirectCancelController.execute(req, res)
 )
 router.post('/refund/instant/:orderId', (req, res) =>
   instantRefundController.execute(req, res)
