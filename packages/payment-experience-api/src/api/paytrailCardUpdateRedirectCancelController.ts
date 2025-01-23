@@ -6,7 +6,7 @@ import { getOrderAdmin } from '@verkkokauppa/order-backend'
 export class PaytrailCardUpdateRedirectCancelController extends AbstractController {
   protected readonly requestSchema = null
 
-  private static redirect = (url: URL, orderId?: string, user?: string) => {
+  public static redirect = (url: URL, orderId?: string, user?: string) => {
     url.pathname = orderId
       ? `${orderId}/card-update-failed`
       : 'card-update-failed'
