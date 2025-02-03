@@ -20,8 +20,11 @@
       "header": "Payment information",
       "alv": "Incl. VAT",
       "paidTotal": "Paid in total",
+      "toBePaidTotal": "Total to be paid",
       "paymentMethod": "Payment method",
       "date": "Date",
+      "orderDate": "Order date",
+      "invoice": "Invoice",
        "total": "in total",
        "unit": {
          "pcs": "pcs",
