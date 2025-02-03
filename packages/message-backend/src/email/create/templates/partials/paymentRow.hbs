@@ -104,7 +104,11 @@
                                         <tr>
                                             <td width="80%" class="purchase_item" style="border-top: 1rem solid transparent;">
                                                                 <span class="f-fallback">
+                                                                {{#ifCond order.payment.paymentGateway '===' 'offline'}}
+                                                                    {{I18n 'orderConfirmation.receipt.toBePaidTotal'}}
+                                                                {{else}}
                                                                     {{I18n 'orderConfirmation.receipt.paidTotal'}}
+                                                                {{/ifCond}}
                                                                 </span>
                                             </td>
                                             <td class="align-right" width="20%" class="purchase_item" style="border-top: 1rem solid transparent;">
@@ -137,14 +141,22 @@
                                             </td>
                                             <td class="align-right" width="20%" class="purchase_item">
                                                                 <span class="f-fallback no-wrap">
+                                                                {{#ifCond order.payment.paymentGateway '===' 'offline'}}
+                                                                    {{I18n 'orderConfirmation.receipt.invoice'}}
+                                                                {{else}}
                                                                     {{order.payment.paymentMethodLabel}}
+                                                                {{/ifCond}}
                                                                 </span>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td width="80%" class="purchase_item">
                                                                 <span class="f-fallback">
+                                                                {{#ifCond order.payment.paymentGateway '===' 'offline'}}
+                                                                    {{I18n 'orderConfirmation.receipt.orderDate'}}
+                                                                {{else}}
                                                                     {{I18n 'orderConfirmation.receipt.date'}}
+                                                                {{/ifCond}}
                                                                 </span>
                                             </td>
                                             <td class="align-right" width="20%" class="purchase_item">
