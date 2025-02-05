@@ -17,7 +17,10 @@ import {
   getProductInvoicings,
 } from '@verkkokauppa/product-backend'
 import { URL } from 'url'
-import { checkInvoiceReturnUrl } from '@verkkokauppa/payment-backend'
+import {
+  checkInvoiceReturnUrl,
+  paidPaymentExists,
+} from '@verkkokauppa/payment-backend'
 import { sendReceipt } from '../lib/sendEmail'
 import { sendErrorNotification } from '@verkkokauppa/message-backend'
 import {
@@ -88,6 +91,13 @@ export class InvoicingRedirectController extends AbstractController {
         )
       }
 
+      if (await paidPaymentExists(order)) {
+        return res.redirect(
+          302,
+          InvoicingRedirectController.fault(redirectUrl, user)
+        )
+      }
+
       const paymentStatus = await checkInvoiceReturnUrl({
         orderId: orderId,
         merchantId: merchantId,
@@ -106,13 +116,6 @@ export class InvoicingRedirectController extends AbstractController {
           InvoicingRedirectController.fault(redirectUrl, user)
         )
       }
-
-      // if (await paidPaymentExists(order)) {
-      //   return res.redirect(
-      //     302,
-      //     InvoicingRedirectController.fault(redirectUrl, user)
-      //   )
-      // }
 
       const productInvoicings = await getProductInvoicings({
         productIds: order.items.map((i) => i.productId),
