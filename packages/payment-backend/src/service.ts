@@ -12,6 +12,7 @@ import type {
 } from './types'
 import type { ParsedQs } from 'qs'
 import {
+  CheckInvoiceReturnUrlFailure,
   CheckPaytrailRefundCallbackUrlFailure,
   CheckPaytrailReturnUrlFailure,
   CheckVismaReturnUrlFailure,
@@ -519,7 +520,7 @@ export const checkInvoiceReturnUrl = async (p: {
     })
     return result.data
   } catch (e) {
-    throw new CheckPaytrailReturnUrlFailure(e)
+    throw new CheckInvoiceReturnUrlFailure(e)
   }
 }
 

@@ -76,6 +76,16 @@ export class CheckPaytrailReturnUrlFailure extends ExperienceFailure {
   }
 }
 
+export class CheckInvoiceReturnUrlFailure extends ExperienceFailure {
+  constructor(source: Error) {
+    super({
+      code: 'failed-to-check-invoice-return-url',
+      message: 'Failed to check invoice return url',
+      source,
+    })
+  }
+}
+
 export class CheckPaytrailRefundCallbackUrlFailure extends ExperienceFailure {
   constructor(source: Error) {
     super({
