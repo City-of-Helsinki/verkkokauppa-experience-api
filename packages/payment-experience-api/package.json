@@ -1,6 +1,6 @@
 {
   "name": "@verkkokauppa/payment-experience-api",
-  "version": "0.8.38",
+  "version": "0.8.39",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
