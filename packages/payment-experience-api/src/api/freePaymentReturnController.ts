@@ -16,6 +16,7 @@ import {
   getPublicServiceConfiguration,
   parseMerchantIdFromFirstOrderItem,
 } from '@verkkokauppa/configuration-backend'
+import { sendErrorNotification } from '@verkkokauppa/message-backend'
 
 export class FreePaymentReturnController extends AbstractController {
   protected readonly requestSchema = null
@@ -107,8 +108,19 @@ export class FreePaymentReturnController extends AbstractController {
         paymentReturnStatus: paymentStatus,
         redirectPaymentUrlBase: FreePaymentReturnController.getRedirectUrl(),
       })
+
       // Function contains internal checks when to send receipt.
-      await sendReceiptToCustomer(paymentStatus, orderId, order)
+      try {
+        await sendReceiptToCustomer(paymentStatus, orderId, order)
+      } catch (e) {
+        logger.error(e)
+
+        // send notification to Slack channel (email) that sending receipt failed
+        await sendErrorNotification({
+          message: `Sending receipt failed for free order ${orderId}`,
+          cause: e.toString(),
+        })
+      }
 
       // Only cancel authorized card renewals.
       if (isAuthorized(paymentStatus) && isCardRenewal(paymentStatus)) {
