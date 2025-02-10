@@ -108,6 +108,11 @@ export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
     return str.toUpperCase()
   })
 
+  // gives number out as string with specified number of decimals
+  Handlebars.registerHelper('toFixed', function (number, decimals) {
+    return Number(number).toFixed(decimals)
+  })
+
   Handlebars.registerHelper('eq', (a, b) => a == b)
 
   Handlebars.registerHelper('Time', function (date) {
