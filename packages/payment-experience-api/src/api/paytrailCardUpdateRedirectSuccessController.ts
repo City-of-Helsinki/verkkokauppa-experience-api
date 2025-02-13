@@ -69,8 +69,10 @@ export class PaytrailCardUpdateRedirectSuccessController extends AbstractControl
           redirectUrl,
           orderId,
           user,
-          paytrailCardResponse.partial_pan,
-          `${paytrailCardResponse.expire_month}/${paytrailCardResponse.expire_year}`
+          paytrailCardResponse?.partial_pan,
+          paytrailCardResponse
+            ? `${paytrailCardResponse?.expire_month}/${paytrailCardResponse?.expire_year}`
+            : ''
         ).toString()
       )
     } catch (e) {
