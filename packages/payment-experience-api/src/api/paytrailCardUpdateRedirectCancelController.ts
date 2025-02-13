@@ -24,8 +24,8 @@ export class PaytrailCardUpdateRedirectCancelController extends AbstractControll
     let redirectUrl = new URL(globalRedirectUrl)
     const { orderId } = req.params
     logger.info(
-      `PaytrailCardUpdateRedirectCancelController request parameters: ${JSON.stringify(
-        req.params
+      `PaytrailCardUpdateRedirectCancelController request parameters: order: ${orderId} ${JSON.stringify(
+        req.query
       )}`
     )
     try {
