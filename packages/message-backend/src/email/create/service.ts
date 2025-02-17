@@ -108,9 +108,11 @@ export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
     return str.toUpperCase()
   })
 
-  // gives number out as string with specified number of decimals
-  Handlebars.registerHelper('toFixed', function (number, decimals) {
-    return Number(number).toFixed(decimals)
+  // KYV-575 gives number out as string with specified number of decimals
+  Handlebars.registerHelper('toFixed', function (value, decimals) {
+    const number = parseFloat(value)
+    if (isNaN(number)) return '0,00'
+    return Number(number).toFixed(decimals).replace('.', ',')
   })
 
   Handlebars.registerHelper('eq', (a, b) => a == b)
