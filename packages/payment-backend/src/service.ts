@@ -13,6 +13,7 @@ import type {
 } from './types'
 import type { ParsedQs } from 'qs'
 import {
+  CheckInvoiceReturnUrlFailure,
   CheckPaytrailRefundCallbackUrlFailure,
   CheckPaytrailReturnUrlFailure,
   CheckVismaReturnUrlFailure,
@@ -497,6 +498,30 @@ export const checkFreeReturnUrl = async (p: {
   }
 }
 
+export const checkInvoiceReturnUrl = async (p: {
+  orderId: string
+  merchantId: string
+}): Promise<PaytrailStatus> => {
+  const { orderId, merchantId } = p
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/invoice/check-return-url`
+
+  try {
+    const result = await axios.get<PaytrailStatus>(url, {
+      params: {
+        orderId,
+        merchantId,
+      },
+    })
+    return result.data
+  } catch (e) {
+    throw new CheckInvoiceReturnUrlFailure(e)
+  }
+}
+
 export const checkPaytrailCardReturnUrl = async (p: {
   params: ParsedQs
   order: Order
@@ -574,6 +599,30 @@ export const checkPaytrailRefundCallbackUrl = async (p: {
   }
 
   const url = `${process.env.PAYMENT_BACKEND_URL}/refund/paytrail/check-refund-callback-url`
+
+  try {
+    const result = await axios.get<PaytrailStatus>(url, {
+      params: {
+        ...params,
+        merchantId,
+      },
+    })
+    return result.data
+  } catch (e) {
+    throw new CheckPaytrailRefundCallbackUrlFailure(e)
+  }
+}
+
+export const checkFreeRefundCallbackUrl = async (p: {
+  params: ParsedQs
+  merchantId: string
+}): Promise<PaytrailStatus> => {
+  const { params, merchantId } = p
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/refund/free/check-refund-callback-url`
 
   try {
     const result = await axios.get<PaytrailStatus>(url, {

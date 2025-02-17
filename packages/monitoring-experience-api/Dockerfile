@@ -17,7 +17,7 @@ COPY ./packages/monitoring-experience-api ./packages/monitoring-experience-api
 
 # Chown to correct user
 USER 0
-RUN chown -R 1001:0 ${APP_ROOT} && chmod -R ug+rwx ${APP_ROOT} && \
+RUN mkdir -p /opt/app-root/src/.config/yarn && chown -R 1001:0 /opt/app-root/src/.config/yarn && chown -R 1001:0 ${APP_ROOT} && chmod -R ug+rwx ${APP_ROOT} && \
     rpm-file-permissions
 USER 1001
 
