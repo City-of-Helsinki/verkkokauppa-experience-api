@@ -28,11 +28,11 @@
                                                 <td class="align-right" width="20%" class="purchase_item">
                                                     {{#if originalPriceGross}}
                                                     <span class="f-fallback no-wrap" style="color: rgb(153, 152, 152); text-decoration: line-through;">
-                                                        {{originalPriceGross}} €
+                                                        {{toFixed originalPriceGross 2}} €
                                                     </span>&nbsp;
                                                     {{/if}}
                                                     <span class="f-fallback no-wrap">
-                                                        {{priceGross}} € / {{I18n 'orderConfirmation.receipt.unit.' unit}}
+                                                        {{toFixed priceGross 2}} € / {{I18n 'orderConfirmation.receipt.unit.' unit}}
                                                     </span>
                                                 </td>
                                             </tr>
@@ -60,7 +60,7 @@
                                                 </td>
                                                 <td class="align-right" width="20%" class="purchase_item pb-1">
                                                     <span class="f-fallback no-wrap">
-                                                        {{rowPriceTotal}} €
+                                                        {{toFixed rowPriceTotal 2}} €
                                                     </span>
                                                 </td>
                                             </tr>
@@ -113,7 +113,7 @@
                                             </td>
                                             <td class="align-right" width="20%" class="purchase_item" style="border-top: 1rem solid transparent;">
                                                                 <span class="f-fallback no-wrap">
-                                                                    {{order.payment.total}} €
+                                                                    {{toFixed order.payment.total 2}} €
                                                                 </span>
                                             </td>
                                         </tr>
@@ -127,7 +127,7 @@
                                              </td>
                                              <td class="align-right" width="20%" class="purchase_item">
                                                                  <span class="f-fallback no-wrap">
-                                                                     {{this}} &euro;
+                                                                     {{toFixed this 2}} &euro;
                                                                  </span>
                                              </td>
                                          </tr>
