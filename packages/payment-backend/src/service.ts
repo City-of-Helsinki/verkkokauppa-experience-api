@@ -4,6 +4,7 @@ import type {
   Payment,
   PaymentFilter,
   PaymentMethod,
+  PaytrailCard,
   PaytrailCardFormParameters,
   PaytrailStatus,
   UpdateFromPaytrailPaymentParameters,
@@ -321,13 +322,11 @@ export const getPaymentMethodList = async (parameters: {
   const { merchantId, order } = parameters
   const [
     onlineMethods,
-    offlineMethods,
     defaultPaymentMethods,
     orderPaymentFilters,
     merchantPaymentFilters,
   ] = await Promise.all([
     getOnlinePaymentMethods(parameters),
-    getOfflinePaymentMethods(parameters),
     getDefaultPaymentMethods(),
     getOrderPaymentFilters(parameters.order),
     merchantId ? getMerchantPaymentFilters({ merchantId }) : [],
@@ -343,7 +342,6 @@ export const getPaymentMethodList = async (parameters: {
       return item !== null && item !== undefined
     })
   let filteredPaymentFilters = onlineMethods
-    .concat(offlineMethods)
     .concat(defaultPaymentMethods)
     .filter((item) => {
       // Exclude empty arrays and empty objects
@@ -580,7 +578,7 @@ export const checkPaytrailCardUpdateReturnUrl = async (p: {
   }
   const url = `${getBackendUrl()}/payment/paytrail/check-card-update-return-url`
   try {
-    const res = await axios.post(url, dto, { params })
+    const res = await axios.post<PaytrailCard>(url, dto, { params })
     return res.data
   } catch (e) {
     throw new ExperienceFailure({
