@@ -22,6 +22,7 @@ import {
   getPublicServiceConfiguration,
   parseMerchantIdFromFirstOrderItem,
 } from '@verkkokauppa/configuration-backend'
+import { sendErrorNotification } from '@verkkokauppa/message-backend'
 
 export class PaytrailOnlinePaymentReturnController extends AbstractController {
   protected readonly requestSchema = null
@@ -122,7 +123,17 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
         redirectPaymentUrlBase: PaytrailOnlinePaymentReturnController.getRedirectUrl(),
       })
       // Function contains internal checks when to send receipt.
-      await sendReceiptToCustomer(paytrailStatus, orderId, order)
+      try {
+        await sendReceiptToCustomer(paytrailStatus, orderId, order)
+      } catch (e) {
+        logger.error(e)
+
+        // send notification to Slack channel (email) that sending receipt failed
+        await sendErrorNotification({
+          message: `Sending receipt failed for paytrail  order ${orderId}`,
+          cause: e.toString(),
+        })
+      }
 
       // Only cancel authorized card renewals.
       if (isAuthorized(paytrailStatus) && isCardRenewal(paytrailStatus)) {
