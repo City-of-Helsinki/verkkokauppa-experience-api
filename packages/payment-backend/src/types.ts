@@ -148,3 +148,17 @@ export interface PaytrailCardFormParameters {
   'checkout-callback-cancel-url': string
   language: string
 }
+
+export type PaytrailCard = {
+  type?: string
+  bin?: string
+  funding?: 'CREDIT' | 'DEBIT' | 'PREPAID' | 'UNKNOWN' | 'unknown'
+  category?: 'CONSUMER' | 'COMMERCIAL' | 'UNKNOWN' | 'unknown'
+  partial_pan?: string
+  expire_year?: string
+  expire_month?: string
+  cvc_required?: 'REQUIRED' | 'NOT_REQUIRED' | 'UNKNOWN' | 'not_tested'
+  country_code?: string | null
+  pan_fingerprint?: string
+  card_fingerprint?: string
+}

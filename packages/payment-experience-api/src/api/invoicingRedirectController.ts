@@ -10,6 +10,7 @@ import {
   createInvoicingEntryForOrder,
   getOrder,
   OrderNotFoundError,
+  setOrderAsAccounted,
 } from '@verkkokauppa/order-backend'
 import {
   getProductAccountingBatch,
@@ -17,13 +18,15 @@ import {
 } from '@verkkokauppa/product-backend'
 import { URL } from 'url'
 import {
+  checkInvoiceReturnUrl,
   paidPaymentExists,
-  PaymentStatus,
-  setPaymentStatus,
 } from '@verkkokauppa/payment-backend'
 import { sendReceipt } from '../lib/sendEmail'
 import { sendErrorNotification } from '@verkkokauppa/message-backend'
-import { getPublicServiceConfiguration } from '@verkkokauppa/configuration-backend'
+import {
+  getPublicServiceConfiguration,
+  parseMerchantIdFromFirstOrderItem,
+} from '@verkkokauppa/configuration-backend'
 
 export class InvoicingRedirectController extends AbstractController {
   protected readonly requestSchema = null
@@ -78,7 +81,36 @@ export class InvoicingRedirectController extends AbstractController {
         redirectUrl.searchParams.append('orderId', order.orderId)
       }
 
+      const merchantId = parseMerchantIdFromFirstOrderItem(order)
+
+      if (!merchantId) {
+        logger.error('Free: No merchantId found from order')
+        return res.redirect(
+          302,
+          InvoicingRedirectController.fault(redirectUrl, user)
+        )
+      }
+
       if (await paidPaymentExists(order)) {
+        return res.redirect(
+          302,
+          InvoicingRedirectController.fault(redirectUrl, user)
+        )
+      }
+
+      const paymentStatus = await checkInvoiceReturnUrl({
+        orderId: orderId,
+        merchantId: merchantId,
+      })
+      logger.debug(
+        `PaymentStatus for invoicing order ${orderId}: ${JSON.stringify(
+          paymentStatus
+        )}`
+      )
+      if (!paymentStatus.valid) {
+        logger.debug(
+          `PaymentStatus is not valid for invoicing order ${orderId}, redirect to failure url`
+        )
         return res.redirect(
           302,
           InvoicingRedirectController.fault(redirectUrl, user)
@@ -169,12 +201,25 @@ export class InvoicingRedirectController extends AbstractController {
         }),
       })
 
-      await setPaymentStatus({ orderId, status: PaymentStatus.INVOICE })
+      try {
+        await setOrderAsAccounted(orderId)
+      } catch (e) {
+        logger.error(e)
+        logger.debug(
+          `Error occurred when trying to set free order as accounted ${orderId}`
+        )
+      }
 
       try {
         await sendReceipt(order, false)
       } catch (e) {
         logger.error(e)
+
+        // send notification to Slack channel (email) that sending receipt failed
+        await sendErrorNotification({
+          message: `Sending receipt failed for invoice order ${orderId}`,
+          cause: e.toString(),
+        })
       }
 
       return res.redirect(
