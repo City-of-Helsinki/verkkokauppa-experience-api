@@ -83,6 +83,12 @@ export class GetUpdateCardFormParametersController extends AbstractController<
       })
     )
 
+    logger.info(
+      `GetUpdateCardFormParametersController response params for order ${orderId} : ${JSON.stringify(
+        dto
+      )}`
+    )
+
     return this.success<any>(res, dto.serialize())
   }
 }

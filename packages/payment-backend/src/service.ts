@@ -4,6 +4,7 @@ import type {
   Payment,
   PaymentFilter,
   PaymentMethod,
+  PaytrailCard,
   PaytrailCardFormParameters,
   PaytrailStatus,
   UpdateFromPaytrailPaymentParameters,
@@ -12,6 +13,7 @@ import type {
 } from './types'
 import type { ParsedQs } from 'qs'
 import {
+  CheckInvoiceReturnUrlFailure,
   CheckPaytrailRefundCallbackUrlFailure,
   CheckPaytrailReturnUrlFailure,
   CheckVismaReturnUrlFailure,
@@ -320,13 +322,11 @@ export const getPaymentMethodList = async (parameters: {
   const { merchantId, order } = parameters
   const [
     onlineMethods,
-    offlineMethods,
     defaultPaymentMethods,
     orderPaymentFilters,
     merchantPaymentFilters,
   ] = await Promise.all([
     getOnlinePaymentMethods(parameters),
-    getOfflinePaymentMethods(parameters),
     getDefaultPaymentMethods(),
     getOrderPaymentFilters(parameters.order),
     merchantId ? getMerchantPaymentFilters({ merchantId }) : [],
@@ -342,7 +342,6 @@ export const getPaymentMethodList = async (parameters: {
       return item !== null && item !== undefined
     })
   let filteredPaymentFilters = onlineMethods
-    .concat(offlineMethods)
     .concat(defaultPaymentMethods)
     .filter((item) => {
       // Exclude empty arrays and empty objects
@@ -499,6 +498,30 @@ export const checkFreeReturnUrl = async (p: {
   }
 }
 
+export const checkInvoiceReturnUrl = async (p: {
+  orderId: string
+  merchantId: string
+}): Promise<PaytrailStatus> => {
+  const { orderId, merchantId } = p
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/invoice/check-return-url`
+
+  try {
+    const result = await axios.get<PaytrailStatus>(url, {
+      params: {
+        orderId,
+        merchantId,
+      },
+    })
+    return result.data
+  } catch (e) {
+    throw new CheckInvoiceReturnUrlFailure(e)
+  }
+}
+
 export const checkPaytrailCardReturnUrl = async (p: {
   params: ParsedQs
   order: Order
@@ -555,7 +578,7 @@ export const checkPaytrailCardUpdateReturnUrl = async (p: {
   }
   const url = `${getBackendUrl()}/payment/paytrail/check-card-update-return-url`
   try {
-    const res = await axios.post(url, dto, { params })
+    const res = await axios.post<PaytrailCard>(url, dto, { params })
     return res.data
   } catch (e) {
     throw new ExperienceFailure({
