@@ -1,11 +1,11 @@
 import {
-  createInvoiceTermsOfServiceBinary,
   sendOrderConfirmationEmailToCustomer,
+  loadPDFFromDir,
 } from '@verkkokauppa/message-backend'
 import {
   getPaymentForOrder,
   Order,
-  PaymentStatus,
+  PaymentGateway,
 } from '@verkkokauppa/payment-backend'
 import { ExperienceFailure, logger } from '@verkkokauppa/core'
 import {
@@ -31,10 +31,13 @@ export const sendReceipt = async (
   }
   const attachments: { [filename: string]: string } = {}
   if (!isSubscriptionRenewal) {
-    if (payments?.status === PaymentStatus.INVOICE) {
+    if (payments?.paymentGateway === PaymentGateway.INVOICE) {
       attachments[
-        'laskutuksen-yleiset-ehdot.pdf'
-      ] = createInvoiceTermsOfServiceBinary()
+        'Laskutusta-koskevat-yleiset-ehdot.pdf'
+      ] = await loadPDFFromDir(
+        'src/public',
+        'Laskutusta-koskevat-yleiset-ehdot.pdf'
+      )
     }
     if (!skipTosByNamespace.includes(order.namespace)) {
       attachments[
