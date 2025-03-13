@@ -31,7 +31,10 @@ export const sendReceipt = async (
   }
   const attachments: { [filename: string]: string } = {}
   if (!isSubscriptionRenewal) {
-    if (payments?.paymentGateway === PaymentGateway.INVOICE) {
+    if (
+      payments?.paymentGateway != null &&
+      payments?.paymentGateway === PaymentGateway.INVOICE
+    ) {
       attachments[
         'Laskutusta-koskevat-yleiset-ehdot.pdf'
       ] = await loadPDFFromDir(
