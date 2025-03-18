@@ -38,8 +38,9 @@ export const sendReceipt = async (
       attachments[
         'Laskutusta-koskevat-yleiset-ehdot.pdf'
       ] = await loadPDFFromDir(
-        'src/public',
-        'Laskutusta-koskevat-yleiset-ehdot.pdf'
+        process.env.INVOICING_TERMS_PATH || 'src/public', // try to use env for invoicing terms path but default to src/public
+        process.env.INVOICING_TERMS_FILENAME ||
+          'Laskutusta-koskevat-yleiset-ehdot.pdf'
       )
     }
     if (!skipTosByNamespace.includes(order.namespace)) {
