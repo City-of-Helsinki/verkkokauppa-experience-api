@@ -20,8 +20,11 @@
       "header": "Betalningsuppgifter",
       "alv": "Inkl. moms",
       "paidTotal": "Betalat totalt",
+      "toBePaidTotal": "Betalas totalt",
       "paymentMethod": "Betalningssätt",
       "date": "Datum",
+      "orderDate": "Beställningsdatum",
+      "invoice": "Faktura",
        "total": "totalt",
        "unit": {
          "pcs": "st.",

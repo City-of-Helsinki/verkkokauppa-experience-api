@@ -20,10 +20,14 @@
       "header": "Maksutiedot",
       "alv": "Sis. alv",
       "paidTotal": "Maksettu yhteensä",
+      "toBePaidTotal": "Maksettavaa yhteensä",
       "paymentMethod": "Maksutapa",
       "date": "Päivämäärä",
+      "orderDate": "Tilausaika",
+      "invoice": "Lasku",
       "updateCard": "Päivämäärä",
       "total": "yhteensä",
+      "subscriptionPaidWithCard": "Tilauksesi on maksettu kortilla jonka neljä viimeistä nunmeroa ovat: ",
       "unit": {
         "pcs": "kpl",
         "month": "kk"
