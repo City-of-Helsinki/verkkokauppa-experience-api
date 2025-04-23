@@ -8,6 +8,7 @@ import type {
   PaytrailCardFormParameters,
   PaytrailStatus,
   UpdateFromPaytrailPaymentParameters,
+  UpdateFromPaytrailRefundParameters,
   VismaPayResponse,
   VismaStatus,
 } from './types'
@@ -1002,6 +1003,26 @@ export const updateInternalPaymentFromPaytrail = async (
     throw new ExperienceFailure({
       code: 'failed-to-update-internal-payment-from-paytrail',
       message: 'failed to update internal payment with paytrail data',
+      source: e as Error,
+    })
+  }
+}
+export const updateInternalRefundFromPaytrail = async (
+  updateFromPaytrailPaymentParameters: UpdateFromPaytrailRefundParameters
+): Promise<RefundPayment> => {
+  checkBackendUrlExists()
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/paytrail/update-from-paytrail-refund`
+  try {
+    const res = await axios.post<RefundPayment>(
+      url,
+      updateFromPaytrailPaymentParameters
+    )
+    return res.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-update-internal-refund-from-paytrail',
+      message: 'failed to update internal refund with paytrail data',
       source: e as Error,
     })
   }

@@ -135,6 +135,13 @@ export interface UpdateFromPaytrailPaymentParameters {
   namespace: string
 }
 
+export interface UpdateFromPaytrailRefundParameters {
+  refundId: string
+  paymentId?: string
+  merchantId: string | null
+  namespace: string
+}
+
 export interface PaytrailCardFormParameters {
   'checkout-account': number
   'checkout-algorithm': string

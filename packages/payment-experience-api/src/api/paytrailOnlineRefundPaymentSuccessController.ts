@@ -156,7 +156,7 @@ export class PaytrailOnlineRefundPaymentSuccessController extends AbstractContro
     }
   }
 
-  private static getFailureRedirectUrl() {
+  public static getFailureRedirectUrl() {
     const redirectUrl = this.checkAndCreateRedirectUrl()
     redirectUrl.pathname = 'failure'
 
