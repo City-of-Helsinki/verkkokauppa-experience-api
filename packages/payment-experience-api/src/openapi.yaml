@@ -799,5 +799,35 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
+  /admin/refund-accounting-create:
+    post:
+      description: Create refund accounting for given refund and paymentId
+      security:
+        - ApiKey: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                refundId:
+                  type: string
+      responses:
+        '200':
+          description: Created refund accounting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderAccounting'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
 
 
