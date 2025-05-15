@@ -25,7 +25,7 @@ import {
   RefundPaymentStatus,
   updateInternalRefundFromPaytrail,
 } from '@verkkokauppa/payment-backend'
-import { PaytrailOnlineRefundPaymentSuccessController } from './paytrailOnlineRefundPaymentSuccessController'
+import { sendErrorNotification } from '@verkkokauppa/message-backend'
 
 const requestSchema = yup.object().shape({
   headers: yup.object().shape({
@@ -68,21 +68,6 @@ export class RefundAccountingCreateAdminController extends AbstractController<
 
     let shouldBePaidPayment: RefundPayment | null
     try {
-      const refundPayment = await getPaidRefundPaymentAdminByRefundId({
-        refundId: refundId,
-      })
-
-      // Already found refundPayment paid, return early to prevent multiple events happening
-      if (refundPayment != null) {
-        logger.debug(
-          `Paid payment already found for this refund, quitting early. Refund id: ${refundId}`
-        )
-        return res.redirect(
-          200,
-          PaytrailOnlineRefundPaymentSuccessController.getFailureRedirectUrl()
-        )
-      }
-
       try {
         shouldBePaidPayment = await updateInternalRefundFromPaytrail({
           refundId: refundId,
@@ -163,6 +148,10 @@ export class RefundAccountingCreateAdminController extends AbstractController<
         `Error occurred while trying to create accounting for refund with id: ${refundId}`
       )
       logger.error(error)
+      await sendErrorNotification({
+        message: `Admin- Error occurred while trying to create accounting for refund with id: ${refundId}`,
+        cause: error,
+      })
     }
 
     return this.created(res, refundAccounting)
