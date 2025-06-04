@@ -1,19 +1,3 @@
-import {
-  createInvoiceTermsOfServiceBinary,
-  sendOrderConfirmationEmailToCustomer,
-} from '@verkkokauppa/message-backend'
-import {
-  getPaymentForOrder,
-  Order,
-  PaymentStatus,
-} from '@verkkokauppa/payment-backend'
-import { ExperienceFailure, logger } from '@verkkokauppa/core'
-import {
-  downloadMerchantTermsOfServiceBinary,
-  getMerchantDetailsForOrder,
-} from '@verkkokauppa/configuration-backend'
-import { isCardRenewal } from './paymentReturnService'
-
 const fs = require('fs').promises
 const path = require('path')
 
