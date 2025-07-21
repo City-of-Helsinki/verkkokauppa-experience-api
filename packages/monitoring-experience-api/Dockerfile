@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi8/nodejs-14:1-35.1626836507 as base
+FROM registry.access.redhat.com/ubi8/nodejs-18 as base
 
 # Install yarn
 RUN npm install -g yarn
@@ -17,7 +17,7 @@ COPY ./packages/monitoring-experience-api ./packages/monitoring-experience-api
 
 # Chown to correct user
 USER 0
-RUN chown -R 1001:0 ${APP_ROOT} && chmod -R ug+rwx ${APP_ROOT} && \
+RUN mkdir -p /opt/app-root/src/.config/yarn && chown -R 1001:0 /opt/app-root/src/.config/yarn && chown -R 1001:0 ${APP_ROOT} && chmod -R ug+rwx ${APP_ROOT} && \
     rpm-file-permissions
 USER 1001
 

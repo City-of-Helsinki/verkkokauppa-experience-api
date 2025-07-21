@@ -20,9 +20,14 @@
       "header": "Maksutiedot",
       "alv": "Sis. alv",
       "paidTotal": "Maksettu yhteensä",
+      "toBePaidTotal": "Maksettavaa yhteensä",
       "paymentMethod": "Maksutapa",
       "date": "Päivämäärä",
+      "orderDate": "Tilausaika",
+      "invoice": "Lasku",
+      "updateCard": "Päivämäärä",
       "total": "yhteensä",
+      "subscriptionPaidWithCard": "Tilauksesi on maksettu kortilla jonka neljä viimeistä nunmeroa ovat: ",
       "unit": {
         "pcs": "kpl",
         "month": "kk"
@@ -66,7 +71,7 @@
     "weekly": "vk",
     "monthly": "kk",
     "yearly": "v",
-    "traficom": "© Ajoneuvon tiedot - Liikenneasioidenrekisteri, Traficom",
+    "traficom": "Lähde: Liikenneasioidenrekisteri, Traficom",
     "h1": "Tilaussopimus:",
     "p1": "Kiitos tilauksestasi",
     "p2": "Olet valinnut tilaustyypiksi jatkuvan tilauksen. Liitteenä löydät jatkuvaa tilausta koskevan tilaussopimuksen sekä sopimusehdot.",

@@ -7,11 +7,24 @@ import { checkPaytrailCardUpdateReturnUrl } from '@verkkokauppa/payment-backend'
 export class PaytrailCardUpdateRedirectSuccessController extends AbstractController {
   protected readonly requestSchema = null
 
-  private static success = (url: URL, orderId?: string, user?: string) => {
+  private static success = (
+    url: URL,
+    orderId?: string,
+    user?: string,
+    cardLastFourDigits?: string,
+    cardExpiry?: string
+  ) => {
     url.pathname = `${orderId}/card-update-success`
     if (user) {
       url.searchParams.append('user', user)
     }
+    if (cardLastFourDigits) {
+      url.searchParams.append('cardLastFourDigits', cardLastFourDigits)
+    }
+    if (cardExpiry) {
+      url.searchParams.append('cardExpiry', cardExpiry)
+    }
+
     return url
   }
 
@@ -45,7 +58,7 @@ export class PaytrailCardUpdateRedirectSuccessController extends AbstractControl
 
       const order = await getOrderAdmin({ orderId })
       user = order.user
-      await checkPaytrailCardUpdateReturnUrl({
+      const paytrailCardResponse = await checkPaytrailCardUpdateReturnUrl({
         params: req.query,
         order,
       })
@@ -55,7 +68,11 @@ export class PaytrailCardUpdateRedirectSuccessController extends AbstractControl
         PaytrailCardUpdateRedirectSuccessController.success(
           redirectUrl,
           orderId,
-          user
+          user,
+          paytrailCardResponse?.partial_pan,
+          paytrailCardResponse
+            ? `${paytrailCardResponse?.expire_month}/${paytrailCardResponse?.expire_year}`
+            : ''
         ).toString()
       )
     } catch (e) {

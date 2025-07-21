@@ -1,9 +1,13 @@
-import { AbstractController, ValidatedRequest } from '@verkkokauppa/core'
+import {
+  AbstractController,
+  logger,
+  ValidatedRequest,
+} from '@verkkokauppa/core'
 import * as yup from 'yup'
 import type { Response } from 'express'
 import { sendSubscriptionPaymentFailedEmailToCustomer } from '@verkkokauppa/message-backend'
 import {
-  getOrderAdmin,
+  getActiveOrderAdmin,
   getSubscriptionAdmin,
   incrementValidationFailedEmailSentCountAdmin,
 } from '@verkkokauppa/order-backend'
@@ -32,10 +36,15 @@ export class SendSubscriptionPaymentFailedEmail extends AbstractController<
       headers: { 'api-key': apiKey },
     } = req
     await validateAdminApiKey({ apiKey })
+    logger.debug(`Sending renewal payment failed email for subscription ${id}`)
 
     // Assumption: subscription is currently on its first order
     const subscription = await getSubscriptionAdmin({ id })
-    const order = await getOrderAdmin({ orderId: subscription.orderId })
+    const order = await getActiveOrderAdmin({
+      subscriptionId: subscription.subscriptionId,
+      endDate: subscription.endDate,
+    })
+    logger.debug(`Getting metas from order ${order?.orderId}`)
 
     await sendSubscriptionPaymentFailedEmailToCustomer({
       order: order,

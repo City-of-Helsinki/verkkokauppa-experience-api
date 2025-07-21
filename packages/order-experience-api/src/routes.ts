@@ -32,10 +32,14 @@ import { SendSubscriptionCardExpiredEmail } from './api/sendSubscriptionCardExpi
 import { CreateFlowStepController } from './api/createFlowStepController'
 import { SetPaymentMethodController } from './api/setPaymentMethodController'
 import { SendRefundEmailController } from './api/sendRefundEmail'
+import { HandleInternalWebhooks } from './api/handleInternalWebhooks'
+import { GetCancelController } from './api/getCancelUrlController'
+import { GetRefundController } from './api/getRefund'
 
 const createController = new CreateController()
 const cartToOrderController = new CartToOrder()
 const cancelController = new (withAuthentication(CancelController))()
+const getCancelController = new (withAuthentication(GetCancelController))()
 const confirmAndCreatePaymentController = new (withAuthentication(
   ConfirmAndCreatePayment
 ))()
@@ -69,6 +73,7 @@ const cancelSubscription = new (withAuthentication(CancelSubscription))()
 const sendSubscriptionContractEmail = new SendSubscriptionContractEmail()
 const sendSubscriptionPaymentFailedEmail = new SendSubscriptionPaymentFailedEmail()
 const sendSubscriptionCardExpiredEmail = new SendSubscriptionCardExpiredEmail()
+const handleInternalWebhooks = new HandleInternalWebhooks()
 const recreateSubscription = new RecreateSubscriptionController()
 const listSubscriptionsController = new ListSubscriptionsController()
 // Authentication is already mixed in at the controller
@@ -81,6 +86,7 @@ const instantRefundController = new CreateRefundController({
   confirmAndCreatePayment: true,
 })
 const confirmRefundController = new ConfirmRefundController()
+const getRefundController = new GetRefundController()
 const sendRefundEmailController = new SendRefundEmailController()
 
 const router = Router()
@@ -113,6 +119,9 @@ router.post('/:orderId/flowSteps', (req, res) =>
 )
 router.post('/:orderId/cancel', (req, res) =>
   cancelController.execute(req, res)
+)
+router.get('/:orderId/getCancelUrl', (req, res) =>
+  getCancelController.execute(req, res)
 )
 router.post('/:orderId/confirmAndCreatePayment', (req, res) =>
   confirmAndCreatePaymentController.execute(req, res)
@@ -147,6 +156,10 @@ router.post('/subscription/:id/emailSubscriptionPaymentFailed', (req, res) =>
 router.post('/subscription/:id/emailSubscriptionCardExpired', (req, res) =>
   sendSubscriptionCardExpiredEmail.execute(req, res)
 )
+router.post('/internal/webhooks', (req, res) =>
+  handleInternalWebhooks.execute(req, res)
+)
+
 router.post('/subscription/:id/recreate', (req, res) =>
   recreateSubscription.execute(req, res)
 )
@@ -166,6 +179,21 @@ router.delete('/gdpr-api/v1/profiles/:id', (req, res) =>
   deleteGdprController.execute(req, res)
 )
 
+router.get('/gdpr-api/v1/profiles/tunnistus/:id', (req, res) => {
+  // Set the `auth-server-type` header to "KEYCLOAK"
+  req.headers['x-auth-server-type'] = 'KEYCLOAK'
+
+  // Execute the controller with the modified request header
+  return getGdprController.execute(req, res)
+})
+
+router.delete('/gdpr-api/v1/profiles/tunnistus/:id', (req, res) => {
+  // Set the `auth-server-type` header to "KEYCLOAK"
+  req.headers['x-auth-server-type'] = 'KEYCLOAK'
+  // Execute the controller with the modified request header
+  return deleteGdprController.execute(req, res)
+})
+
 router.post('/refund', (req, res) => createRefundController.execute(req, res))
 
 router.post('/refund/instant', (req, res) =>
@@ -174,6 +202,10 @@ router.post('/refund/instant', (req, res) =>
 
 router.post('/refund/:refundId/confirm', (req, res) =>
   confirmRefundController.execute(req, res)
+)
+
+router.get('/refund/:refundId', (req, res) =>
+  getRefundController.execute(req, res)
 )
 
 router.post('/refund/:refundId/emailRefundConfirmation', (req, res) =>

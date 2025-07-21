@@ -27,6 +27,9 @@ app.use(
   swaggerUi.setup(openapiDocument)
 )
 
+// Middleware to serve static files from /public route
+app.use('/v1/payment/public', express.static(path.join(__dirname, 'public')))
+
 // Read the certificate and the private key for the https server options
 // ------------------- STEP 2
 // Create the https server by initializing it with 'options'

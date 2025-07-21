@@ -20,8 +20,11 @@
       "header": "Payment information",
       "alv": "Incl. VAT",
       "paidTotal": "Paid in total",
+      "toBePaidTotal": "Total to be paid",
       "paymentMethod": "Payment method",
       "date": "Date",
+      "orderDate": "Order date",
+      "invoice": "Invoice",
        "total": "in total",
        "unit": {
          "pcs": "pcs",
@@ -95,7 +98,7 @@
       "p2": "If necessary, the vendor will provide you with additional instructions related to the use or delivery of the service/product.",
       "businessId": "Business ID"
     },
-    "traficom": "© Vehicle information - Transport register, Traficom",
+    "traficom": "Source: Transport register, Traficom",
     "daily": "day(s)",
     "weekly": "week(s)",
     "monthly": "month(s)",

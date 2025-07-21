@@ -4,13 +4,16 @@ import type {
   Payment,
   PaymentFilter,
   PaymentMethod,
+  PaytrailCard,
   PaytrailCardFormParameters,
   PaytrailStatus,
+  UpdateFromPaytrailPaymentParameters,
   VismaPayResponse,
   VismaStatus,
 } from './types'
 import type { ParsedQs } from 'qs'
 import {
+  CheckInvoiceReturnUrlFailure,
   CheckPaytrailRefundCallbackUrlFailure,
   CheckPaytrailReturnUrlFailure,
   CheckVismaReturnUrlFailure,
@@ -20,6 +23,8 @@ import {
   GetPaymentsForOrderFailure,
   GetPaymentStatusFailure,
   GetPaymentUrlFailure,
+  GetRefundPaymentByRefundPaymentIdFailure,
+  GetRefundPaymentForOrderByRefundIdFailure,
   GetRefundPaymentForOrderFailure,
   PaymentMethodsNotFound,
   PaymentNotFound,
@@ -27,7 +32,7 @@ import {
   PaymentValidationError,
   RefundPaymentNotFound,
 } from './errors'
-import { ExperienceFailure, removeItem } from '@verkkokauppa/core'
+import { ExperienceFailure, logger, removeItem } from '@verkkokauppa/core'
 import {
   PaymentGateway,
   PaymentStatus,
@@ -40,6 +45,7 @@ const allowedPaymentGateways = [
   PaymentGateway.PAYTRAIL.toString(),
   PaymentGateway.VISMA.toString(),
   PaymentGateway.INVOICE.toString(),
+  PaymentGateway.FREE.toString(),
 ]
 
 const checkBackendUrlExists = () => {
@@ -68,6 +74,9 @@ export const createMethodPartFromGateway = (gateway: string) => {
       break
     case 'offline':
       paymentMethodPart = 'invoice'
+      break
+    case 'free':
+      paymentMethodPart = 'free'
       break
   }
   return paymentMethodPart
@@ -197,6 +206,25 @@ export const getOfflinePaymentMethods = async (parameters: {
   }
 }
 
+export const getDefaultPaymentMethods = async (): Promise<PaymentMethod[]> => {
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment-admin/payment-method`
+
+  try {
+    // We use POST instead of GET since we need to send complex parameters,
+    // although using GET would be semantically more correct.
+    const result = await axios.get<PaymentMethod[]>(url)
+    return result.data
+  } catch (e) {
+    logger.log(e)
+    // Default to empty array when no payment methods created.
+    return []
+  }
+}
+
 export const getPaymentFiltersAdmin = async (p: {
   referenceId: string
   referenceType: ReferenceType
@@ -254,6 +282,36 @@ export const filterPaymentMethodsByCode = (
     return !globallyFilteredPaymentMethods.includes(method.code.toLowerCase())
   })
 
+export const isAllowedToPayWithInvoice = (order: Order) => {
+  let allItemsHaveInvoicingDate = true
+
+  for (const item of order.items) {
+    // If any item does not have an invoicingDate, set the flag to false and exit the loop
+    if (!item.invoicingDate) {
+      allItemsHaveInvoicingDate = false
+      break
+    }
+  }
+  return allItemsHaveInvoicingDate
+}
+export const isFreeOrder = (order: Order): boolean => {
+  // Ensure priceTotal is a number and check if it is effectively zero
+  const priceTotal =
+    typeof order.priceTotal === 'string'
+      ? parseFloat(order.priceTotal)
+      : order.priceTotal
+
+  if (
+    (priceTotal && isNaN(<number>priceTotal)) ||
+    (priceTotal !== undefined && isNaN(<number>priceTotal))
+  ) {
+    throw new Error('Invalid priceTotal value')
+  }
+
+  // Check if priceTotal is zero
+  return priceTotal !== undefined ? priceTotal === 0 : false
+}
+
 export const getPaymentMethodList = async (parameters: {
   namespace: string
   totalPrice: number
@@ -264,18 +322,35 @@ export const getPaymentMethodList = async (parameters: {
   const { merchantId, order } = parameters
   const [
     onlineMethods,
-    offlineMethods,
+    defaultPaymentMethods,
     orderPaymentFilters,
     merchantPaymentFilters,
   ] = await Promise.all([
     getOnlinePaymentMethods(parameters),
-    getOfflinePaymentMethods(parameters),
+    getDefaultPaymentMethods(),
     getOrderPaymentFilters(parameters.order),
     merchantId ? getMerchantPaymentFilters({ merchantId }) : [],
   ])
-  const paymentFilters = orderPaymentFilters.concat(merchantPaymentFilters)
+  const paymentFilters = orderPaymentFilters
+    .concat(merchantPaymentFilters)
+    .filter((item) => {
+      // Exclude empty arrays and empty objects
+      if (Array.isArray(item) && item.length === 0) {
+        return false
+      }
+      // Exclude null, undefined, empty string, and NaN
+      return item !== null && item !== undefined
+    })
   let filteredPaymentFilters = onlineMethods
-    .concat(offlineMethods)
+    .concat(defaultPaymentMethods)
+    .filter((item) => {
+      // Exclude empty arrays and empty objects
+      if (Array.isArray(item) && item.length === 0) {
+        return false
+      }
+      // Exclude null, undefined, empty string, and NaN
+      return item !== null && item !== undefined
+    })
     .filter((method) => {
       return !paymentFilters.find((filter) => {
         const value = filter.value.toLowerCase()
@@ -299,7 +374,7 @@ export const getPaymentMethodList = async (parameters: {
   // TODO remove Paytrail filter when we are disabling payments via visma pay
   const gateways =
     process.env.FILTERED_PAYMENT_GATEWAYS ||
-    `${PaymentGateway.VISMA},${PaymentGateway.INVOICE}`
+    `${PaymentGateway.VISMA},${PaymentGateway.INVOICE},${PaymentGateway.FREE}`
 
   let globallyFilteredPaymentGateways = gateways.split(',')
 
@@ -317,6 +392,30 @@ export const getPaymentMethodList = async (parameters: {
       )
     }
   })
+
+  let allItemsHaveInvoicingDate = isAllowedToPayWithInvoice(order)
+  // If all items have invoicingDate, remove PaymentGateway.INVOICE
+  if (allItemsHaveInvoicingDate) {
+    globallyFilteredPaymentGateways = removeItem(
+      globallyFilteredPaymentGateways,
+      PaymentGateway.INVOICE
+    )
+  }
+
+  // If order priceTotal is 0 then we allow only the free payment method (remove others from payment method list)
+  if (isFreeOrder(order)) {
+    filteredPaymentFilters = filteredPaymentFilters.filter((paymentFilters) => {
+      return (
+        paymentFilters?.gateway?.toLowerCase() ===
+        PaymentGateway.FREE.toString().toLowerCase()
+      )
+    })
+
+    globallyFilteredPaymentGateways = removeItem(
+      globallyFilteredPaymentGateways,
+      PaymentGateway.FREE
+    )
+  }
 
   filteredPaymentFilters = filterPaymentMethodByGateway(
     filteredPaymentFilters,
@@ -372,6 +471,54 @@ export const checkPaytrailReturnUrl = async (p: {
     return result.data
   } catch (e) {
     throw new CheckPaytrailReturnUrlFailure(e)
+  }
+}
+
+export const checkFreeReturnUrl = async (p: {
+  orderId: string
+  merchantId: string
+}): Promise<PaytrailStatus> => {
+  const { orderId, merchantId } = p
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/free/check-return-url`
+
+  try {
+    const result = await axios.get<PaytrailStatus>(url, {
+      params: {
+        orderId,
+        merchantId,
+      },
+    })
+    return result.data
+  } catch (e) {
+    throw new CheckPaytrailReturnUrlFailure(e)
+  }
+}
+
+export const checkInvoiceReturnUrl = async (p: {
+  orderId: string
+  merchantId: string
+}): Promise<PaytrailStatus> => {
+  const { orderId, merchantId } = p
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/invoice/check-return-url`
+
+  try {
+    const result = await axios.get<PaytrailStatus>(url, {
+      params: {
+        orderId,
+        merchantId,
+      },
+    })
+    return result.data
+  } catch (e) {
+    throw new CheckInvoiceReturnUrlFailure(e)
   }
 }
 
@@ -431,7 +578,7 @@ export const checkPaytrailCardUpdateReturnUrl = async (p: {
   }
   const url = `${getBackendUrl()}/payment/paytrail/check-card-update-return-url`
   try {
-    const res = await axios.post(url, dto, { params })
+    const res = await axios.post<PaytrailCard>(url, dto, { params })
     return res.data
   } catch (e) {
     throw new ExperienceFailure({
@@ -452,6 +599,30 @@ export const checkPaytrailRefundCallbackUrl = async (p: {
   }
 
   const url = `${process.env.PAYMENT_BACKEND_URL}/refund/paytrail/check-refund-callback-url`
+
+  try {
+    const result = await axios.get<PaytrailStatus>(url, {
+      params: {
+        ...params,
+        merchantId,
+      },
+    })
+    return result.data
+  } catch (e) {
+    throw new CheckPaytrailRefundCallbackUrlFailure(e)
+  }
+}
+
+export const checkFreeRefundCallbackUrl = async (p: {
+  params: ParsedQs
+  merchantId: string
+}): Promise<PaytrailStatus> => {
+  const { params, merchantId } = p
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/refund/free/check-refund-callback-url`
 
   try {
     const result = await axios.get<PaytrailStatus>(url, {
@@ -586,6 +757,49 @@ export const getRefundPaymentForOrderAdmin = async (p: {
   }
 }
 
+export const getRefundPaymentForOrderAdminByRefundId = async (p: {
+  refundId: string
+}): Promise<[RefundPayment]> => {
+  const { refundId } = p
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/refund-admin/refund-payment/get/refundId`
+  try {
+    const res = await axios.get(url, {
+      params: { refundId },
+    })
+    return res.data
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new RefundPaymentNotFound()
+    }
+    throw new GetRefundPaymentForOrderByRefundIdFailure(e)
+  }
+}
+export const getRefundPaymentAdminByRefundPaymentId = async (p: {
+  refundPaymentId: string
+}): Promise<RefundPayment> => {
+  const { refundPaymentId } = p
+  if (!process.env.PAYMENT_BACKEND_URL) {
+    throw new Error('No payment API backend URL set')
+  }
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/refund-admin/refund-payment/get/refundPaymentId`
+  try {
+    const res = await axios.get(url, {
+      params: { refundPaymentId },
+    })
+    return res.data
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new RefundPaymentNotFound()
+    }
+    throw new GetRefundPaymentByRefundPaymentIdFailure(e)
+  }
+}
+
 export const getPaymentsForOrderAdmin = async (
   p: {
     orderId: string
@@ -684,6 +898,28 @@ export const getPaidRefundPaymentAdmin = async (p: {
   }
 }
 
+export const getPaidRefundPaymentAdminByRefundId = async (p: {
+  refundId: string
+}): Promise<RefundPayment | null> => {
+  try {
+    let paidRefundPayment = null
+    const refundPayment = await getRefundPaymentForOrderAdminByRefundId(p)
+
+    refundPayment.forEach((payment) => {
+      if (payment.status === RefundPaymentStatus.PAID_ONLINE.toString()) {
+        paidRefundPayment = payment
+      }
+    })
+
+    return paidRefundPayment
+  } catch (e) {
+    if (e instanceof RefundPaymentNotFound) {
+      return null
+    }
+    throw e
+  }
+}
+
 export const createPaymentFromUnpaidOrder = async (p: {
   order: Order
   paymentMethod: string
@@ -745,6 +981,27 @@ export const savePaymentFiltersAdmin = async (
     throw new ExperienceFailure({
       code: 'failed-to-save-payment-filter',
       message: 'failed to save payment filter(s)',
+      source: e as Error,
+    })
+  }
+}
+
+export const updateInternalPaymentFromPaytrail = async (
+  updateFromPaytrailPaymentParameters: UpdateFromPaytrailPaymentParameters
+): Promise<Payment> => {
+  checkBackendUrlExists()
+
+  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/paytrail/update-from-paytrail-payment`
+  try {
+    const res = await axios.post<Payment>(
+      url,
+      updateFromPaytrailPaymentParameters
+    )
+    return res.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-update-internal-payment-from-paytrail',
+      message: 'failed to update internal payment with paytrail data',
       source: e as Error,
     })
   }

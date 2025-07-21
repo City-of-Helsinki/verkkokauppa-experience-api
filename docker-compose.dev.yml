@@ -8,6 +8,7 @@ services:
       target: base
     volumes:
       - ./packages/product-experience-api/:/opt/app-root/src/packages/product-experience-api/
+      - ./packages/product-experience-api/src/openapi.yaml:/opt/app-root/src/packages/product-experience-api/dist/openapi.yaml
       - ./packages/product-experience-api/nodemon.json:/opt/app-root/src/packages/product-experience-api/nodemon.json
       - ./packages/product-backend/:/opt/app-root/src/packages/product-backend/
       - ./packages/product-mapping-backend/:/opt/app-root/src/packages/product-mapping-backend/
@@ -19,6 +20,7 @@ services:
       - '8080'
     ports:
       - '8081:8080'
+      - '9233:9229'
     command: yarn workspace @verkkokauppa/product-experience-api dev
     environment:
       - SERVICE_NAME=product-experience-api
@@ -33,6 +35,7 @@ services:
       target: base
     volumes:
       - ./packages/price-experience-api/:/opt/app-root/src/packages/price-experience-api/
+      - ./packages/price-experience-api/src/openapi.yaml:/opt/app-root/src/packages/price-experience-api/dist/openapi.yaml
       - ./packages/price-experience-api/nodemon.json:/opt/app-root/src/packages/price-experience-api/nodemon.json
       - ./packages/price-backend/:/opt/app-root/src/packages/price-backend/
       - ./packages/core/:/opt/app-root/src/packages/core/
@@ -48,37 +51,16 @@ services:
       - .env.docker
     networks:
       - common
-  cart-experience-api:
-    build:
-      context: ./
-      dockerfile: packages/cart-experience-api/Dockerfile
-      target: base
-    volumes:
-      - ./packages/cart-experience-api/:/opt/app-root/src/packages/cart-experience-api/
-      - ./packages/cart-experience-api/nodemon.json:/opt/app-root/src/packages/cart-experience-api/nodemon.json
-      - ./packages/cart-backend/:/opt/app-root/src/packages/cart-backend/
-      - ./packages/core/:/opt/app-root/src/packages/core/
-      - ./packages/product-backend/:/opt/app-root/src/packages/product-backend/
-      - ./packages/price-backend/:/opt/app-root/src/packages/price-backend/
-    container_name: cart-experience-api
-    expose:
-      - '8080'
-    ports:
-      - '8083:8080'
-    command: yarn workspace @verkkokauppa/cart-experience-api dev
-    environment:
-      - SERVICE_NAME=cart-experience-api
-    env_file:
-      - .env.docker
-    networks:
-      - common
+
   order-experience-api:
     build:
       context: ./
       dockerfile: packages/order-experience-api/Dockerfile
       target: base
     volumes:
+      - ./packages/auth-helsinki-profile/:/opt/app-root/src/packages/auth-helsinki-profile
       - ./packages/order-experience-api/:/opt/app-root/src/packages/order-experience-api/
+      - ./packages/order-experience-api/src/openapi.yaml:/opt/app-root/src/packages/order-experience-api/dist/openapi.yaml
       - ./packages/order-experience-api/nodemon.json:/opt/app-root/src/packages/order-experience-api/nodemon.json
       - ./packages/order-backend/:/opt/app-root/src/packages/order-backend/
       - ./packages/cart-backend/:/opt/app-root/src/packages/cart-backend/
@@ -88,11 +70,14 @@ services:
       - ./packages/product-backend/:/opt/app-root/src/packages/product-backend/
       - ./packages/price-backend/:/opt/app-root/src/packages/price-backend/
       - ./packages/configuration-backend/:/opt/app-root/src/packages/configuration-backend/
+      - ./packages/product-mapping-backend/:/opt/app-root/src/packages/product-mapping-backend
     container_name: order-experience-api
     expose:
       - '8080'
+      - '8081'
     ports:
       - '8084:8080'
+      - '8284:8081'
       - '9230:9229'
     command: yarn workspace @verkkokauppa/order-experience-api dev
     environment:
@@ -109,7 +94,9 @@ services:
       args:
         - TZ=Europe/Helsinki
     volumes:
+      - ./packages/auth-helsinki-profile/:/opt/app-root/src/packages/auth-helsinki-profile
       - ./packages/payment-experience-api/:/opt/app-root/src/packages/payment-experience-api/
+      - ./packages/payment-experience-api/src/openapi.yaml:/opt/app-root/src/packages/payment-experience-api/dist/openapi.yaml
       - ./packages/order-backend/:/opt/app-root/src/packages/order-backend/
       - ./packages/payment-backend/:/opt/app-root/src/packages/payment-backend/
       - ./packages/product-backend/:/opt/app-root/src/packages/product-backend/
@@ -140,6 +127,7 @@ services:
       target: base
     volumes:
       - ./packages/merchant-experience-api/:/opt/app-root/src/packages/merchant-experience-api/
+      - ./packages/merchant-experience-api/src/openapi.yaml:/opt/app-root/src/packages/merchant-experience-api/dist/openapi.yaml
       - ./packages/merchant-experience-api/nodemon.json:/opt/app-root/src/packages/merchant-experience-api/nodemon.json
       - ./packages/configuration-backend/:/opt/app-root/src/packages/configuration-backend/
       - ./packages/core/:/opt/app-root/src/packages/core/
@@ -164,6 +152,7 @@ services:
       target: base
     volumes:
       - ./packages/monitoring-experience-api/:/opt/app-root/src/packages/monitoring-experience-api/
+      - ./packages/monitoring-experience-api/src/openapi.yaml:/opt/app-root/src/packages/monitoring-experience-api/dist/openapi.yaml
       - ./packages/monitoring-experience-api/nodemon.json:/opt/app-root/src/packages/monitoring-experience-api/nodemon.json
       - ./packages/configuration-backend/:/opt/app-root/src/packages/configuration-backend/
       - ./packages/core/:/opt/app-root/src/packages/core/
@@ -181,5 +170,40 @@ services:
     networks:
       - common
 
+  hotreloader:
+    build:
+      context: ./
+      dockerfile: packages/core/Dockerfile
+      target: base
+      args:
+        - TZ=Europe/Helsinki
+    volumes:
+      # Ignores/Hides the node_modules from the bind on the host allowing the node_modules
+      # from inside the container to be used instead
+      - /opt/app-root/src/packages/auth-helsinki-profile/node_modules
+      - /opt/app-root/src/packages/core/node_modules
+      - /opt/app-root/src/packages/cart-backend/node_modules
+      - /opt/app-root/src/packages/configuration-backend/node_modules
+      - /opt/app-root/src/packages/message-backend/node_modules
+      - /opt/app-root/src/packages/order-backend/node_modules
+      - /opt/app-root/src/packages/payment-backend/node_modules
+      - /opt/app-root/src/packages/price-backend/node_modules
+      - /opt/app-root/src/packages/product-backend/node_modules
+      - /opt/app-root/src/packages/product-mapping-backend/node_modules
+      - ./packages/auth-helsinki-profile/:/opt/app-root/src/packages/auth-helsinki-profile
+      - ./packages/core/:/opt/app-root/src/packages/core
+      - ./packages/cart-backend/:/opt/app-root/src/packages/cart-backend
+      - ./packages/configuration-backend/:/opt/app-root/src/packages/configuration-backend
+      - ./packages/message-backend/:/opt/app-root/src/packages/message-backend
+      - ./packages/order-backend/:/opt/app-root/src/packages/order-backend
+      - ./packages/payment-backend/:/opt/app-root/src/packages/payment-backend
+      - ./packages/price-backend/:/opt/app-root/src/packages/price-backend
+      - ./packages/product-backend/:/opt/app-root/src/packages/product-backend
+      - ./packages/product-mapping-backend/:/opt/app-root/src/packages/product-mapping-backend
+    container_name: hotreloader
+    env_file:
+      - .env.docker
+    networks:
+      - common
 networks:
   common:

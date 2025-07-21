@@ -10,7 +10,10 @@ import { RefundGateway } from '../enums'
 import { createMethodPartFromGateway } from '../service'
 import type { RefundAggregate, RefundPayment } from './types'
 
-const allowedRefundGateways = [RefundGateway.PAYTRAIL.toString()]
+const allowedRefundGateways = [
+  RefundGateway.PAYTRAIL.toString(),
+  RefundGateway.FREE.toString(),
+]
 
 export const createRefundPaymentFromRefund = async (parameters: {
   order: Order

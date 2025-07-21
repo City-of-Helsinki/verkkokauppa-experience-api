@@ -374,6 +374,29 @@ const isApiKeyValid = async (p: {
   }
 }
 
+const isWebhookApiKeyValid = async (p: {
+  namespace: string
+  apiKey: string
+}): Promise<boolean> => {
+  const { namespace, apiKey: token } = p
+  if (!process.env.CONFIGURATION_BACKEND_URL) {
+    throw new Error('No configuration backend URL set')
+  }
+  const url = `${process.env.CONFIGURATION_BACKEND_URL}/webhook-api-access/validate`
+  try {
+    const res = await axios.get(url, {
+      params: { namespace, token },
+    })
+    return res.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-validate-webhook-api-key',
+      message: 'Failed to validate webhook api key',
+      source: e,
+    })
+  }
+}
+
 export const validateApiKey = async (p: {
   namespace: string
   apiKey: string
@@ -383,6 +406,21 @@ export const validateApiKey = async (p: {
     throw new ExperienceError({
       code: 'api-key-validation-failed',
       message: 'invalid api key',
+      responseStatus: StatusCode.Forbidden,
+      logLevel: 'info',
+    })
+  }
+}
+
+export const validateWebhookApiKey = async (p: {
+  namespace: string
+  apiKey: string
+}): Promise<void> => {
+  const isValid = await isWebhookApiKeyValid(p)
+  if (!isValid) {
+    throw new ExperienceError({
+      code: 'webhook-api-key-validation-failed',
+      message: 'invalid webhook api key',
       responseStatus: StatusCode.Forbidden,
       logLevel: 'info',
     })

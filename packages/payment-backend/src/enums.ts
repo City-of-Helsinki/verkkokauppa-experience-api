@@ -26,8 +26,11 @@ export enum PaymentGateway {
   PAYTRAIL = 'online-paytrail',
   INVOICE = 'offline',
   VISMA = 'online',
+  FREE = 'free',
 }
 
 export enum RefundGateway {
   PAYTRAIL = 'online-paytrail',
+
+  FREE = 'free',
 }

@@ -9,6 +9,8 @@ import {
   confirmOrder,
   createAccountingEntryForOrder,
   getOrderAdmin,
+  lockOrder,
+  unlockOrder,
 } from '@verkkokauppa/order-backend'
 import { URL } from 'url'
 import {
@@ -18,6 +20,8 @@ import {
 import {
   checkPaytrailCardReturnUrl,
   paidPaymentExists,
+  Payment,
+  updateInternalPaymentFromPaytrail,
 } from '@verkkokauppa/payment-backend'
 import { sendReceiptToCustomer } from '../lib/sendEmail'
 import { getProductAccountingBatch } from '@verkkokauppa/product-backend'
@@ -48,6 +52,7 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
     failureRedirectUrl.pathname = `${orderId ?? ''}/summary`
 
     let user = ''
+    let lock = false
     try {
       if (!orderId) {
         return res.redirect(
@@ -76,20 +81,31 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
         successRedirectUrl.pathname = 'success'
         successRedirectUrl.searchParams.append('orderId', orderId)
       }
+      successRedirectUrl.searchParams.append('user', order.user)
 
       if (nsFailureRedirectUrl?.configurationValue) {
         failureRedirectUrl = new URL(nsFailureRedirectUrl.configurationValue)
         failureRedirectUrl.searchParams.append('orderId', orderId)
       }
 
+      let retry = 0
+      while (!(lock = await lockOrder(order))) {
+        logger.info('order is already locked')
+        if (retry > 2) {
+          throw new ExperienceError({
+            code: 'failed-to-lock-order',
+            message: 'Exceeded max retry attempts trying to lock order',
+            responseStatus: StatusCode.InternalServerError,
+            logLevel: 'error',
+          })
+        }
+        const wait = 5500 * 2 ** retry++
+        logger.info(`waiting ${wait}ms to retry`)
+        await new Promise((resolve) => setTimeout(resolve, wait))
+      }
+
       if (await paidPaymentExists(order)) {
-        return res.redirect(
-          302,
-          PaytrailCardRedirectSuccessController.fault(
-            failureRedirectUrl,
-            user
-          ).toString()
-        )
+        return res.redirect(302, successRedirectUrl.toString())
       }
 
       // Now we confirm order and check if sums and other are ok. Mappings should be good now
@@ -110,6 +126,24 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
           ).toString()
         )
       }
+      let paymentWithUpdatePaidAt: Payment
+      try {
+        if (!payment) {
+          throw new Error(
+            `Card-redirect - Payment not found when updating internal payment from paytrail with orderId ${orderId}`
+          )
+        }
+        paymentWithUpdatePaidAt = await updateInternalPaymentFromPaytrail({
+          paymentId: payment.paymentId,
+          merchantId: parseMerchantIdFromFirstOrderItem(order),
+          namespace: order.namespace,
+        })
+      } catch (e) {
+        logger.error(e)
+        logger.debug(
+          `Card-redirect - Error occurred, when updating payment data from paytrail ${orderId}`
+        )
+      }
 
       const paymentReturnStatus = {
         paymentPaid: payment.status === 'payment_paid_online',
@@ -117,7 +151,17 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
       }
 
       // send email receipt. Method does not throw exceptions
-      await sendReceiptToCustomer(paymentReturnStatus, orderId, order)
+      try {
+        await sendReceiptToCustomer(paymentReturnStatus, orderId, order)
+      } catch (e) {
+        logger.error(e)
+
+        // send notification to Slack channel (email) that sending receipt failed
+        await sendErrorNotification({
+          message: `Sending receipt failed for paytrail card order ${orderId}`,
+          cause: e.toString(),
+        })
+      }
 
       try {
         logger.info(`Load paytrail product accountings for order ${orderId}`)
@@ -140,6 +184,11 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
           return {
             ...item,
             ...productAccounting,
+            merchantId: parseMerchantIdFromFirstOrderItem(order) || '',
+            namespace: order.namespace,
+            paytrailTransactionId:
+              paymentWithUpdatePaidAt?.paytrailTransactionId || '',
+            paidAt: paymentWithUpdatePaidAt?.paidAt || '',
           }
         })
 
@@ -152,6 +201,7 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
         await createAccountingEntryForOrder({
           orderId,
           dtos: accountingDtos,
+          namespace: order.namespace,
         })
       } catch (e) {
         // log error
@@ -167,7 +217,6 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
         })
       }
 
-      successRedirectUrl.searchParams.append('user', order.user)
       return res.redirect(302, successRedirectUrl.toString())
     } catch (e) {
       logger.error(e)
@@ -178,6 +227,10 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
           user
         ).toString()
       )
+    } finally {
+      if (orderId && lock) {
+        await unlockOrder({ orderId })
+      }
     }
   }
 }

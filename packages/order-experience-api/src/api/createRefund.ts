@@ -187,7 +187,8 @@ export class CreateRefundController extends AbstractController<
               items: refundItems,
             },
             payment,
-            gateway: RefundGateway.PAYTRAIL.toString(),
+            gateway:
+              payment?.paymentGateway || RefundGateway.PAYTRAIL.toString(),
             merchantId: refundItems[0]?.merchantId || '',
           })
 

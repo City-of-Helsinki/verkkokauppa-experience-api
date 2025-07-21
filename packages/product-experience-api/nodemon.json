@@ -1,7 +1,16 @@
 {
   "verbose": true,
   "ignore": [],
-  "watch": ["src/**/*.ts"],
+  "ext": "ts,yaml,json",
+  "watch": [
+    "src/**/*.ts",
+    "src/openapi.yaml",
+    "../core/src/**/*.ts",
+    "../product-backend/src/**/*.ts",
+    "../product-mapping-backend/src/**/*.ts",
+    "../price-backend/src/**/*.ts",
+    "../configuration-backend/src/**/*.ts"
+  ],
   "execMap": {
     "ts": "node --inspect=0.0.0.0:9229 --nolazy -r ts-node/register"
   }

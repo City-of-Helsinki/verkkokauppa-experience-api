@@ -10,22 +10,28 @@ import {
   createInvoicingEntryForOrder,
   getOrder,
   OrderNotFoundError,
+  setOrderAsAccounted,
 } from '@verkkokauppa/order-backend'
-import { getProductInvoicings } from '@verkkokauppa/product-backend'
+import {
+  getProductAccountingBatch,
+  getProductInvoicings,
+} from '@verkkokauppa/product-backend'
 import { URL } from 'url'
 import {
+  checkInvoiceReturnUrl,
   paidPaymentExists,
-  PaymentStatus,
-  setPaymentStatus,
 } from '@verkkokauppa/payment-backend'
 import { sendReceipt } from '../lib/sendEmail'
 import { sendErrorNotification } from '@verkkokauppa/message-backend'
-import { getPublicServiceConfiguration } from '@verkkokauppa/configuration-backend'
+import {
+  getPublicServiceConfiguration,
+  parseMerchantIdFromFirstOrderItem,
+} from '@verkkokauppa/configuration-backend'
 
 export class InvoicingRedirectController extends AbstractController {
   protected readonly requestSchema = null
 
-  private static fault = (url: URL, user?: string) => {
+  private static fault = (url: URL, user?: string | null) => {
     url.pathname += 'failure'
     if (user) {
       url.searchParams.append('user', user)
@@ -49,13 +55,14 @@ export class InvoicingRedirectController extends AbstractController {
     let redirectUrl = new URL(globalRedirectUrl)
 
     const {
-      params: { orderId, user },
+      query: { orderId, user },
     } = req
 
+    if (typeof orderId !== 'string' || typeof user !== 'string') {
+      return res.redirect(302, InvoicingRedirectController.fault(redirectUrl))
+    }
+
     try {
-      if (!orderId || !user) {
-        return res.redirect(302, InvoicingRedirectController.fault(redirectUrl))
-      }
       redirectUrl.pathname = orderId + '/'
 
       const order = await getOrder({ orderId, user })
@@ -74,7 +81,36 @@ export class InvoicingRedirectController extends AbstractController {
         redirectUrl.searchParams.append('orderId', order.orderId)
       }
 
+      const merchantId = parseMerchantIdFromFirstOrderItem(order)
+
+      if (!merchantId) {
+        logger.error('Free: No merchantId found from order')
+        return res.redirect(
+          302,
+          InvoicingRedirectController.fault(redirectUrl, user)
+        )
+      }
+
       if (await paidPaymentExists(order)) {
+        return res.redirect(
+          302,
+          InvoicingRedirectController.fault(redirectUrl, user)
+        )
+      }
+
+      const paymentStatus = await checkInvoiceReturnUrl({
+        orderId: orderId,
+        merchantId: merchantId,
+      })
+      logger.debug(
+        `PaymentStatus for invoicing order ${orderId}: ${JSON.stringify(
+          paymentStatus
+        )}`
+      )
+      if (!paymentStatus.valid) {
+        logger.debug(
+          `PaymentStatus is not valid for invoicing order ${orderId}, redirect to failure url`
+        )
         return res.redirect(
           302,
           InvoicingRedirectController.fault(redirectUrl, user)
@@ -85,8 +121,23 @@ export class InvoicingRedirectController extends AbstractController {
         productIds: order.items.map((i) => i.productId),
       })
 
+      const productAccountings = await getProductAccountingBatch({
+        productIds: order.items.map((i) => i.productId),
+      })
+
       await createInvoicingEntryForOrder({
         items: order.items.map((item) => {
+          const productAccounting = productAccountings.find(
+            (i) => i?.productId === item.productId
+          )
+          if (!productAccounting) {
+            throw new ExperienceError({
+              code: 'failed-to-find-product-accounting',
+              message: `No accounting entry found for product ${item.productId}`,
+              responseStatus: StatusCode.InternalServerError,
+              logLevel: 'error',
+            })
+          }
           const productInvoicing = productInvoicings.find(
             (i) => i?.productId === item.productId
           )
@@ -104,8 +155,8 @@ export class InvoicingRedirectController extends AbstractController {
               orderIncrementId: yup.string().required(),
               orderItemId: yup.string().required(),
               invoicingDate: yup.string().required(),
+              customerOvt: yup.string().nullable().default(''),
               customerYid: yup.string().required(),
-              customerOvt: yup.string().required(),
               customerName: yup.string().required(),
               customerAddress: yup.string().required(),
               customerPostcode: yup.string().required(),
@@ -118,6 +169,10 @@ export class InvoicingRedirectController extends AbstractController {
               quantity: yup.number().required(),
               unit: yup.string().required(),
               priceNet: yup.string().required(),
+              internalOrder: yup.string().notRequired(),
+              profitCenter: yup.string().notRequired(),
+              project: yup.string().notRequired(),
+              operationArea: yup.string().notRequired(),
             })
             .validateSync({
               orderId: order.orderId,
@@ -138,16 +193,33 @@ export class InvoicingRedirectController extends AbstractController {
               quantity: item.quantity,
               unit: item.unit,
               priceNet: item.priceNet,
+              internalOrder: productAccounting.internalOrder,
+              profitCenter: productAccounting.profitCenter,
+              project: productAccounting.project,
+              operationArea: productAccounting.operationArea,
             })
         }),
       })
 
-      await setPaymentStatus({ orderId, status: PaymentStatus.INVOICE })
+      try {
+        await setOrderAsAccounted(orderId)
+      } catch (e) {
+        logger.error(e)
+        logger.debug(
+          `Error occurred when trying to set free order as accounted ${orderId}`
+        )
+      }
 
       try {
         await sendReceipt(order, false)
       } catch (e) {
         logger.error(e)
+
+        // send notification to Slack channel (email) that sending receipt failed
+        await sendErrorNotification({
+          message: `Sending receipt failed for invoice order ${orderId}`,
+          cause: e.toString(),
+        })
       }
 
       return res.redirect(

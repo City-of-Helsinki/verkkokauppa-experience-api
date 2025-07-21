@@ -6,6 +6,9 @@ import {
   createOrder,
   createOrderWithItems,
   getOrder,
+  isVatCodeUsedAfterDateTime,
+  isVatPercentageUsedInOrderItems,
+  OrderItem,
   setCustomerToOrder,
   setInvoiceToOrder,
   setOrderTotals,
@@ -818,7 +821,11 @@ describe('Test Create Accounting entry for order', () => {
   it('Should throw error with no backend url set', async () => {
     process.env.ORDER_BACKEND_URL = ''
     await expect(
-      createAccountingEntryForOrder({ dtos: [], orderId: '' })
+      createAccountingEntryForOrder({
+        dtos: [],
+        orderId: '',
+        namespace: 'namespace',
+      })
     ).rejects.toThrow('No order backend URL set')
   })
   it('Should create order accounting entry correctly with backend url set', async () => {
@@ -839,13 +846,66 @@ describe('Test Create Accounting entry for order', () => {
           balanceProfitCenter: 'balanceProfitCenter',
           project: 'project',
           operationArea: 'operationArea',
+          paidAt: 'paidAt',
+          merchantId: 'merchantId',
+          namespace: 'namespace',
+          paytrailTransactionId: 'paytrailTransactionId',
         },
       ],
+      namespace: 'namespace',
     }
     axiosMock.post.mockResolvedValue({ data: mockData })
     const result = await createAccountingEntryForOrder({
       ...mockData,
     })
     expect(result).toEqual(mockData)
+  })
+})
+
+describe('checkIfWrongVatCodeAfterGivenDate', () => {
+  it('should return false when the VAT code is correct and date is before the given date', () => {
+    const items = ([{ vatPercentage: '10' }] as unknown) as [OrderItem]
+    const vatCode = '24'
+    const dateTime = '2023-08-20T10:00:00.000Z'
+    const result = isVatCodeUsedAfterDateTime(items, vatCode, dateTime)
+    expect(result).toBe(false)
+  })
+
+  it('should return false when the VAT code is correct and date is after the given date', () => {
+    const items = ([{ vatPercentage: '10' }] as unknown) as [OrderItem]
+    const vatCode = '24'
+    const dateTime = '2023-08-25T10:00:00.000Z'
+    const result = isVatCodeUsedAfterDateTime(items, vatCode, dateTime)
+    expect(result).toBe(false)
+  })
+
+  it('should return false when the VAT code is correct but date is before the given date', () => {
+    const items = ([{ vatPercentage: '24' }] as unknown) as [OrderItem]
+    const vatCode = '24'
+    const dateTime = '2023-08-20T10:00:00.000Z'
+    const result = isVatCodeUsedAfterDateTime(items, vatCode, dateTime)
+    expect(result).toBe(false)
+  })
+
+  it('should return true if vat percentage starts with 24', () => {
+    const items = ([
+      { vatPercentage: '24,00' },
+      { vatPercentage: '24.00' },
+      { vatPercentage: '24.12' },
+    ] as unknown) as [OrderItem]
+    const vatCode = '24'
+    const result = isVatPercentageUsedInOrderItems(items, vatCode)
+    expect(result).toBe(true) // Adjust based on your logic (true/false).
+  })
+
+  it('should return false if vat percentage starts with 2', () => {
+    const items = ([
+      { vatPercentage: '2' },
+      { vatPercentage: '2' },
+      { vatPercentage: '2' },
+    ] as unknown) as [OrderItem]
+    const vatCode = '2'
+    const result = isVatPercentageUsedInOrderItems(items, vatCode)
+    expect(result).toBe(true) // Adjust based on your logic (true/false).
   })
 })

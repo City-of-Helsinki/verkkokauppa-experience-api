@@ -14,7 +14,7 @@ describe('document-definition.ts', () => {
       namespace: 'asukaspysakointi',
       customerFirstName: 'dummy_firstname',
       customerLastName: 'dummy_lastname',
-      customerEmail: '76ffa1a5-19b1-4eed-b969-f6a88c1f8b9e@ambientia.fi',
+      customerEmail: '76ffa1a5-19b1-4eed-b969-f6a88c1f8b9e@hiq.fi',
       paymentMethodToken:
         'tmTpd9z3l4GU4Zw01HiOnjmRyxMDIRYef7Dvo1+gJa3NUuLe3wfdEVURERzCLTvN1puZWNIMng7M27PaZQD7Jpl44gAHUdt5f4Or+KKS5KM=',
       paymentMethodExpirationYear: '2034',
@@ -77,8 +77,7 @@ describe('document-definition.ts', () => {
         },
         {
           bold: false,
-          text:
-            '© Ajoneuvon tiedot - Liikenneasioidenrekisteri, Traficom\n\n\n',
+          text: 'Lähde: Liikenneasioidenrekisteri, Traficom\n\n\n',
         },
         {
           table: {
@@ -165,7 +164,7 @@ describe('document-definition.ts', () => {
         },
         {
           bold: false,
-          text: '© Vehicle information - Transport register, Traficom\n\n\n',
+          text: 'Source: Transport register, Traficom\n\n\n',
         },
         {
           table: {
@@ -249,8 +248,7 @@ describe('document-definition.ts', () => {
         },
         {
           bold: false,
-          text:
-            '© Fordonsuppgifter - Trafik- och transportregistret, Traficom\n\n\n',
+          text: 'Källa: Trafik- och transportregistret, Traficom\n\n\n',
         },
         {
           table: {

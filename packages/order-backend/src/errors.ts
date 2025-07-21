@@ -157,3 +157,13 @@ export class CreateRefundAccountingFailure extends ExperienceFailure {
     })
   }
 }
+
+export class SetOrderAccountedFailure extends ExperienceFailure {
+  constructor(source: Error) {
+    super({
+      code: 'failed-to-set-order-as-accounted',
+      message: 'Failed to set order as accounted',
+      source,
+    })
+  }
+}

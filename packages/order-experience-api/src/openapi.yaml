@@ -551,6 +551,37 @@ components:
                 type: string
               value:
                 type: string
+    WebhookRequest:
+      type: object
+      properties:
+        namespace:
+          type: string
+          default: ''
+        orderId:
+          type: string
+          default: ''
+        timestamp:
+          type: string
+          format: date-time
+          default: ''
+        eventType:
+          type: string
+          default: ''
+        subscriptionId:
+          type: string
+          default: ''
+        paymentId:
+          type: string
+          default: ''
+        eventTimestamp:
+          type: string
+          format: date-time
+          default: ''
+        paymentPaidTimestamp:
+          type: string
+          format: date-time
+          default: ''
+
   parameters:
     Namespace:
       name: namespace
@@ -607,6 +638,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorBody'
+    WebhookResponse:
+      description: Response of internal webhook
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/WebhookRequest'
 paths:
   /:
     post:
@@ -931,6 +968,37 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /{orderId}/getCancelUrl:
+    get:
+      description: Get service cancel order url, does not cancel order just returns the url to redirect when cancelling and the whole orders data
+      security:
+        - UserId: []
+        - HelsinkiProfile: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: The resulting order and cancelUrl
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - order
+                  - cancelUrl
+                properties:
+                  order:
+                    $ref: '#/components/schemas/Order'
+                  cancelUrl:
+                    type: string
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '403':
+          $ref: '#/components/responses/AuthenticationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /{orderId}/confirmAndCreatePayment:
     post:
       description: Confirm order and create payment from it
@@ -1172,59 +1240,59 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  /subscription/create:
-    post:
-      description: Create subscription
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Subscription'
-      responses:
-        '201':
-          description: The created subscription
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Subscription'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-  /subscription/create-from-order:
-    post:
-      description: Create subscriptions from order. Each order item creates its own subscription.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - orderId
-                - user
-              properties:
-                orderId:
-                  type: string
-                user:
-                  type: string
-      responses:
-        '201':
-          description: The subscription ids
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - subscriptionIds
-                properties:
-                  subscriptionIds:
-                    type: array
-                    items:
-                      type: string
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+#  /subscription/create:
+#    post:
+#      description: Create subscription
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: '#/components/schemas/Subscription'
+#      responses:
+#        '201':
+#          description: The created subscription
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/Subscription'
+#        '500':
+#          $ref: '#/components/responses/InternalServerError'
+#  /subscription/create-from-order:
+#    post:
+#      description: Create subscriptions from order. Each order item creates its own subscription.
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              type: object
+#              required:
+#                - orderId
+#                - user
+#              properties:
+#                orderId:
+#                  type: string
+#                user:
+#                  type: string
+#      responses:
+#        '201':
+#          description: The subscription ids
+#          content:
+#            application/json:
+#              schema:
+#                type: object
+#                required:
+#                  - subscriptionIds
+#                properties:
+#                  subscriptionIds:
+#                    type: array
+#                    items:
+#                      type: string
+#        '404':
+#          $ref: '#/components/responses/NotFound'
+#        '500':
+#          $ref: '#/components/responses/InternalServerError'
   /subscription/search/active:
     post:
       description: Search active subscriptions
@@ -1649,5 +1717,260 @@ paths:
           $ref: '#/components/responses/RequestValidationError'
         '403':
           $ref: '#/components/responses/InvalidApiKey'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /refund/{refundId}:
+    get:
+      summary: Get refund and refund payment details
+      description: Fetch refund and corresponding refund payment details for a given refund ID.
+      operationId: getRefundPayment
+      security:
+        - ApiKey: [ ]
+      parameters:
+        - $ref: '#/components/parameters/Namespace'
+        - $ref: '#/components/parameters/RefundId'
+      responses:
+        '200':
+          description: The confirmed refund
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - refund
+                  - payment
+                properties:
+                  refund:
+                    $ref: '#/components/schemas/Refund'
+                  payment:
+                    $ref: '#/components/schemas/RefundPayment'
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '403':
+          $ref: '#/components/responses/InvalidApiKey'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /internal/webhooks:
+    post:
+      summary: Handle internal webhooks
+      operationId: handleInternalWebhooks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                namespace:
+                  type: string
+                  default: ''
+                orderId:
+                  type: string
+                  default: ''
+                timestamp:
+                  type: string
+                  format: date-time
+                  default: ''
+                eventType:
+                  type: string
+                  default: ''
+                subscriptionId:
+                  type: string
+                  default: ''
+                paymentId:
+                  type: string
+                  default: ''
+                eventTimestamp:
+                  type: string
+                  format: date-time
+                  default: ''
+                paymentPaidTimestamp:
+                  type: string
+                  format: date-time
+                  default: ''
+      parameters:
+        - in: header
+          name: webhook-api-key
+          required: true
+          schema:
+            type: string
+          description: API key for webhook authentication
+        - in: header
+          name: namespace
+          required: true
+          schema:
+            type: string
+          description: Namespace for the webhook
+      responses:
+        '200':
+          $ref: '#/components/responses/WebhookResponse'
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+        '403':
+          $ref: '#/components/responses/InvalidApiKey'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+
+  /gdpr-api/v1/profiles/tunnistus/{id}:
+    get:
+      security:
+        - HelsinkiProfile: [ ]
+      summary: Retrieve GDPR Profile
+      description: Fetch GDPR-related profile information for a specific user based on their ID.
+      operationId: getGdprProfile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier (UUID) of the user's profile.
+          schema:
+            type: string
+        - name: displayable
+          in: query
+          required: false
+          description: Whether to include formatting and labels for display purposes.
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Successfully retrieved GDPR profile data.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  profile:
+                    type: object
+                    properties:
+                      subscriptions:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                              example: subscription
+                            children:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  key:
+                                    type: string
+                                    example: meta
+                                  children:
+                                    type: array
+                                    items:
+                                      type: object
+                                      properties:
+                                        key:
+                                          type: string
+                                          example: metaItem
+                                        children:
+                                          type: array
+                                          items:
+                                            type: object
+                                            properties:
+                                              key:
+                                                type: string
+                                              value:
+                                                type: string
+                      orders:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                              example: order
+                            children:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  key:
+                                    type: string
+                                    example: customer
+                                  children:
+                                    type: array
+                                    items:
+                                      type: object
+                                      properties:
+                                        key:
+                                          type: string
+                                        value:
+                                          type: string
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
+
+        '403':
+          description: Forbidden. The client does not have access to the resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+        '404':
+          description: Not Found. The specified user profile could not be found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+
+    delete:
+      security:
+        - HelsinkiProfile: [ ]
+      summary: Delete GDPR Profile
+      description: |
+        Deletes the GDPR profile for the specified user ID. The deletion is restricted due to the Accounting Act and will return a `403 Forbidden` error with a descriptive message.
+      operationId: deleteGdprProfile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier (UUID) of the user's profile.
+          schema:
+            type: string
+        - name: user
+          in: header
+          required: true
+          description: The authenticated user ID.
+          schema:
+            type: string
+        - name: auth-server-type
+          in: header
+          required: true
+          description: Specifies the authentication server to use. Fixed value KEYCLOAK.
+          schema:
+            type: string
+            enum:
+              - KEYCLOAK
+      responses:
+        '403':
+          description: Forbidden. Profile deletion is not allowed due to the Accounting Act.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                          example: profile-deletion-failed
+                        message:
+                          type: object
+                          properties:
+                            en:
+                              type: string
+                              description: Error message in English.
+                              example: Forbidden due accounting act
+        '400':
+          $ref: '#/components/responses/RequestValidationError'
         '500':
           $ref: '#/components/responses/InternalServerError'

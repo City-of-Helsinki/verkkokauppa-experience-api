@@ -35,6 +35,16 @@ export class PaymentMethodsNotFound extends ExperienceError {
     })
   }
 }
+export class DefaultPaymentMethodsNotFound extends ExperienceError {
+  constructor() {
+    super({
+      code: 'default-payment-methods-not-found',
+      message: 'Default Payment methods not found',
+      logLevel: 'info',
+      responseStatus: StatusCode.NotFound,
+    })
+  }
+}
 
 export class GetPaymentMethodListFailure extends ExperienceFailure {
   constructor(source: Error) {
@@ -61,6 +71,16 @@ export class CheckPaytrailReturnUrlFailure extends ExperienceFailure {
     super({
       code: 'failed-to-check-paytrail-return-url',
       message: 'Failed to check paytrail return url',
+      source,
+    })
+  }
+}
+
+export class CheckInvoiceReturnUrlFailure extends ExperienceFailure {
+  constructor(source: Error) {
+    super({
+      code: 'failed-to-check-invoice-return-url',
+      message: 'Failed to check invoice return url',
       source,
     })
   }
@@ -146,6 +166,25 @@ export class GetRefundPaymentForOrderFailure extends ExperienceFailure {
     super({
       code: 'failed-to-get-refund-payment-for-order',
       message: 'Failed to get refund payment for order',
+      source,
+    })
+  }
+}
+
+export class GetRefundPaymentForOrderByRefundIdFailure extends ExperienceFailure {
+  constructor(source: Error) {
+    super({
+      code: 'failed-to-get-refund-payment-for-order-by-refund-id',
+      message: 'Failed to get refund payment for order by refund id',
+      source,
+    })
+  }
+}
+export class GetRefundPaymentByRefundPaymentIdFailure extends ExperienceFailure {
+  constructor(source: Error) {
+    super({
+      code: 'failed-to-get-refund-payment-by-refund-payment-id',
+      message: 'Failed to get refund payment by refund payment id',
       source,
     })
   }
