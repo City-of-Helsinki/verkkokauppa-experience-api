@@ -14,6 +14,10 @@ import {
 } from '@verkkokauppa/configuration-backend'
 import { isCardRenewal } from './paymentReturnService'
 
+const skipTosByNamespace = (process.env.SKIP_TERMS_ACCEPT_FOR_NAMESPACES || '')
+  .toLowerCase()
+  .split(',')
+
 export const sendReceipt = async (
   order: Order,
   isSubscriptionRenewal: boolean
@@ -32,10 +36,22 @@ export const sendReceipt = async (
         'laskutuksen-yleiset-ehdot.pdf'
       ] = createInvoiceTermsOfServiceBinary()
     }
-    if (
+
+    // if flag is set and set to false
+    const sendMerchantTermsSetToFalse =
       merchant.sendMerchantTermsOfService !== undefined &&
-      merchant.sendMerchantTermsOfService.toUpperCase() == 'TRUE'
-    ) {
+      merchant.sendMerchantTermsOfService.toUpperCase() == 'FALSE'
+
+    // if flag is not defined then check that namespace is not in skip list (old logic)
+    const doNotSkipByNamespace =
+      merchant.sendMerchantTermsOfService == undefined &&
+      !skipTosByNamespace.includes(order.namespace)
+
+    // this if split to two flags above so IntelliJ code helper understands what is done
+    // and does not want to break the logic (also easier to read)
+    // if flag exists and is NOT set to false or
+    // if flag is not defined and not skipping by old logic then include terms
+    if (!sendMerchantTermsSetToFalse || doNotSkipByNamespace) {
       logger.info(
         `Include terms of service to receipt for order ${order.orderId} from ${merchant.merchantTermsOfServiceUrl}`
       )
