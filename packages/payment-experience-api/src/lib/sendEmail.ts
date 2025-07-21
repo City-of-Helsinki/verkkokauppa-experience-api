@@ -44,21 +44,15 @@ export const sendReceipt = async (
       )
     }
 
-    // if flag is set and set to false
-    const sendMerchantTermsSetToFalse =
-      merchant.sendMerchantTermsOfService !== undefined &&
-      merchant.sendMerchantTermsOfService.toUpperCase() == 'FALSE'
-
-    // if flag is not defined then check that namespace is not in skip list (old logic)
-    const doNotSkipByNamespace =
-      merchant.sendMerchantTermsOfService == undefined &&
-      !skipTosByNamespace.includes(order.namespace)
-
-    // this if split to two flags above so IntelliJ code helper understands what is done
-    // and does not want to break the logic (also easier to read)
     // if flag exists and is NOT set to false or
-    // if flag is not defined and not skipping by old logic then include terms
-    if (!sendMerchantTermsSetToFalse || doNotSkipByNamespace) {
+    // if flag is not defined and not skipping by old logic
+    // then include terms
+    if (
+      (merchant.sendMerchantTermsOfService !== undefined &&
+        !(merchant.sendMerchantTermsOfService.toUpperCase() == 'FALSE')) ||
+      (merchant.sendMerchantTermsOfService == undefined &&
+        !skipTosByNamespace.includes(order.namespace))
+    ) {
       logger.info(
         `Include terms of service to receipt for order ${order.orderId} from ${merchant.merchantTermsOfServiceUrl}`
       )
