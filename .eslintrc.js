@@ -37,4 +37,13 @@ module.exports = {
       }
     ]
   },
+  overrides: [
+    {
+      // Disable jest/no-standalone-expect for .e2e. files
+      files: ['*.e2e.*'],
+      rules: {
+        'jest/no-standalone-expect': 'off',
+      },
+    },
+  ],
 }

@@ -14,6 +14,7 @@ jest.mock('@verkkokauppa/payment-backend', () => {
     __esModules: true,
     // first start with all of the module's functions auto-mocked
     getPaidRefundPaymentAdmin: jest.fn(() => null),
+    getPaidRefundPaymentAdminByRefundId: jest.fn(() => null),
     // lastly override w/ any of the module's functions that
     // we want to use the *real* implementations for
 
@@ -82,7 +83,7 @@ const refundBackendResponseMock = {
     status: 'draft',
     customerFirstName: 'dummy_firstname',
     customerLastName: 'dummy_lastname',
-    customerEmail: 'f117c93e-426c-4dcc-8b86-f7ff65cacde4@ambientia.fi',
+    customerEmail: 'f117c93e-426c-4dcc-8b86-f7ff65cacde4@hiq.fi',
     customerPhone: '0404123456',
     refundReason: 'Palautuksen syy',
     priceNet: '100',
@@ -328,8 +329,16 @@ describe('Test paytrail refund payment success controller', () => {
     const mockGetPaidRefundPaymentAdmin = jest.requireMock(
       '@verkkokauppa/payment-backend'
     ).getPaidRefundPaymentAdmin
+    const mockgetPaidRefundPaymentAdminByRefundId = jest.requireMock(
+      '@verkkokauppa/payment-backend'
+    ).getPaidRefundPaymentAdminByRefundId
 
     mockGetPaidRefundPaymentAdmin.mockImplementationOnce(() => {
+      return {
+        refundPayment: 'refundPayment',
+      }
+    })
+    mockgetPaidRefundPaymentAdminByRefundId.mockImplementationOnce(() => {
       return {
         refundPayment: 'refundPayment',
       }
@@ -606,6 +615,10 @@ describe('Test paytrail refund payment success controller', () => {
       unit: 'pcs',
       vatCode: 'vatCode',
       vatPercentage: '24',
+      refundCreatedAt: '',
+      refundTransactionId: '',
+      merchantId: orderBackendResponseMock?.items[0]?.merchantId,
+      namespace: paymentMock.namespace,
     }
 
     const mockProductAccounting = [
@@ -738,6 +751,7 @@ describe('Test paytrail refund payment success controller', () => {
       {
         refundId: refundId,
         orderId: mockProductAccountingDtos.orderId,
+        namespace: merchantConfigMock.namespace,
         dtos: [mockProductAccountingDtos],
       }
     )

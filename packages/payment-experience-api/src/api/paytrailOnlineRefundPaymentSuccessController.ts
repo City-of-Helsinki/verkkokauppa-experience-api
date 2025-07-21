@@ -13,7 +13,8 @@ import {
 } from '@verkkokauppa/order-backend'
 import {
   checkPaytrailRefundCallbackUrl,
-  getPaidRefundPaymentAdmin,
+  getPaidRefundPaymentAdminByRefundId,
+  RefundPayment,
 } from '@verkkokauppa/payment-backend'
 import { createUserRefundRedirectUrl } from '../lib/refundCallbackService'
 import { parseRefundIdFromPaytrailRefundCallbackUrl } from '../lib/paytrail'
@@ -57,12 +58,15 @@ export class PaytrailOnlineRefundPaymentSuccessController extends AbstractContro
       })
     }
 
-    const refundPayment = await getPaidRefundPaymentAdmin({
-      orderId: orderId,
+    const refundPayment = await getPaidRefundPaymentAdminByRefundId({
+      refundId: refundId,
     })
 
     // Already found refundPayment paid, return early to prevent multiple events happening
     if (refundPayment != null) {
+      logger.debug(
+        `Paid payment already found for this refund, quitting early. Refund id: ${refundId}`
+      )
       return result.redirect(
         200,
         PaytrailOnlineRefundPaymentSuccessController.getFailureRedirectUrl()
@@ -106,6 +110,7 @@ export class PaytrailOnlineRefundPaymentSuccessController extends AbstractContro
         await createAccountingEntryForRefund({
           refundId: refundId,
           orderId: orderId,
+          namespace: order.namespace,
           dtos: refund.items.map((item) => {
             const productAccounting = productAccountings.find(
               (accountingData) => accountingData.productId === item.productId
@@ -118,9 +123,15 @@ export class PaytrailOnlineRefundPaymentSuccessController extends AbstractContro
                 logLevel: 'error',
               })
             }
+            const refundPaymentTyped = (refundPayment as unknown) as RefundPayment
             return {
               ...item,
               ...productAccounting,
+              merchantId: merchantId,
+              namespace: order.namespace,
+              refundTransactionId:
+                refundPaymentTyped?.refundTransactionId || '',
+              refundCreatedAt: refundPaymentTyped?.createdAt || '',
             }
           }),
         })

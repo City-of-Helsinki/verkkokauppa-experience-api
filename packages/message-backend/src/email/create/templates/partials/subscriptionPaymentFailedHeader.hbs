@@ -14,7 +14,9 @@
                                         <tr>
                                             <td width="100%" class="purchase_item">
                                                 <span class="f-fallback">
+                                                    {{#if order.merchant.merchantName}}
                                                     {{I18n 'subscriptionPaymentFailed.order.header'}} {{order.merchant.merchantName}}
+                                                    {{/if}}
                                                 </span>
                                             </td>
                                         </tr>

@@ -97,6 +97,7 @@ export interface OrderBackendResponse {
   namespace: string
   user: string
   createdAt: string
+  incrementId: string
   customerFirstName?: string
   customerLastName?: string
   customerEmail?: string
@@ -135,6 +136,10 @@ export interface ProductAccounting {
 export type OrderAccountingItem = ProductAccounting & {
   orderItemId: string
   orderId: string
+  paidAt: string
+  merchantId: string
+  namespace: string
+  paytrailTransactionId: string
 }
 
 export interface OrderAccounting {
@@ -145,11 +150,17 @@ export interface OrderAccounting {
 
 export type OrderAccountingItemRequest = ProductAccounting & {
   productId: string
+  paidAt: string
+  merchantId: string
+  namespace: string
+  paytrailTransactionId: string
 }
 
 export interface OrderAccountingRequest {
   orderId: string
   dtos: OrderAccountingItemRequest[]
+  namespace: string
+  // paidAt: string
 }
 
 export interface OrderItemInvoicing {
@@ -161,7 +172,7 @@ export interface OrderItemInvoicing {
   orderIncrementId: string
   invoicingDate: string
   customerYid: string
-  customerOvt: string
+  customerOvt?: string | null
   customerName: string
   customerAddress: string
   customerPostcode: string

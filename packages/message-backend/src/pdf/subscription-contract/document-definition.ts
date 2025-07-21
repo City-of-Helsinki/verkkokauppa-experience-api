@@ -82,7 +82,7 @@ export const documentDefinition = async (subscription: {
       {
         text: `${
           subscription.namespace === 'asukaspysakointi'
-            ? '© Ajoneuvon tiedot - Liikenneasioidenrekisteri, Traficom\n\n\n'
+            ? 'Lähde: Liikenneasioidenrekisteri, Traficom\n\n\n'
             : ''
         }`,
         bold: false,
@@ -196,7 +196,7 @@ export const documentDefinition = async (subscription: {
       {
         text: `${
           subscription.namespace === 'asukaspysakointi'
-            ? '© Vehicle information - Transport register, Traficom\n\n\n'
+            ? 'Source: Transport register, Traficom\n\n\n'
             : ''
         }`,
         bold: false,
@@ -313,7 +313,7 @@ export const documentDefinition = async (subscription: {
       {
         text: `${
           subscription.namespace === 'asukaspysakointi'
-            ? '© Fordonsuppgifter - Trafik- och transportregistret, Traficom\n\n\n'
+            ? 'Källa: Trafik- och transportregistret, Traficom\n\n\n'
             : ''
         }`,
         bold: false,

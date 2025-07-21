@@ -12,6 +12,20 @@ import {
 import * as yup from 'yup'
 import { validateApiKey } from '@verkkokauppa/configuration-backend'
 
+const nextEntitySchema = yup
+  .object({
+    companyCode: yup.string().nullable().notRequired(),
+    mainLedgerAccount: yup.string().nullable().notRequired(),
+    vatCode: yup.string().nullable().notRequired(),
+    internalOrder: yup.string().nullable().notRequired(),
+    profitCenter: yup.string().nullable().notRequired(),
+    balanceProfitCenter: yup.string().nullable().notRequired(),
+    project: yup.string().nullable().notRequired(),
+    operationArea: yup.string().nullable().notRequired(),
+  })
+  .nullable()
+  .notRequired()
+
 const requestSchema = yup.object().shape({
   params: yup.object().shape({
     productId: yup.string().required(),
@@ -34,6 +48,14 @@ const requestSchema = yup.object().shape({
       })
       .notRequired()
       .default(undefined),
+    activeFrom: yup.date().nullable().notRequired(),
+    nextEntity: nextEntitySchema.when('activeFrom', {
+      is: (value: null | undefined) => value !== null && value !== undefined,
+      then: yup
+        .object()
+        .required('nextEntity is required when activeFrom is provided'),
+      otherwise: nextEntitySchema,
+    }),
   }),
   headers: yup.object().shape({
     'api-key': yup.string().required(),
@@ -53,7 +75,7 @@ export class CreateProductAccountingController extends AbstractController<
     const { productId } = req.params
     const { 'api-key': apiKey, namespace } = req.headers
     const { productInvoicing, ...accounting } = req.body
-    const productAccounting: any = { productId, ...accounting }
+    const productAccounting: any = { productId, ...accounting, namespace }
 
     await validateApiKey({ namespace, apiKey })
 

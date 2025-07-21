@@ -7,11 +7,13 @@ import {
 } from '@verkkokauppa/core'
 import type { Response } from 'express'
 import {
+  calculateTotalsFromItems,
   checkLastValidPurchaseDateTime,
   createOrder,
   createOrderWithItems,
-  calculateTotalsFromItems,
   Order,
+  getEndOfDayInFinland,
+  isVatPercentageUsedInOrderItems,
 } from '@verkkokauppa/order-backend'
 import {
   PaymentFilter,
@@ -44,7 +46,18 @@ export class CreateController extends AbstractController<typeof requestSchema> {
     req: ValidatedRequest<typeof requestSchema>,
     res: Response
   ): Promise<any> {
-    const { items, customer, lastValidPurchaseDateTime } = req.body
+    const { items, customer } = req.body
+    let { lastValidPurchaseDateTime } = req.body
+
+    if (lastValidPurchaseDateTime === undefined) {
+      const isVatCodeUsed = isVatPercentageUsedInOrderItems(items, '24')
+      if (isVatCodeUsed) {
+        lastValidPurchaseDateTime = getEndOfDayInFinland(
+          process.env.FORCED_END_OF_DAY || '2024-08-31'
+        )
+        req.body.lastValidPurchaseDateTime = lastValidPurchaseDateTime
+      }
+    }
 
     checkLastValidPurchaseDateTime(lastValidPurchaseDateTime)
 

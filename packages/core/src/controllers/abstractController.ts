@@ -5,6 +5,7 @@ import { RequestValidationError, UnexpectedError } from '../errors'
 import { ExperienceError } from '../models'
 import axios, { AxiosRequestConfig } from 'axios'
 import * as Sentry from '@sentry/node'
+import type { Span } from '@sentry/node'
 
 export type UnknownRequest = Request<unknown, unknown, unknown>
 export type ValidatedRequest<
@@ -43,9 +44,16 @@ export abstract class AbstractController<
       await this.implementation(validatedReq, res)
     } catch (err) {
       const e = err instanceof ExperienceError ? err : new UnexpectedError(err)
-      Sentry.captureException(err, {
-        user: typeof user === 'string' ? { id: user } : undefined,
-        level: e.definition.responseStatus >= 500 ? 'error' : 'info',
+      Sentry.withScope((scope) => {
+        scope.setSDKProcessingMetadata({ request: req })
+        const transaction = (res as any).__sentry_transaction as Span
+        if (transaction && scope.getSpan() === undefined) {
+          scope.setSpan(transaction)
+        }
+        Sentry.captureException(err, {
+          user: typeof user === 'string' ? { id: user } : undefined,
+          level: e.definition.responseStatus >= 500 ? 'error' : 'info',
+        })
       })
       this.respond(
         res,
