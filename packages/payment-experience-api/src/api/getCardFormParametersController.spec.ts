@@ -16,6 +16,7 @@ const getPaytrailPaymenCardFormParamsMock = require('@verkkokauppa/payment-backe
 const orderMock = {
   orderId: 'test123',
   type: 'subscription',
+  subscriptionId: 'sub123',
   namespace: 'n1',
   paymentMethod: {
     name: 'payment method',

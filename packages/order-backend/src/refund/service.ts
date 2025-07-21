@@ -164,13 +164,14 @@ export const createAccountingEntryForRefund = async (
   if (!process.env.ORDER_BACKEND_URL) {
     throw new Error('No order backend URL set')
   }
-  const { refundId, orderId, dtos } = p
+  const { refundId, orderId, dtos, namespace } = p
   const url = `${process.env.ORDER_BACKEND_URL}/refund/accounting/create`
   try {
     const dto = {
       refundId,
       orderId,
       dtos,
+      namespace,
     }
     const result = await axios.post<RefundAccounting>(url, dto)
     return result.data

@@ -9,6 +9,7 @@ import type {
   OrderCustomer,
   OrderInvoice,
   OrderInvoiceRequest,
+  OrderItem,
   OrderItemInvoicing,
   OrderItemRequest,
   OrderPaymentMethod,
@@ -27,11 +28,14 @@ import {
   OrderValidationError,
   SetCustomerToOrderFailure,
   SetInvoiceToOrderFailure,
+  SetOrderAccountedFailure,
   SetOrderTotalsFailure,
   SubscriptionNotFoundError,
 } from './errors'
 import { ExperienceFailure, ForbiddenError } from '@verkkokauppa/core'
+import { format, isAfter } from 'date-fns'
 import { formatToTimeZone } from 'date-fns-timezone'
+import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz'
 
 const getBackendUrl = () => {
   const url = process.env.ORDER_BACKEND_URL
@@ -44,7 +48,7 @@ const getBackendUrl = () => {
 export const createOrder = async (p: {
   namespace: string
   user: string
-  lastValidPurchaseDateTime?: Date | string
+  lastValidPurchaseDateTime?: Date | string | undefined
 }): Promise<Order> => {
   const { namespace, user, lastValidPurchaseDateTime } = p
   if (!process.env.ORDER_BACKEND_URL) {
@@ -327,6 +331,28 @@ export const getOrderAdmin = async (p: { orderId: string }): Promise<Order> => {
   }
 }
 
+export const getActiveOrderAdmin = async (p: {
+  subscriptionId: string
+  endDate: string
+}): Promise<Order> => {
+  const { subscriptionId, endDate } = p
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+  const url = `${process.env.ORDER_BACKEND_URL}/order-admin/get-active-by-subscription-id`
+  try {
+    const result = await axios.get<OrderWithItemsBackendResponse>(url, {
+      params: { subscriptionId, endDate },
+    })
+    return transFormBackendOrder(result.data)
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new OrderNotFoundError()
+    }
+    throw new GetOrderFailure(e)
+  }
+}
+
 export const transFormBackendOrder = (
   p: OrderWithItemsBackendResponse
 ): Order => {
@@ -348,6 +374,7 @@ export const transFormBackendOrder = (
       subscriptionId,
       invoice,
       lastValidPurchaseDateTime,
+      incrementId,
     },
     items,
     flowSteps,
@@ -384,6 +411,7 @@ export const transFormBackendOrder = (
     updateCardUrl: `${process.env.CHECKOUT_BASE_URL}${orderId}/update-card?user=${user}`,
     flowSteps,
     paymentMethod,
+    incrementId,
   }
   if (lastValidPurchaseDateTime) {
     data = {
@@ -463,17 +491,33 @@ export const createAccountingEntryForOrder = async (
   if (!process.env.ORDER_BACKEND_URL) {
     throw new Error('No order backend URL set')
   }
-  const { orderId, dtos } = p
+  const { orderId, dtos, namespace } = p
   const url = `${process.env.ORDER_BACKEND_URL}/order/accounting/create`
   try {
     const dto = {
       orderId,
       dtos,
+      namespace,
     }
     const result = await axios.post<OrderAccounting>(url, dto)
     return result.data
   } catch (e) {
     throw new CreateOrderAccountingFailure(e)
+  }
+}
+
+export const setOrderAsAccounted = async (orderId: string): Promise<any> => {
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+  const url = `${process.env.ORDER_BACKEND_URL}/order/setAccounted`
+  try {
+    const result = await axios.post<void>(url, null, {
+      params: { orderId },
+    })
+    return result.data
+  } catch (e) {
+    throw new SetOrderAccountedFailure(e)
   }
 }
 
@@ -550,6 +594,64 @@ export const checkLastValidPurchaseDateTime = (
   return dateTimeInHelsinkiTimezone
 }
 
+export const getEndOfDayInFinland = (dateString: string) => {
+  const finlandTimezone = 'Europe/Helsinki'
+
+  // Parse the input date string into a Date object
+  const date = new Date(dateString)
+
+  // Convert the date to Finland timezone
+  const dateInFinland = utcToZonedTime(date, finlandTimezone)
+
+  // Set time to the end of the day (23:59:59.999)
+  dateInFinland.setHours(23, 59, 59, 999)
+
+  // Convert the adjusted time back to UTC
+  return dateInFinland
+}
+
+export const isVatCodeUsedAfterDateTime = (
+  items: [OrderItem],
+  vatPercentage: string,
+  dateTime: any
+) => {
+  const finlandTimezone = 'Europe/Helsinki'
+
+  // Get the current date and time in Finland timezone
+  const currentDateInFinland = zonedTimeToUtc(
+    format(
+      utcToZonedTime(new Date(), finlandTimezone),
+      "yyyy-MM-dd'T'HH:mm:ss.SSSX"
+    ),
+    finlandTimezone
+  )
+  let dateToCheckAgainst: Date
+  // If parameter is string convert it to Date
+  if (typeof dateTime === 'string') {
+    dateToCheckAgainst = new Date(dateTime)
+  }
+
+  // Iterate through items to check for wrong VAT code after the current date in Finland
+  return items.some((item) => {
+    // Check if the item's date is after the current time and VAT code is 24
+    return (
+      isAfter(dateToCheckAgainst, currentDateInFinland) &&
+      item.vatPercentage === vatPercentage
+    )
+  })
+}
+
+export const isVatPercentageUsedInOrderItems = (
+  items: [OrderItem],
+  vatPercentage: string
+) => {
+  // Iterate through items to check for wrong VAT code after the current date in Finland
+  return items.some((item) => {
+    // Check if the item's starts with VAT code 24
+    return item.vatPercentage.startsWith(vatPercentage)
+  })
+}
+
 export const setOrderPaymentMethod = async (p: {
   orderId: string
   user: string
@@ -568,6 +670,45 @@ export const setOrderPaymentMethod = async (p: {
     throw new ExperienceFailure({
       code: 'failed-to-set-order-payment-method',
       message: `failed to set order payment method (${JSON.stringify(p)})`,
+      source: e as Error,
+    })
+  }
+}
+
+export const lockOrder = async (p: { orderId: string }): Promise<boolean> => {
+  const { orderId } = p
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+  const url = `${process.env.ORDER_BACKEND_URL}/order-admin/lock`
+  try {
+    const res = await axios.post(url, undefined, {
+      params: { orderId },
+    })
+    return res.data
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-lock-order',
+      message: `failed to lock order (${JSON.stringify(p)})`,
+      source: e as Error,
+    })
+  }
+}
+
+export const unlockOrder = async (p: { orderId: string }): Promise<void> => {
+  const { orderId } = p
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+  const url = `${process.env.ORDER_BACKEND_URL}/order-admin/unlock`
+  try {
+    await axios.post(url, undefined, {
+      params: { orderId },
+    })
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-unlock-order',
+      message: `failed to unlock order (${JSON.stringify(p)})`,
       source: e as Error,
     })
   }

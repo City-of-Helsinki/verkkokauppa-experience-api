@@ -9,6 +9,7 @@ import {
   getPaymentsForOrderAdmin,
   Order,
   PaymentStatus,
+  updateInternalPaymentFromPaytrail,
 } from '@verkkokauppa/payment-backend'
 import { sendReceiptToCustomer } from '../lib/sendEmail'
 import { parseOrderIdFromPaytrailRedirect } from '../lib/paytrail'
@@ -21,6 +22,7 @@ import {
   getPublicServiceConfiguration,
   parseMerchantIdFromFirstOrderItem,
 } from '@verkkokauppa/configuration-backend'
+import { sendErrorNotification } from '@verkkokauppa/message-backend'
 
 export class PaytrailOnlinePaymentReturnController extends AbstractController {
   protected readonly requestSchema = null
@@ -95,13 +97,43 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
         return result.redirect(302, failureRedirectUrl.toString())
       }
 
+      try {
+        const paymentId = query['checkout-stamp']?.toString()
+        if (paymentId) {
+          await updateInternalPaymentFromPaytrail({
+            paymentId: paymentId,
+            merchantId: parseMerchantIdFromFirstOrderItem(order),
+            namespace: order.namespace,
+          })
+        } else {
+          logger.error(
+            `Error occurred, when updating payment data from paytrail ${orderId}. checkout-stamp is null.`
+          )
+        }
+      } catch (e) {
+        logger.error(e)
+        logger.debug(
+          `Error occurred, when updating payment data from paytrail ${orderId}`
+        )
+      }
+
       const redirectUrl = await createUserRedirectUrl({
         order,
         paymentReturnStatus: paytrailStatus,
         redirectPaymentUrlBase: PaytrailOnlinePaymentReturnController.getRedirectUrl(),
       })
       // Function contains internal checks when to send receipt.
-      await sendReceiptToCustomer(paytrailStatus, orderId, order)
+      try {
+        await sendReceiptToCustomer(paytrailStatus, orderId, order)
+      } catch (e) {
+        logger.error(e)
+
+        // send notification to Slack channel (email) that sending receipt failed
+        await sendErrorNotification({
+          message: `Sending receipt failed for paytrail  order ${orderId}`,
+          cause: e.toString(),
+        })
+      }
 
       // Only cancel authorized card renewals.
       if (isAuthorized(paytrailStatus) && isCardRenewal(paytrailStatus)) {

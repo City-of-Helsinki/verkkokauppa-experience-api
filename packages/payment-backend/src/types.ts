@@ -12,6 +12,7 @@ export interface OrderItemRequest {
   priceGross: string
   priceVat: string
   vatPercentage: string
+  invoicingDate?: Date | null
 }
 
 export type OrderItem = OrderItemRequest & {
@@ -97,6 +98,8 @@ export interface Payment {
   description: string | null
   additionalInfo: string
   timestamp: string
+  paidAt?: string
+  paytrailTransactionId?: string
   token: string
   paytrailProvider?: PaytrailProvider
 }
@@ -126,6 +129,12 @@ export interface PaymentFilter {
   value: string
 }
 
+export interface UpdateFromPaytrailPaymentParameters {
+  paymentId: string
+  merchantId: string | null
+  namespace: string
+}
+
 export interface PaytrailCardFormParameters {
   'checkout-account': number
   'checkout-algorithm': string
@@ -138,4 +147,18 @@ export interface PaytrailCardFormParameters {
   'checkout-callback-success-url': string
   'checkout-callback-cancel-url': string
   language: string
+}
+
+export type PaytrailCard = {
+  type?: string
+  bin?: string
+  funding?: 'CREDIT' | 'DEBIT' | 'PREPAID' | 'UNKNOWN' | 'unknown'
+  category?: 'CONSUMER' | 'COMMERCIAL' | 'UNKNOWN' | 'unknown'
+  partial_pan?: string
+  expire_year?: string
+  expire_month?: string
+  cvc_required?: 'REQUIRED' | 'NOT_REQUIRED' | 'UNKNOWN' | 'not_tested'
+  country_code?: string | null
+  pan_fingerprint?: string
+  card_fingerprint?: string
 }

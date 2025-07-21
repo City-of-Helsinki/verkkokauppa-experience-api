@@ -40,7 +40,8 @@
                                                 </tr>
                                             {{/ifCond}}
 
-                                            {{#each subscription.meta}}
+                                            {{#each order.items}}
+                                                {{#each meta}}
 
                                                 {{#if label}}
                                                     <tr>
@@ -69,6 +70,7 @@
                                                     </tr>
                                                 {{/if}}
 
+                                                {{/each}}
                                             {{/each}}
 
 
@@ -102,6 +104,7 @@
                                             </td>
                                         </tr>
 
+                                        {{#if order.merchant.merchantUrl}}
                                         <tr>
                                             <td width="100%" class="purchase_item pb-1">
                                                 <span class="f-fallback">
@@ -110,6 +113,7 @@
                                                 </span>
                                             </td>
                                         </tr>
+                                        {{/if}}
                                         <tr>
                                             <td width="100%" class="purchase_item">
                                                 <span class="f-fallback">

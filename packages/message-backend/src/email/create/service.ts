@@ -108,6 +108,13 @@ export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
     return str.toUpperCase()
   })
 
+  // KYV-575 gives number out as string with specified number of decimals
+  Handlebars.registerHelper('toFixed', function (value, decimals) {
+    const number = parseFloat(value)
+    if (isNaN(number)) return '0,00'
+    return Number(number).toFixed(decimals).replace('.', ',')
+  })
+
   Handlebars.registerHelper('eq', (a, b) => a == b)
 
   Handlebars.registerHelper('Time', function (date) {
@@ -193,6 +200,9 @@ export function HandleBarTemplate<T>(language: SUPPORTED_LANGUAGES) {
       case '||':
         // @ts-ignore
         return v1 || v2 ? options.fn(this) : options.inverse(this)
+      case 'length':
+        // @ts-ignore
+        return v1?.length > v2 ? options.fn(this) : options.inverse(this)
       default:
         // @ts-ignore
         return options.inverse(this)

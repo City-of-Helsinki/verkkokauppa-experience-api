@@ -27,7 +27,9 @@ const paidPaymentExistsMock = require('@verkkokauppa/payment-backend').paidPayme
 )
 
 const getPaidPaymentAdmin = require('@verkkokauppa/payment-backend').getPaidPaymentAdmin.mockImplementation(
-  () => true
+  () => {
+    return { paymentGateway: 'online-paytrail' }
+  }
 )
 
 const confirmRefundAdminDataMock = {
@@ -38,7 +40,7 @@ const confirmRefundAdminDataMock = {
   status: 'confirmed',
   customerFirstName: 'dummy_firstname',
   customerLastName: 'dummy_lastname',
-  customerEmail: 'test@ambientia.fi',
+  customerEmail: 'test@hiq.fi',
   customerPhone: '',
   priceNet: '100',
   priceVat: '100',
@@ -416,7 +418,9 @@ describe('Test CreateRefundController', () => {
         priceTotal: '333',
         priceVat: '222',
       },
-      payment: true,
+      payment: {
+        paymentGateway: 'online-paytrail',
+      },
       // This is refundAggregateDto
       refund: {
         items: [
@@ -434,7 +438,7 @@ describe('Test CreateRefundController', () => {
           },
         ],
         refund: {
-          customerEmail: 'test@ambientia.fi',
+          customerEmail: 'test@hiq.fi',
           customerFirstName: 'dummy_firstname',
           customerLastName: 'dummy_lastname',
           customerPhone: '',
