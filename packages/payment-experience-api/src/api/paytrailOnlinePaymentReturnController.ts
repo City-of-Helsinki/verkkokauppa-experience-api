@@ -132,6 +132,7 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
         await sendErrorNotification({
           message: `Sending receipt failed for paytrail  order ${orderId}`,
           cause: e.toString(),
+          header: 'Error - Sending receipt failed',
         })
       }
 
