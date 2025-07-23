@@ -29,6 +29,8 @@ export class PaytrailOnlinePaymentNotifyController extends AbstractController {
   ): Promise<any> {
     const { query } = request
 
+    logger.info('Paytrail online payment notify controller called')
+
     const orderId = parseOrderIdFromPaytrailRedirect({ query })
     if (!orderId) {
       logger.error('Paytrail: No orderId specified')
@@ -52,7 +54,22 @@ export class PaytrailOnlinePaymentNotifyController extends AbstractController {
       merchantId: merchantId,
     })
 
-    logger.info('Paytrail online payment notify controller called')
+    // check if this was paid late (KYV-1196)
+    if (
+      paytrailStatus.paymentPaid &&
+      order.lastValidPurchaseDateTime &&
+      order.lastValidPurchaseDateTime?.setMinutes(
+        order.lastValidPurchaseDateTime?.getMinutes() + 15
+      ) < Date.now()
+    ) {
+      // at least 15 minutes past last valid purchase datetime
+      await sendErrorNotification({
+        message: `Order: ${orderId} was paid but last valid purchase datetime had already passed`,
+        cause: '',
+        header:
+          'Error - Order was paid late, last valid purchase datetime has passed',
+      })
+    }
 
     logger.debug(
       `PaytrailStatus callback for order ${orderId}: ${JSON.stringify(
@@ -127,6 +144,7 @@ export class PaytrailOnlinePaymentNotifyController extends AbstractController {
           .map((item) => item?.productId)
           .join(',')}`,
         cause: e.toString(),
+        header: 'Error - Creating order accountings failed',
       })
     }
     return this.success<any>(response, paytrailStatus)
