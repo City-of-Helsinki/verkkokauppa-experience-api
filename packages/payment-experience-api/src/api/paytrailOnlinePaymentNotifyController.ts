@@ -6,6 +6,7 @@ import {
 } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
 import {
+  checkIfPaidLate,
   createAccountingEntryForOrder,
   getOrderAdmin,
   OrderNotFoundError,
@@ -18,7 +19,10 @@ import {
 } from '@verkkokauppa/payment-backend'
 import { parseOrderIdFromPaytrailRedirect } from '../lib/paytrail'
 import { parseMerchantIdFromFirstOrderItem } from '@verkkokauppa/configuration-backend'
-import { sendErrorNotification } from '@verkkokauppa/message-backend'
+import {
+  sendErrorNotification,
+  sendErrorNotificationWithOrderData,
+} from '@verkkokauppa/message-backend'
 
 export class PaytrailOnlinePaymentNotifyController extends AbstractController {
   protected readonly requestSchema = null
@@ -55,20 +59,18 @@ export class PaytrailOnlinePaymentNotifyController extends AbstractController {
     })
 
     // check if this was paid late (KYV-1196)
-    if (
-      paytrailStatus.paymentPaid &&
-      order.lastValidPurchaseDateTime &&
-      order.lastValidPurchaseDateTime?.setMinutes(
-        order.lastValidPurchaseDateTime?.getMinutes() + 15
-      ) < Date.now()
-    ) {
-      // at least 15 minutes past last valid purchase datetime
-      await sendErrorNotification({
-        message: `Order: ${orderId} was paid but last valid purchase datetime had already passed`,
-        cause: '',
-        header:
-          'Error - Order was paid late, last valid purchase datetime has passed',
-      })
+    if (paytrailStatus.paymentPaid) {
+      const paidLate = await checkIfPaidLate({ order })
+      if (paidLate) {
+        // at least 15 minutes past last valid purchase datetime
+        await sendErrorNotificationWithOrderData({
+          orderId,
+          message: `Order: ${orderId} was paid but last valid purchase datetime had already passed`,
+          cause: '',
+          header:
+            'Error - Order was paid late, last valid purchase datetime has passed',
+        })
+      }
     }
 
     logger.debug(

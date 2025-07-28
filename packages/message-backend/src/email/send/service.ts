@@ -233,6 +233,27 @@ export const sendErrorNotification = async (p: {
   }
 }
 
+export const sendErrorNotificationWithOrderData = async (p: {
+  orderId: string
+  message: string
+  cause: string
+  header: string
+}): Promise<void> => {
+  const { orderId, message, cause, header } = p
+  isMessageBackendUrlSet()
+  const url = `${process.env.ORDER_BACKEND_URL}/notification/sendErrorNotificationWithOrder/${orderId}`
+  try {
+    await axios.post(url, { message, cause, header })
+    return
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-send-error-notification',
+      message: 'Failed to send error notification',
+      source: e,
+    })
+  }
+}
+
 export const sendRefundConfirmationEmail = async (p: {
   order: Order
   refund: Refund
