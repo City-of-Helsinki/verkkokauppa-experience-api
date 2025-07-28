@@ -713,3 +713,29 @@ export const unlockOrder = async (p: { orderId: string }): Promise<void> => {
     })
   }
 }
+
+// check if this was paid late (KYV-1196)
+export const checkIfPaidLate = async (p: {
+  order: Order
+}): Promise<boolean> => {
+  const { order } = p
+
+  try {
+    // first create base date to compare to based on if there is last valid purchase date time
+    const timeToCompareTo = order.lastValidPurchaseDateTime
+      ? new Date(order.lastValidPurchaseDateTime)
+      : new Date(order.createdAt)
+    // then add either 15 minutes of 60 minutes to it based on if it is last valid purchase datetime
+    timeToCompareTo.setMinutes(
+      timeToCompareTo.getMinutes() + (order.lastValidPurchaseDateTime ? 15 : 60)
+    )
+
+    return timeToCompareTo < new Date()
+  } catch (e) {
+    throw new ExperienceFailure({
+      code: 'failed-to-check-if-payment-was-paid-late',
+      message: 'failed to check if payment was paid late',
+      source: e as Error,
+    })
+  }
+}

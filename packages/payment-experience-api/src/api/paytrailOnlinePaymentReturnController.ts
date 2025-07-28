@@ -1,7 +1,7 @@
 import { AbstractController, logger } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
 import { URL } from 'url'
-import { getOrderAdmin } from '@verkkokauppa/order-backend'
+import { checkIfPaidLate, getOrderAdmin } from '@verkkokauppa/order-backend'
 import {
   cancelPaymentAdmin,
   checkPaytrailReturnUrl,
@@ -22,7 +22,10 @@ import {
   getPublicServiceConfiguration,
   parseMerchantIdFromFirstOrderItem,
 } from '@verkkokauppa/configuration-backend'
-import { sendErrorNotification } from '@verkkokauppa/message-backend'
+import {
+  sendErrorNotification,
+  sendErrorNotificationWithOrderData,
+} from '@verkkokauppa/message-backend'
 
 export class PaytrailOnlinePaymentReturnController extends AbstractController {
   protected readonly requestSchema = null
@@ -95,6 +98,21 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
           `PaytrailStatus is not valid for ${orderId}, redirect to failure url`
         )
         return result.redirect(302, failureRedirectUrl.toString())
+      }
+
+      // check if this was paid late (KYV-1196)
+      if (paytrailStatus.paymentPaid) {
+        const paidLate = await checkIfPaidLate({ order })
+        if (paidLate) {
+          // at least 15 minutes past last valid purchase datetime
+          await sendErrorNotificationWithOrderData({
+            orderId,
+            message: `Order: ${orderId} was paid but last valid purchase datetime had already passed`,
+            cause: '',
+            header:
+              'Error - Order was paid late, last valid purchase datetime has passed',
+          })
+        }
       }
 
       try {
