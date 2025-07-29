@@ -32,7 +32,7 @@ import {
   SetOrderTotalsFailure,
   SubscriptionNotFoundError,
 } from './errors'
-import { ExperienceFailure, ForbiddenError } from '@verkkokauppa/core'
+import { ExperienceFailure, ForbiddenError, logger } from '@verkkokauppa/core'
 import { format, isAfter } from 'date-fns'
 import { formatToTimeZone } from 'date-fns-timezone'
 import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz'
@@ -719,10 +719,11 @@ export const checkIfPaidLate = async (p: {
   order: Order
 }): Promise<boolean> => {
   const { order } = p
+  const finlandTimezone = 'Europe/Helsinki'
 
   try {
     // first create base date to compare to based on if there is last valid purchase date time
-    const timeToCompareTo = order.lastValidPurchaseDateTime
+    let timeToCompareTo = order.lastValidPurchaseDateTime
       ? new Date(order.lastValidPurchaseDateTime)
       : new Date(order.createdAt)
     // then add either 15 minutes of 60 minutes to it based on if it is last valid purchase datetime
@@ -730,6 +731,13 @@ export const checkIfPaidLate = async (p: {
       timeToCompareTo.getMinutes() + (order.lastValidPurchaseDateTime ? 15 : 60)
     )
 
+    timeToCompareTo = zonedTimeToUtc(timeToCompareTo, finlandTimezone)
+
+    logger.debug(
+      `Checking if paid late. OrderId: ${
+        order.orderId
+      }, Time to compare to: ${timeToCompareTo}, Time now: ${new Date()}`
+    )
     return timeToCompareTo < new Date()
   } catch (e) {
     throw new ExperienceFailure({

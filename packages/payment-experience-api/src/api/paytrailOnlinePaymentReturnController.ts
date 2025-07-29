@@ -100,21 +100,6 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
         return result.redirect(302, failureRedirectUrl.toString())
       }
 
-      // check if this was paid late (KYV-1196)
-      if (paytrailStatus.paymentPaid) {
-        const paidLate = await checkIfPaidLate({ order })
-        if (paidLate) {
-          // at least 15 minutes past last valid purchase datetime
-          await sendErrorNotificationWithOrderData({
-            orderId,
-            message: `Order: ${orderId} was paid but last valid purchase datetime had already passed`,
-            cause: '',
-            header:
-              'Error - Order was paid late, last valid purchase datetime has passed',
-          })
-        }
-      }
-
       try {
         const paymentId = query['checkout-stamp']?.toString()
         if (paymentId) {
@@ -133,6 +118,21 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
         logger.debug(
           `Error occurred, when updating payment data from paytrail ${orderId}`
         )
+      }
+
+      // check if this was paid late (KYV-1196)
+      if (paytrailStatus.paymentPaid) {
+        const paidLate = await checkIfPaidLate({ order })
+        if (paidLate) {
+          // at least 15 minutes past last valid purchase datetime
+          await sendErrorNotificationWithOrderData({
+            orderId,
+            message: `Order: ${orderId} was paid but last valid purchase datetime had already passed`,
+            cause: '',
+            header:
+              'Error - Order was paid late, last valid purchase datetime has passed',
+          })
+        }
       }
 
       const redirectUrl = await createUserRedirectUrl({
