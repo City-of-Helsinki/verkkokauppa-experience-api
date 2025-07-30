@@ -32,7 +32,7 @@ export class InvoicingRedirectController extends AbstractController {
   protected readonly requestSchema = null
 
   private static fault = (url: URL, user?: string | null) => {
-    url.pathname += 'failure'
+    url.pathname = 'failure'
     if (user) {
       url.searchParams.append('user', user)
     }
@@ -40,7 +40,7 @@ export class InvoicingRedirectController extends AbstractController {
   }
 
   private static success = (url: URL, user?: string) => {
-    url.pathname += 'success'
+    url.pathname = 'success'
     if (user) {
       url.searchParams.append('user', user)
     }
