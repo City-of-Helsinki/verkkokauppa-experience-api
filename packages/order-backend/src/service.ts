@@ -144,6 +144,27 @@ export const cancelOrder = async (p: {
   }
 }
 
+export const checkCanCancelOrder = async (p: {
+  orderId: string
+}): Promise<Boolean> => {
+  const { orderId } = p
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+  const url = `${process.env.ORDER_BACKEND_URL}/order/check/can-cancel`
+  try {
+    const result = await axios.get<Boolean>(url, {
+      params: { orderId },
+    })
+    return result.data
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new OrderNotFoundError()
+    }
+    throw new CancelOrderFailure(e)
+  }
+}
+
 export const confirmOrder = async (p: {
   orderId: string
   user: string
