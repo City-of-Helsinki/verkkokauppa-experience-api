@@ -6,13 +6,13 @@ import {
 } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
 import {
-  checkIfPaidLate,
   createAccountingEntryForOrder,
   getOrderAdmin,
   OrderNotFoundError,
 } from '@verkkokauppa/order-backend'
 import { getProductAccountingBatch } from '@verkkokauppa/product-backend'
 import {
+  checkIfPaidLate,
   checkPaytrailReturnUrl,
   Payment,
   updateInternalPaymentFromPaytrail,
@@ -75,26 +75,40 @@ export class PaytrailOnlinePaymentNotifyController extends AbstractController {
         merchantId: merchantId,
         namespace: order.namespace,
       })
+
+      // check if this was paid late (KYV-1196)
+      if (paytrailStatus.paymentPaid) {
+        const paidLate = await checkIfPaidLate({
+          order,
+          payment: paymentWithUpdatePaidAt,
+        })
+        if (paidLate) {
+          if (order.lastValidPurchaseDateTime) {
+            // at least 15 minutes past last valid purchase datetime
+            await sendErrorNotificationWithOrderData({
+              orderId,
+              message: `Order: ${orderId} was paid but last valid purchase datetime had already passed`,
+              cause: '',
+              header:
+                'Error - Order was paid late, last valid purchase datetime has passed',
+            })
+          } else {
+            // at least hour after the creation of payment
+            await sendErrorNotificationWithOrderData({
+              orderId,
+              message: `Order: ${orderId} was paid over an hour after payment was created. Could be past the time merchants wait for PAYMENT_PAID.`,
+              cause: '',
+              header:
+                'Warning - Order was paid over an hour after payment was created',
+            })
+          }
+        }
+      }
     } catch (e) {
       logger.error(e)
       logger.debug(
         `Notify - Error occurred, when updating payment data from paytrail ${orderId}`
       )
-    }
-
-    // check if this was paid late (KYV-1196)
-    if (paytrailStatus.paymentPaid) {
-      const paidLate = await checkIfPaidLate({ order })
-      if (paidLate) {
-        // at least 15 minutes past last valid purchase datetime
-        await sendErrorNotificationWithOrderData({
-          orderId,
-          message: `Order: ${orderId} was paid but last valid purchase datetime had already passed`,
-          cause: '',
-          header:
-            'Error - Order was paid late, last valid purchase datetime has passed',
-        })
-      }
     }
 
     try {
