@@ -160,6 +160,7 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
         await sendErrorNotification({
           message: `Sending receipt failed for paytrail card order ${orderId}`,
           cause: e.toString(),
+          header: 'Error - Sending receipt failed',
         })
       }
 
@@ -214,6 +215,7 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
           message:
             'Creating accountings failed in paytrailCardRedirectSuccessController',
           cause: e.toString(),
+          header: 'Error - Creating order accountings failed',
         })
       }
 

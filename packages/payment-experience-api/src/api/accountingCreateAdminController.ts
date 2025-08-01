@@ -152,6 +152,7 @@ export class AccountingCreateAdminController extends AbstractController<
           .map((item) => item?.productId)
           .join(',')} paymentId ${paymentId}`,
         cause: e.toString(),
+        header: 'Error - Creating order accountings failed',
       })
     }
 

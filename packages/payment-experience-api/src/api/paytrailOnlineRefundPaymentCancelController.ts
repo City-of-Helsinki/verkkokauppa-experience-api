@@ -57,6 +57,7 @@ export class PaytrailOnlineRefundPaymentCancelController extends AbstractControl
           refundPaymentStatus: status,
         })}`,
         cause: 'Paytrail refund payment cancel controller called',
+        header: 'Error - Refund cancel controller called',
       })
 
       return this.success(result)

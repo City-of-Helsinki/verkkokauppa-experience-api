@@ -219,6 +219,7 @@ export class InvoicingRedirectController extends AbstractController {
         await sendErrorNotification({
           message: `Sending receipt failed for invoice order ${orderId}`,
           cause: e.toString(),
+          header: 'Error - Sending receipt failed',
         })
       }
 
@@ -234,6 +235,7 @@ export class InvoicingRedirectController extends AbstractController {
           await sendErrorNotification({
             cause: 'Invoicing redirect controller error',
             message: `Failed to create invoicing (order ${orderId}, user ${user}, error ${e.toString()})`,
+            header: 'Error - Creating order invoicing failed',
           })
         }
       } catch (e) {

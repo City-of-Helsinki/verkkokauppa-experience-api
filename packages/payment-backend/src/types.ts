@@ -52,6 +52,7 @@ export interface Order {
   priceVat?: string
   priceTotal?: string
   type: OrderType
+  lastValidPurchaseDateTime?: Date
 }
 
 export interface PaymentMethod {
@@ -102,6 +103,7 @@ export interface Payment {
   paytrailTransactionId?: string
   token: string
   paytrailProvider?: PaytrailProvider
+  createdAt?: string
 }
 
 export interface PaytrailProvider {

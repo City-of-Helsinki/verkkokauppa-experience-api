@@ -12,13 +12,17 @@ import {
 } from '@verkkokauppa/order-backend'
 import { getProductAccountingBatch } from '@verkkokauppa/product-backend'
 import {
+  checkIfPaidLate,
   checkPaytrailReturnUrl,
   Payment,
   updateInternalPaymentFromPaytrail,
 } from '@verkkokauppa/payment-backend'
 import { parseOrderIdFromPaytrailRedirect } from '../lib/paytrail'
 import { parseMerchantIdFromFirstOrderItem } from '@verkkokauppa/configuration-backend'
-import { sendErrorNotification } from '@verkkokauppa/message-backend'
+import {
+  sendErrorNotification,
+  sendErrorNotificationWithOrderData,
+} from '@verkkokauppa/message-backend'
 
 export class PaytrailOnlinePaymentNotifyController extends AbstractController {
   protected readonly requestSchema = null
@@ -28,6 +32,8 @@ export class PaytrailOnlinePaymentNotifyController extends AbstractController {
     response: Response
   ): Promise<any> {
     const { query } = request
+
+    logger.info('Paytrail online payment notify controller called')
 
     const orderId = parseOrderIdFromPaytrailRedirect({ query })
     if (!orderId) {
@@ -52,8 +58,6 @@ export class PaytrailOnlinePaymentNotifyController extends AbstractController {
       merchantId: merchantId,
     })
 
-    logger.info('Paytrail online payment notify controller called')
-
     logger.debug(
       `PaytrailStatus callback for order ${orderId}: ${JSON.stringify(
         paytrailStatus
@@ -71,6 +75,35 @@ export class PaytrailOnlinePaymentNotifyController extends AbstractController {
         merchantId: merchantId,
         namespace: order.namespace,
       })
+
+      // check if this was paid late (KYV-1196)
+      if (paytrailStatus.paymentPaid) {
+        const paidLate = await checkIfPaidLate({
+          order,
+          payment: paymentWithUpdatePaidAt,
+        })
+        if (paidLate) {
+          if (order.lastValidPurchaseDateTime) {
+            // at least 15 minutes past last valid purchase datetime
+            await sendErrorNotificationWithOrderData({
+              orderId,
+              message: `Order: ${orderId} was paid but last valid purchase datetime had already passed`,
+              cause: '',
+              header:
+                'Error - Order was paid late, last valid purchase datetime has passed',
+            })
+          } else {
+            // at least hour after the creation of payment
+            await sendErrorNotificationWithOrderData({
+              orderId,
+              message: `Order: ${orderId} was paid over an hour after payment was created. Could be past the time merchants wait for PAYMENT_PAID.`,
+              cause: '',
+              header:
+                'Warning - Order was paid over an hour after payment was created',
+            })
+          }
+        }
+      }
     } catch (e) {
       logger.error(e)
       logger.debug(
@@ -127,6 +160,7 @@ export class PaytrailOnlinePaymentNotifyController extends AbstractController {
           .map((item) => item?.productId)
           .join(',')}`,
         cause: e.toString(),
+        header: 'Error - Creating order accountings failed',
       })
     }
     return this.success<any>(response, paytrailStatus)

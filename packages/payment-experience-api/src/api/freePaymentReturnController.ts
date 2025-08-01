@@ -119,6 +119,7 @@ export class FreePaymentReturnController extends AbstractController {
         await sendErrorNotification({
           message: `Sending receipt failed for free order ${orderId}`,
           cause: e.toString(),
+          header: 'Error - Sending receipt failed',
         })
       }
 
