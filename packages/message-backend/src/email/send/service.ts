@@ -24,6 +24,7 @@ import type {
 import {
   ExperienceError,
   ExperienceFailure,
+  logger,
   StatusCode,
 } from '@verkkokauppa/core'
 
@@ -225,11 +226,7 @@ export const sendErrorNotification = async (p: {
     await axios.post(url, { message, cause, header })
     return
   } catch (e) {
-    throw new ExperienceFailure({
-      code: 'failed-to-send-error-notification',
-      message: 'Failed to send error notification',
-      source: e,
-    })
+    logger.error('Failed to send error notification. Error: ' + e)
   }
 }
 
@@ -246,11 +243,9 @@ export const sendErrorNotificationWithOrderData = async (p: {
     await axios.post(url, { message, cause, header })
     return
   } catch (e) {
-    throw new ExperienceFailure({
-      code: 'failed-to-send-error-notification',
-      message: 'Failed to send error notification',
-      source: e,
-    })
+    logger.error(
+      'Failed to send error notification with order data. Error: ' + e
+    )
   }
 }
 
