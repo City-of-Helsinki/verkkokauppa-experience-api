@@ -40,6 +40,8 @@ import {
   RefundPaymentStatus,
 } from './enums'
 import type { RefundPayment } from './refund/types'
+import { zonedTimeToUtc } from 'date-fns-tz'
+import * as Sentry from '@sentry/node'
 
 const allowedPaymentGateways = [
   PaymentGateway.PAYTRAIL.toString(),
@@ -1075,5 +1077,48 @@ export const setPaymentStatus = async (p: {
       message: 'failed to set payment status',
       source: e as Error,
     })
+  }
+}
+
+// check if this was paid late (KYV-1196)
+export const checkIfPaidLate = async (p: {
+  order: Order
+  payment: Payment | null
+}): Promise<boolean> => {
+  const { order, payment } = p
+  const finlandTimezone = 'Europe/Helsinki'
+
+  try {
+    // first create base date to compare to based on if there is last valid purchase date time
+    // created at should come from payment, if for some reason not then from order
+    // (GET payment can in theory return null)
+    let createdAt = payment?.createdAt
+      ? new Date(payment?.createdAt)
+      : new Date(order.createdAt)
+    let timeToCompareTo = order.lastValidPurchaseDateTime
+      ? new Date(order.lastValidPurchaseDateTime)
+      : createdAt
+    // then add either 15 minutes of 60 minutes to it based on if it is last valid purchase datetime
+    timeToCompareTo.setMinutes(
+      timeToCompareTo.getMinutes() + (order.lastValidPurchaseDateTime ? 15 : 60)
+    )
+
+    timeToCompareTo = zonedTimeToUtc(timeToCompareTo, finlandTimezone)
+
+    logger.debug(
+      `Checking if paid late. OrderId: ${
+        order.orderId
+      }, Time to compare to: ${timeToCompareTo}, Time now: ${new Date()}`
+    )
+    return timeToCompareTo < new Date()
+  } catch (e) {
+    Sentry.captureException(e, {
+      extra: {
+        orderId: p.order?.orderId,
+        message: 'Failed to check if payment was paid late',
+      },
+    })
+    logger.error('Failed to check if payment was paid late', e)
+    return false // fallback value
   }
 }
