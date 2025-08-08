@@ -12,20 +12,16 @@ import type {
   Order,
   OrderConfirmationEmailParameters,
   OrderItemMeta,
+  OrderMerchant,
+  Payment,
+  Refund,
   Subscription,
+  SubscriptionCardExpiredEmailParameters,
   SubscriptionItemMeta,
   SubscriptionPaymentFailedEmailParameters,
   VatTable,
-  SubscriptionCardExpiredEmailParameters,
-  Refund,
-  OrderMerchant,
-  Payment,
 } from '../create/types'
-import {
-  ExperienceError,
-  ExperienceFailure,
-  StatusCode,
-} from '@verkkokauppa/core'
+import { ExperienceError, logger, StatusCode } from '@verkkokauppa/core'
 
 function isMessageBackendUrlSet() {
   if (!process.env.MESSAGE_BACKEND_URL) {
@@ -216,19 +212,35 @@ export const sendSubscriptionCardExpiredEmailToCustomer = async (p: {
 export const sendErrorNotification = async (p: {
   message: string
   cause: string
+  header: string
 }): Promise<void> => {
-  const { message, cause } = p
+  const { message, cause, header } = p
   isMessageBackendUrlSet()
   const url = `${process.env.MESSAGE_BACKEND_URL}/message/send/errorNotification`
   try {
-    await axios.post(url, { message, cause })
+    await axios.post(url, { message, cause, header })
     return
   } catch (e) {
-    throw new ExperienceFailure({
-      code: 'failed-to-send-error-notification',
-      message: 'Failed to send error notification',
-      source: e,
-    })
+    logger.error('Failed to send error notification. Error: ' + e)
+  }
+}
+
+export const sendErrorNotificationWithOrderData = async (p: {
+  orderId: string
+  message: string
+  cause: string
+  header: string
+}): Promise<void> => {
+  const { orderId, message, cause, header } = p
+  isMessageBackendUrlSet()
+  const url = `${process.env.ORDER_BACKEND_URL}/notification/sendErrorNotificationWithOrder/${orderId}`
+  try {
+    await axios.post(url, { message, cause, header })
+    return
+  } catch (e) {
+    logger.error(
+      'Failed to send error notification with order data. Error: ' + e
+    )
   }
 }
 
