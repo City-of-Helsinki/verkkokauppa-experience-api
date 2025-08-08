@@ -23,6 +23,7 @@ import {
   sendErrorNotification,
   sendErrorNotificationWithOrderData,
 } from '@verkkokauppa/message-backend'
+import * as Sentry from '@sentry/node'
 
 export class PaytrailOnlinePaymentNotifyController extends AbstractController {
   protected readonly requestSchema = null
@@ -32,10 +33,12 @@ export class PaytrailOnlinePaymentNotifyController extends AbstractController {
     response: Response
   ): Promise<any> {
     const { query } = request
-
-    logger.info('Paytrail online payment notify controller called')
-
     const orderId = parseOrderIdFromPaytrailRedirect({ query })
+
+    logger.info(
+      `Paytrail online payment notify controller called with orderId ${orderId}`
+    )
+
     if (!orderId) {
       logger.error('Paytrail: No orderId specified')
       throw new OrderNotFoundError()
@@ -77,32 +80,45 @@ export class PaytrailOnlinePaymentNotifyController extends AbstractController {
       })
 
       // check if this was paid late (KYV-1196)
-      if (paytrailStatus.paymentPaid) {
-        const paidLate = await checkIfPaidLate({
-          order,
-          payment: paymentWithUpdatePaidAt,
-        })
-        if (paidLate) {
-          if (order.lastValidPurchaseDateTime) {
-            // at least 15 minutes past last valid purchase datetime
-            await sendErrorNotificationWithOrderData({
-              orderId,
-              message: `Order: ${orderId} was paid but last valid purchase datetime had already passed`,
-              cause: '',
-              header:
-                'Error - Order was paid late, last valid purchase datetime has passed',
-            })
-          } else {
-            // at least hour after the creation of payment
-            await sendErrorNotificationWithOrderData({
-              orderId,
-              message: `Order: ${orderId} was paid over an hour after payment was created. Could be past the time merchants wait for PAYMENT_PAID.`,
-              cause: '',
-              header:
-                'Warning - Order was paid over an hour after payment was created',
-            })
+      try {
+        if (paytrailStatus.paymentPaid) {
+          const paidLate = await checkIfPaidLate({
+            order,
+            payment: paymentWithUpdatePaidAt,
+          })
+          if (paidLate) {
+            if (order.lastValidPurchaseDateTime) {
+              // at least 15 minutes past last valid purchase datetime
+              await sendErrorNotificationWithOrderData({
+                orderId,
+                message: `Order: ${orderId} was paid but last valid purchase datetime had already passed`,
+                cause: '',
+                header:
+                  'Error - Order was paid late, last valid purchase datetime has passed',
+              })
+            } else {
+              // at least hour after the creation of payment
+              await sendErrorNotificationWithOrderData({
+                orderId,
+                message: `Order: ${orderId} was paid over an hour after payment was created. Could be past the time merchants wait for PAYMENT_PAID.`,
+                cause: '',
+                header:
+                  'Warning - Order was paid over an hour after payment was created',
+              })
+            }
           }
         }
+      } catch (e) {
+        Sentry.captureException(e, {
+          extra: {
+            orderId: orderId,
+            message: 'Failed to send error email for order that was paid late',
+          },
+        })
+        logger.error(
+          'Failed to send error email for order that was paid late',
+          e
+        )
       }
     } catch (e) {
       logger.error(e)
