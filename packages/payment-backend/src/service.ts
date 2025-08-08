@@ -41,6 +41,7 @@ import {
 } from './enums'
 import type { RefundPayment } from './refund/types'
 import { zonedTimeToUtc } from 'date-fns-tz'
+import * as Sentry from '@sentry/node'
 
 const allowedPaymentGateways = [
   PaymentGateway.PAYTRAIL.toString(),
@@ -1111,10 +1112,13 @@ export const checkIfPaidLate = async (p: {
     )
     return timeToCompareTo < new Date()
   } catch (e) {
-    throw new ExperienceFailure({
-      code: 'failed-to-check-if-payment-was-paid-late',
-      message: 'failed to check if payment was paid late',
-      source: e as Error,
+    Sentry.captureException(e, {
+      extra: {
+        orderId: p.order?.orderId,
+        message: 'Failed to check if payment was paid late',
+      },
     })
+    logger.error('Failed to check if payment was paid late', e)
+    return false // fallback value
   }
 }
