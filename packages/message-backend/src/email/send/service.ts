@@ -12,21 +12,16 @@ import type {
   Order,
   OrderConfirmationEmailParameters,
   OrderItemMeta,
+  OrderMerchant,
+  Payment,
+  Refund,
   Subscription,
+  SubscriptionCardExpiredEmailParameters,
   SubscriptionItemMeta,
   SubscriptionPaymentFailedEmailParameters,
   VatTable,
-  SubscriptionCardExpiredEmailParameters,
-  Refund,
-  OrderMerchant,
-  Payment,
 } from '../create/types'
-import {
-  ExperienceError,
-  ExperienceFailure,
-  logger,
-  StatusCode,
-} from '@verkkokauppa/core'
+import { ExperienceError, logger, StatusCode } from '@verkkokauppa/core'
 
 function isMessageBackendUrlSet() {
   if (!process.env.MESSAGE_BACKEND_URL) {
