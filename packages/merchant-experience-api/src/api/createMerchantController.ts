@@ -23,9 +23,10 @@ const merchantCommonSchema = yup.object({
   merchantEmail: yup.string().required(),
   merchantUrl: yup.string().required(),
   merchantTermsOfServiceUrl: yup.string().required(),
+  sendMerchantTermsOfService: yup.string().notRequired(),
   merchantBusinessId: yup.string().required(),
-  merchantPhone: yup.string(),
-  merchantShopId: yup.string().required(),
+  merchantPhone: yup.string().notRequired(),
+  merchantShopId: yup.string().notRequired(),
   merchantPaytrailMerchantId: yup.string().required(),
 })
 

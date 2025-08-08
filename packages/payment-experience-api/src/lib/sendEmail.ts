@@ -43,7 +43,19 @@ export const sendReceipt = async (
           'Laskutusta-koskevat-yleiset-ehdot.pdf'
       )
     }
-    if (!skipTosByNamespace.includes(order.namespace)) {
+
+    // if flag exists and is NOT set to false or
+    // if flag is not defined and not skipping by old logic
+    // then include terms
+    if (
+      (merchant.sendMerchantTermsOfService !== undefined &&
+        !(merchant.sendMerchantTermsOfService.toUpperCase() == 'FALSE')) ||
+      (merchant.sendMerchantTermsOfService == undefined &&
+        !skipTosByNamespace.includes(order.namespace))
+    ) {
+      logger.info(
+        `Include terms of service to receipt for order ${order.orderId} from ${merchant.merchantTermsOfServiceUrl}`
+      )
       attachments[
         'asiointipalvelun-ehdot.pdf'
       ] = await downloadMerchantTermsOfServiceBinary(merchant)
