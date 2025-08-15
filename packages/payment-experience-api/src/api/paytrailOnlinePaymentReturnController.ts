@@ -83,7 +83,7 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
       const merchantId = parseMerchantIdFromFirstOrderItem(order)
 
       if (!merchantId) {
-        logger.error('Paytrail: No merchantId found from order')
+        logger.error(`Paytrail: No merchantId found from order ${orderId}`)
         return result.redirect(302, failureRedirectUrl.toString())
       }
 
