@@ -101,6 +101,7 @@ describe('Test paytrail refund payment cancel controller', () => {
           refundPaymentStatus: { valid: true },
         }),
         cause: 'Paytrail refund payment cancel controller called',
+        header: 'Error - Refund cancel controller called',
       })
     } else {
       expect(sendErrorNotificationMock).toHaveBeenCalledTimes(0)
