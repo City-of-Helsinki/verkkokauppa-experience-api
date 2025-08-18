@@ -175,27 +175,31 @@ export class InvoicingRedirectController extends AbstractController {
                 project: yup.string().nullable().default(''),
                 operationArea: yup.string().nullable().default(''),
               })
-              .test((value) => {
-                if (!value) return false
+              .test(
+                'Only one accounting identifier',
+                'Accounting information should only have internalOrder or profitCenter defined. If neither is given then project has to be defined.',
+                (value) => {
+                  if (!value) return false
 
-                // only internalOrder or profitCenter should be used
-                // if neither of them is used then project should be defined
-                const hasInternalOrder = !!value.internalOrder
-                const hasProfitCenter = !!value.profitCenter
-                const hasProject = !!value.project
+                  // only internalOrder or profitCenter should be used
+                  // if neither of them is used then project should be defined
+                  const hasInternalOrder = !!value.internalOrder
+                  const hasProfitCenter = !!value.profitCenter
+                  const hasProject = !!value.project
 
-                // InternalOrder and ProfitCenter should not be provided at the same time
-                if (hasInternalOrder && hasProfitCenter) {
-                  return false
+                  // InternalOrder and ProfitCenter should not be provided at the same time
+                  if (hasInternalOrder && hasProfitCenter) {
+                    return false
+                  }
+
+                  // if neither provided then project is required
+                  if (!hasInternalOrder && !hasProfitCenter) {
+                    return hasProject
+                  }
+
+                  return true
                 }
-
-                // if neither provided then project is required
-                if (!hasInternalOrder && !hasProfitCenter) {
-                  return hasProject
-                }
-
-                return true
-              })
+              )
               .validateSync({
                 orderId: order.orderId,
                 orderIncrementId: order.incrementId,
