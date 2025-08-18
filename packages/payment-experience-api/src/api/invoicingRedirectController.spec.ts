@@ -487,7 +487,8 @@ describe('Test invoicing redirect controller', () => {
     )
     expect(sendErrorNotificationMock).toHaveBeenCalledTimes(1)
     expect(sendErrorNotificationMock.mock.calls[0][0]).toEqual({
-      cause: 'ValidationError: this is invalid',
+      cause:
+        'ValidationError: Accounting information should only have internalOrder or profitCenter defined. If neither is given then project has to be defined.',
       header: 'Error - Creating invoicing entry for order failed',
       message:
         'Creating invoicing entry for order 145d8829-07b7-4b03-ab0e-24063958ab9b failed',
@@ -517,7 +518,8 @@ describe('Test invoicing redirect controller', () => {
     )
     expect(sendErrorNotificationMock).toHaveBeenCalledTimes(2)
     expect(sendErrorNotificationMock.mock.calls[1][0]).toEqual({
-      cause: 'ValidationError: this is invalid',
+      cause:
+        'ValidationError: Accounting information should only have internalOrder or profitCenter defined. If neither is given then project has to be defined.',
       header: 'Error - Creating invoicing entry for order failed',
       message:
         'Creating invoicing entry for order 145d8829-07b7-4b03-ab0e-24063958ab9b failed',
