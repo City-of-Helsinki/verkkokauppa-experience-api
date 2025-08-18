@@ -72,6 +72,11 @@ const orderBackendResponseMock = {
 }
 
 describe('Test invoicing redirect controller', () => {
+  beforeEach(() => {
+    sendErrorNotificationMock.mockClear()
+    sendOrderConfirmationEmailToCustomerMock.mockClear()
+  })
+
   it('Test invoicing entry creation', async () => {
     process.env.REDIRECT_PAYMENT_URL_BASE = 'https://test.dev.hel'
     process.env.CONFIGURATION_BACKEND_URL = 'https://test.dev.hel'
