@@ -49,6 +49,8 @@ components:
           type: string
         merchantTermsOfServiceUrl:
           type: string
+        sendMerchantTermsOfService:
+          type: string
         merchantPaymentWebhookUrl:
           type: string
         merchantOrderWebhookUrl:
@@ -79,7 +81,6 @@ components:
         - merchantUrl
         - merchantTermsOfServiceUrl
         - merchantBusinessId
-        - merchantShopId
         - merchantPaytrailMerchantId
       properties:
         merchantName:
@@ -98,9 +99,11 @@ components:
           type: string
         merchantTermsOfServiceUrl:
           type: string
+        sendMerchantTermsOfService: #Not required
+          type: string
         merchantBusinessId:
           type: string
-        merchantShopId:
+        merchantShopId: #Not required
           type: string
         merchantPaytrailMerchantId:
           type: string
@@ -122,6 +125,8 @@ components:
         merchantUrl:
           type: string
         merchantTermsOfServiceUrl:
+          type: string
+        sendMerchantTermsOfService: #Not required
           type: string
         merchantBusinessId:
           type: string
@@ -167,6 +172,7 @@ components:
               - "merchantRefundWebhookUrl // Desc: TODO"
               - "merchantSubscriptionWebhookUrl // Desc: webhook to the transaction service when a subscription is created or canceled. The notification includes the subscription id and the order id, as well as the cancellationCause,(CUSTOMER_CANCELLED, EXPIRED, NO_RIGHT_OF_PURCHASE) information."
               - "merchantTermsOfServiceUrl // Desc: Appears in the summary under Order terms and on the receipt under cancellation instructions and conditions"
+              - "sendMerchantTermsOfService // Desc: Overrides namespace value (Read more about usage from namespace description)"
               - "orderCancelRedirectUrl // Desc: If specified, the Kassa-UI will return here if the order is canceled (ie before payment). In the query parameter orderId, the browser is told the ID of the order that was not paid for."
               - "orderRightOfPurchaseIsActive // Desc: Is the purchase right check on the interface on?"
               - "orderRightOfPurchaseUrl // Desc: The interface of the transaction service, from which the right to purchase the products of the order is checked, if specified on."
@@ -184,6 +190,7 @@ components:
               - "merchantShopId // Desc: TODO"
               - "merchantStreet // Desc: Appears on the receipt under Seller's information"
               - "merchantTermsOfServiceUrl // Desc: Overrides namespace value (Read more about usage from namespace description)"
+              - "sendMerchantTermsOfService // Desc: Overrides namespace value (Read more about usage from namespace description)"
               - "merchantUrl // Desc: Return address to the transaction service from the cashier of the online store. The receipt page is also returned here"
               - "merchantZip // Desc: Appears on the receipt under Seller's information"
               - "orderRightOfPurchaseIsActive // Desc: Overrides namespace value (Read more about usage from namespace description)"
@@ -210,6 +217,7 @@ components:
             type: string
             example:
               - "merchantTermsOfServiceUrl // Desc: Overrides namespace value (Read more about usage from namespace description)"
+              - "sendMerchantTermsOfService // Desc: Overrides namespace value (Read more about usage from namespace description)"
               - "orderRightOfPurchaseIsActive // Desc: Overrides namespace value (Read more about usage from namespace description)"
               - "orderRightOfPurchaseUrl // Desc: Overrides namespace value (Read more about usage from namespace description)"
               - "subscriptionPriceUrl // Desc: Overrides namespace value (Read more about usage from namespace description)"
@@ -295,6 +303,8 @@ paths:
                     type: string
                   merchantTermsOfServiceUrl:
                     type: string
+                  sendMerchantTermsOfService:
+                    type: string
                   merchantPaymentWebhookUrl:
                     type: string
                   merchantOrderWebhookUrl:
@@ -373,6 +383,8 @@ paths:
                   merchantUrl:
                     type: string
                   merchantTermsOfServiceUrl:
+                    type: string
+                  sendMerchantTermsOfService:
                     type: string
                   merchantPaymentWebhookUrl:
                     type: string

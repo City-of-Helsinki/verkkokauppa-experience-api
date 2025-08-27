@@ -286,6 +286,7 @@ const getAllowedKeysToMerchant = () => [
   'merchantPhone',
   'merchantUrl',
   'merchantTermsOfServiceUrl',
+  'sendMerchantTermsOfService',
   'merchantBusinessId',
   'merchantShopId',
 ]
