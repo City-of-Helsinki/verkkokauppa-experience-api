@@ -131,3 +131,26 @@ export const getProductAccountingBatch = async (p: {
     throw new GetProductAccountingFailure(productIds.join(','), e)
   }
 }
+
+export const validateAccountingValues = (p: { accounting }): boolean => {
+  const { accounting } = p
+  if (!accounting) return false
+
+  // only internalOrder or profitCenter should be used
+  // if neither of them is used then project should be defined
+  const hasInternalOrder = !!accounting.internalOrder
+  const hasProfitCenter = !!accounting.profitCenter
+  const hasProject = !!accounting.project
+
+  // InternalOrder and ProfitCenter should not be provided at the same time
+  if (hasInternalOrder && hasProfitCenter) {
+    return false
+  }
+
+  // if neither provided then project is required
+  if (!hasInternalOrder && !hasProfitCenter) {
+    return hasProject
+  }
+
+  return true
+}
