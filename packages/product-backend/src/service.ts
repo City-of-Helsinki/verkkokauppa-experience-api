@@ -8,7 +8,7 @@ import {
   GetProductAccountingFailure,
   ProductAccountingNotFoundError,
 } from './errors'
-import { ExperienceFailure } from '@verkkokauppa/core'
+import { ExperienceFailure, logger } from '@verkkokauppa/core'
 
 type ProductBackendResponse = {
   id: string
@@ -132,7 +132,7 @@ export const getProductAccountingBatch = async (p: {
   }
 }
 
-export const validateAccountingValues = (p: { accounting }): boolean => {
+export const validateAccountingValues = (p: { accounting: any }): boolean => {
   const { accounting } = p
   if (!accounting) return false
 
@@ -141,7 +141,6 @@ export const validateAccountingValues = (p: { accounting }): boolean => {
   const hasInternalOrder = !!accounting.internalOrder
   const hasProfitCenter = !!accounting.profitCenter
   const hasProject = !!accounting.project
-
   // InternalOrder and ProfitCenter should not be provided at the same time
   if (hasInternalOrder && hasProfitCenter) {
     return false
@@ -150,6 +149,24 @@ export const validateAccountingValues = (p: { accounting }): boolean => {
   // if neither provided then project is required
   if (!hasInternalOrder && !hasProfitCenter) {
     return hasProject
+  }
+
+  return true
+}
+
+export const validateAccountingValuesForNextEntity = (p: {
+  accounting: any
+}): boolean => {
+  const { accounting } = p
+  if (!accounting) return true
+
+  // only internalOrder or profitCenter should be used
+  // if neither of them is used then project should be defined
+  const hasInternalOrder = !!accounting.internalOrder
+  const hasProfitCenter = !!accounting.profitCenter
+  // InternalOrder and ProfitCenter should not be provided at the same time
+  if (hasInternalOrder && hasProfitCenter) {
+    return false
   }
 
   return true
