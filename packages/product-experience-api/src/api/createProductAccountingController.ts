@@ -8,6 +8,7 @@ import type { Response } from 'express'
 import {
   createProductAccounting,
   createProductInvoicing,
+  validateAccountingValues,
 } from '@verkkokauppa/product-backend'
 import * as yup from 'yup'
 import { validateApiKey } from '@verkkokauppa/configuration-backend'
@@ -86,27 +87,7 @@ const requestSchema = yup.object().shape({
     .test(
       'Only one accounting identifier',
       'Accounting information should only have internalOrder or profitCenter defined. If neither is given then project has to be defined.',
-      (value) => {
-        if (!value) return false
-
-        // only internalOrder or profitCenter should be used
-        // if neither of them is used then project should be defined
-        const hasInternalOrder = !!value.internalOrder
-        const hasProfitCenter = !!value.profitCenter
-        const hasProject = !!value.project
-
-        // InternalOrder and ProfitCenter should not be provided at the same time
-        if (hasInternalOrder && hasProfitCenter) {
-          return false
-        }
-
-        // if neither provided then project is required
-        if (!hasInternalOrder && !hasProfitCenter) {
-          return hasProject
-        }
-
-        return true
-      }
+      (value) => validateAccountingValues(value)
     ),
   headers: yup.object().shape({
     'api-key': yup.string().required(),
