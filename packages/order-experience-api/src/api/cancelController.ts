@@ -39,7 +39,7 @@ export class CancelController extends AbstractController<typeof requestSchema> {
       return this.respond(
         res,
         403,
-        'Can not cancel. If this order is invoice it could be canceller or invoiced already'
+        'Can not cancel. If this order is invoice it could be cancelled or invoiced already'
       )
     }
     logger.debug(`Cancel Order ${orderId}`)
