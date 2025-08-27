@@ -48,9 +48,11 @@ export const sendReceipt = async (
     // if flag is not defined and not skipping by old logic
     // then include terms
     if (
-      (merchant.sendMerchantTermsOfService !== undefined &&
+      (merchant &&
+        merchant.sendMerchantTermsOfService !== undefined &&
         !(merchant.sendMerchantTermsOfService.toUpperCase() == 'FALSE')) ||
-      (merchant.sendMerchantTermsOfService == undefined &&
+      (merchant &&
+        merchant.sendMerchantTermsOfService == undefined &&
         !skipTosByNamespace.includes(order.namespace))
     ) {
       logger.info(
