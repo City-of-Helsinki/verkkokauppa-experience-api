@@ -1012,7 +1012,7 @@ export const updateInternalRefundFromPaytrail = async (
 ): Promise<RefundPayment> => {
   checkBackendUrlExists()
 
-  const url = `${process.env.PAYMENT_BACKEND_URL}/payment/paytrail/update-from-paytrail-refund`
+  const url = `${process.env.PAYMENT_BACKEND_URL}/refundpayment/paytrail/update-from-paytrail-refund`
   try {
     const res = await axios.post<RefundPayment>(
       url,
