@@ -1,14 +1,15 @@
 import axios from 'axios'
 import type { ProductAccounting } from './types/ProductAccounting'
-export type { ProductAccounting } from './types/ProductAccounting'
 import {
-  ProductNotFoundError,
-  GetProductFailure,
   CreateProductAccountingFailure,
   GetProductAccountingFailure,
+  GetProductFailure,
   ProductAccountingNotFoundError,
+  ProductNotFoundError,
 } from './errors'
 import { ExperienceFailure } from '@verkkokauppa/core'
+
+export type { ProductAccounting } from './types/ProductAccounting'
 
 type ProductBackendResponse = {
   id: string
@@ -130,4 +131,44 @@ export const getProductAccountingBatch = async (p: {
     }
     throw new GetProductAccountingFailure(productIds.join(','), e)
   }
+}
+
+export const validateAccountingValues = (p: { accounting: any }): boolean => {
+  const { accounting } = p
+  if (!accounting) return false
+
+  // only internalOrder or profitCenter should be used
+  // if neither of them is used then project should be defined
+  const hasInternalOrder = !!accounting.internalOrder
+  const hasProfitCenter = !!accounting.profitCenter
+  const hasProject = !!accounting.project
+  // InternalOrder and ProfitCenter should not be provided at the same time
+  if (hasInternalOrder && hasProfitCenter) {
+    return false
+  }
+
+  // if neither provided then project is required
+  if (!hasInternalOrder && !hasProfitCenter) {
+    return hasProject
+  }
+
+  return true
+}
+
+export const validateAccountingValuesForNextEntity = (p: {
+  accounting: any
+}): boolean => {
+  const { accounting } = p
+  if (!accounting) return true
+
+  // only internalOrder or profitCenter should be used
+  // if neither of them is used then project should be defined
+  const hasInternalOrder = !!accounting.internalOrder
+  const hasProfitCenter = !!accounting.profitCenter
+  // InternalOrder and ProfitCenter should not be provided at the same time
+  if (hasInternalOrder && hasProfitCenter) {
+    return false
+  }
+
+  return true
 }

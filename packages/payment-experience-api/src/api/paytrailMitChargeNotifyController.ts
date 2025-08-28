@@ -125,6 +125,7 @@ export class PaytrailMitChargeNotifyController extends AbstractController<
           .map((item) => item?.productId)
           .join(',')}`,
         cause: e.toString(),
+        header: 'Error - Creating order accountings failed',
       })
     }
 

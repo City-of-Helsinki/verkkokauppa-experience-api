@@ -21,6 +21,7 @@ export type MerchantKeys = {
   merchantEmail?: string
   merchantUrl?: string
   merchantTermsOfServiceUrl?: string
+  sendMerchantTermsOfService?: string
   merchantBusinessId?: string
   merchantPhone?: string
   merchantShopId?: string
