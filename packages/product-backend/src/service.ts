@@ -1,14 +1,15 @@
 import axios from 'axios'
 import type { ProductAccounting } from './types/ProductAccounting'
-export type { ProductAccounting } from './types/ProductAccounting'
 import {
-  ProductNotFoundError,
-  GetProductFailure,
   CreateProductAccountingFailure,
   GetProductAccountingFailure,
+  GetProductFailure,
   ProductAccountingNotFoundError,
+  ProductNotFoundError,
 } from './errors'
-import { ExperienceFailure, logger } from '@verkkokauppa/core'
+import { ExperienceFailure } from '@verkkokauppa/core'
+
+export type { ProductAccounting } from './types/ProductAccounting'
 
 type ProductBackendResponse = {
   id: string
