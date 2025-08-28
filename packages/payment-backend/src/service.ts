@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from "axios"
 import type {
   Order,
   Payment,
@@ -9,9 +9,9 @@ import type {
   PaytrailStatus,
   UpdateFromPaytrailPaymentParameters,
   VismaPayResponse,
-  VismaStatus,
-} from './types'
-import type { ParsedQs } from 'qs'
+  VismaStatus
+} from "./types"
+import type { ParsedQs } from "qs"
 import {
   CheckInvoiceReturnUrlFailure,
   CheckPaytrailRefundCallbackUrlFailure,
@@ -30,18 +30,13 @@ import {
   PaymentNotFound,
   PaymentsNotFound,
   PaymentValidationError,
-  RefundPaymentNotFound,
-} from './errors'
-import { ExperienceFailure, logger, removeItem } from '@verkkokauppa/core'
-import {
-  PaymentGateway,
-  PaymentStatus,
-  ReferenceType,
-  RefundPaymentStatus,
-} from './enums'
-import type { RefundPayment } from './refund/types'
-import { zonedTimeToUtc } from 'date-fns-tz'
-import * as Sentry from '@sentry/node'
+  RefundPaymentNotFound
+} from "./errors"
+import { ExperienceFailure, logger, removeItem } from "@verkkokauppa/core"
+import { PaymentGateway, PaymentStatus, ReferenceType, RefundPaymentStatus } from "./enums"
+import type { RefundPayment } from "./refund/types"
+import { zonedTimeToUtc } from "date-fns-tz"
+import * as Sentry from "@sentry/node"
 
 const allowedPaymentGateways = [
   PaymentGateway.PAYTRAIL.toString(),
