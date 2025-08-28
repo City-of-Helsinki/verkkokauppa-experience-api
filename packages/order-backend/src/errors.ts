@@ -117,6 +117,19 @@ export class OrderNotFoundError extends ExperienceError {
   }
 }
 
+export class CancelOrderError extends ExperienceError {
+  constructor() {
+    super({
+      code: 'order-could-not-be-cancelled',
+      message:
+        'Can not cancel. If this order is invoice it could be cancelled or invoiced already',
+      responseStatus: StatusCode.Forbidden,
+      logLevel: 'info',
+    })
+    Object.setPrototypeOf(this, OrderNotFoundError.prototype)
+  }
+}
+
 export class SubscriptionNotFoundError extends ExperienceError {
   constructor(id: string) {
     super({
