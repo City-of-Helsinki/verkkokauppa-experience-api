@@ -151,6 +151,7 @@ export class RefundAccountingCreateAdminController extends AbstractController<
       await sendErrorNotification({
         message: `Admin- Error occurred while trying to create accounting for refund with id: ${refundId}`,
         cause: error,
+        header: 'Error - Creating refund accountings failed',
       })
     }
 
