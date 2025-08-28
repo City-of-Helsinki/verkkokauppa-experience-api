@@ -5,7 +5,11 @@ import {
   ValidatedRequest,
 } from '@verkkokauppa/core'
 import type { Response } from 'express'
-import { cancelOrder, checkCanCancelOrder } from '@verkkokauppa/order-backend'
+import {
+  cancelOrder,
+  CancelOrderError,
+  checkCanCancelOrder,
+} from '@verkkokauppa/order-backend'
 import { getPublicServiceConfiguration } from '@verkkokauppa/configuration-backend'
 import { URL } from 'url'
 import * as yup from 'yup'
@@ -36,11 +40,7 @@ export class CancelController extends AbstractController<typeof requestSchema> {
 
     if (!canCancel) {
       // nothing to cancel
-      return this.respond(
-        res,
-        403,
-        'Can not cancel. If this order is invoice it could be cancelled or invoiced already'
-      )
+      throw new CancelOrderError()
     }
     logger.debug(`Cancel Order ${orderId}`)
     const order = await cancelOrder({ orderId, user })
