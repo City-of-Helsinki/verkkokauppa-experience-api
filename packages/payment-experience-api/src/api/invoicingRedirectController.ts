@@ -33,9 +33,9 @@ export class InvoicingRedirectController extends AbstractController {
 
   private static fault = (url: URL, user?: string | null) => {
     if (!url.pathname.includes('success')) {
-      url.pathname = url.pathname.replace('success', 'failure')
-    } else {
       url.pathname += 'failure'
+    } else {
+      url.pathname = url.pathname.replace('success', 'failure')
     }
 
     if (user) {
