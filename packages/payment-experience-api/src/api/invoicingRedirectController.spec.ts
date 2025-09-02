@@ -755,4 +755,85 @@ describe('Test invoicing redirect controller', () => {
     expect(sendErrorNotificationMock).toHaveBeenCalledTimes(0)
     expect(sendOrderConfirmationEmailToCustomerMock).toHaveBeenCalledTimes(1)
   })
+
+  it('Test redirect to failure page', async () => {
+    process.env.REDIRECT_PAYMENT_URL_BASE = 'https://test.dev.hel'
+
+    const invoicingRedirectController = new InvoicingRedirectController()
+
+    const mockRequest = {
+      query: {
+        orderId: orderBackendResponseMock.order.orderId,
+      },
+      httpVersion: 'HTTP/:1.1',
+    } as any
+    mockRequest.get = jest.fn()
+
+    const res = ({} as unknown) as Response
+    const mockGetFunction = jest.fn()
+
+    mockGetFunction.mockImplementation((key) => {
+      if (key.includes(`user`)) {
+        return 'dummy-user'
+      }
+      if (key.includes(`content-length`)) {
+        return 'content-length'
+      }
+      console.log(key)
+      return 'mockGetFunction.mockImplementation'
+    })
+    res.get = mockGetFunction
+    res.status = jest.fn().mockReturnValue(res)
+    res.json = jest.fn().mockReturnValue(res)
+    res.redirect = jest.fn()
+
+    await invoicingRedirectController.execute(mockRequest as any, res)
+    expect(res.redirect).toHaveBeenCalledWith(
+      302,
+      'https://test.dev.hel/failure'
+    )
+    expect(sendErrorNotificationMock).toHaveBeenCalledTimes(0)
+    expect(sendOrderConfirmationEmailToCustomerMock).toHaveBeenCalledTimes(0)
+  })
+
+  it('Test redirect to failure page when path already set', async () => {
+    process.env.REDIRECT_PAYMENT_URL_BASE =
+      'https://test.dev.hel/testipolku/success'
+
+    const invoicingRedirectController = new InvoicingRedirectController()
+
+    const mockRequest = {
+      query: {
+        orderId: orderBackendResponseMock.order.orderId,
+      },
+      httpVersion: 'HTTP/:1.1',
+    } as any
+    mockRequest.get = jest.fn()
+
+    const res = ({} as unknown) as Response
+    const mockGetFunction = jest.fn()
+
+    mockGetFunction.mockImplementation((key) => {
+      if (key.includes(`user`)) {
+        return 'dummy-user'
+      }
+      if (key.includes(`content-length`)) {
+        return 'content-length'
+      }
+      console.log(key)
+      return 'mockGetFunction.mockImplementation'
+    })
+    res.get = mockGetFunction
+    res.status = jest.fn().mockReturnValue(res)
+    res.json = jest.fn().mockReturnValue(res)
+    res.redirect = jest.fn()
+
+    await invoicingRedirectController.execute(mockRequest as any, res)
+    expect(res.redirect).toHaveBeenCalledWith(
+      302,
+      'https://test.dev.hel/testipolku/failure'
+    )
+    expect(sendErrorNotificationMock).toHaveBeenCalledTimes(0)
+    expect(sendOrderConfirmationEmailToCustomerMock).toHaveBeenCalledTimes(0)
+  })
 })
