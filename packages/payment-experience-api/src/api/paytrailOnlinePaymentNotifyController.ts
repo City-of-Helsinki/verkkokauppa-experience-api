@@ -19,10 +19,7 @@ import {
 } from '@verkkokauppa/payment-backend'
 import { parseOrderIdFromPaytrailRedirect } from '../lib/paytrail'
 import { parseMerchantIdFromFirstOrderItem } from '@verkkokauppa/configuration-backend'
-import {
-  sendErrorNotification,
-  sendErrorNotificationWithOrderData,
-} from '@verkkokauppa/message-backend'
+import { sendErrorNotification } from '@verkkokauppa/message-backend'
 import * as Sentry from '@sentry/node'
 
 export class PaytrailOnlinePaymentNotifyController extends AbstractController {
@@ -89,22 +86,30 @@ export class PaytrailOnlinePaymentNotifyController extends AbstractController {
           if (paidLate) {
             if (order.lastValidPurchaseDateTime) {
               // at least 15 minutes past last valid purchase datetime
-              await sendErrorNotificationWithOrderData({
-                orderId,
-                message: `Order: ${orderId} was paid but last valid purchase datetime had already passed`,
-                cause: '',
-                header:
-                  'Error - Order was paid late, last valid purchase datetime has passed',
-              })
+              logger.warning(
+                `Paytrail online payment notify controller called late for order ${orderId}. Last valid purchase datetime had passed.
+                )}`
+              )
+              // await sendErrorNotificationWithOrderData({
+              //   orderId,
+              //   message: `Order: ${orderId} was paid but last valid purchase datetime had already passed`,
+              //   cause: '',
+              //   header:
+              //     'Error - Order was paid late, last valid purchase datetime has passed',
+              // })
             } else {
               // at least hour after the creation of payment
-              await sendErrorNotificationWithOrderData({
-                orderId,
-                message: `Order: ${orderId} was paid over an hour after payment was created. Could be past the time merchants wait for PAYMENT_PAID.`,
-                cause: '',
-                header:
-                  'Warning - Order was paid over an hour after payment was created',
-              })
+              logger.warning(
+                `Paytrail online payment notify controller called late for order ${orderId}. Payment was created over an hour ago.
+                )}`
+              )
+              // await sendErrorNotificationWithOrderData({
+              //   orderId,
+              //   message: `Order: ${orderId} was paid over an hour after payment was created. Could be past the time merchants wait for PAYMENT_PAID.`,
+              //   cause: '',
+              //   header:
+              //     'Warning - Order was paid over an hour after payment was created',
+              // })
             }
           }
         }
