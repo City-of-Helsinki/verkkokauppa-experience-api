@@ -86,7 +86,7 @@ export class PaytrailOnlinePaymentNotifyController extends AbstractController {
           if (paidLate) {
             if (order.lastValidPurchaseDateTime) {
               // at least 15 minutes past last valid purchase datetime
-              logger.warning(
+              logger.debug(
                 `Paytrail online payment notify controller called late for order ${orderId}. Last valid purchase datetime had passed.
                 )}`
               )
@@ -99,7 +99,7 @@ export class PaytrailOnlinePaymentNotifyController extends AbstractController {
               // })
             } else {
               // at least hour after the creation of payment
-              logger.warning(
+              logger.debug(
                 `Paytrail online payment notify controller called late for order ${orderId}. Payment was created over an hour ago.
                 )}`
               )
