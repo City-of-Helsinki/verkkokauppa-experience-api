@@ -16,6 +16,23 @@ describe('calculateTotalsFromItems', () => {
     expect(totals.priceTotal).toEqual('1.50')
   })
 
+  it('handles 3 items with 0.33 each correctly', () => {
+    const order = {
+      items: [
+        { rowPriceNet: '0.33', rowPriceVat: '0.00', rowPriceTotal: '0.33' },
+        { rowPriceNet: '0.33', rowPriceVat: '0.00', rowPriceTotal: '0.33' },
+        { rowPriceNet: '0.33', rowPriceVat: '0.00', rowPriceTotal: '0.33' },
+      ],
+    }
+
+    const totals = calculateTotalsFromItems(order as any)
+
+    // With cents: 33 + 33 + 33 = 99 cents = 0.99
+    expect(totals.priceNet).toEqual('0.99')
+    expect(totals.priceVat).toEqual('0.00')
+    expect(totals.priceTotal).toEqual('0.99')
+  })
+
   it('handles a single item', () => {
     const order = {
       items: [{ rowPriceNet: '5', rowPriceVat: '1.25', rowPriceTotal: '6.25' }],
