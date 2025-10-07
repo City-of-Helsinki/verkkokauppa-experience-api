@@ -8,6 +8,7 @@ import type { Response } from 'express'
 import {
   createOrderWithItems,
   calculateTotalsFromItems,
+  setOrderTotals,
 } from '@verkkokauppa/order-backend'
 import { getCart } from '@verkkokauppa/cart-backend'
 import { getPrice } from '@verkkokauppa/price-backend'
@@ -73,15 +74,23 @@ export class CartToOrder extends AbstractController<typeof requestSchema> {
       })
     )
 
-    const dto = new Data(
-      await createOrderWithItems({
-        namespace: cart.namespace,
-        user: cart.user || '',
-        customer,
-        items,
-        ...calculateTotalsFromItems({ items }),
-      })
-    )
+    const order = await createOrderWithItems({
+      namespace: cart.namespace,
+      user: cart.user || '',
+      customer,
+      items,
+      priceNet: '0.00',
+      priceVat: '0.00',
+      priceTotal: '0.00',
+    })
+
+    const orderWithTotals = await setOrderTotals({
+      orderId: order.orderId,
+      user: cart.user || '',
+      ...calculateTotalsFromItems(order),
+    })
+
+    const dto = new Data(orderWithTotals)
 
     return this.created<any>(res, dto.serialize())
   }
