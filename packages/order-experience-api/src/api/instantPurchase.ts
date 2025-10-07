@@ -140,7 +140,12 @@ export class InstantPurchase extends AbstractController<typeof requestSchema> {
     const order = await setOrderTotals({
       orderId,
       user: body.user,
-      ...calculateTotalsFromItems({ items: orderItems }),
+      ...calculateTotalsFromItems({
+        items: orderItems.map((item) => ({
+          ...item,
+          orderId,
+        })),
+      }),
     })
 
     return this.created(
