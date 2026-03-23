@@ -8,6 +8,7 @@ instead of steps 1 and 2 you might get the mkcert.exe version 1.4.4 from here: h
 4. setup local certificate authority `mkcert -install`
 5. create certificates `mkcert --cert-file cert.crt --key-file cert.key  localhost 127.0.0.1 example.test "*.example.test"`
 6. copy .crt and .key files to verkkokauppa-kassa-ui/config/ directory
+7. Uncomment `USE_HTTPS_SERVER='true'` in `.env.docker` to use https server
 
 [//]: # (Outdated instructions in case new ones do not work)
 [//]: # (1. `npm install -g mkcert`)
