@@ -13,6 +13,7 @@ import {
   getMerchantDetailsForOrder,
 } from '@verkkokauppa/configuration-backend'
 import { isCardRenewal } from './paymentReturnService'
+import { getOrderConfirmationPdf } from '@verkkokauppa/order-backend'
 
 const skipTosByNamespace = (process.env.SKIP_TERMS_ACCEPT_FOR_NAMESPACES || '')
   .toLowerCase()
@@ -62,6 +63,11 @@ export const sendReceipt = async (
         'asiointipalvelun-ehdot.pdf'
       ] = await downloadMerchantTermsOfServiceBinary(merchant)
     }
+  }
+  // confirmation PDF is sent regardless of the order type
+  const confirmationPdf = await getOrderConfirmationPdf(order.orderId)
+  if (confirmationPdf !== null) {
+    attachments['order-confirmation.pdf'] = confirmationPdf
   }
   const email = await sendOrderConfirmationEmailToCustomer({
     order: orderWithPayments,
