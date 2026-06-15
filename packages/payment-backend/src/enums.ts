@@ -34,3 +34,7 @@ export enum RefundGateway {
 
   FREE = 'free',
 }
+
+export enum CreditCardType {
+  VISA_MASTERCARD = 'Visa/Mastercard',
+}
