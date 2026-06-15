@@ -33,6 +33,7 @@ import {
   SubscriptionNotFoundError,
 } from './errors'
 import { ExperienceFailure, ForbiddenError } from '@verkkokauppa/core'
+import { sendErrorNotification } from '@verkkokauppa/message-backend'
 import { format, isAfter } from 'date-fns'
 import { formatToTimeZone } from 'date-fns-timezone'
 import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz'
@@ -693,6 +694,26 @@ export const setOrderPaymentMethod = async (p: {
       message: `failed to set order payment method (${JSON.stringify(p)})`,
       source: e as Error,
     })
+  }
+}
+
+export const getOrderConfirmationPdf = async (
+  orderId: string
+): Promise<string | null> => {
+  const url = `${getBackendUrl()}/order/pdf/orderConfirmation`
+  try {
+    const res = await axios.get(url, {
+      params: { orderId },
+      responseType: 'arraybuffer',
+    })
+    return Buffer.from(res.data).toString('base64')
+  } catch (e) {
+    await sendErrorNotification({
+      message: `Failed to get order confirmation pdf for order ${orderId}`,
+      cause: e.toString(),
+      header: 'Error - Failed to get order confirmation pdf',
+    })
+    return null
   }
 }
 

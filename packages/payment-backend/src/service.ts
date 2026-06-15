@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios from 'axios'
 import type {
   Order,
   Payment,
@@ -10,9 +10,9 @@ import type {
   UpdateFromPaytrailPaymentParameters,
   UpdateFromPaytrailRefundParameters,
   VismaPayResponse,
-  VismaStatus
-} from "./types"
-import type { ParsedQs } from "qs"
+  VismaStatus,
+} from './types'
+import type { ParsedQs } from 'qs'
 import {
   CheckInvoiceReturnUrlFailure,
   CheckPaytrailRefundCallbackUrlFailure,
@@ -31,13 +31,19 @@ import {
   PaymentNotFound,
   PaymentsNotFound,
   PaymentValidationError,
-  RefundPaymentNotFound
-} from "./errors"
-import { ExperienceFailure, logger, removeItem } from "@verkkokauppa/core"
-import { PaymentGateway, PaymentStatus, ReferenceType, RefundPaymentStatus } from "./enums"
-import type { RefundPayment } from "./refund/types"
-import { zonedTimeToUtc } from "date-fns-tz"
-import * as Sentry from "@sentry/node"
+  RefundPaymentNotFound,
+} from './errors'
+import { ExperienceFailure, logger, removeItem } from '@verkkokauppa/core'
+import {
+  CreditCardType,
+  PaymentGateway,
+  PaymentStatus,
+  ReferenceType,
+  RefundPaymentStatus,
+} from './enums'
+import type { RefundPayment } from './refund/types'
+import { zonedTimeToUtc } from 'date-fns-tz'
+import * as Sentry from '@sentry/node'
 
 const allowedPaymentGateways = [
   PaymentGateway.PAYTRAIL.toString(),
@@ -111,7 +117,9 @@ export const createPaymentFromOrder = async (parameters: {
   const url = `${process.env.PAYMENT_BACKEND_URL}/payment/${paymentMethodPart}/createFromOrder`
   const dto = {
     paymentMethod,
-    paymentMethodLabel: paymentMethodLabel || paymentMethod,
+    paymentMethodLabel: paymentMethod.includes('creditcard')
+      ? CreditCardType.VISA_MASTERCARD
+      : paymentMethodLabel || paymentMethod,
     language,
     order: {
       order: {
@@ -537,7 +545,9 @@ export const checkPaytrailCardReturnUrl = async (p: {
       },
       items: order.items,
     },
-    paymentMethod: order?.paymentMethod?.name,
+    paymentMethod: order?.paymentMethod?.code,
+    paymentMethodLabel:
+      order?.paymentMethod?.name || CreditCardType.VISA_MASTERCARD,
     merchantId: merchantId,
   }
 
