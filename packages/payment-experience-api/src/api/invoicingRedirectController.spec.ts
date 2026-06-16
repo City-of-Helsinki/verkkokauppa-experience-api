@@ -4,12 +4,14 @@ import type { Response } from 'express'
 import { InvoicingRedirectController } from './invoicingRedirectController'
 
 jest.mock('@verkkokauppa/message-backend')
-const sendErrorNotificationMock = require('@verkkokauppa/message-backend').sendErrorNotification.mockImplementation(
-  () => []
-)
-const sendOrderConfirmationEmailToCustomerMock = require('@verkkokauppa/message-backend').sendOrderConfirmationEmailToCustomer.mockImplementation(
-  () => []
-)
+const sendErrorNotificationMock =
+  require('@verkkokauppa/message-backend').sendErrorNotification.mockImplementation(
+    () => [],
+  )
+const sendOrderConfirmationEmailToCustomerMock =
+  require('@verkkokauppa/message-backend').sendOrderConfirmationEmailToCustomer.mockImplementation(
+    () => [],
+  )
 
 jest.mock('axios')
 const axiosMock = axios as jest.Mocked<typeof axios>
@@ -173,6 +175,16 @@ describe('Test invoicing redirect controller', () => {
     const mockProduct = { productId: 'dummy-product', name: 'Test' }
 
     axiosMock.get.mockImplementation((url, data?: any) => {
+      if (url.includes(`/order/pdf/orderConfirmation`)) {
+        // KYV-1116
+        // eslint-disable-next-line jest/no-conditional-expect
+        expect(data.params).toEqual({
+          orderId: orderBackendResponseMock.order.orderId,
+        })
+        return Promise.resolve({
+          data: 'PDF content',
+        })
+      }
       if (url.includes(`/payment/invoice/check-return-url`)) {
         // eslint-disable-next-line jest/no-conditional-expect
         expect(data.params).toEqual({
@@ -255,7 +267,7 @@ describe('Test invoicing redirect controller', () => {
     } as any
     mockRequest.get = jest.fn()
 
-    const res = ({} as unknown) as Response
+    const res = {} as unknown as Response
     const mockGetFunction = jest.fn()
 
     mockGetFunction.mockImplementation((key) => {
@@ -276,7 +288,7 @@ describe('Test invoicing redirect controller', () => {
     await invoicingRedirectController.execute(mockRequest as any, res)
     expect(res.redirect).toHaveBeenCalledWith(
       302,
-      'https://service.dev.hel/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b&user=test%40test.dev.hel'
+      'https://service.dev.hel/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b&user=test%40test.dev.hel',
     )
     expect(sendErrorNotificationMock).toHaveBeenCalledTimes(0)
     expect(sendOrderConfirmationEmailToCustomerMock).toHaveBeenCalledTimes(1)
@@ -378,6 +390,16 @@ describe('Test invoicing redirect controller', () => {
     ]
 
     axiosMock.get.mockImplementation((url, data?: any) => {
+      if (url.includes(`/order/pdf/orderConfirmation`)) {
+        // KYV-1116
+        // eslint-disable-next-line jest/no-conditional-expect
+        expect(data.params).toEqual({
+          orderId: orderBackendResponseMock.order.orderId,
+        })
+        return Promise.resolve({
+          data: 'PDF content',
+        })
+      }
       if (url.includes(`/payment/invoice/check-return-url`)) {
         // eslint-disable-next-line jest/no-conditional-expect
         expect(data.params).toEqual({
@@ -460,7 +482,7 @@ describe('Test invoicing redirect controller', () => {
     } as any
     mockRequest.get = jest.fn()
 
-    const res = ({} as unknown) as Response
+    const res = {} as unknown as Response
     const mockGetFunction = jest.fn()
 
     mockGetFunction.mockImplementation((key) => {
@@ -483,7 +505,7 @@ describe('Test invoicing redirect controller', () => {
     await invoicingRedirectController.execute(mockRequest as any, res)
     expect(res.redirect).toHaveBeenCalledWith(
       302,
-      'https://service.dev.hel/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b&user=test%40test.dev.hel'
+      'https://service.dev.hel/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b&user=test%40test.dev.hel',
     )
     expect(sendErrorNotificationMock).toHaveBeenCalledTimes(1)
     expect(sendErrorNotificationMock.mock.calls[0][0]).toEqual({
@@ -514,7 +536,7 @@ describe('Test invoicing redirect controller', () => {
     await invoicingRedirectController.execute(mockRequest as any, res)
     expect(res.redirect).toHaveBeenCalledWith(
       302,
-      'https://service.dev.hel/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b&user=test%40test.dev.hel'
+      'https://service.dev.hel/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b&user=test%40test.dev.hel',
     )
     expect(sendErrorNotificationMock).toHaveBeenCalledTimes(2)
     expect(sendErrorNotificationMock.mock.calls[1][0]).toEqual({
@@ -545,7 +567,7 @@ describe('Test invoicing redirect controller', () => {
     await invoicingRedirectController.execute(mockRequest as any, res)
     expect(res.redirect).toHaveBeenCalledWith(
       302,
-      'https://service.dev.hel/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b&user=test%40test.dev.hel'
+      'https://service.dev.hel/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b&user=test%40test.dev.hel',
     )
     expect(sendErrorNotificationMock).toHaveBeenCalledTimes(2)
     expect(sendOrderConfirmationEmailToCustomerMock).toHaveBeenCalledTimes(3)
@@ -647,6 +669,16 @@ describe('Test invoicing redirect controller', () => {
     const mockProduct = { productId: 'dummy-product', name: 'Test' }
 
     axiosMock.get.mockImplementation((url, data?: any) => {
+      if (url.includes(`/order/pdf/orderConfirmation`)) {
+        // KYV-1116
+        // eslint-disable-next-line jest/no-conditional-expect
+        expect(data.params).toEqual({
+          orderId: orderBackendResponseMock.order.orderId,
+        })
+        return Promise.resolve({
+          data: 'PDF content',
+        })
+      }
       if (url.includes(`/payment/invoice/check-return-url`)) {
         // eslint-disable-next-line jest/no-conditional-expect
         expect(data.params).toEqual({
@@ -729,7 +761,7 @@ describe('Test invoicing redirect controller', () => {
     } as any
     mockRequest.get = jest.fn()
 
-    const res = ({} as unknown) as Response
+    const res = {} as unknown as Response
     const mockGetFunction = jest.fn()
 
     mockGetFunction.mockImplementation((key) => {
@@ -750,7 +782,7 @@ describe('Test invoicing redirect controller', () => {
     await invoicingRedirectController.execute(mockRequest as any, res)
     expect(res.redirect).toHaveBeenCalledWith(
       302,
-      'https://test.dev.hel/145d8829-07b7-4b03-ab0e-24063958ab9b/success?user=test%40test.dev.hel'
+      'https://test.dev.hel/145d8829-07b7-4b03-ab0e-24063958ab9b/success?user=test%40test.dev.hel',
     )
     expect(sendErrorNotificationMock).toHaveBeenCalledTimes(0)
     expect(sendOrderConfirmationEmailToCustomerMock).toHaveBeenCalledTimes(1)
@@ -769,7 +801,7 @@ describe('Test invoicing redirect controller', () => {
     } as any
     mockRequest.get = jest.fn()
 
-    const res = ({} as unknown) as Response
+    const res = {} as unknown as Response
     const mockGetFunction = jest.fn()
 
     mockGetFunction.mockImplementation((key) => {
@@ -790,7 +822,7 @@ describe('Test invoicing redirect controller', () => {
     await invoicingRedirectController.execute(mockRequest as any, res)
     expect(res.redirect).toHaveBeenCalledWith(
       302,
-      'https://test.dev.hel/failure'
+      'https://test.dev.hel/failure',
     )
     expect(sendErrorNotificationMock).toHaveBeenCalledTimes(0)
     expect(sendOrderConfirmationEmailToCustomerMock).toHaveBeenCalledTimes(0)
@@ -810,7 +842,7 @@ describe('Test invoicing redirect controller', () => {
     } as any
     mockRequest.get = jest.fn()
 
-    const res = ({} as unknown) as Response
+    const res = {} as unknown as Response
     const mockGetFunction = jest.fn()
 
     mockGetFunction.mockImplementation((key) => {
@@ -831,7 +863,7 @@ describe('Test invoicing redirect controller', () => {
     await invoicingRedirectController.execute(mockRequest as any, res)
     expect(res.redirect).toHaveBeenCalledWith(
       302,
-      'https://test.dev.hel/testipolku/failure'
+      'https://test.dev.hel/testipolku/failure',
     )
     expect(sendErrorNotificationMock).toHaveBeenCalledTimes(0)
     expect(sendOrderConfirmationEmailToCustomerMock).toHaveBeenCalledTimes(0)
