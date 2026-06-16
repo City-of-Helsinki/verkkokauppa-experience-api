@@ -52,6 +52,7 @@ describe('Test receipt send', () => {
     process.env.REDIRECT_PAYMENT_URL_BASE = 'https://test.dev.hel'
     process.env.CONFIGURATION_BACKEND_URL = 'https://test.dev.hel'
     process.env.MESSAGE_BACKEND_URL = 'https://test.dev.hel'
+    process.env.ORDER_BACKEND_URL = 'https://test.dev.hel'
     process.env.PAYMENT_BACKEND_URL = 'https://test.dev.hel'
     process.env.MERCHANT_API_URL = 'https://test.dev.hel'
 
@@ -114,7 +115,7 @@ describe('Test receipt send', () => {
 
     axiosMock.post.mockImplementation((url, data?: any) => {
       expect(data.header).toEqual(
-        'Tilausvahvistus ja kuitti / Order confirmation and receipt / Beställningsbekräftelse och kvitto'
+        'Tilausvahvistus ja kuitti / Order confirmation and receipt / Beställningsbekräftelse och kvitto',
       )
       expect(data.id).toEqual('145d8829-07b7-4b03-ab0e-24063958ab9b')
       expect(data.receiver).toEqual('essi.esimerkki@gmail.com')
