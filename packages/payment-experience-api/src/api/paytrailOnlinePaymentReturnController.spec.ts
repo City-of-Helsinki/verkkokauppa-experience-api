@@ -2,6 +2,7 @@ import axios from 'axios'
 import type { PaytrailStatus } from '@verkkokauppa/payment-backend'
 import type { Response } from 'express'
 import { PaytrailOnlinePaymentReturnController } from './paytrailOnlinePaymentReturnController'
+import { sendErrorNotification } from '@verkkokauppa/message-backend'
 
 jest.mock('axios')
 
@@ -37,6 +38,7 @@ jest.mock('@verkkokauppa/message-backend', () => {
     __esModules: true,
     // first start with all of the module's functions auto-mocked
     sendOrderConfirmationEmailToCustomer: jest.fn(() => null),
+    sendErrorNotification: jest.fn(() => null),
     // lastly override w/ any of the module's functions that
     // we want to use the *real* implementations for
 
@@ -45,7 +47,7 @@ jest.mock('@verkkokauppa/message-backend', () => {
 })
 
 const mockSendOrderConfirmationEmailToCustomer = jest.requireMock(
-  '@verkkokauppa/message-backend'
+  '@verkkokauppa/message-backend',
 ).sendOrderConfirmationEmailToCustomer
 
 const axiosMock = axios as jest.Mocked<typeof axios>
@@ -180,7 +182,8 @@ describe('Test paytrail refund payment success controller', () => {
       return Promise.resolve({})
     })
 
-    const paytrailOnlinePaymentReturnController = new PaytrailOnlinePaymentReturnController()
+    const paytrailOnlinePaymentReturnController =
+      new PaytrailOnlinePaymentReturnController()
 
     const mockRequest = {
       query: {
@@ -201,7 +204,7 @@ describe('Test paytrail refund payment success controller', () => {
     } as any
     mockRequest.get = jest.fn()
 
-    const res = ({} as unknown) as Response
+    const res = {} as unknown as Response
     const mockGetFunction = jest.fn().mockImplementation((key) => {
       if (key.includes(`user`)) {
         return 'dummy-user'
@@ -231,7 +234,7 @@ describe('Test paytrail refund payment success controller', () => {
     expect(res.redirect).toBeCalledTimes(1)
     expect(res.redirect).toHaveBeenCalledWith(
       302,
-      `https://service.dev.hel/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b&user=${orderBackendResponseMock.order.user}`
+      `https://service.dev.hel/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b&user=${orderBackendResponseMock.order.user}`,
     )
   })
 
@@ -309,7 +312,7 @@ describe('Test paytrail refund payment success controller', () => {
       return Promise.resolve({})
     })
     const mockGetPaidPaymentAdmin = jest.requireMock(
-      '@verkkokauppa/payment-backend'
+      '@verkkokauppa/payment-backend',
     ).getPaidPaymentAdmin
 
     mockGetPaidPaymentAdmin.mockImplementationOnce(() => {
@@ -319,7 +322,8 @@ describe('Test paytrail refund payment success controller', () => {
         status: 'payment_paid_online',
       }
     })
-    const paytrailOnlinePaymentReturnController = new PaytrailOnlinePaymentReturnController()
+    const paytrailOnlinePaymentReturnController =
+      new PaytrailOnlinePaymentReturnController()
 
     const mockRequest = {
       query: {
@@ -340,7 +344,7 @@ describe('Test paytrail refund payment success controller', () => {
     } as any
     mockRequest.get = jest.fn()
 
-    const res = ({} as unknown) as Response
+    const res = {} as unknown as Response
     const mockGetFunction = jest.fn().mockImplementation((key) => {
       if (key.includes(`user`)) {
         return 'dummy-user'
@@ -370,7 +374,7 @@ describe('Test paytrail refund payment success controller', () => {
     expect(res.redirect).toBeCalledTimes(1)
     expect(res.redirect).toHaveBeenCalledWith(
       302,
-      'https://test.dev.hel/145d8829-07b7-4b03-ab0e-24063958ab9b/success?user=user123'
+      'https://test.dev.hel/145d8829-07b7-4b03-ab0e-24063958ab9b/success?user=user123',
     )
   })
 
@@ -451,7 +455,7 @@ describe('Test paytrail refund payment success controller', () => {
       return Promise.resolve({})
     })
     const mockGetPaidPaymentAdmin = jest.requireMock(
-      '@verkkokauppa/payment-backend'
+      '@verkkokauppa/payment-backend',
     ).getPaidPaymentAdmin
 
     mockGetPaidPaymentAdmin.mockImplementationOnce(() => {
@@ -461,7 +465,8 @@ describe('Test paytrail refund payment success controller', () => {
         status: 'payment_cancelled',
       }
     })
-    const paytrailOnlinePaymentReturnController = new PaytrailOnlinePaymentReturnController()
+    const paytrailOnlinePaymentReturnController =
+      new PaytrailOnlinePaymentReturnController()
 
     const mockRequest = {
       query: {
@@ -482,7 +487,7 @@ describe('Test paytrail refund payment success controller', () => {
     } as any
     mockRequest.get = jest.fn()
 
-    const res = ({} as unknown) as Response
+    const res = {} as unknown as Response
     const mockGetFunction = jest.fn().mockImplementation((key) => {
       if (key.includes(`user`)) {
         return 'dummy-user'
@@ -512,7 +517,7 @@ describe('Test paytrail refund payment success controller', () => {
     expect(res.redirect).toBeCalledTimes(1)
     expect(res.redirect).toHaveBeenCalledWith(
       302,
-      'https://test.dev.hel/failure'
+      'https://test.dev.hel/failure',
     )
   })
 
@@ -593,7 +598,8 @@ describe('Test paytrail refund payment success controller', () => {
       return Promise.resolve({})
     })
 
-    const paytrailOnlinePaymentReturnController = new PaytrailOnlinePaymentReturnController()
+    const paytrailOnlinePaymentReturnController =
+      new PaytrailOnlinePaymentReturnController()
 
     const mockRequest = {
       query: {
@@ -614,7 +620,7 @@ describe('Test paytrail refund payment success controller', () => {
     } as any
     mockRequest.get = jest.fn()
 
-    const res = ({} as unknown) as Response
+    const res = {} as unknown as Response
     const mockGetFunction = jest.fn().mockImplementation((key) => {
       if (key.includes(`user`)) {
         return 'dummy-user'
@@ -644,7 +650,7 @@ describe('Test paytrail refund payment success controller', () => {
     expect(res.redirect).toBeCalledTimes(1)
     expect(res.redirect).toHaveBeenCalledWith(
       302,
-      'https://test.dev.hel/failure'
+      'https://test.dev.hel/failure',
     )
   })
 })
