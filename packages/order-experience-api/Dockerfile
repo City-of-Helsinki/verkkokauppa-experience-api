@@ -48,12 +48,12 @@ FROM base as production
 RUN yarn workspace @verkkokauppa/core build
 RUN yarn workspace @verkkokauppa/auth-helsinki-profile build
 RUN yarn workspace @verkkokauppa/cart-backend build
+RUN yarn workspace @verkkokauppa/message-backend build
 RUN yarn workspace @verkkokauppa/order-backend build
 RUN yarn workspace @verkkokauppa/price-backend build
 RUN yarn workspace @verkkokauppa/product-backend build
 RUN yarn workspace @verkkokauppa/product-mapping-backend build
 RUN yarn workspace @verkkokauppa/payment-backend build
-RUN yarn workspace @verkkokauppa/message-backend build
 RUN yarn workspace @verkkokauppa/configuration-backend build
 RUN yarn workspace @verkkokauppa/order-experience-api build
 EXPOSE 8080
