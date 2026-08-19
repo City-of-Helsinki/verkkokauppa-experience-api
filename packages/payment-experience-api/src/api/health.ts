@@ -1,6 +1,7 @@
 import { AbstractController } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
 
+// health checks for pipelines
 export class Health extends AbstractController {
   protected readonly requestSchema = null
 
