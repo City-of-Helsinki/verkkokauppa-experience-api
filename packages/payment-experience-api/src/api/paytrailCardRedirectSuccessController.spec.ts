@@ -4,7 +4,6 @@ import { PaytrailCardRedirectSuccessController } from './paytrailCardRedirectSuc
 import type { Request, Response } from 'express'
 import axios from 'axios'
 import { PaymentType } from '@verkkokauppa/payment-backend'
-import { getOrderConfirmationPdf } from '@verkkokauppa/order-backend'
 
 jest.mock('@verkkokauppa/payment-backend')
 jest.mock('@verkkokauppa/product-backend')
