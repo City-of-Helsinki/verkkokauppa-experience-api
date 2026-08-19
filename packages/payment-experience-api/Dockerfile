@@ -41,9 +41,9 @@ yarn workspace @verkkokauppa/payment-experience-api install
 FROM base as production
 RUN yarn workspace @verkkokauppa/core build && \
 yarn workspace @verkkokauppa/auth-helsinki-profile build && \
+yarn workspace @verkkokauppa/message-backend build && \
 yarn workspace @verkkokauppa/order-backend build && \
 yarn workspace @verkkokauppa/payment-backend build && \
-yarn workspace @verkkokauppa/message-backend build && \
 yarn workspace @verkkokauppa/product-backend build && \
 yarn workspace @verkkokauppa/configuration-backend build && \
 yarn workspace @verkkokauppa/payment-experience-api build
