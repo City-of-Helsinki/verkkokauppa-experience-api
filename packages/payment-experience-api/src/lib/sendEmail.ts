@@ -65,10 +65,10 @@ export const sendReceipt = async (
     }
   }
   // confirmation PDF is sent regardless of the order type
-  const confirmationPdf = await getOrderConfirmationPdf(order.orderId)
-  if (confirmationPdf !== null) {
-    attachments['order-confirmation.pdf'] = confirmationPdf
-  }
+  // const confirmationPdf = await getOrderConfirmationPdf(order.orderId)
+  // if (confirmationPdf !== null) {
+  //   attachments['order-confirmation.pdf'] = confirmationPdf
+  // }
   const email = await sendOrderConfirmationEmailToCustomer({
     order: orderWithPayments,
     emailHeader:
