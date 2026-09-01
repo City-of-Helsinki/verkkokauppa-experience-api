@@ -13,7 +13,7 @@ import {
   getMerchantDetailsForOrder,
 } from '@verkkokauppa/configuration-backend'
 import { isCardRenewal } from './paymentReturnService'
-import { getOrderConfirmationPdf } from '@verkkokauppa/order-backend'
+// import { getOrderConfirmationPdf } from '@verkkokauppa/order-backend'
 
 const skipTosByNamespace = (process.env.SKIP_TERMS_ACCEPT_FOR_NAMESPACES || '')
   .toLowerCase()
