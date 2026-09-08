@@ -289,6 +289,8 @@ const getAllowedKeysToMerchant = () => [
   'sendMerchantTermsOfService',
   'merchantBusinessId',
   'merchantShopId',
+  'merchantBarQRCodeType',
+  'tokenChargingUrl',
 ]
 
 export const getMerchantValues = async (

@@ -37,6 +37,8 @@ const keyMap: { [key: string]: string } = {
   MERCHANT_REFUND_WEBHOOK_URL: 'merchantRefundWebhookUrl',
   MERCHANT_SHOP_ID: 'merchantShopId',
   ORDER_PAYMENT_FAILED_REDIRECT_URL: 'orderPaymentFailedRedirectUrl',
+  MERCHANT_BAR_QR_CODE_TYPE: 'merchantBarQRCodeType',
+  TOKEN_CHARGING_URL: 'tokenChargingUrl',
 }
 
 const keys = [...Object.keys(keyMap), ...Object.values(keyMap)]

@@ -71,6 +71,10 @@ components:
           type: string
         orderPaymentFailedRedirectUrl:
           type: string
+        merchantBarQRCodeType:
+          type: string
+        tokenChargingUrl:
+          type: string
     MerchantConfigurations:
       type: object
       required:
@@ -107,6 +111,10 @@ components:
           type: string
         merchantPaytrailMerchantId:
           type: string
+        merchantBarQRCodeType: #Not required
+          type: string
+        tokenChargingUrl: #Not required
+          type: string
     MerchantConfigurationsUpdateAll:
       type: object
       properties:
@@ -131,6 +139,10 @@ components:
         merchantBusinessId:
           type: string
         merchantShopId:
+          type: string
+        merchantBarQRCodeType: #Not required
+          type: string
+        tokenChargingUrl: #Not required
           type: string
     Merchant:
       type: object
@@ -196,6 +208,8 @@ components:
               - "orderRightOfPurchaseIsActive // Desc: Overrides namespace value (Read more about usage from namespace description)"
               - "orderRightOfPurchaseUrl // Desc: Overrides namespace value (Read more about usage from namespace description)"
               - "subscriptionPriceUrl // Desc: Overrides namespace value (Read more about usage from namespace description)"
+              - "merchantBarQRCodeType // Desc: The type of the ticket/voucher qr-code"
+              - "tokenChargingUrl // Desc: The interface for qr-codes"
         platform:
           type: array
           items:
@@ -319,6 +333,10 @@ paths:
                     type: string
                   orderPaymentFailedRedirectUrl:
                     type: string
+                  merchantBarQRCodeType:
+                    type: string
+                  tokenChargingUrl:
+                    type: string
         '500':
           $ref: '#/components/responses/InternalServerError'
     post:
@@ -399,6 +417,10 @@ paths:
                   merchantShopId:
                     type: string
                   orderPaymentFailedRedirectUrl:
+                    type: string
+                  merchantBarQRCodeType:
+                    type: string
+                  tokenChargingUrl:
                     type: string
         '500':
           $ref: '#/components/responses/InternalServerError'

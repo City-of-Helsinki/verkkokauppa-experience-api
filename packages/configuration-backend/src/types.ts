@@ -9,6 +9,8 @@ export type MerchantConfigurationKeys = {
   merchantUrl: string
   merchantTermsOfServiceUrl: string
   merchantBusinessId: string
+  merchantBarQRCodeType: string
+  tokenChargingUrl: string
   // Merchant restricted values
   merchantPaymentWebhookUrl: string
 }
@@ -26,6 +28,8 @@ export type MerchantKeys = {
   merchantPhone?: string
   merchantShopId?: string
   merchantPaytrailMerchantId?: string
+  merchantBarQRCodeType?: string
+  tokenChargingUrl?: string
   [key: string]: any // 👈️ variable keys
 }
 
