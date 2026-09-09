@@ -49,6 +49,8 @@ describe('Test onboarding', () => {
         'orderCreatedRedirectUrl',
         'orderCancelRedirectUrl',
         'subscriptionPriceUrl',
+        'merchantBarQRCodeType',
+        'tokenChargingUrl',
       ]
       await Promise.all(
         merchantKeys.map(async (k) => {
