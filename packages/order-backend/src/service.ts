@@ -1,4 +1,6 @@
 import axios from 'axios'
+import bwipjs from 'bwip-js'
+import { PDFDocument } from 'pdf-lib'
 import { stringify } from 'qs'
 import type {
   FlowStep,
@@ -715,6 +717,35 @@ export const getOrderConfirmationPdf = async (
     })
     return null
   }
+}
+
+export const createBarQrCode = async (
+  codeType: string,
+  codeText: string
+): Promise<ArrayBuffer> => {
+  return await bwipjs.toBuffer({
+    bcid: codeType,
+    text: codeText,
+  })
+}
+
+export const createTicketPdf = async (
+  barQrImage: ArrayBuffer
+): Promise<string> => {
+  const pdf = await PDFDocument.create()
+  const page = pdf.addPage()
+
+  const qrImage = await pdf.embedPng(barQrImage)
+
+  const { height } = page.getSize()
+  page.drawImage(qrImage, {
+    x: 20,
+    y: height - 100 - 20,
+    width: 100,
+    height: 100,
+  })
+  const pdfArray = await pdf.save()
+  return Buffer.from(pdfArray).toString('base64')
 }
 
 export const lockOrder = async (p: { orderId: string }): Promise<boolean> => {
