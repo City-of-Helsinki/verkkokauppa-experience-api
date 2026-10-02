@@ -40,6 +40,9 @@ import { format, isAfter } from 'date-fns'
 import { formatToTimeZone } from 'date-fns-timezone'
 import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz'
 
+const QR_CODE_WIDTH_IN_PDF = 100
+const QR_CODE_HEIGHT_IN_PDF = 100
+
 const getBackendUrl = () => {
   const url = process.env.ORDER_BACKEND_URL
   if (!url) {
@@ -740,9 +743,9 @@ export const createTicketPdf = async (
   const { height } = page.getSize()
   page.drawImage(qrImage, {
     x: 20,
-    y: height - 100 - 20,
-    width: 100,
-    height: 100,
+    y: height - QR_CODE_HEIGHT_IN_PDF - 20,
+    width: QR_CODE_WIDTH_IN_PDF,
+    height: QR_CODE_HEIGHT_IN_PDF,
   })
   const pdfArray = await pdf.save()
   return Buffer.from(pdfArray).toString('base64')
