@@ -127,6 +127,8 @@ export type OrderItem = OrderItemRequest & {
   orderItemId: string
   orderId: string
   merchantId?: string
+  tokenName?: string
+  tokenQRCodeUrl?: string
 }
 export type OrderItemMeta = {
   orderItemMetaId: string

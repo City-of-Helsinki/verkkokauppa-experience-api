@@ -13,7 +13,12 @@ import {
   getMerchantDetailsForOrder,
 } from '@verkkokauppa/configuration-backend'
 import { isCardRenewal } from './paymentReturnService'
-// import { getOrderConfirmationPdf } from '@verkkokauppa/order-backend'
+import {
+  createTicketPdf,
+  createBarQrCode,
+  //  getOrderConfirmationPdf,
+} from '@verkkokauppa/order-backend'
+import axios from 'axios'
 
 const skipTosByNamespace = (process.env.SKIP_TERMS_ACCEPT_FOR_NAMESPACES || '')
   .toLowerCase()
@@ -69,6 +74,39 @@ export const sendReceipt = async (
   // if (confirmationPdf !== null) {
   //   attachments['order-confirmation.pdf'] = confirmationPdf
   // }
+  // if orderItem has tokenName defined, add QR Code
+  for (const item of order.items) {
+    if (item?.tokenName) {
+      const pdfName = `lippu-biljet-ticket-${item.orderItemId}.pdf`
+      // if tokenQRCodeUrl exists, use it to fetch QR code
+      if (item?.tokenQRCodeUrl) {
+        const url = item.tokenQRCodeUrl
+        try {
+          const result = await axios.get<ArrayBuffer>(url, {
+            responseType: 'arraybuffer',
+          })
+          if (result.status === 200) {
+            logger.debug(`Fetching QR Code from ${url}`)
+            attachments[pdfName] = await createTicketPdf(result.data)
+            continue
+          } else {
+            logger.warn(
+              `Fetching QR Code from ${url} failed: ${result.statusText}`
+            )
+          }
+        } catch (error) {
+          logger.warn(`Fetching QR Code from ${url} failed: `, error)
+        }
+      }
+      // if tokenQRCodeUrl does not exist or fetching QR code fails, create QR code
+      logger.debug(`Creating QR code.`)
+      const barQrCode = await createBarQrCode(
+        merchant.merchantBarQRCodeType,
+        item.tokenName
+      )
+      attachments[pdfName] = await createTicketPdf(barQrCode)
+    }
+  }
   const email = await sendOrderConfirmationEmailToCustomer({
     order: orderWithPayments,
     emailHeader:
