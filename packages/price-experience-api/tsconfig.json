@@ -7,10 +7,10 @@
         "baseUrl": "./",
         "paths": {
             "@verkkokauppa/core": [
-                "../core"
+                "..\\core"
             ],
             "@verkkokauppa/price-backend": [
-                "../price-backend"
+                "..\\price-backend"
             ]
         }
     },
@@ -19,10 +19,10 @@
     ],
     "references": [
         {
-            "path": "../core"
+            "path": "..\\core"
         },
         {
-            "path": "../price-backend"
+            "path": "..\\price-backend"
         }
     ]
 }

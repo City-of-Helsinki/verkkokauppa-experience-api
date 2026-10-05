@@ -722,6 +722,32 @@ export const getOrderConfirmationPdf = async (
   }
 }
 
+// KYV-1402
+// check if bar code logic applies and get bar code token if needed
+export const barQRCodeCheck = async (p: {
+  merchantId: string
+  namespace: string
+  items: OrderItem[]
+}): Promise<OrderItem[]> => {
+  const { merchantId, namespace, items } = p
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+  const url = `${process.env.ORDER_BACKEND_URL}/order/voucher/check`
+  try {
+    const result = await axios.post<OrderItem[]>(url, {
+      params: { merchantId, namespace },
+      body: { items },
+    })
+    return result.data
+  } catch (e) {
+    if (e.response?.status === 404) {
+      throw new OrderNotFoundError()
+    }
+    throw new GetOrderFailure(e)
+  }
+}
+
 export const createBarQrCode = async (
   codeType: string,
   codeText: string
