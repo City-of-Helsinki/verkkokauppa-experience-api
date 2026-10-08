@@ -158,11 +158,16 @@ export class PaytrailOnlinePaymentReturnController extends AbstractController {
 
       // KYV-1402
       // get QR code if this is voucher purchase
-      order.items = await barQRCodeCheck({
-        merchantId,
-        namespace: order.namespace,
-        items: order.items,
-      })
+      try {
+        order.items = await barQRCodeCheck({
+          merchantId,
+          namespace: order.namespace,
+          items: order.items,
+        })
+      } catch (e) {
+        logger.error(e)
+        logger.debug(`Error occurred, when checking for barcode ${orderId}`)
+      }
 
       // Function contains internal checks when to send receipt.
       try {

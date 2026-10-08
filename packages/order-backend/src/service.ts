@@ -26,6 +26,7 @@ import {
   CreateOrderFailure,
   CreateOrderWithItemsFailure,
   GetOrderFailure,
+  OrderItemsNotFoundFailure,
   OrderNotFoundError,
   OrderValidationError,
   SetCustomerToOrderFailure,
@@ -34,7 +35,7 @@ import {
   SetOrderTotalsFailure,
   SubscriptionNotFoundError,
 } from './errors'
-import { ExperienceFailure, ForbiddenError } from '@verkkokauppa/core'
+import { ExperienceFailure, ForbiddenError, logger } from '@verkkokauppa/core'
 import { sendErrorNotification } from '@verkkokauppa/message-backend'
 import { format, isAfter } from 'date-fns'
 import { formatToTimeZone } from 'date-fns-timezone'
@@ -741,10 +742,7 @@ export const barQRCodeCheck = async (p: {
     })
     return result.data
   } catch (e) {
-    if (e.response?.status === 404) {
-      throw new OrderNotFoundError()
-    }
-    throw new GetOrderFailure(e)
+    throw new OrderItemsNotFoundFailure(e)
   }
 }
 

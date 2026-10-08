@@ -181,6 +181,20 @@ describe('Test paytrail refund payment success controller', () => {
       return Promise.resolve({})
     })
 
+    axiosMock.post.mockImplementation((url, data?: any) => {
+      if (url === undefined) {
+        return Promise.resolve({ data: '' })
+      }
+
+      if (url.includes(`/order/voucher/check`)) {
+        return Promise.resolve({ data: orderBackendResponseMock.items })
+      }
+
+      console.log(url)
+      console.log(data)
+      return Promise.resolve({})
+    })
+
     const paytrailOnlinePaymentReturnController = new PaytrailOnlinePaymentReturnController()
 
     const mockRequest = {
@@ -355,6 +369,7 @@ describe('Test paytrail refund payment success controller', () => {
     const mockRedirect = jest
       .fn()
       .mockImplementation((status: number, url: string) => {
+        console.log(url)
         return {
           status,
           url,
