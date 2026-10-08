@@ -2,7 +2,6 @@
     "compilerOptions": {
         "baseUrl": "./packages",
         "resolveJsonModule": true,
-        "esModuleInterop": true,
         "paths": {
             "@verkkokauppa/product-experience-api/*": [
                 "product-experience-api/src/*"

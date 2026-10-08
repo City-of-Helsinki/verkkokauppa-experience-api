@@ -35,7 +35,7 @@ import {
   SetOrderTotalsFailure,
   SubscriptionNotFoundError,
 } from './errors'
-import { ExperienceFailure, ForbiddenError, logger } from '@verkkokauppa/core'
+import { ExperienceFailure, ForbiddenError } from '@verkkokauppa/core'
 import { sendErrorNotification } from '@verkkokauppa/message-backend'
 import { format, isAfter } from 'date-fns'
 import { formatToTimeZone } from 'date-fns-timezone'
