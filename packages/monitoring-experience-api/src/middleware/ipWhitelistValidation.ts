@@ -18,7 +18,9 @@ export const withIpWhitelistValidation = <
         req.headers['x-forwarded-for'] || req.socket?.remoteAddress
 
       if (!requestIp) {
-        throw new IpAddressValidationError('No IP found to validate')
+        throw new IpAddressValidationError(
+          'No IP found to validate for whitelist check'
+        )
       } else {
         const parsedClientIp = parseClientIpFromXForwardedFromHeader(requestIp)
 
