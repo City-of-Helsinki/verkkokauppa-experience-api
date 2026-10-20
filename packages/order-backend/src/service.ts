@@ -738,9 +738,6 @@ export const barQRCodeCheck = async (p: {
   try {
     const result = await axios.post<OrderItem[]>(url, items, {
       params: { merchantId, namespace },
-      // paramsSerializer: function (params: any) {
-      //   return stringify(params, { arrayFormat: 'brackets' })
-      // },
     })
     return result.data
   } catch (e) {
