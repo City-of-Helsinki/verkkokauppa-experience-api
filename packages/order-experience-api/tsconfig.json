@@ -7,34 +7,34 @@
         "baseUrl": "./",
         "paths": {
             "@verkkokauppa/auth-helsinki-profile": [
-                "..\\auth-helsinki-profile"
+                "../auth-helsinki-profile"
             ],
             "@verkkokauppa/cart-backend": [
-                "..\\cart-backend"
+                "../cart-backend"
             ],
             "@verkkokauppa/configuration-backend": [
-                "..\\configuration-backend"
+                "../configuration-backend"
             ],
             "@verkkokauppa/core": [
-                "..\\core"
+                "../core"
             ],
             "@verkkokauppa/message-backend": [
-                "..\\message-backend"
+                "../message-backend"
             ],
             "@verkkokauppa/order-backend": [
-                "..\\order-backend"
+                "../order-backend"
             ],
             "@verkkokauppa/payment-backend": [
-                "..\\payment-backend"
+                "../payment-backend"
             ],
             "@verkkokauppa/price-backend": [
-                "..\\price-backend"
+                "../price-backend"
             ],
             "@verkkokauppa/product-backend": [
-                "..\\product-backend"
+                "../product-backend"
             ],
             "@verkkokauppa/product-mapping-backend": [
-                "..\\product-mapping-backend"
+                "../product-mapping-backend"
             ]
         }
     },
@@ -43,34 +43,34 @@
     ],
     "references": [
         {
-            "path": "..\\auth-helsinki-profile"
+            "path": "../auth-helsinki-profile"
         },
         {
-            "path": "..\\cart-backend"
+            "path": "../cart-backend"
         },
         {
-            "path": "..\\configuration-backend"
+            "path": "../configuration-backend"
         },
         {
-            "path": "..\\core"
+            "path": "../core"
         },
         {
-            "path": "..\\message-backend"
+            "path": "../message-backend"
         },
         {
-            "path": "..\\order-backend"
+            "path": "../order-backend"
         },
         {
-            "path": "..\\payment-backend"
+            "path": "../payment-backend"
         },
         {
-            "path": "..\\price-backend"
+            "path": "../price-backend"
         },
         {
-            "path": "..\\product-backend"
+            "path": "../product-backend"
         },
         {
-            "path": "..\\product-mapping-backend"
+            "path": "../product-mapping-backend"
         }
     ]
 }
