@@ -7,10 +7,10 @@
         "baseUrl": "./",
         "paths": {
             "@verkkokauppa/configuration-backend": [
-                "../configuration-backend"
+                "..\\configuration-backend"
             ],
             "@verkkokauppa/core": [
-                "../core"
+                "..\\core"
             ]
         }
     },
@@ -19,10 +19,10 @@
     ],
     "references": [
         {
-            "path": "../configuration-backend"
+            "path": "..\\configuration-backend"
         },
         {
-            "path": "../core"
+            "path": "..\\core"
         }
     ]
 }
