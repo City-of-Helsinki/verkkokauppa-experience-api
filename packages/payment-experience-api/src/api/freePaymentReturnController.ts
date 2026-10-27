@@ -1,7 +1,11 @@
 import { AbstractController, logger } from '@verkkokauppa/core'
 import type { Request, Response } from 'express'
 import { URL } from 'url'
-import { getOrderAdmin, setOrderAsAccounted } from '@verkkokauppa/order-backend'
+import {
+  barQRCodeCheck,
+  getOrderAdmin,
+  setOrderAsAccounted,
+} from '@verkkokauppa/order-backend'
 import {
   checkFreeReturnUrl,
   getPaidPaymentAdmin,
@@ -108,6 +112,19 @@ export class FreePaymentReturnController extends AbstractController {
         paymentReturnStatus: paymentStatus,
         redirectPaymentUrlBase: FreePaymentReturnController.getRedirectUrl(),
       })
+
+      // KYV-1402
+      // get QR code if this is voucher purchase
+      try {
+        order.items = await barQRCodeCheck({
+          merchantId,
+          namespace: order.namespace,
+          items: order.items,
+        })
+      } catch (e) {
+        logger.error(e)
+        logger.debug(`Error occurred, when checking for barcode ${orderId}`)
+      }
 
       // Function contains internal checks when to send receipt.
       try {

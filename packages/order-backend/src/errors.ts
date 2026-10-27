@@ -117,6 +117,16 @@ export class OrderNotFoundError extends ExperienceError {
   }
 }
 
+export class OrderItemsNotFoundFailure extends ExperienceFailure {
+  constructor(source: Error) {
+    super({
+      code: 'failed-to-get-order-items',
+      message: 'Failed to get orderitems',
+      source,
+    })
+  }
+}
+
 export class CancelOrderError extends ExperienceError {
   constructor() {
     super({

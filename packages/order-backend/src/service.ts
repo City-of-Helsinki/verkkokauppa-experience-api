@@ -26,6 +26,7 @@ import {
   CreateOrderFailure,
   CreateOrderWithItemsFailure,
   GetOrderFailure,
+  OrderItemsNotFoundFailure,
   OrderNotFoundError,
   OrderValidationError,
   SetCustomerToOrderFailure,
@@ -719,6 +720,28 @@ export const getOrderConfirmationPdf = async (
       header: 'Error - Failed to get order confirmation pdf',
     })
     return null
+  }
+}
+
+// KYV-1402
+// check if bar code logic applies and get bar code token if needed
+export const barQRCodeCheck = async (p: {
+  merchantId: string
+  namespace: string
+  items: OrderItem[]
+}): Promise<OrderItem[]> => {
+  const { merchantId, namespace, items } = p
+  if (!process.env.ORDER_BACKEND_URL) {
+    throw new Error('No order backend URL set')
+  }
+  const url = `${process.env.ORDER_BACKEND_URL}/order/voucher/check`
+  try {
+    const result = await axios.post<OrderItem[]>(url, items, {
+      params: { merchantId, namespace },
+    })
+    return result.data
+  } catch (e) {
+    throw new OrderItemsNotFoundFailure(e)
   }
 }
 

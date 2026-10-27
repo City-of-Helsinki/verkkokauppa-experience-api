@@ -62,6 +62,9 @@
             "path": "packages/core"
         },
         {
+            "path": "packages/e2e-testing-backend"
+        },
+        {
             "path": "packages/merchant-experience-api"
         },
         {
