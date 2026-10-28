@@ -706,21 +706,30 @@ export const setOrderPaymentMethod = async (p: {
 
 export const getOrderConfirmationPdf = async (
   orderId: string
-): Promise<string | null> => {
+): Promise<string | undefined> => {
   const url = `${getBackendUrl()}/order/pdf/orderConfirmation`
   try {
-    const res = await axios.get(url, {
+    const response = await axios.get(url, {
       params: { orderId },
       responseType: 'arraybuffer',
     })
-    return Buffer.from(res.data).toString('base64')
+    if (
+      response.status !== 200 ||
+      !response.data ||
+      response.data.byteLength === 0
+    ) {
+      throw new Error(
+        'Backend API response was empty or API did not respond with status 200'
+      )
+    }
+    return Buffer.from(response.data).toString('base64')
   } catch (e) {
     await sendErrorNotification({
-      message: `Failed to get order confirmation pdf for order ${orderId}`,
+      message: `Failed to get order confirmation pdf for order ${orderId}. Sending order confirmation email without pdf file.`,
       cause: e.toString(),
-      header: 'Error - Failed to get order confirmation pdf',
+      header: 'Warning - Failed to get order confirmation pdf',
     })
-    return null
+    return undefined
   }
 }
 
