@@ -1,5 +1,6 @@
 import axios from 'axios'
-import bwipjs from 'bwip-js'
+// import bwipjs from 'bwip-js'
+import bwipjs = require('bwip-js')
 import { PDFDocument } from 'pdf-lib'
 import { stringify } from 'qs'
 import type {
