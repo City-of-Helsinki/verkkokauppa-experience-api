@@ -9,7 +9,6 @@ import {
 } from '@verkkokauppa/payment-backend'
 import { ExperienceFailure, logger } from '@verkkokauppa/core'
 import {
-  // TODO väliaikainen poisto
   downloadMerchantTermsOfServiceBinary,
   getMerchantDetailsForOrder,
 } from '@verkkokauppa/configuration-backend'
