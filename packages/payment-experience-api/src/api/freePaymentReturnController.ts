@@ -127,18 +127,8 @@ export class FreePaymentReturnController extends AbstractController {
       }
 
       // Function contains internal checks when to send receipt.
-      try {
-        await sendReceiptToCustomer(paymentStatus, orderId, order)
-      } catch (e) {
-        logger.error(e)
-
-        // send notification to Slack channel (email) that sending receipt failed
-        await sendErrorNotification({
-          message: `Sending receipt failed for free order ${orderId}`,
-          cause: e.toString(),
-          header: 'Error - Sending receipt failed',
-        })
-      }
+      // asynchronous call that does not break processing. Sends error notification if fails
+      sendReceiptToCustomer(paymentStatus, orderId, order)
 
       // Only cancel authorized card renewals.
       if (isAuthorized(paymentStatus) && isCardRenewal(paymentStatus)) {

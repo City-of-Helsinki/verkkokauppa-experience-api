@@ -1,6 +1,7 @@
 import {
   sendOrderConfirmationEmailToCustomer,
   loadPDFFromDir,
+  sendErrorNotification,
 } from '@verkkokauppa/message-backend'
 import {
   getPaymentForOrder,
@@ -137,6 +138,13 @@ export const sendReceiptToCustomer = async (
     } catch (e) {
       // Skip errors for receipt sending
       logger.error(e)
+
+      // send notification to Slack channel (email) that sending receipt failed
+      await sendErrorNotification({
+        message: `Sending receipt failed for order ${orderId}`,
+        cause: e.toString(),
+        header: 'Error - Sending receipt failed',
+      })
     }
   }
 }

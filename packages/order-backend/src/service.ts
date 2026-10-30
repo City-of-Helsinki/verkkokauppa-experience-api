@@ -42,8 +42,8 @@ import { format, isAfter } from 'date-fns'
 import { formatToTimeZone } from 'date-fns-timezone'
 import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz'
 
-const QR_CODE_WIDTH_IN_PDF = 100
-const QR_CODE_HEIGHT_IN_PDF = 100
+const QR_CODE_WIDTH_IN_PDF = 600
+const QR_CODE_HEIGHT_IN_PDF = 600
 
 const getBackendUrl = () => {
   const url = process.env.ORDER_BACKEND_URL
