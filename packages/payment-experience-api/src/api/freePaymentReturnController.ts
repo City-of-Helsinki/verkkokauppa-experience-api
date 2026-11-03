@@ -20,7 +20,6 @@ import {
   getPublicServiceConfiguration,
   parseMerchantIdFromFirstOrderItem,
 } from '@verkkokauppa/configuration-backend'
-import { sendErrorNotification } from '@verkkokauppa/message-backend'
 
 export class FreePaymentReturnController extends AbstractController {
   protected readonly requestSchema = null
