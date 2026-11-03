@@ -1122,14 +1122,15 @@ export const checkIfPaidLate = async (p: {
       ? new Date(payment?.createdAt)
       : new Date(order.createdAt)
     let timeToCompareTo = order.lastValidPurchaseDateTime
-      ? new Date(order.lastValidPurchaseDateTime)
+      ? zonedTimeToUtc(
+          new Date(order.lastValidPurchaseDateTime),
+          finlandTimezone
+        ) // lastValidPurchaseDateTime is in finnish time so convert it to UTC-0
       : createdAt
     // then add either 15 minutes of 60 minutes to it based on if it is last valid purchase datetime
     timeToCompareTo.setMinutes(
       timeToCompareTo.getMinutes() + (order.lastValidPurchaseDateTime ? 15 : 60)
     )
-
-    timeToCompareTo = zonedTimeToUtc(timeToCompareTo, finlandTimezone)
 
     logger.debug(
       `Checking if paid late. OrderId: ${
