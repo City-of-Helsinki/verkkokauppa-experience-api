@@ -16,7 +16,7 @@ import { isCardRenewal } from './paymentReturnService'
 import {
   createTicketPdf,
   createBarQrCode,
-  //  getOrderConfirmationPdf,
+  getOrderConfirmationPdf,
 } from '@verkkokauppa/order-backend'
 import axios from 'axios'
 
@@ -70,10 +70,10 @@ export const sendReceipt = async (
     }
   }
   // confirmation PDF is sent regardless of the order type
-  // const confirmationPdf = await getOrderConfirmationPdf(order.orderId)
-  // if (confirmationPdf !== null) {
-  //   attachments['order-confirmation.pdf'] = confirmationPdf
-  // }
+  const confirmationPdf = await getOrderConfirmationPdf(order.orderId)
+  if (confirmationPdf !== undefined) {
+    attachments['kuitti-kvitto-receipt.pdf'] = confirmationPdf
+  }
   // if orderItem has tokenName defined, add QR Code
   for (const item of order.items) {
     if (item?.tokenName) {
