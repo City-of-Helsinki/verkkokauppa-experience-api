@@ -151,18 +151,8 @@ export class PaytrailCardRedirectSuccessController extends AbstractController {
       }
 
       // send email receipt. Method does not throw exceptions
-      try {
-        await sendReceiptToCustomer(paymentReturnStatus, orderId, order)
-      } catch (e) {
-        logger.error(e)
-
-        // send notification to Slack channel (email) that sending receipt failed
-        await sendErrorNotification({
-          message: `Sending receipt failed for paytrail card order ${orderId}`,
-          cause: e.toString(),
-          header: 'Error - Sending receipt failed',
-        })
-      }
+      // asynchronous call that does not break processing. Sends error notification if fails
+      sendReceiptToCustomer(paymentReturnStatus, orderId, order)
 
       try {
         logger.info(`Load paytrail product accountings for order ${orderId}`)

@@ -4,14 +4,12 @@ import type { Response } from 'express'
 import { InvoicingRedirectController } from './invoicingRedirectController'
 
 jest.mock('@verkkokauppa/message-backend')
-const sendErrorNotificationMock =
-  require('@verkkokauppa/message-backend').sendErrorNotification.mockImplementation(
-    () => [],
-  )
-const sendOrderConfirmationEmailToCustomerMock =
-  require('@verkkokauppa/message-backend').sendOrderConfirmationEmailToCustomer.mockImplementation(
-    () => [],
-  )
+const sendErrorNotificationMock = require('@verkkokauppa/message-backend').sendErrorNotification.mockImplementation(
+  () => []
+)
+const sendOrderConfirmationEmailToCustomerMock = require('@verkkokauppa/message-backend').sendOrderConfirmationEmailToCustomer.mockImplementation(
+  () => []
+)
 
 jest.mock('axios')
 const axiosMock = axios as jest.Mocked<typeof axios>
@@ -267,7 +265,7 @@ describe('Test invoicing redirect controller', () => {
     } as any
     mockRequest.get = jest.fn()
 
-    const res = {} as unknown as Response
+    const res = ({} as unknown) as Response
     const mockGetFunction = jest.fn()
 
     mockGetFunction.mockImplementation((key) => {
@@ -288,9 +286,9 @@ describe('Test invoicing redirect controller', () => {
     await invoicingRedirectController.execute(mockRequest as any, res)
     expect(res.redirect).toHaveBeenCalledWith(
       302,
-      'https://service.dev.hel/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b&user=test%40test.dev.hel',
+      'https://service.dev.hel/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b&user=test%40test.dev.hel'
     )
-    expect(sendErrorNotificationMock).toHaveBeenCalledTimes(0)
+    expect(sendErrorNotificationMock).toHaveBeenCalledTimes(1)
     expect(sendOrderConfirmationEmailToCustomerMock).toHaveBeenCalledTimes(1)
   })
 
@@ -482,7 +480,7 @@ describe('Test invoicing redirect controller', () => {
     } as any
     mockRequest.get = jest.fn()
 
-    const res = {} as unknown as Response
+    const res = ({} as unknown) as Response
     const mockGetFunction = jest.fn()
 
     mockGetFunction.mockImplementation((key) => {
@@ -505,9 +503,9 @@ describe('Test invoicing redirect controller', () => {
     await invoicingRedirectController.execute(mockRequest as any, res)
     expect(res.redirect).toHaveBeenCalledWith(
       302,
-      'https://service.dev.hel/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b&user=test%40test.dev.hel',
+      'https://service.dev.hel/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b&user=test%40test.dev.hel'
     )
-    expect(sendErrorNotificationMock).toHaveBeenCalledTimes(1)
+    expect(sendErrorNotificationMock).toHaveBeenCalledTimes(2)
     expect(sendErrorNotificationMock.mock.calls[0][0]).toEqual({
       cause:
         'ValidationError: Accounting information should only have internalOrder or profitCenter defined. If neither is given then project has to be defined.',
@@ -536,10 +534,10 @@ describe('Test invoicing redirect controller', () => {
     await invoicingRedirectController.execute(mockRequest as any, res)
     expect(res.redirect).toHaveBeenCalledWith(
       302,
-      'https://service.dev.hel/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b&user=test%40test.dev.hel',
+      'https://service.dev.hel/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b&user=test%40test.dev.hel'
     )
-    expect(sendErrorNotificationMock).toHaveBeenCalledTimes(2)
-    expect(sendErrorNotificationMock.mock.calls[1][0]).toEqual({
+    expect(sendErrorNotificationMock).toHaveBeenCalledTimes(4)
+    expect(sendErrorNotificationMock.mock.calls[2][0]).toEqual({
       cause:
         'ValidationError: Accounting information should only have internalOrder or profitCenter defined. If neither is given then project has to be defined.',
       header: 'Error - Creating invoicing entry for order failed',
@@ -567,9 +565,9 @@ describe('Test invoicing redirect controller', () => {
     await invoicingRedirectController.execute(mockRequest as any, res)
     expect(res.redirect).toHaveBeenCalledWith(
       302,
-      'https://service.dev.hel/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b&user=test%40test.dev.hel',
+      'https://service.dev.hel/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b&user=test%40test.dev.hel'
     )
-    expect(sendErrorNotificationMock).toHaveBeenCalledTimes(2)
+    expect(sendErrorNotificationMock).toHaveBeenCalledTimes(5)
     expect(sendOrderConfirmationEmailToCustomerMock).toHaveBeenCalledTimes(3)
   })
 
@@ -761,7 +759,7 @@ describe('Test invoicing redirect controller', () => {
     } as any
     mockRequest.get = jest.fn()
 
-    const res = {} as unknown as Response
+    const res = ({} as unknown) as Response
     const mockGetFunction = jest.fn()
 
     mockGetFunction.mockImplementation((key) => {
@@ -782,9 +780,9 @@ describe('Test invoicing redirect controller', () => {
     await invoicingRedirectController.execute(mockRequest as any, res)
     expect(res.redirect).toHaveBeenCalledWith(
       302,
-      'https://test.dev.hel/145d8829-07b7-4b03-ab0e-24063958ab9b/success?user=test%40test.dev.hel',
+      'https://test.dev.hel/145d8829-07b7-4b03-ab0e-24063958ab9b/success?user=test%40test.dev.hel'
     )
-    expect(sendErrorNotificationMock).toHaveBeenCalledTimes(0)
+    expect(sendErrorNotificationMock).toHaveBeenCalledTimes(1)
     expect(sendOrderConfirmationEmailToCustomerMock).toHaveBeenCalledTimes(1)
   })
 
@@ -801,7 +799,7 @@ describe('Test invoicing redirect controller', () => {
     } as any
     mockRequest.get = jest.fn()
 
-    const res = {} as unknown as Response
+    const res = ({} as unknown) as Response
     const mockGetFunction = jest.fn()
 
     mockGetFunction.mockImplementation((key) => {
@@ -822,7 +820,7 @@ describe('Test invoicing redirect controller', () => {
     await invoicingRedirectController.execute(mockRequest as any, res)
     expect(res.redirect).toHaveBeenCalledWith(
       302,
-      'https://test.dev.hel/failure',
+      'https://test.dev.hel/failure'
     )
     expect(sendErrorNotificationMock).toHaveBeenCalledTimes(0)
     expect(sendOrderConfirmationEmailToCustomerMock).toHaveBeenCalledTimes(0)
@@ -842,7 +840,7 @@ describe('Test invoicing redirect controller', () => {
     } as any
     mockRequest.get = jest.fn()
 
-    const res = {} as unknown as Response
+    const res = ({} as unknown) as Response
     const mockGetFunction = jest.fn()
 
     mockGetFunction.mockImplementation((key) => {
@@ -863,7 +861,7 @@ describe('Test invoicing redirect controller', () => {
     await invoicingRedirectController.execute(mockRequest as any, res)
     expect(res.redirect).toHaveBeenCalledWith(
       302,
-      'https://test.dev.hel/testipolku/failure',
+      'https://test.dev.hel/testipolku/failure'
     )
     expect(sendErrorNotificationMock).toHaveBeenCalledTimes(0)
     expect(sendOrderConfirmationEmailToCustomerMock).toHaveBeenCalledTimes(0)

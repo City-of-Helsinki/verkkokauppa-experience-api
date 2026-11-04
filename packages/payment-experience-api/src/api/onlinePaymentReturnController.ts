@@ -59,8 +59,10 @@ export class OnlinePaymentReturnController extends AbstractController {
         paymentReturnStatus: vismaStatus,
         redirectPaymentUrlBase: OnlinePaymentReturnController.getRedirectUrl(),
       })
+
       // Function contains internal checks when to send receipt.
-      await sendReceiptToCustomer(vismaStatus, orderId, order)
+      // asynchronous call that does not break processing. Sends error notification if fails
+      sendReceiptToCustomer(vismaStatus, orderId, order)
 
       // Only cancel authorized card renewals.
       if (isAuthorized(vismaStatus) && isCardRenewal(vismaStatus)) {
