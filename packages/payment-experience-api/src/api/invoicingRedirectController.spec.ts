@@ -536,8 +536,8 @@ describe('Test invoicing redirect controller', () => {
       302,
       'https://service.dev.hel/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b&user=test%40test.dev.hel'
     )
-    expect(sendErrorNotificationMock).toHaveBeenCalledTimes(2)
-    expect(sendErrorNotificationMock.mock.calls[1][0]).toEqual({
+    expect(sendErrorNotificationMock).toHaveBeenCalledTimes(4)
+    expect(sendErrorNotificationMock.mock.calls[2][0]).toEqual({
       cause:
         'ValidationError: Accounting information should only have internalOrder or profitCenter defined. If neither is given then project has to be defined.',
       header: 'Error - Creating invoicing entry for order failed',
@@ -567,7 +567,7 @@ describe('Test invoicing redirect controller', () => {
       302,
       'https://service.dev.hel/success?orderId=145d8829-07b7-4b03-ab0e-24063958ab9b&user=test%40test.dev.hel'
     )
-    expect(sendErrorNotificationMock).toHaveBeenCalledTimes(2)
+    expect(sendErrorNotificationMock).toHaveBeenCalledTimes(5)
     expect(sendOrderConfirmationEmailToCustomerMock).toHaveBeenCalledTimes(3)
   })
 
