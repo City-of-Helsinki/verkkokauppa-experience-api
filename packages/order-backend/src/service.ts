@@ -42,9 +42,6 @@ import { format, isAfter } from 'date-fns'
 import { formatToTimeZone } from 'date-fns-timezone'
 import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz'
 
-const QR_CODE_WIDTH_IN_PDF = 600
-const QR_CODE_HEIGHT_IN_PDF = 600
-
 const getBackendUrl = () => {
   const url = process.env.ORDER_BACKEND_URL
   if (!url) {
@@ -759,14 +756,25 @@ export const createBarQrCode = async (
   codeType: string,
   codeText: string
 ): Promise<ArrayBuffer> => {
+  const BWIP_TYPE_MAP: Record<string, string> = {
+    QR_CODE: 'qrcode',
+    CODE_128: 'code128',
+  }
+  const bcid = BWIP_TYPE_MAP[codeType]
+
+  if (!bcid) {
+    throw new Error('Unknown barcode or qr code type: ' + codeType)
+  }
   return await bwipjs.toBuffer({
-    bcid: codeType,
+    bcid: bcid,
     text: codeText,
   })
 }
 
 export const createTicketPdf = async (
-  barQrImage: ArrayBuffer
+  barQrImage: ArrayBuffer,
+  qrCodeHeight: number,
+  qrCodeWidth: number
 ): Promise<string> => {
   const pdf = await PDFDocument.create()
   const page = pdf.addPage()
@@ -776,9 +784,9 @@ export const createTicketPdf = async (
   const { height } = page.getSize()
   page.drawImage(qrImage, {
     x: 20,
-    y: height - QR_CODE_HEIGHT_IN_PDF - 20,
-    width: QR_CODE_WIDTH_IN_PDF,
-    height: QR_CODE_HEIGHT_IN_PDF,
+    y: height - qrCodeHeight - 20,
+    width: qrCodeWidth,
+    height: qrCodeHeight,
   })
   const pdfArray = await pdf.save()
   return Buffer.from(pdfArray).toString('base64')
