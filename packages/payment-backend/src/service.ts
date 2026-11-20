@@ -371,7 +371,10 @@ export const getPaymentMethodList = async (parameters: {
     .filter((method) => {
       return (
         order.type !== 'subscription' ||
-        method.group.toLowerCase().startsWith('creditcard')
+        (!order?.invoicingDate &&
+          method.group.toLowerCase().startsWith('creditcard')) ||
+        (order?.invoicingDate &&
+          method.group.toLowerCase().startsWith('invoice'))
       )
     })
 
