@@ -16,6 +16,7 @@ import type {
   OrderItemInvoicing,
   OrderItemRequest,
   OrderPaymentMethod,
+  OrderType,
   OrderWithItemsBackendResponse,
 } from './types'
 import {
@@ -57,8 +58,10 @@ export const createOrder = async (p: {
   namespace: string
   user: string
   lastValidPurchaseDateTime?: Date | string | undefined
+  type?: OrderType | undefined
+  invoicingDate?: Date | string | undefined
 }): Promise<Order> => {
-  const { namespace, user, lastValidPurchaseDateTime } = p
+  const { namespace, user, lastValidPurchaseDateTime, type, invoicingDate } = p
   if (!process.env.ORDER_BACKEND_URL) {
     throw new Error('No order backend URL set')
   }
@@ -72,6 +75,8 @@ export const createOrder = async (p: {
         namespace,
         user,
         lastValidPurchaseDateTime,
+        type,
+        invoicingDate,
       },
     })
     return transFormBackendOrder(result.data)
@@ -89,6 +94,8 @@ export const createOrderWithItems = async (p: {
   items: OrderItemRequest[]
   customer: OrderCustomer
   lastValidPurchaseDateTime?: Date
+  type?: OrderType
+  invoicingDate?: Date
 }): Promise<Order> => {
   const {
     namespace,
@@ -99,6 +106,8 @@ export const createOrderWithItems = async (p: {
     priceVat,
     priceTotal,
     lastValidPurchaseDateTime,
+    type,
+    invoicingDate,
   } = p
   if (!process.env.ORDER_BACKEND_URL) {
     throw new Error('No order backend URL set')
@@ -115,6 +124,8 @@ export const createOrderWithItems = async (p: {
       priceVat: priceVat.toString(),
       priceTotal: priceTotal.toString(),
       lastValidPurchaseDateTime,
+      type,
+      invoicingDate,
     },
     items,
   }
