@@ -83,6 +83,7 @@ export interface Order {
   loggedInCheckoutUrl?: string
   customer?: OrderCustomer
   invoice?: OrderInvoice
+  invoicingDate?: Date
   status?: string
   subscriptionId?: string
   type: OrderType

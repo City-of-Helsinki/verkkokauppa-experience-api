@@ -25,6 +25,7 @@ import {
   customerSchema,
   itemsSchema,
   paymentFiltersSchema,
+  typeSchema,
 } from '../lib/validation'
 import * as yup from 'yup'
 
@@ -36,6 +37,8 @@ const requestSchema = yup.object().shape({
     customer: customerSchema.notRequired().default(undefined),
     paymentFilters: paymentFiltersSchema.notRequired(),
     lastValidPurchaseDateTime: yup.date().notRequired().default(undefined),
+    type: typeSchema.notRequired(),
+    invoicingDate: yup.date().notRequired(),
   }),
 })
 
@@ -80,12 +83,16 @@ export class CreateController extends AbstractController<typeof requestSchema> {
       user,
       paymentFilters,
       lastValidPurchaseDateTime,
+      type,
+      invoicingDate,
     } = req.body
     logger.debug(`Create Order for namespace ${namespace} and user ${user}`)
     const orderData = await createOrder({
       namespace,
       user,
       lastValidPurchaseDateTime,
+      type,
+      invoicingDate,
     })
 
     const paymentFiltersData = await this.saveOrderPaymentFilters(
@@ -111,6 +118,8 @@ export class CreateController extends AbstractController<typeof requestSchema> {
       customer,
       paymentFilters,
       lastValidPurchaseDateTime,
+      type,
+      invoicingDate,
     } = req.body
     logger.debug(
       `Create Order with Items for namespace ${namespace} and user ${user}`
@@ -131,6 +140,8 @@ export class CreateController extends AbstractController<typeof requestSchema> {
       customer,
       ...calculateTotalsFromItems({ items }),
       lastValidPurchaseDateTime,
+      type,
+      invoicingDate,
     })
 
     const paymentFiltersData = await this.saveOrderPaymentFilters(

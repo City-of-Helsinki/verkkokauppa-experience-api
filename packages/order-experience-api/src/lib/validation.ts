@@ -59,3 +59,11 @@ export const paymentFiltersSchema = yup.array().of(
     value: yup.string().required(),
   })
 )
+
+export const typeSchema = yup.object().shape({
+  type: yup
+    .string()
+    .matches(/^(order|subscription)?$/, { excludeEmptyString: true })
+    .trim()
+    .ensure(),
+})
