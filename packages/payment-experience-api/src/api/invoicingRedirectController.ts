@@ -9,6 +9,7 @@ import type { Request, Response } from 'express'
 import {
   createInvoicingEntryForOrder,
   getOrder,
+  Order,
   OrderNotFoundError,
   setOrderAsAccounted,
 } from '@verkkokauppa/order-backend'
@@ -98,6 +99,17 @@ export class InvoicingRedirectController extends AbstractController {
         )
       }
 
+      // KYV-1438 Separate handling for invoice subscriptions
+      if (order.type == 'subscription') {
+        await this.handleInvoicingSubscription(order)
+
+        // redirect to success
+        return res.redirect(
+          302,
+          InvoicingRedirectController.success(redirectUrl, user)
+        )
+      }
+
       if (await paidPaymentExists(order)) {
         return res.redirect(
           302,
@@ -105,7 +117,6 @@ export class InvoicingRedirectController extends AbstractController {
         )
       }
 
-      // KYV-1438 Separate handling for invoice subscriptions
       const paymentStatus = await checkInvoiceReturnUrl({
         orderId: orderId,
         merchantId: merchantId,
@@ -289,5 +300,9 @@ export class InvoicingRedirectController extends AbstractController {
         InvoicingRedirectController.success(redirectUrl, user)
       )
     }
+  }
+
+  private async handleInvoicingSubscription(order: Order) {
+    // TODO: what is needed?
   }
 }
