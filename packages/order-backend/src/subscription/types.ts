@@ -36,7 +36,7 @@ export interface Subscription {
   originalPriceNet: string
   originalPriceVat: string
   originalPriceGross: string
-  invoicingDate: string
+  //invoicingDate: string
   meta: SubscriptionItemMeta[]
 }
 
