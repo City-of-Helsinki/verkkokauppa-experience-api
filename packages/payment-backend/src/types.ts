@@ -55,6 +55,7 @@ export interface Order {
   priceTotal?: string
   type: OrderType
   lastValidPurchaseDateTime?: Date
+  invoicingDate?: Date
 }
 
 export interface PaymentMethod {
