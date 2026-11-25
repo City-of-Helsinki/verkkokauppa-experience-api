@@ -105,6 +105,7 @@ export class InvoicingRedirectController extends AbstractController {
         )
       }
 
+      // KYV-1438 Separate handling for invoice subscriptions
       const paymentStatus = await checkInvoiceReturnUrl({
         orderId: orderId,
         merchantId: merchantId,

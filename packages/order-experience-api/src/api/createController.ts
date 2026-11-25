@@ -37,7 +37,7 @@ const requestSchema = yup.object().shape({
     customer: customerSchema.notRequired().default(undefined),
     paymentFilters: paymentFiltersSchema.notRequired(),
     lastValidPurchaseDateTime: yup.date().notRequired().default(undefined),
-    type: typeSchema.notRequired(),
+    type: typeSchema.nullable().notRequired(),
     invoicingDate: yup.date().notRequired(),
   }),
 })
@@ -53,12 +53,15 @@ export class CreateController extends AbstractController<typeof requestSchema> {
     let { lastValidPurchaseDateTime } = req.body
 
     if (lastValidPurchaseDateTime === undefined) {
-      const isVatCodeUsed = isVatPercentageUsedInOrderItems(items, '24')
-      if (isVatCodeUsed) {
-        lastValidPurchaseDateTime = getEndOfDayInFinland(
-          process.env.FORCED_END_OF_DAY || '2024-08-31'
-        )
-        req.body.lastValidPurchaseDateTime = lastValidPurchaseDateTime
+      // only check vat code from items if items were given
+      if (items) {
+        const isVatCodeUsed = isVatPercentageUsedInOrderItems(items, '24')
+        if (isVatCodeUsed) {
+          lastValidPurchaseDateTime = getEndOfDayInFinland(
+            process.env.FORCED_END_OF_DAY || '2024-08-31'
+          )
+          req.body.lastValidPurchaseDateTime = lastValidPurchaseDateTime
+        }
       }
     }
 

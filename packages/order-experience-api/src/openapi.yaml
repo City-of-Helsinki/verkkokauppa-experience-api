@@ -670,6 +670,13 @@ paths:
                       type: string
                       format: date-time
                       description: ISO 8601 date time format with offset from UTC
+                    type:
+                      type: string
+                      description: order or subscription. Use subscription if creating invoice subscription from this order
+                    invoicingDate:
+                      type: string
+                      format: date-time
+                      description: ISO 8601 date time format with offset from UTC. Use only if creating invoicing subscription
                     paymentFilters:
                       type: array
                       items:
