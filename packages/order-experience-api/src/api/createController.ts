@@ -37,7 +37,7 @@ const requestSchema = yup.object().shape({
     customer: customerSchema.notRequired().default(undefined),
     paymentFilters: paymentFiltersSchema.notRequired(),
     lastValidPurchaseDateTime: yup.date().notRequired().default(undefined),
-    type: typeSchema.nullable().notRequired(),
+    type: typeSchema.notRequired().default(undefined),
     invoicingDate: yup.date().notRequired(),
   }),
 })
